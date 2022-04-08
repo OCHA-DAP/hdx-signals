@@ -1,7 +1,8 @@
+altair==4.2.0
 jupyter==1.0.0
+jupyter-black==0.3.1
 jupytext==1.13.7
 hvplot==0.7.3
 pandas==1.4.1
 pre-commit==2.18.1
 pycaret==2.3.9
-scikit-learn==0.23.2
