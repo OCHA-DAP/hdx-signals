@@ -23,7 +23,7 @@ alt.data_transformers.enable("data_server")
 
 ```python
 df_idmc = utils.get_idmc_data()
-df_cerf = utils.get_cerf_data()
+df_cerf = utils.get_cerf_hdx_data()
 df_cerf = df_cerf[
     df_cerf["dateUSGSignature"] > df_idmc["displacement_date"].min()
 ]
@@ -195,7 +195,13 @@ In general the anomalies don't seem crazy compared to the
 CERF data. Some questions remain, for future notebooks:
 
 - which features are important? which can be removed, or changed?
+- which hyperparameters should be used? N (for KNN), and fraction of
+  anomaly (default 0.05)
 - does displacement reporting matter? i.e., if in one country it's tracked
   in detail and many small displacements are reported, while in another
   it's all aggregated together, does that affect the anomaly detection?
 - does this model perform "better" than a baseline model? (e.g. a simple threshold)
+
+```python
+
+```

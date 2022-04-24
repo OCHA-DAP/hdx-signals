@@ -30,7 +30,7 @@ def run_pipeline(clobber: bool = False):
         df_idmc_pop = pd.merge(df_idmc, df_pop, how="left", on="iso3")
         logger.info(f"Writing to {constants.idmc_output_filename}")
         df_idmc_pop.to_csv(constants.idmc_output_filename, index=False)
-    if clobber or (not Path(constants.cerf_filename).exists()):
+    if clobber or (not Path(constants.cerf_hdx_filename).exists()):
         logger.info("Downloading latest CERF allocations")
         get_cerf_data()
 
@@ -56,7 +56,7 @@ def get_cerf_data() -> pd.DataFrame():
     cerf_filename = load_dataset_from_hdx(
         hdx_address="cerf-allocations",
         hdx_dataset_name="CERF Allocations.csv",
-        output_filepath=constants.cerf_filename,
+        output_filepath=Path(constants.cerf_hdx_filename),
     )
     return pd.read_csv(cerf_filename)
 
