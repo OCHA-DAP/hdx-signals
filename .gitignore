@@ -134,5 +134,8 @@ dmypy.json
 # PyCharm
 .idea/
 
-# Output data
-data/output/*
+# All data
+data/*
+
+# Notebooks
+*.ipynb

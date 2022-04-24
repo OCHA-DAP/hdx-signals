@@ -4,6 +4,7 @@ from pathlib import Path
 
 import pandas as pd
 import requests
+from aatoolbox.utils.hdx_api import load_dataset_from_hdx
 
 from src import constants  # noqa: F401
 
@@ -22,12 +23,16 @@ def parse_args() -> argparse.Namespace:
 
 
 def run_pipeline(clobber: bool = False):
-    df_pop = get_pop_data()
-    df_idmc = get_idmc_data()
-    df_idmc_pop = pd.merge(df_idmc, df_pop, how="left", on="iso3")
     if clobber or (not Path(constants.idmc_output_filename).exists()):
+        logger.info("Downloading latest IDMC data")
+        df_pop = get_pop_data()
+        df_idmc = get_idmc_data()
+        df_idmc_pop = pd.merge(df_idmc, df_pop, how="left", on="iso3")
         logger.info(f"Writing to {constants.idmc_output_filename}")
         df_idmc_pop.to_csv(constants.idmc_output_filename, index=False)
+    if clobber or (not Path(constants.cerf_filename).exists()):
+        logger.info("Downloading latest CERF allocations")
+        get_cerf_data()
 
 
 def get_pop_data() -> pd.DataFrame:
@@ -45,6 +50,15 @@ def get_pop_data() -> pd.DataFrame:
 def get_idmc_data() -> pd.DataFrame:
     df_idmc = pd.DataFrame(requests.get(IDMC_URL).json())
     return df_idmc
+
+
+def get_cerf_data() -> pd.DataFrame():
+    cerf_filename = load_dataset_from_hdx(
+        hdx_address="cerf-allocations",
+        hdx_dataset_name="CERF Allocations.csv",
+        output_filepath=constants.cerf_filename,
+    )
+    return pd.read_csv(cerf_filename)
 
 
 if __name__ == "__main__":

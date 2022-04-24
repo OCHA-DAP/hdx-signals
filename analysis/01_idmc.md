@@ -1,5 +1,7 @@
 # Explore IDMC data
 
+This notebook is for a simple exploration of the IDMC data
+
 ```python
 import requests
 
