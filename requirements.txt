@@ -10,3 +10,4 @@ pandas==1.4.1
 pre-commit==2.18.1
 pycaret==2.3.9
 requests==2.27.1
+statsmodels==0.13.2
