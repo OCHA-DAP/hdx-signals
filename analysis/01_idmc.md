@@ -17,6 +17,7 @@ from src import utils
 
 ```python
 df_idmc = utils.get_idmc_data()
+df_idmc
 ```
 
 ```python

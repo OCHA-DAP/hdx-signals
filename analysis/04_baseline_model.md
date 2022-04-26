@@ -64,7 +64,6 @@ df_idmc_daily = (
     .sum()
     .fillna(0)
 )
-
 ```
 
 ```python
@@ -118,7 +117,7 @@ chart1
 
 ```python
 # Make a version that divides out the median
-def dv_by_median(x):
+def sub_median(x):
     median = x.median()
     # median = np.where(median, median == 0, 1)
     return x - median
@@ -126,14 +125,14 @@ def dv_by_median(x):
 
 grouper = pd.Grouper(freq="1Y")
 df_idmc_daily_noseas = df_idmc_daily.groupby(grouper).transform(
-    lambda x: div_by_median(x)
+    lambda x: sub_median(x)
 )
 df_idmc_noseas_alt = get_long_form(df_idmc_daily_noseas)
 df_idmc_daily_noseas.hvplot()
 ```
 
 ```python
-threshold = 100 # Threshold needed for MMR in April
+threshold = 100  # Threshold needed for MMR in April
 chart1 = (
     alt.Chart(df_idmc_noseas_alt[df_idmc_noseas_alt["value"] > threshold])
     .mark_point(shape="wedge")

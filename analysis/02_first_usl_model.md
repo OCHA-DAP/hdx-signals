@@ -82,13 +82,9 @@ for cname in columns:
 ```
 
 ```python
-
-```
-
-```python
+anom = pa.setup(data=df_idmc_model, silent=True, ignore_features=["id"])
 # Remove the last model because it gives an error
 models = list(pa.models().index)[:-1]
-anom = pa.setup(data=df_idmc_model, silent=True, ignore_features=["id"])
 ```
 
 ```python
@@ -201,7 +197,3 @@ CERF data. Some questions remain, for future notebooks:
   in detail and many small displacements are reported, while in another
   it's all aggregated together, does that affect the anomaly detection?
 - does this model perform "better" than a baseline model? (e.g. a simple threshold)
-
-```python
-
-```
