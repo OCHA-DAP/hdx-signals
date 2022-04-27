@@ -187,7 +187,7 @@ lc = (chart3 + chart2 + chart1).resolve_scale(color="independent")
 lc.configure_axisX(labelAngle=90).configure_axisY(grid=True)
 ```
 
-In general the anomalies don't seem crazy compared to the
+ In general the anomalies don't seem crazy compared to the
 CERF data. Some questions remain, for future notebooks:
 
 - which features are important? which can be removed, or changed?

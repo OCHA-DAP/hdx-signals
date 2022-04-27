@@ -82,3 +82,25 @@ def _get_cerf_nicolas_data(filepath_prefix: Path) -> pd.DataFrame:
     )
     df_cerf = df_cerf.dropna(subset="iso3")
     return df_cerf
+
+
+def get_model_input_data(
+    df_idmc: pd.DataFrame, columns: list = None
+) -> pd.DataFrame:
+    if columns is None:
+        columns = [
+            "id",
+            "latitude",
+            "longitude",
+            "figure",
+            "day_of_year",
+            "year",
+            "duration",
+            "pop",
+        ]
+    # Make year, day, and duration columns
+    df_idmc["day_of_year"] = df_idmc["displacement_date"].dt.dayofyear
+    df_idmc["duration"] = (
+        df_idmc["displacement_end_date"] - df_idmc["displacement_start_date"]
+    ).dt.days
+    return df_idmc[columns].dropna()
