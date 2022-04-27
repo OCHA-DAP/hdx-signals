@@ -41,3 +41,6 @@ You can run all hooks against all your files using
 ```shell
 pre-commit run --all-files
 ```
+
+For saving Altair plots, you will need to install
+[one of the backends](https://github.com/altair-viz/altair_saver#additional-requirements)

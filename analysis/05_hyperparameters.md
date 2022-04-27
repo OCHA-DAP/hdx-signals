@@ -36,11 +36,7 @@ import pycaret.anomaly as pa
 import pandas as pd
 from altair import datum
 
-from src import utils
-```
-
-```python
-MODEL = "knn"
+from src import utils, constants
 ```
 
 ```python
@@ -67,7 +63,7 @@ anom = pa.setup(
 df_results = pd.DataFrame()
 fractions = [0.005, 0.01, 0.02, 0.03, 0.04, 0.05]
 for fraction in fractions:
-    anom_model = pa.create_model(model=MODEL, fraction=fraction)
+    anom_model = pa.create_model(model=constants.model, fraction=fraction)
     results = pa.assign_model(anom_model)
     results["fraction"] = fraction
     df_results = pd.concat([df_results, results], ignore_index=True)

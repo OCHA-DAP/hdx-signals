@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import pandas as pd
+import pycaret.anomaly as pa
 from hdx.location.country import Country
 
 from src import constants
@@ -104,3 +105,26 @@ def get_model_input_data(
         df_idmc["displacement_end_date"] - df_idmc["displacement_start_date"]
     ).dt.days
     return df_idmc[columns].dropna()
+
+
+def run_model(
+    df_idmc: pd.DataFrame, df_idmc_model: pd.DataFrame
+) -> pd.DataFrame:
+    pa.setup(
+        data=df_idmc_model,
+        silent=True,
+        ignore_features=["id"],
+    )
+    anom_model = pa.create_model(model=constants.model)
+    df_results = pa.assign_model(anom_model)
+    df_final = df_results.merge(
+        df_idmc,
+        on="id",
+        how="left",
+        copy=False,
+        suffixes=[None, "_todrop"],
+    )
+    df_final = df_final[
+        df_final.columns.drop(list(df_final.filter(regex="_todrop")))
+    ]
+    return df_final
