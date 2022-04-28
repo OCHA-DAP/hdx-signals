@@ -51,22 +51,6 @@ df_idmc_model = utils.get_model_input_data(df_idmc)
 df_final = utils.run_model(df_idmc, df_idmc_model)
 ```
 
-```python jupyter={"source_hidden": true} tags=[]
-# Plot results for Myanmar
-chart1 = (
-    alt.Chart(df_final[df_final["iso3"] == "MMR"])
-    .mark_point(opacity=1)
-    .encode(
-        x="displacement_date",
-        y="fraction:O",
-        color=alt.Color(
-            "figure", scale=alt.Scale(type="log", scheme="orangeRed")
-        ),
-    )
-    .transform_filter((datum.Anomaly == 1))
-)
-```
-
 ```python
 def plot_country(country, iso3):
 
@@ -115,6 +99,10 @@ plot_country("Sudan", "SDN")
 ```
 
 ```python
+plot_country("Ethiopia", "ETH")
+```
+
+```python
 df_final["Anomaly"] = df_final["Anomaly"].replace({0: False, 1: True})
 df_final.rename(
     columns={
@@ -125,6 +113,10 @@ df_final.rename(
 ).drop(
     columns=["Anomaly_Score", "pop", "day_of_year", "year", "duration"]
 ).to_excel(
-    OUTPUT_DATA_DIR / "model_results.xlsx", index=False
+    OUTPUT_DATA_DIR / "global_monitoring_knn_model_results.xlsx", index=False
 )
+```
+
+```python
+
 ```

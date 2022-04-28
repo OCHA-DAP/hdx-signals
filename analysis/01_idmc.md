@@ -7,8 +7,9 @@ This notebook is for a simple exploration of the IDMC data
 ```
 
 ```python
-import requests
+from datetime import date
 
+import altair as alt
 import pandas as pd
 import hvplot.pandas
 
@@ -16,8 +17,31 @@ from src import utils
 ```
 
 ```python
+# needed to plot dataframes with Altair of more than 5000 rows
+alt.data_transformers.enable("data_server")
+```
+
+```python
 df_idmc = utils.get_idmc_data()
 df_idmc
+```
+
+```python
+df_idmc_plot = df_idmc[
+    (df_idmc["figure"] > 0)
+    & (df_idmc["displacement_date"].dt.year > 2017)
+    & (df_idmc["displacement_date"] < pd.to_datetime(date(2022, 5, 1)))
+]
+alt.Chart(df_idmc_plot).mark_point().encode(
+    x=alt.X("displacement_date", title="Dislpacement Date"),
+    y=alt.Y(
+        "figure",
+        title="Displaced persons",
+    ),  # scale=alt.Scale(type="log")),
+    color=alt.Color(
+        "displacement_type", legend=alt.Legend(title="Displacement type")
+    ),
+).configure_axisX(labelAngle=90)
 ```
 
 ```python
@@ -28,6 +52,7 @@ df_idmc.displacement_type.unique()
 ```python
 # Let's only take conflict for now
 df_idmc = df_idmc.loc[df_idmc["displacement_type"] == "Conflict"]
+len(df_idmc)
 ```
 
 ```python
