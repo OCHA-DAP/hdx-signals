@@ -4,7 +4,6 @@ library(tidyverse)
 library(zoo)
 library(lubridate)
 library(gghdx)
-library(forecast)
 library(here)
 
 gghdx()
@@ -67,8 +66,7 @@ df_daily <- df %>%
     )
   ) %>%
   filter( # remove few cases where both start and end not available
-    !is.na(start_date),
-    !is.na(end_date)
+    !is.na(displacement_date)
   ) %>%
   rowwise() %>%
   transmute(

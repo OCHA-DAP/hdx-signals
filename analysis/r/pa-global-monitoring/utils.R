@@ -1,3 +1,5 @@
+library(forecast)
+
 #' Flag values in top perc
 #' 
 #' @param x Numeric vector
