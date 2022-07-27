@@ -48,7 +48,7 @@ df <- parse_json(
 # across the days from start to end date for each reported event
 # and then summing across days
 
-df_daily <- df %>%
+df_clean_time <-  df %>%
   mutate(
     across(
       contains("date"),
@@ -67,7 +67,9 @@ df_daily <- df %>%
   ) %>%
   filter( # remove few cases where both start and end not available
     !is.na(displacement_date)
-  ) %>%
+  )
+
+df_daily <- df_clean_time %>%
   rowwise() %>%
   transmute(
     country,
@@ -289,7 +291,7 @@ df_flags_group <- df_filtered %>%
   ) %>%
   contiguous()
 
-df_filtered_long %>%
+p_cumulative <- df_filtered_long %>%
   ggplot() +
   geom_rect(
     data = df_flags_group,
@@ -338,10 +340,11 @@ df_filtered_long %>%
   ) 
 
 ggsave(
-  here(
+  filename = here(
     plot_dir,
     "flag_cumulative.png"
   ),
+  plot = p_cumulative,
   width = 15,
   height = 10,
   units = "in"
