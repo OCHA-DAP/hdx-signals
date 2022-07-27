@@ -37,3 +37,25 @@ tsoutliers_clean <- function(x, row_numbers) {
     row_numbers %in% indices
   }
 }
+
+#' Create contiguous dataset for rectangle plotting
+#' 
+#' @param df Data frame already filtered to dates we want.
+contiguous <- function(df) {
+  df %>%
+    group_by(
+      country
+    ) %>%
+    mutate(
+      date_group = cumsum(date - lag(date, default = min(date)) != 1)
+    ) %>%
+    group_by(
+      country,
+      date_group
+    ) %>%
+    summarize(
+      date_min = min(date),
+      date_max = max(date),
+      .groups = "drop"
+    )
+}

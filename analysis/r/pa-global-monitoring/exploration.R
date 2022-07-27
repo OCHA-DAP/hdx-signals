@@ -55,12 +55,12 @@ df_daily <- df %>%
       as.Date
     ),
     start_date = if_else(
-      displacement_start_date <= displacement_end_date,
+      displacement_start_date <= displacement_end_date | is.na(displacement_end_date),
       displacement_start_date,
       displacement_end_date
     ),
     end_date = if_else(
-      displacement_start_date <= displacement_end_date,
+      displacement_start_date <= displacement_end_date & !is.na(displacement_end_date),
       displacement_end_date,
       displacement_start_date
     )
@@ -151,6 +151,7 @@ df_flagged <- df_rolled %>%
   mutate(
     first_displacement_in_year = daily > 0 & lag(yearly) == 0,
     flag_daily = flag_percent(daily),
+    flag_weekly = flag_percent(weekly),
     flag_monthly = flag_percent(monthly),
     flag_quarterly = flag_percent(quarterly),
     flag_yearly = flag_percent(yearly),
@@ -159,13 +160,14 @@ df_flagged <- df_rolled %>%
   ungroup() %>%
   mutate(
     flag_daily_global = flag_percent(daily),
+    flag_weekly_global = flag_percent(weekly),
     flag_monthly_global = flag_percent(monthly),
     flag_quarterly_global = flag_percent(quarterly),
     flag_yearly_global = flag_percent(yearly),
-    ts_outliers_global = tsoutliers_clean(x = daily, row_numbers = row_number()),
     flag_5k_day = daily >= 5000,
     flag_20k_week = weekly >= 20000,
-    flag_100k_quarter = quarterly >= 100000,
+    flag_100k_month = monthly >= 100000,
+    flag_250k_quarter = quarterly >= 250000,
     flag_500k_yearly = yearly >= 500000
   )
 
@@ -216,26 +218,6 @@ df_filtered <- df_flagged %>%
 
 # look at how total flags compares across the various datasets
 
-df_flags <- df_filtered %>%
-  pivot_longer(
-    daily:yearly
-  ) %>%
-  mutate(
-    name = factor(
-      name,
-      levels = c(
-        "daily",
-        "weekly",
-        "monthly",
-        "quarterly",
-        "yearly"
-      )
-    )
-  ) %>%
-  filter(
-    total_flags > 0
-  )
-
 df_filtered_long <- df_filtered %>%
   pivot_longer(
     daily:yearly
@@ -252,6 +234,13 @@ df_filtered_long <- df_filtered %>%
       )
     )
   ) 
+
+# dataset with only flags for visualization
+
+df_flags <- df_filtered_long %>%
+  filter(
+    total_flags > 0
+  )
 
 df_filtered_long %>%
   ggplot(
@@ -298,20 +287,7 @@ df_flags_group <- df_filtered %>%
   filter(
     total_flags > 0
   ) %>%
-  group_by(
-    country
-  ) %>%
-  mutate(
-    date_group = cumsum(date - lag(date, default = min(date)) != 1)
-  ) %>%
-  group_by(
-    country,
-    date_group
-  ) %>%
-  summarize(
-    date_min = min(date),
-    date_max = max(date)
-  )
+  contiguous()
 
 df_filtered_long %>%
   ggplot() +
@@ -350,7 +326,11 @@ df_filtered_long %>%
     ),
     x = "",
     y = "",
-    color = "Total #\nof flags"
+    caption = paste0(
+        "Flags include first displacement in a year; daily, weekly, monthly,",
+        "quarterly, and yearly displacement in 95th percentile for",
+        "that country, and global thresholds for the same time periods."
+    )
   ) +
   scale_x_date(
     date_breaks = "2 year",
@@ -360,9 +340,89 @@ df_filtered_long %>%
 ggsave(
   here(
     plot_dir,
-    "flags-area.png"
+    "flag_cumulative.png"
   ),
   width = 15,
   height = 10,
   units = "in"
+)
+
+##################################
+#### CHECK FLAGS INDIVIDUALLY ####
+##################################
+
+# check each flag create individually
+# first create plottable names for the visuals
+flag_names <-
+  c(
+    "First displacement reported in a year" = "first_displacement_in_year",
+    "Daily displacement in 95th percentile for that country" = "flag_daily",
+    "Weekly displacement in 95th percentile for that country" = "flag_weekly",
+    "Monthly displacement in 95th percentile for that country" = "flag_monthly",
+    "Quarterly displacement in 95th percentile for that country" = "flag_quarterly",
+    "Yearly displacement in 95th percentile for that country" = "flag_yearly",
+    "Time series outlier detected in country trend" = "ts_outliers",
+    "Daily displacement in 95th percentile globally" = "flag_daily_global",
+    "Weekly displacement in 95th percentile globally" = "flag_weekly_global",
+    "Monthly displacement in 95th percentile globally" = "flag_monthly_global",
+    "Quarterly displacement in 95th percentile globally" = "flag_quarterly_global",
+    "Yearly displacement in 95th percentile globally" = "flag_yearly_global",
+    "Daily displacement at or above 5,000 persons" = "flag_5k_day",
+    "Weekly displacement at or above 20,000 persons" = "flag_20k_week",
+    "Monthly displacement at or above 100,000 persons" = "flag_100k_month",
+    "Quarterly displacement at or above 250,000 persons" = "flag_250k_quarter",
+    "Yearly displacement at or above 500,000 persons" = "flag_500k_yearly"
+  )
+
+iwalk(
+  flag_names,
+  ~ (df_filtered_long %>%
+       ggplot() +
+       geom_rect(
+         data = filter(
+           df_filtered_long,
+           !!sym(.x)
+         ) %>% contiguous(),
+         aes(
+           xmin = date_min,
+           xmax = date_max
+         ),
+         ymin = 0,
+         ymax = Inf,
+         fill = hdx_hex("tomato-ultra-light")
+       ) +
+       geom_line(
+         aes(
+           x = date,
+           y = value
+         ),
+         alpha = 1,
+         color = hdx_hex("gray-medium"),
+         lwd = 1
+       ) +
+       facet_wrap(
+         name~country,
+         scales = "free_y"
+       ) +
+       scale_y_continuous(
+         labels = scales::comma
+       ) +
+       scale_color_gradient_hdx_tomato() +
+       labs(
+         title = "Displacement in sample countries, 2018 - 2022",
+         subtitle = paste("Flag:", .y),
+         x = "",
+         y = ""
+       ) +
+       scale_x_date(
+         date_breaks = "2 year",
+         date_labels = "%Y"
+       )
+  ) %>%
+    ggsave(
+      filename = here(
+        plot_dir,
+        paste0(.x, ".png")
+      )
+    )
 )
