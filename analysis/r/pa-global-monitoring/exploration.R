@@ -12,6 +12,22 @@ gghdx()
 # utility functions
 source("utils.R")
 
+# global monitoring folder for outputting plots
+gm_dir <- Sys.getenv("CERF_GM_DIR")
+out_dir <- here(
+  gm_dir,
+  "output"
+)
+plot_dir <- here(
+  out_dir,
+  "plots"
+)
+
+data_dir <- here(
+  out_dir,
+  "data"
+)
+
 ###################
 #### LOAD DATA ####
 ###################
@@ -158,7 +174,7 @@ df_flagged <- df_rolled %>%
 write_csv(
   df_flagged,
   here(
-    "data",
+    data_dir,
     "df_flagged_normalized.csv"
   )
 )
@@ -167,6 +183,10 @@ write_csv(
 # and easy visualization. Only compute total flags on this filtered dataset
 # to improve performance
 
+# data is flagged on first displacement in year,
+# country-level displacement figures in 95th percentile
+# for daily, weekly, quarterly, and yearly, and
+# absolute thresholds for each
 df_filtered <- df_flagged %>%
   filter(
     country %in% c(
@@ -341,7 +361,7 @@ df_filtered_long %>%
 
 ggsave(
   here(
-    "graphs",
+    plot_dir,
     "flags-area.png"
   ),
   width = 15,
