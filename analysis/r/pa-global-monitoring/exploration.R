@@ -17,6 +17,7 @@ out_dir <- here(
   gm_dir,
   "output"
 )
+
 plot_dir <- here(
   out_dir,
   "plots"
@@ -31,7 +32,10 @@ data_dir <- here(
 #### LOAD DATA ####
 ###################
 
-IDMC_URL <- "https://backend.idmcdb.org/data/idus_view_all_flat_cached_ochachd"
+IDMC_URL <- paste0(
+  "https://helix-copilot-prod-helix-media-external.s3.amazonaws.com/external-",
+  "media/api-dump/idus-all/2022-08-22-08-59-07/gxvgu/idus_all.json"
+)
 
 df <- parse_json(
   GET(IDMC_URL),
@@ -51,7 +55,7 @@ df <- parse_json(
 df_clean_time <-  df %>%
   mutate(
     across(
-      contains("date"),
+      c(contains("date"), "created_at"),
       as.Date
     ),
     start_date = if_else(
@@ -197,7 +201,7 @@ df_filtered <- df_flagged %>%
       "Syria",
       "Myanmar",
       "South Sudan",
-      "Somalia"
+      "Mozambique"
     ),
     year(date) >= 2018
   ) %>%
