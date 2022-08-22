@@ -77,6 +77,7 @@ df_daily <- df_clean_time %>%
   rowwise() %>%
   transmute(
     country,
+    displacement_type,
     id,
     date = list(
       seq(start_date, end_date, by = "day") # create daily cases
@@ -89,6 +90,7 @@ df_daily <- df_clean_time %>%
   ) %>%
   group_by(
     country,
+    displacement_type,
     date
   ) %>%
   summarize(
@@ -102,6 +104,7 @@ df_daily <- df_clean_time %>%
 df_daily_complete <- df_daily %>%
   complete(
     country,
+    displacement_type = c("Conflict", "Disaster", "Other"),
     date = seq(min(date), max(date), by = "day"),
     fill = list(
       figure = 0
@@ -109,6 +112,7 @@ df_daily_complete <- df_daily %>%
   ) %>%
   arrange( # ensuring data is correctly ordered for later rolling sums
     country,
+    displacement_type,
     date
   )
 
@@ -121,7 +125,8 @@ df_daily_complete <- df_daily %>%
 
 df_rolled <- df_daily_complete %>%
   group_by(
-    country
+    country,
+    displacement_type
   ) %>%
   mutate(
     weekly = rollsumr(
@@ -155,6 +160,7 @@ df_rolled <- df_daily_complete %>%
 
 df_flagged <- df_rolled %>%
   mutate(
+    first_displacement_in_6_months = daily > 0 & lag(quarterly) == 0 & lag(quarterly, n = 2) == 0,
     first_displacement_in_year = daily > 0 & lag(yearly) == 0,
     flag_daily = flag_percent(daily),
     flag_weekly = flag_percent(weekly),
@@ -165,11 +171,6 @@ df_flagged <- df_rolled %>%
   ) %>%
   ungroup() %>%
   mutate(
-    flag_daily_global = flag_percent(daily),
-    flag_weekly_global = flag_percent(weekly),
-    flag_monthly_global = flag_percent(monthly),
-    flag_quarterly_global = flag_percent(quarterly),
-    flag_yearly_global = flag_percent(yearly),
     flag_5k_day = daily >= 5000,
     flag_20k_week = weekly >= 20000,
     flag_100k_month = monthly >= 100000,
@@ -196,21 +197,41 @@ write_csv(
 df_filtered <- df_flagged %>%
   filter(
     country %in% c(
-      "Sri Lanka",
       "Iraq",
-      "Syria",
+      "Mozambique",
       "Myanmar",
       "South Sudan",
-      "Mozambique"
+      "Sri Lanka"
     ),
     year(date) >= 2018
+  ) %>%
+  group_by(
+    country,
+    date
+  ) %>%
+  summarize(
+    across(
+      .cols = c(
+        daily:yearly
+      ),
+      .fns = sum,
+      na.rm = TRUE
+    ),
+    across(
+      .cols = c(
+        first_displacement_in_6_months:flag_500k_yearly
+      ),
+      .fns = max,
+      na.rm = TRUE
+    ),
+    .groups = "drop"
   ) %>%
   rowwise() %>%
   mutate(
     total_flags = sum(
       c_across(
         c(
-          first_displacement_in_year:flag_yearly,
+          first_displacement_in_6_months:flag_yearly,
           flag_5k_day:flag_500k_yearly
         )
       )
@@ -362,6 +383,7 @@ ggsave(
 # first create plottable names for the visuals
 flag_names <-
   c(
+    "First displacement reported in 6 months" = "first_displacement_in_6_months",
     "First displacement reported in a year" = "first_displacement_in_year",
     "Daily displacement in 95th percentile for that country" = "flag_daily",
     "Weekly displacement in 95th percentile for that country" = "flag_weekly",
@@ -369,11 +391,6 @@ flag_names <-
     "Quarterly displacement in 95th percentile for that country" = "flag_quarterly",
     "Yearly displacement in 95th percentile for that country" = "flag_yearly",
     "Time series outlier detected in country trend" = "ts_outliers",
-    "Daily displacement in 95th percentile globally" = "flag_daily_global",
-    "Weekly displacement in 95th percentile globally" = "flag_weekly_global",
-    "Monthly displacement in 95th percentile globally" = "flag_monthly_global",
-    "Quarterly displacement in 95th percentile globally" = "flag_quarterly_global",
-    "Yearly displacement in 95th percentile globally" = "flag_yearly_global",
     "Daily displacement at or above 5,000 persons" = "flag_5k_day",
     "Weekly displacement at or above 20,000 persons" = "flag_20k_week",
     "Monthly displacement at or above 100,000 persons" = "flag_100k_month",
@@ -388,7 +405,7 @@ iwalk(
        geom_rect(
          data = filter(
            df_filtered_long,
-           !!sym(.x)
+           as.logical(!!sym(.x))
          ) %>% contiguous(),
          aes(
            xmin = date_min,
