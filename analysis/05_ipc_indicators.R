@@ -27,16 +27,29 @@ data$phase_p4._pct <- round(data$phase_p4._num / data$population, 2)
 # indicators
 ##########
 
-# Current food security levels
-Nbr of people and percentage of population in IPC3, IPC4, IPC5, IPC3+, IPC4+
-  Previous food security levels
-Nbr of people and percentage of population in IPC3, IPC4, IPC5, IPC3+, IPC4+
+# create list of all adm1's
+adm1_pcodes <- unique(data$area) ## FIX ME WHEN PCODES AVAILABLE
 
-  Indicators
-Change in food security levels since last assessment
-Delta of number of people in IPC3, IPC4, IPC5, IPC3+, IPC4+ (count, percentage change)
-Delta of percentage of population in IPC3, IPC4, IPC5, IPC3+, IPC4+ (percentage points, percentage change)
-Projected change in food security levels (3 and 6 months out)
-Delta of number of people in IPC3, IPC4, IPC5, IPC3+, IPC4+ (count, percentage change)
-Delta of percentage of population in IPC3, IPC4, IPC5, IPC3+, IPC4+ (percentage points, percentage change)
+# create empty dataframe to receive results
+cur_last_deltas <- data.frame()
+
+# compute changes since last assessment: (Cur minus last cur) delta in percentage points
+
+for (adm1_pcode in adm1_pcodes) {
+
+output <- data %>%
+  filter(area == adm1_pcode & analysis_type == "current") %>%
+  arrange(desc(date_of_analysis)) %>%
+  mutate(prev_phase3p_pct = lead(phase_p3._pct),
+         cur_prev_delta_phase3p_pct = phase_p3._pct - prev_phase3p_pct,
+         prev_phase4p_pct = lead(phase_p4._pct),
+         cur_prev_delta_phase4p_pct = phase_p4._pct - prev_phase4p_pct,
+         prev_phase5_pct = lead(phase_5_pct),
+         cur_prev_delta_phase5_pct = phase_5_pct - prev_phase5_pct)
+
+  # add to a dataframe
+  cur_last_deltas <- rbind(cur_last_deltas, output)
+}
+
+
 
