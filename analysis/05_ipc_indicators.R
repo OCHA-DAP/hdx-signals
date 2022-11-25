@@ -30,10 +30,8 @@ data$phase_p4._pct <- round(data$phase_p4._num / data$population, 2)
 # create list of all adm1's
 adm1_pcodes <- unique(data$area) ## FIX ME WHEN PCODES AVAILABLE
 
-# create empty dataframe to receive results
+# compute changes since last assessment: (Cur minus last cur) deltas in percentage points
 cur_last_deltas <- data.frame()
-
-# compute changes since last assessment: (Cur minus last cur) delta in percentage points
 
 for (adm1_pcode in adm1_pcodes) {
 
@@ -49,6 +47,31 @@ output <- data %>%
 
   # add to a dataframe
   cur_last_deltas <- rbind(cur_last_deltas, output)
+}
+
+
+# compute changes projected in 3 months: (Proj3 minus cur) deltas in percentage points
+indicators <- c("phase_p3._pct", "phase_p4._pct", "phase_5_pct")
+
+proj3_cur_deltas <- data.frame()
+
+for (adm1_pcode in adm1_pcodes) {
+  adm1_df <- data %>%
+    filter(area == adm1_pcode)
+
+    for (ind in indicators) {
+    output <- adm1_df %>%
+      select(date_of_analysis, analysis_type, (!!as.name(ind))) %>%
+      pivot_wider(names_from = analysis_type,
+                  values_from = (!!as.name(ind))) %>%
+      mutate(proj3_cur_delta = first_projection - current) %>%
+      pivot_longer(!date_of_analysis, names_to = "indicator", values_to = "value") %>%
+      mutate(indicator = paste0(ind, "_", indicator),
+             adm1_pcode = adm1_pcode)
+
+    proj3_cur_deltas <- rbind(proj3_cur_deltas, output)
+
+    }
 }
 
 
