@@ -27,16 +27,16 @@ data$phase_p4._pct <- round(data$phase_p4._num / data$population, 2)
 # indicators
 ##########
 
-# create list of all adm1's
-adm1_pcodes <- unique(data$area) ## FIX ME WHEN PCODES AVAILABLE
+# create list of all adm0's
+adm0_pcodes <- unique(data$country) ## FIX ME WHEN PCODES AVAILABLE
 
 # compute changes since last assessment: (Cur minus last cur) deltas in percentage points
 cur_last_deltas <- data.frame()
 
-for (adm1_pcode in adm1_pcodes) {
+for (pcode in adm0_pcodes) {
 
 output <- data %>%
-  filter(area == adm1_pcode & analysis_type == "current") %>%
+  filter(area == pcode & analysis_type == "current") %>%
   arrange(desc(date_of_analysis)) %>%
   mutate(prev_phase3p_pct = lead(phase_p3._pct),
          cur_prev_delta_phase3p_pct = phase_p3._pct - prev_phase3p_pct,
@@ -55,19 +55,19 @@ indicators <- c("phase_p3._pct", "phase_p4._pct", "phase_5_pct")
 
 proj3_cur_deltas <- data.frame()
 
-for (adm1_pcode in adm1_pcodes) {
-  adm1_df <- data %>%
-    filter(area == adm1_pcode)
+for (pcode in adm0_pcodes) {
+  adm0_df <- data %>%
+    filter(country == pcode)
 
     for (ind in indicators) {
-    output <- adm1_df %>%
+    output <- adm0_df %>%
       select(date_of_analysis, analysis_type, (!!as.name(ind))) %>%
       pivot_wider(names_from = analysis_type,
                   values_from = (!!as.name(ind))) %>%
       mutate(proj3_cur_delta = first_projection - current) %>%
       pivot_longer(!date_of_analysis, names_to = "indicator", values_to = "value") %>%
       mutate(indicator = paste0(ind, "_", indicator),
-             adm1_pcode = adm1_pcode)
+             adm0_pcode = pcode)
 
     proj3_cur_deltas <- rbind(proj3_cur_deltas, output)
 
