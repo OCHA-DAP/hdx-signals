@@ -1,4 +1,4 @@
-## Compute metrics on changes in food security situation
+## Compute indicators of trends in food security situation
 
 ##########
 # set up
