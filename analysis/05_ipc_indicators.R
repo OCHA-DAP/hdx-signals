@@ -7,6 +7,10 @@
 ## install, load libraries
 pacman::p_load(tidyverse, ggplot2)
 
+## set up paths
+data_dir <- Sys.getenv("AA_DATA_DIR")
+monitoring_data_folder <- paste0(data_dir, "/private/exploration/glb/global_monitoring")
+
 ## load data ## FIX ME WITH LINK TO HDX ONCE FILE IS UPLOADED
 data <- read.csv("ipc_complete_data.csv")
 
@@ -27,10 +31,10 @@ data$phase_p4._pct <- round(data$phase_p4._num / data$population, 2)
 # indicators
 ##########
 
-# create list of all adm0's
+## create list of all adm0's
 adm0_pcodes <- unique(data$country) ## FIX ME WHEN PCODES AVAILABLE
 
-# compute changes since last assessment: (Cur minus last cur) deltas in percentage points
+## compute changes since last assessment: (Cur minus last cur) deltas in percentage points
 cur_last_deltas <- data.frame()
 
 for (pcode in adm0_pcodes) {
@@ -50,7 +54,7 @@ output <- data %>%
 }
 
 
-# compute changes projected in 3 months: (Proj3 minus cur) deltas in percentage points
+## compute changes projected in 3 months: (Proj3 minus cur) deltas in percentage points
 indicators <- c("phase_p3._pct", "phase_p4._pct", "phase_5_pct")
 
 proj3_cur_deltas <- data.frame()
@@ -74,5 +78,10 @@ for (pcode in adm0_pcodes) {
     }
 }
 
+## save outputs
+today <- Sys.Date()
+
+write.csv(cur_last_deltas, file = paste0(monitoring_data_folder, "/outputs/", today, "_cur_last_deltas.csv"))
+write.csv(proj3_cur_deltas, file = paste0(monitoring_data_folder, "/outputs/", today, "_proj3_cur_deltas.csv"))
 
 
