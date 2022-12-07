@@ -196,6 +196,15 @@ alert7 <- cur_last_deltas %>%
 alerts <- rbind(alerts, alert7)
 
 # Alert8: Delta in IPC 5 is greater than 0 (current minus last)
+alert8 <- cur_last_deltas %>%
+  filter(cur_prev_delta_phase5_pct > 0) %>%
+  select(country, date_of_analysis, cur_prev_delta_phase5_pct) %>%
+  rename(value = cur_prev_delta_phase5_pct) %>%
+  add_column(alert = "alert8",
+             .after = "date_of_analysis")
+
+alerts <- rbind(alerts, alert8)
+
 # Alert9: Delta in IPC 4+ is greater than 0 (projected minus current)
 # Alert10: Delta in IPC 5 is greater than 0 (projected minus current)
 
