@@ -217,7 +217,15 @@ alert9 <- proj3_cur_deltas_wide %>%
 alerts <- rbind(alerts, alert9)
 
 # Alert10: Delta in IPC 5 is greater than 0 (projected minus current)
+alert10 <- proj3_cur_deltas_wide %>%
+  filter(phase_5_pct_proj3_cur_delta > 0) %>%
+  select(adm0_pcode, date_of_analysis, phase_5_pct_proj3_cur_delta) %>%
+  rename(country = adm0_pcode, ## FIX ME
+         value = phase_5_pct_proj3_cur_delta) %>%
+  add_column(alert = "alert10",
+             .after = "date_of_analysis")
 
+alerts <- rbind(alerts, alert10)
 
 
 
