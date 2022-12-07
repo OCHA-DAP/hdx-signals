@@ -151,6 +151,16 @@ alert3 <- cur_last_deltas %>%
 alerts <- rbind(alerts, alert3)
 
 # Alert4: Population in IPC4+ projected to be greater than 0 when currently it is zero
+alert4 <- proj3_cur_deltas_wide %>%
+  filter(phase_p4._pct_first_projection > 0 &
+           phase_p4._pct_current == 0) %>%
+  select(adm0_pcode, date_of_analysis, phase_p4._pct_first_projection) %>%
+  rename(country = adm0_pcode,
+         value = phase_p4._pct_first_projection) %>% ## FIX ME
+  add_column(alert = "alert4",
+             .after = "date_of_analysis")
+
+alerts <- rbind(alerts, alert4)
 
 # Alert5: Population in IPC5 is greater than 0 when last assessment was zero
 # Alert6: Population in IPC5 projected to be greater than 0 when currently it is zero
