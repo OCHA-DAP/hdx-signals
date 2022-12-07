@@ -251,5 +251,5 @@ alerts <- rbind(alerts, alert12)
 ## save outputs
 write.csv(cur_last_deltas, file = paste0(monitoring_data_folder, "/outputs/", today, "_cur_last_deltas.csv"))
 write.csv(proj3_cur_deltas_wide, file = paste0(monitoring_data_folder, "/outputs/", today, "_proj3_cur_deltas.csv"))
-
+write.csv(alerts, file = paste0(monitoring_data_folder, "/outputs/", today, "_alerts.csv"))
 
