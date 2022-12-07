@@ -185,50 +185,68 @@ alert6 <- proj3_cur_deltas_wide %>%
 
 alerts <- rbind(alerts, alert6)
 
-# Alert7: Delta in IPC 4+ is greater than 0 (current minus last)
+# Alert7: Delta in IPC 3+ is greater than 0 (current minus last)
 alert7 <- cur_last_deltas %>%
-  filter(cur_prev_delta_phase4p_pct > 0) %>%
-  select(country, date_of_analysis, cur_prev_delta_phase4p_pct) %>%
-  rename(value = cur_prev_delta_phase4p_pct) %>%
+  filter(cur_prev_delta_phase3p_pct > 0) %>%
+  select(country, date_of_analysis, cur_prev_delta_phase3p_pct) %>%
+  rename(value = cur_prev_delta_phase3p_pct) %>%
   add_column(alert = "alert7",
              .after = "date_of_analysis")
 
 alerts <- rbind(alerts, alert7)
 
-# Alert8: Delta in IPC 5 is greater than 0 (current minus last)
+# Alert8: Delta in IPC 4+ is greater than 0 (current minus last)
 alert8 <- cur_last_deltas %>%
-  filter(cur_prev_delta_phase5_pct > 0) %>%
-  select(country, date_of_analysis, cur_prev_delta_phase5_pct) %>%
-  rename(value = cur_prev_delta_phase5_pct) %>%
+  filter(cur_prev_delta_phase4p_pct > 0) %>%
+  select(country, date_of_analysis, cur_prev_delta_phase4p_pct) %>%
+  rename(value = cur_prev_delta_phase4p_pct) %>%
   add_column(alert = "alert8",
              .after = "date_of_analysis")
 
 alerts <- rbind(alerts, alert8)
 
-# Alert9: Delta in IPC 4+ is greater than 0 (projected minus current)
-alert9 <- proj3_cur_deltas_wide %>%
-  filter(phase_p4._pct_proj3_cur_delta > 0) %>%
-  select(adm0_pcode, date_of_analysis, phase_p4._pct_proj3_cur_delta) %>%
-  rename(country = adm0_pcode, ## FIX ME
-         value = phase_p4._pct_proj3_cur_delta) %>%
+# Alert9: Delta in IPC 5 is greater than 0 (current minus last)
+alert9 <- cur_last_deltas %>%
+  filter(cur_prev_delta_phase5_pct > 0) %>%
+  select(country, date_of_analysis, cur_prev_delta_phase5_pct) %>%
+  rename(value = cur_prev_delta_phase5_pct) %>%
   add_column(alert = "alert9",
              .after = "date_of_analysis")
 
 alerts <- rbind(alerts, alert9)
 
-# Alert10: Delta in IPC 5 is greater than 0 (projected minus current)
+# Alert10: Delta in IPC 3+ is greater than 0 (projected minus current)
 alert10 <- proj3_cur_deltas_wide %>%
-  filter(phase_5_pct_proj3_cur_delta > 0) %>%
-  select(adm0_pcode, date_of_analysis, phase_5_pct_proj3_cur_delta) %>%
+  filter(phase_p3._pct_proj3_cur_delta > 0) %>%
+  select(adm0_pcode, date_of_analysis, phase_p3._pct_proj3_cur_delta) %>%
   rename(country = adm0_pcode, ## FIX ME
-         value = phase_5_pct_proj3_cur_delta) %>%
+         value = phase_p3._pct_proj3_cur_delta) %>%
   add_column(alert = "alert10",
              .after = "date_of_analysis")
 
 alerts <- rbind(alerts, alert10)
 
+# Alert11: Delta in IPC 4+ is greater than 0 (projected minus current)
+alert11 <- proj3_cur_deltas_wide %>%
+  filter(phase_p4._pct_proj3_cur_delta > 0) %>%
+  select(adm0_pcode, date_of_analysis, phase_p4._pct_proj3_cur_delta) %>%
+  rename(country = adm0_pcode, ## FIX ME
+         value = phase_p4._pct_proj3_cur_delta) %>%
+  add_column(alert = "alert11",
+             .after = "date_of_analysis")
 
+alerts <- rbind(alerts, alert11)
 
+# Alert12: Delta in IPC 5 is greater than 0 (projected minus current)
+alert12 <- proj3_cur_deltas_wide %>%
+  filter(phase_5_pct_proj3_cur_delta > 0) %>%
+  select(adm0_pcode, date_of_analysis, phase_5_pct_proj3_cur_delta) %>%
+  rename(country = adm0_pcode, ## FIX ME
+         value = phase_5_pct_proj3_cur_delta) %>%
+  add_column(alert = "alert12",
+             .after = "date_of_analysis")
+
+alerts <- rbind(alerts, alert12)
 
 ## save outputs
 write.csv(cur_last_deltas, file = paste0(monitoring_data_folder, "/outputs/", today, "_cur_last_deltas.csv"))
