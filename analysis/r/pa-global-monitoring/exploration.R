@@ -34,7 +34,7 @@ data_dir <- here(
 
 IDMC_URL <- paste0(
   "https://helix-copilot-prod-helix-media-external.s3.amazonaws.com/external-",
-  "media/api-dump/idus-all/2022-08-22-08-59-07/gxvgu/idus_all.json"
+  "media/api-dump/idus-all/2022-08-31-08-59-12/QtGRV/idus_all.json"
 )
 
 df <- parse_json(
