@@ -10,11 +10,17 @@ options(scipen=999)
 ## install, load libraries
 pacman::p_load(tidyverse, ggplot2)
 
-## set up paths
+# paths
 data_dir <- Sys.getenv("AA_DATA_DIR")
 monitoring_data_folder <- paste0(data_dir, "/private/exploration/glb/global_monitoring")
 
-## load data ## FIX ME WITH LINK TO HDX ONCE FILE IS UPLOADED
+# date variable to save in filenames
+today <- Sys.Date()
+
+##########
+# data loading
+##########
+                               ## FIX ME WITH LINK TO HDX ONCE FILE IS UPLOADED
 data <- read.csv("ipc_complete_data.csv")
 
 ##########
@@ -103,9 +109,36 @@ proj3_cur_deltas_wide <- proj3_cur_deltas %>%
                           pivot_wider(names_from = indicator,
                                       values_from = value)
 
-## save outputs
-today <- Sys.Date()
+##########
+# alerts: verify if alert thresholds are met
+##########
 
+# create dataframe to receive alerts info
+alerts <- data.frame()
+
+# Alert1: Population in IPC3+ is greater than 0 when last assessment was zero
+alert1 <- cur_last_deltas %>%
+  filter(prev_phase3p_pct == 0 &
+         phase_p3._pct > 0) %>%
+  select(country, date_of_analysis, phase_p3._pct)
+
+alerts <- rbind(alerts, alert1)
+
+# Alert2: Population in IPC3+ projected greater than 0 when current assessment is zero
+# Alert3: Population in IPC4+ is greater than 0 when last assessment was zero
+# Alert4: Population in IPC4+ projected to be greater than 0 when currently it is zero
+# Alert5: Population in IPC5 is greater than 0 when last assessment was zero
+# Alert6: Population in IPC5 projected to be greater than 0 when currently it is zero
+# Alert7: Delta in IPC 4+ is greater than 0 (current minus last)
+# Alert8: Delta in IPC 5 is greater than 0 (current minus last)
+# Alert9: Delta in IPC 4+ is greater than 0 (projected minus current)
+# Alert10: Delta in IPC 5 is greater than 0 (projected minus current)
+
+
+
+
+
+## save outputs
 write.csv(cur_last_deltas, file = paste0(monitoring_data_folder, "/outputs/", today, "_cur_last_deltas.csv"))
 write.csv(proj3_cur_deltas_wide, file = paste0(monitoring_data_folder, "/outputs/", today, "_proj3_cur_deltas.csv"))
 
