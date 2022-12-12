@@ -10,11 +10,17 @@ options(scipen=999)
 ## install, load libraries
 pacman::p_load(tidyverse, ggplot2)
 
-## set up paths
+# paths
 data_dir <- Sys.getenv("AA_DATA_DIR")
 monitoring_data_folder <- paste0(data_dir, "/private/exploration/glb/global_monitoring")
 
-## load data ## FIX ME WITH LINK TO HDX ONCE FILE IS UPLOADED
+# date variable to save in filenames
+today <- Sys.Date()
+
+##########
+# data loading
+##########
+                               ## FIX ME WITH LINK TO HDX ONCE FILE IS UPLOADED
 data <- read.csv("ipc_complete_data.csv")
 
 ##########
@@ -103,10 +109,147 @@ proj3_cur_deltas_wide <- proj3_cur_deltas %>%
                           pivot_wider(names_from = indicator,
                                       values_from = value)
 
-## save outputs
-today <- Sys.Date()
+##########
+# alerts: verify if alert thresholds are met
+##########
 
+# create dataframe to receive alerts info
+alerts <- data.frame()
+
+# Alert1: Population in IPC3+ is greater than 0 when last assessment was zero
+alert1 <- cur_last_deltas %>%
+  filter(prev_phase3p_pct == 0 &
+         phase_p3._pct > 0) %>%
+  select(country, date_of_analysis, phase_p3._pct) %>%
+  rename(value = phase_p3._pct) %>%
+  add_column(alert = "alert1",
+             .after = "date_of_analysis")
+
+alerts <- rbind(alerts, alert1)
+
+# Alert2: Population in IPC3+ projected greater than 0 when current assessment is zero
+alert2 <- proj3_cur_deltas_wide %>%
+  filter(phase_p3._pct_first_projection > 0 &
+           phase_p3._pct_current == 0) %>%
+  select(adm0_pcode, date_of_analysis, phase_p3._pct_first_projection) %>%
+  rename(country = adm0_pcode,
+         value = phase_p3._pct_first_projection) %>% ## FIX ME
+  add_column(alert = "alert2",
+             .after = "date_of_analysis")
+
+alerts <- rbind(alerts, alert2)
+
+# Alert3: Population in IPC4+ is greater than 0 when last assessment was zero
+alert3 <- cur_last_deltas %>%
+  filter(prev_phase4p_pct == 0 &
+           phase_p4._pct > 0) %>%
+  select(country, date_of_analysis, phase_p4._pct) %>%
+  rename(value = phase_p4._pct) %>%
+  add_column(alert = "alert3",
+             .after = "date_of_analysis")
+
+alerts <- rbind(alerts, alert3)
+
+# Alert4: Population in IPC4+ projected to be greater than 0 when currently it is zero
+alert4 <- proj3_cur_deltas_wide %>%
+  filter(phase_p4._pct_first_projection > 0 &
+           phase_p4._pct_current == 0) %>%
+  select(adm0_pcode, date_of_analysis, phase_p4._pct_first_projection) %>%
+  rename(country = adm0_pcode,
+         value = phase_p4._pct_first_projection) %>% ## FIX ME
+  add_column(alert = "alert4",
+             .after = "date_of_analysis")
+
+alerts <- rbind(alerts, alert4)
+
+# Alert5: Population in IPC5 is greater than 0 when last assessment was zero
+alert5 <- cur_last_deltas %>%
+  filter(prev_phase5_pct == 0 &
+           phase_5_pct > 0) %>%
+  select(country, date_of_analysis, phase_5_pct) %>%
+  rename(value = phase_5_pct) %>%
+  add_column(alert = "alert5",
+             .after = "date_of_analysis")
+
+alerts <- rbind(alerts, alert5)
+
+# Alert6: Population in IPC5 projected to be greater than 0 when currently it is zero
+alert6 <- proj3_cur_deltas_wide %>%
+  filter(phase_5_pct_first_projection > 0 &
+         phase_5_pct_current == 0) %>%
+  select(adm0_pcode, date_of_analysis, phase_5_pct_first_projection) %>%
+  rename(country = adm0_pcode,
+         value = phase_5_pct_first_projection) %>% ## FIX ME
+  add_column(alert = "alert6",
+             .after = "date_of_analysis")
+
+alerts <- rbind(alerts, alert6)
+
+# Alert7: Delta in IPC 3+ is greater than 0 (current minus last)
+alert7 <- cur_last_deltas %>%
+  filter(cur_prev_delta_phase3p_pct > 0) %>%
+  select(country, date_of_analysis, cur_prev_delta_phase3p_pct) %>%
+  rename(value = cur_prev_delta_phase3p_pct) %>%
+  add_column(alert = "alert7",
+             .after = "date_of_analysis")
+
+alerts <- rbind(alerts, alert7)
+
+# Alert8: Delta in IPC 4+ is greater than 0 (current minus last)
+alert8 <- cur_last_deltas %>%
+  filter(cur_prev_delta_phase4p_pct > 0) %>%
+  select(country, date_of_analysis, cur_prev_delta_phase4p_pct) %>%
+  rename(value = cur_prev_delta_phase4p_pct) %>%
+  add_column(alert = "alert8",
+             .after = "date_of_analysis")
+
+alerts <- rbind(alerts, alert8)
+
+# Alert9: Delta in IPC 5 is greater than 0 (current minus last)
+alert9 <- cur_last_deltas %>%
+  filter(cur_prev_delta_phase5_pct > 0) %>%
+  select(country, date_of_analysis, cur_prev_delta_phase5_pct) %>%
+  rename(value = cur_prev_delta_phase5_pct) %>%
+  add_column(alert = "alert9",
+             .after = "date_of_analysis")
+
+alerts <- rbind(alerts, alert9)
+
+# Alert10: Delta in IPC 3+ is greater than 0 (projected minus current)
+alert10 <- proj3_cur_deltas_wide %>%
+  filter(phase_p3._pct_proj3_cur_delta > 0) %>%
+  select(adm0_pcode, date_of_analysis, phase_p3._pct_proj3_cur_delta) %>%
+  rename(country = adm0_pcode, ## FIX ME
+         value = phase_p3._pct_proj3_cur_delta) %>%
+  add_column(alert = "alert10",
+             .after = "date_of_analysis")
+
+alerts <- rbind(alerts, alert10)
+
+# Alert11: Delta in IPC 4+ is greater than 0 (projected minus current)
+alert11 <- proj3_cur_deltas_wide %>%
+  filter(phase_p4._pct_proj3_cur_delta > 0) %>%
+  select(adm0_pcode, date_of_analysis, phase_p4._pct_proj3_cur_delta) %>%
+  rename(country = adm0_pcode, ## FIX ME
+         value = phase_p4._pct_proj3_cur_delta) %>%
+  add_column(alert = "alert11",
+             .after = "date_of_analysis")
+
+alerts <- rbind(alerts, alert11)
+
+# Alert12: Delta in IPC 5 is greater than 0 (projected minus current)
+alert12 <- proj3_cur_deltas_wide %>%
+  filter(phase_5_pct_proj3_cur_delta > 0) %>%
+  select(adm0_pcode, date_of_analysis, phase_5_pct_proj3_cur_delta) %>%
+  rename(country = adm0_pcode, ## FIX ME
+         value = phase_5_pct_proj3_cur_delta) %>%
+  add_column(alert = "alert12",
+             .after = "date_of_analysis")
+
+alerts <- rbind(alerts, alert12)
+
+## save outputs
 write.csv(cur_last_deltas, file = paste0(monitoring_data_folder, "/outputs/", today, "_cur_last_deltas.csv"))
 write.csv(proj3_cur_deltas_wide, file = paste0(monitoring_data_folder, "/outputs/", today, "_proj3_cur_deltas.csv"))
-
+write.csv(alerts, file = paste0(monitoring_data_folder, "/outputs/", today, "_alerts.csv"))
 
