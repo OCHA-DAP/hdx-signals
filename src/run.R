@@ -14,8 +14,6 @@ output_dir <- file.path(
   "outputs"
 )
 
-today <- Sys.Date()
-
 #########################
 #### LOAD INDICATORS ####
 #########################
@@ -23,7 +21,11 @@ today <- Sys.Date()
 # runs all indicator scripts
 
 walk(
-  .x = list.files(inds_dir),
+  .x = list.files(
+    inds_dir,
+    recursive = TRUE,
+    pattern = "^run.R$"
+  ),
   .f = ~source(
     file.path(inds_dir, .x),
     local = TRUE,
