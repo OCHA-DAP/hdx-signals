@@ -11,12 +11,47 @@ output_dir <- file.path(
   "outputs"
 )
 
+
+ipc_messager <- function(type, pct_increase, phase, num, pct_pop) {
+  paste(
+    "In the IPC",
+    type,
+    "analysis, there is an estimated",
+    pct_increase,
+    "in population in phase",
+    phase,
+    ", to a total of",
+    num,
+    "or",
+    pct_pop,
+    "of the population."
+  )
+}
+
 #############
 #### IPC ####
 #############
 
+ipc_messager <- function(type, pct_increase, phase, num, pct_pop) {
+  paste(
+    "In the IPC",
+    type,
+    "analysis, there is an estimated",
+    pct_increase,
+    "in population in phase",
+    phase,
+    ", to a total of",
+    num,
+    "or",
+    pct_pop,
+    "of the population."
+    )
+}
+
 # get into country level form
-df_ipc <- ipc_download() %>%
+df_ipc_raw <- ipc_download()
+
+df_ipc <- df_ipc_raw %>%
   mutate(
     iso3 = countrycode(country, origin = "country.name", destination = "iso3c"),
     phase_4pl_num = phase_4_num + phase_5_num,
@@ -45,7 +80,7 @@ df_ipc <- ipc_download() %>%
     .groups = "drop"
   )
 
-# get differences between current values
+# get differences between current values and the previous current value
 df_cur_delta <- df_ipc %>%
   filter(
     analysis_type == "current"
@@ -61,16 +96,13 @@ df_cur_delta <- df_ipc %>%
   mutate(
     across(
       matches("pct$"),
-      ~ .x - lag(.x)
-    ),
-    flag_ipc_curr_3pl = phase_3pl_pct > 0,
-    flag_ipc_curr_4pl = phase_4pl_pct > 0,
-    flag_ipc_curr_5 = phase_5_pct > 0,
+      ~ .x - lag(.x),
+      .names = "{col}_delta"
+    )
   ) %>%
   select(
-    country:analysis_period_end,
-    ends_with("pct"),
-    starts_with("flag")
+    country:analysis_type,
+    ends_with("delta")
   ) %>%
   slice(-1) %>%
   ungroup()
@@ -92,140 +124,129 @@ df_proj_delta <- df_ipc %>%
   mutate(
     across(
       ends_with("pct"),
-      ~ .x - lag(.x)
-    ),
-    flag_ipc_proj_3pl = phase_3pl_pct > 0,
-    flag_ipc_proj_4pl = phase_4pl_pct > 0,
-    flag_ipc_proj_5 = phase_5_pct > 0,
+      ~ .x - lag(.x),
+      .names = "{col}_delta"
+    )
   ) %>%
   select(
     country:analysis_type,
-    ends_with("pct"),
-    starts_with("flag"),
+    ends_with("delta")
   ) %>%
   slice(-1) %>%
   ungroup()
+
+######################
+#### WRANGLE DATA ####
+######################
+
+# wrangle the data together for a single country-level IPC dataset
+
+df_ipc_wrangled <- left_join(
+  df_ipc,
+  bind_rows(df_cur_delta, df_proj_delta),
+  by = c(
+    "country",
+    "iso3",
+    "date_of_analysis",
+    "analysis_period_start",
+    "analysis_period_end",
+    "analysis_type"
+  )
+)
 
 #######################
 #### FLAGGING DATA ####
 #######################
 
-# pull all IPC flags together
-# and put the start date of the
-# flags as the date of analysis
-# and the end date to be 1 month
-# later
-
-df_cur_flags <- df_cur_delta %>%
-  select(
-    country,
-    iso3,
-    date_of_analysis,
-    starts_with("flag")
+ipc_messager <- function(type, pct_increase, phase, num, pct_pop, start_date, end_date) {
+  phase <- str_replace_all(phase, c("_" = " ", "pl" = "+"))
+  paste(
+    "There is an expected increase of",
+    scales::percent(pct_increase, accuracy = 1),
+    "of population in",
+    phase,
+    "during the",
+    str_replace(type, "_", " "),
+    "period from",
+    format(start_date, format = "%B %Y"),
+    "to",
+    format(end_date, format = "%B %Y"),
+    "compared to the",
+    case_when(
+      type == "current" ~ "previous current",
+      type == "first_projection" ~ "current",
+      TRUE ~ "first projection"
+    ),
+    "period. The total population in",
+    phase,
+    "is estimated to be",
+    scales::number(num, big.mark = ","),
+    "people,",
+    scales::percent(pct_pop, accuracy = 1),
+    "of the population."
   )
+}
 
-df_proj1_flags <- df_proj_delta %>%
-  filter(
-    analysis_type == "first_projection"
-  ) %>%
-  select(
-    country,
-    iso3,
-    date_of_analysis,
-    starts_with("flag")
-  ) %>%
-  rename_with(
-    .fn = ~gsub("(flag_ipc_proj)(.*)", "\\11\\2", .x),
-    .cols = starts_with("flag")
-  )
-
-df_proj2_flags <- df_proj_delta %>%
-  filter(
-    analysis_type == "second_projection"
-  ) %>%
-  select(
-    country,
-    iso3,
-    date_of_analysis,
-    starts_with("flag")
-  ) %>%
-  rename_with(
-    .fn = ~gsub("(flag_ipc_proj)(.*)", "\\12\\2", .x),
-    .cols = starts_with("flag")
-  )
-
-reduce(
-  list(df_cur_flags, df_proj1_flags, df_proj2_flags),
-  full_join,
-  by = c("country", "iso3", "date_of_analysis")
-)
-
-df_ipc_flags <- reduce(
-  list(df_cur_flags, df_proj1_flags, df_proj2_flags),
-  full_join,
-  by = c("country", "iso3", "date_of_analysis")
-) %>%
-  select(
-    country,
-    iso3,
-    date_of_analysis,
-    starts_with("flag")
-  ) %>%
-  rowwise() %>%
-  mutate(
-    flag_ipc_any = sum(c_across(starts_with("flag")), na.rm = TRUE) > 0
-  ) %>%
-  ungroup() %>%
+# flag on the IPC data by looking at wherever there is a positive percent change
+df_ipc_flags <- df_ipc_wrangled %>%
   pivot_longer(
-    cols = starts_with("flag"),
-    names_to = "flag_type",
-    values_to = "flag"
+    cols = starts_with("phase"),
+    names_to = c("phase", "name"),
+    names_pattern = "(phase_[0-9]+[pl]*)_(.*)"
   ) %>%
-  rename(
-    start_date = date_of_analysis
-  ) %>%
-  mutate(
-    end_date = as.Date(start_date + lubridate::dmonths()),
-    .after = start_date
-  ) %>%
+  pivot_wider() %>%
   filter(
-    flag
+    !is.na(pct_delta),
+    pct_delta > 0,
+    str_detect(phase, "3pl|4pl|5")
   ) %>%
   mutate(
-    flag_source = "ipc",
-    .before = flag_type
+    message = ipc_messager(
+      type = analysis_type,
+      pct_increase = pct_delta,
+      phase = phase,
+      num = num,
+      pct_pop = pct,
+      start_date = analysis_period_start,
+      end_date = analysis_period_end
+    )
   ) %>%
-  select(
-    -flag
+  group_by(
+    country,
+    iso3,
+    start_date = analysis_period_start
+  ) %>%
+  summarize(
+    end_date = max(analysis_period_end),
+    message = paste(message, collapse = "\n"),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    flag_type = "displacement",
+    flag_source = "ipc",
+    .before = "start_date"
   )
+
 
 ########################
 #### SAVE IPC  DATA ####
 ########################
 
-today <- Sys.Date()
-
 write_csv(
-  x = df_ipc,
+  x = df_ipc_raw,
   file = file.path(
     output_dir,
-    paste0(today, "_ipc_global.csv")
+    "ipc",
+    "raw.csv"
   )
 )
 
 write_csv(
-  x = df_cur_delta,
+  x = df_ipc_wrangled,
   file = file.path(
     output_dir,
-    paste0(today, "_ipc_curr_delta.csv")
-  )
-)
-
-write_csv(
-  x = df_proj_delta,
-  file = file.path(
-    output_dir,
-    paste0(today, "_ipc_proj_delta.csv")
+    "ipc",
+    "wrangled.csv"
   )
 )
 
@@ -233,6 +254,7 @@ write_csv(
   x = df_ipc_flags,
   file = file.path(
     output_dir,
-    paste0(today, "_ipc_flags.csv")
+    "ipc",
+    "flags.csv"
   )
 )

@@ -20,7 +20,7 @@ today <- Sys.Date()
 #### LOAD INDICATORS ####
 #########################
 
-# loads all indicators
+# runs all indicator scripts
 
 walk(
   .x = list.files(inds_dir),
@@ -39,7 +39,8 @@ walk(
 
 list.files(
   output_dir,
-  pattern = paste0(today, "(.*)_flags.csv")
+  recursive = TRUE,
+  pattern = "^flags.csv$"
 ) %>%
   map_dfr(
     ~read_csv(
@@ -58,6 +59,6 @@ list.files(
   write_csv(
     file.path(
       output_dir,
-      paste0(today, "_flags_total.csv")
+     "flags_total.csv"
     )
   )
