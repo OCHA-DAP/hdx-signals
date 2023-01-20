@@ -223,7 +223,7 @@ df_ipc_flags <- df_ipc_wrangled %>%
     .groups = "drop"
   ) %>%
   mutate(
-    flag_type = "displacement",
+    flag_type = "food_security",
     flag_source = "ipc",
     .before = "start_date"
   )
