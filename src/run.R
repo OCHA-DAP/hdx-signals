@@ -39,7 +39,7 @@ walk(
 
 # creates global flags files
 
-list.files(
+flags_total <- list.files(
   output_dir,
   recursive = TRUE,
   pattern = "^flags.csv$"
@@ -57,10 +57,32 @@ list.files(
     country,
     start_date,
     end_date
-  ) %>%
+  )
+
+flags_total %>%
   write_csv(
     file.path(
       output_dir,
      "flags_total.csv"
-    )
+    ),
+    na = ""
+  )
+
+# create long format dataset for filtration on the dashboard
+
+flags_total %>%
+  rowwise() %>%
+  mutate(
+    date = list(seq(start_date, end_date, by = "day")),
+    .before = start_date
+  ) %>%
+  unnest(
+    cols = date
+  ) %>%
+  write_csv(
+    file.path(
+      output_dir,
+      "flags_total_daily.csv"
+    ),
+    na = ""
   )
