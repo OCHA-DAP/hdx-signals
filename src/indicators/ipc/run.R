@@ -239,7 +239,8 @@ write_csv(
     output_dir,
     "ipc",
     "raw.csv"
-  )
+  ),
+  na = ""
 )
 
 write_csv(
@@ -248,7 +249,8 @@ write_csv(
     output_dir,
     "ipc",
     "wrangled.csv"
-  )
+  ),
+  na = ""
 )
 
 write_csv(
@@ -257,5 +259,6 @@ write_csv(
     output_dir,
     "ipc",
     "flags.csv"
-  )
+  ),
+  na = ""
 )

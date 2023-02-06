@@ -243,6 +243,20 @@ ai_summary <- pmap_chr(
 
 df_idmc_flags_final$summary_experimental <- str_remove_all(ai_summary, "\\\n")
 
+# filter final data
+
+df_idmc_flags_final <- df_idmc_flags_final %>%
+  select(
+    iso3,
+    country,
+    flag_type,
+    flag_source,
+    start_date,
+    end_date,
+    message,
+    summary_experimental
+  )
+
 #########################
 #### SAVING OUT DATA ####
 #########################
@@ -253,7 +267,8 @@ write_csv(
     output_dir,
     "idmc",
     "raw.csv"
-  )
+  ),
+  na = ""
 )
 
 write_csv(
@@ -262,24 +277,16 @@ write_csv(
     output_dir,
     "idmc",
     "wrangled.csv"
-  )
+  ),
+  na = ""
 )
 
 write_csv(
-  x = df_idmc_flags_final %>%
-    select(
-      iso3,
-      country,
-      flag_type,
-      flag_source,
-      start_date,
-      end_date,
-      message,
-      summary_experimental
-    ),
+  x = df_idmc_flags_final,
   file = file.path(
     output_dir,
     "idmc",
     "flags.csv"
-  )
+  ),
+  na = ""
 )
