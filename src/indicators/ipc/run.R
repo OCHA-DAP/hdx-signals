@@ -1,6 +1,8 @@
 library(Ripc)
 library(tidyverse)
 library(countrycode)
+library(rvest)
+library(openai)
 
 output_dir <- file.path(
   Sys.getenv("AA_DATA_DIR"),
@@ -11,75 +13,44 @@ output_dir <- file.path(
   "outputs"
 )
 
-
-ipc_messager <- function(type, pct_increase, phase, num, pct_pop) {
-  paste(
-    "In the IPC",
-    type,
-    "analysis, there is an estimated",
-    pct_increase,
-    "in population in phase",
-    phase,
-    ", to a total of",
-    num,
-    "or",
-    pct_pop,
-    "of the population."
-  )
-}
-
 #############
 #### IPC ####
 #############
 
-#' Function to create simple message with IPC data
-ipc_messager <- function(type, pct_increase, phase, num, pct_pop) {
-  paste(
-    "In the IPC",
-    type,
-    "analysis, there is an estimated",
-    pct_increase,
-    "in population in phase",
-    phase,
-    ", to a total of",
-    num,
-    "or",
-    pct_pop,
-    "of the population."
-    )
-}
-
 # get into country level form
-df_ipc_raw <- ipc_download()
+df_ipc_raw <- ipc_get_population()$country
 
 df_ipc <- df_ipc_raw %>%
+  rename_with(
+    .fn = ~str_replace(.x, "phase", "phase_")
+  ) %>%
+  rename(
+    date_of_analysis = analysis_date,
+    analysis_type = period,
+    population = estimated_population
+  ) %>%
   mutate(
-    iso3 = countrycode(country, origin = "country.name", destination = "iso3c"),
+    iso3 = ifelse(
+      country == "LAC",
+      country,
+      countrycode(country, origin = "iso2c", destination = "iso3c")
+    ),
+    country = ifelse(
+      iso3 == "LAC",
+      "Latin America and the Caribbean",
+      countrycode(iso3, origin = "iso3c", destination = "country.name")
+    ),
     phase_4pl_num = phase_4_num + phase_5_num,
     phase_4pl_pct = phase_4_pct + phase_5_pct
+  ) %>% left_join(
+    ipc_get_analyses() %>%
+      transmute(
+        anl_id,
+        analysis_url = str_replace(link, "http://www-test.fao.org/ipcinfo-portal", "https://www.ipcinfo.org")
+      ),
+    by = "anl_id"
   ) %>%
-  group_by(
-    country,
-    iso3,
-    date_of_analysis,
-    analysis_period_start,
-    analysis_period_end,
-    analysis_type
-  ) %>%
-  summarize(
-    across(
-      .cols = ends_with("_pct"),
-      .fns = weighted.mean,
-      w = population,
-      na.rm = TRUE
-    ),
-    across(
-      .cols = c(ends_with("_num"), population),
-      .fns = sum,
-      na.rm = TRUE
-    ),
-    .groups = "drop"
-  )
+  relocate(analysis_url, .after = analysis_type)
 
 # get differences between current values and the previous current value
 df_cur_delta <- df_ipc %>%
@@ -99,14 +70,18 @@ df_cur_delta <- df_ipc %>%
       matches("pct$"),
       ~ .x - lag(.x),
       .names = "{col}_delta"
-    )
-  ) %>%
-  select(
-    country:analysis_type,
-    ends_with("delta")
+    ),
+    title_detail = str_extract(title, "(?<=[0-9]{4})(.*)$"),
+    potential_incomparability = title_detail != lag(title_detail)
   ) %>%
   slice(-1) %>%
-  ungroup()
+  ungroup() %>%
+  select(
+    anl_id,
+    analysis_type,
+    ends_with("delta"),
+    potential_incomparability
+  )
 
 # get differences between current and projections (or first to second proj)
 df_proj_delta <- df_ipc %>%
@@ -116,7 +91,7 @@ df_proj_delta <- df_ipc %>%
     date_of_analysis
   ) %>%
   filter(
-    "first_projection" %in% analysis_type
+    "projected" %in% analysis_type
   ) %>%
   arrange(
     analysis_type,
@@ -129,12 +104,13 @@ df_proj_delta <- df_ipc %>%
       .names = "{col}_delta"
     )
   ) %>%
-  select(
-    country:analysis_type,
-    ends_with("delta")
-  ) %>%
   slice(-1) %>%
-  ungroup()
+  ungroup() %>%
+  select(
+    anl_id,
+    analysis_type,
+    ends_with("delta")
+  )
 
 ######################
 #### WRANGLE DATA ####
@@ -145,81 +121,46 @@ df_proj_delta <- df_ipc %>%
 df_ipc_wrangled <- left_join(
   df_ipc,
   bind_rows(df_cur_delta, df_proj_delta),
-  by = c(
-    "country",
-    "iso3",
-    "date_of_analysis",
-    "analysis_period_start",
-    "analysis_period_end",
-    "analysis_type"
+  by = c("anl_id", "analysis_type")
+) %>%
+  mutate(
+    potential_incomparability = replace_na(potential_incomparability, FALSE)
   )
-)
 
 #######################
 #### FLAGGING DATA ####
 #######################
 
-ipc_messager <- function(type, pct_increase, phase, num, pct_pop, start_date, end_date) {
-  phase <- str_replace_all(phase, c("_" = " ", "pl" = "+"))
-  paste(
-    "There is an expected increase of",
-    scales::percent(pct_increase, accuracy = 1),
-    "of population in",
-    phase,
-    "during the",
-    str_replace(type, "_", " "),
-    "period from",
-    format(start_date, format = "%B %Y"),
-    "to",
-    format(end_date, format = "%B %Y"),
-    "compared to the",
-    case_when(
-      type == "current" ~ "previous current",
-      type == "first_projection" ~ "current",
-      TRUE ~ "first projection"
-    ),
-    "period. The total population in",
-    phase,
-    "is estimated to be",
-    scales::number(num, big.mark = ","),
-    "people,",
-    scales::percent(pct_pop, accuracy = 1),
-    "of the population."
-  )
-}
-
 # flag on the IPC data by looking at wherever there is a positive percent change
 df_ipc_flags <- df_ipc_wrangled %>%
-  pivot_longer(
-    cols = starts_with("phase"),
-    names_to = c("phase", "name"),
-    names_pattern = "(phase_[0-9]+[pl]*)_(.*)"
-  ) %>%
-  pivot_wider() %>%
   filter(
-    !is.na(pct_delta),
-    pct_delta > 0,
-    str_detect(phase, "3pl|4pl|5")
-  ) %>%
-  mutate(
-    message = ipc_messager(
-      type = analysis_type,
-      pct_increase = pct_delta,
-      phase = phase,
-      num = num,
-      pct_pop = pct,
-      start_date = analysis_period_start,
-      end_date = analysis_period_end
-    )
+    if_any(
+      .cols = c(phase_3pl_pct_delta, phase_4pl_pct_delta, phase_5_pct_delta),
+      .fns = ~ !is.na(.x) & .x > 0
+    ) | potential_incomparability
   ) %>%
   group_by(
     country,
     iso3,
-    start_date = analysis_period_start
+    date_of_analysis
   ) %>%
   summarize(
+    start_date = min(analysis_period_start),
     end_date = max(analysis_period_end),
-    message = paste(message, collapse = "\n"),
+    message = paste(
+      c(
+        ifelse(
+          potential_incomparability,
+          "Uncertain if the difference between the current and previous analysis is due to shifting geographic focus, check the IPC for details. ",
+          ""
+        ),
+        "Increases in populations in phase 3+ are estimated in the ",
+        paste(str_replace(unique(analysis_type), "_", " "), collapse = ", "),
+        ifelse(n() == 1, " analysis.", " analyses.")
+      ),
+      collapse = ""
+    ),
+    url = unique(analysis_url)[1],
     .groups = "drop"
   ) %>%
   mutate(
@@ -228,6 +169,68 @@ df_ipc_flags <- df_ipc_wrangled %>%
     .before = "start_date"
   )
 
+######################
+#### WEB SCRAPING ####
+######################
+
+# AI summarization function
+
+ai_summarizer <- function(req, text) {
+  text <- str_trunc(text, 4000, ellipsis = "...")
+  req <- paste(req, text, collapse = " ")
+  insistent_ai <- insistently(
+    \(req) {
+      create_completion(
+        model = "text-davinci-003",
+        prompt = req,
+        max_tokens = 100
+      )$choices$text
+    },
+    rate = rate_delay(pause = 1, max_times = 5)
+  )
+
+  insistent_ai(req)
+}
+
+# scrape the IPC URL for additional information and pass that on to the
+# ChatGPT AI model for summarization.
+ipc_scraper <- function(url) {
+  if (!is.na(url)) {
+    txt <- read_html(url) %>%
+      html_nodes("._undmaptext") %>%
+      html_text()
+    # extract the situation report and recommendations from the scraped text
+    txt <- txt[rank(-nchar(txt)) <= 2]
+    txt <- str_replace_all(txt, "[\r\n\t]+", " ")
+
+    # feed these to the AI to get a summarization
+    sit_rep <- ai_summarizer(
+      "Please summarize the current food security situation in 4 sentences based on the following description -->",
+      txt[1]
+    )
+    recs <- ai_summarizer(
+      "In 4 sentences, summarize the key recommendations and actions describes below -->",
+      txt[2]
+    )
+
+    # send these back to the dataset
+    paste(
+      "Situation summary: ",
+      sit_rep,
+      "Recommendations summary: ",
+      recs
+    )
+
+  } else {
+    NA
+  }
+}
+
+df_ipc_flags$summary_experimental <- map_chr(
+  df_ipc_flags$url,
+  ipc_scraper,
+  .progress = TRUE
+)
 
 ########################
 #### SAVE IPC  DATA ####
