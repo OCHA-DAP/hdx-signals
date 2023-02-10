@@ -51,6 +51,15 @@ be flagged for new, large scale conflict displacement events. The thresholds are
 - Over 100,000 persons displaced in the past quarter
 - Over 500,000 persons displaced in the past year
 
+The anomaly flags are also only generated when the displacement across that
+period of time is also above a specific minimum value. If it is below that
+value, no flag is generated. These lower limits for flagging are:
+
+- 100 persons displaced in the past week
+- 500 persons displaced in the past month
+- 1500 persons displaced in the past quarter
+- 5000 persons displaced in the past year
+
 Flags are also generated for the first displacement reported in the past 3 months, 6
 months, or year.
 
@@ -69,6 +78,10 @@ into an events dataset, but combining multiple events from the raw data.
 there is an experimental `summary_experiment` column. This column is an AI generated
 summary of the causes and context of displacement for the IDU events used to generate
 the flag.
+
+`flags_full.csv`: flagging dataset that has all subflags for the IDMC data
+included. Used to determine in recursive runs if there have been additional
+flags identified for a crisis and when to activate email alerts.
 
 `raw.csv`: raw IDU output. This includes all reported events used to feed into the
 alerts. Can be explored to better contextualize the reported displacement.

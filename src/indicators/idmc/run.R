@@ -80,6 +80,7 @@ df_flags_start <- df_idmc_flags %>%
     flag_name != "flag_idmc_any"
   ) %>%
   mutate(
+    flag_start_date = start_date,
     start_date = case_when(
       str_detect(flag_name, "yearly") ~ start_date - days(364),
       str_detect(flag_name, "quarterly") ~ start_date - days(89),
@@ -89,6 +90,17 @@ df_flags_start <- df_idmc_flags %>%
     )
   )
 
+# setting flagging priority for the latest flag for a country
+# we start with the 1st in a period as priority
+# then look at weekly -> yearly in increasing priority so that user sees
+# the more acute, short term fluctuations on the main dashboard page
+flag_priority <- c("flag_idmc_1st_year", "flag_idmc_1st_6_months",
+                   "flag_idmc_1st_3_months", "flag_idmc_global_weekly",
+                   "flag_idmc_weekly", "flag_idmc_global_monthly",
+                   "flag_idmc_monthly", "flag_idmc_global_quarterly",
+                   "flag_idmc_quarterly", "flag_idmc_global_yearly",
+                   "flag_idmc_yearly", "flag_idmc_any")
+
 # for any flags, join up to the other data set
 # and make the start date the minimum of the start date of any
 # other flag in that time frame
@@ -97,24 +109,35 @@ df_flags_start_any <- df_idmc_flags %>%
     flag_name == "flag_idmc_any"
   ) %>%
   full_join(
-    rename_with(
-      df_flags_start,
-      .fn = ~ paste0(.x, 2),
-      .cols = ends_with("date")
-    ) %>%
       select(
-        country, ends_with("date2")
+        df_flags_start,
+        country,
+        flag_name2 = flag_name,
+        start_date2 = start_date,
+        end_date2 = end_date,
+        flag_start_date
       ),
-    by = "country"
+    by = "country",
+    multiple = "all"
   ) %>%
   group_by(iso3, country, flag_name, uuid) %>%
   filter(
-    end_date2 >= start_date
+    end_date2 >= start_date,
+    flag_start_date <= end_date
+  ) %>%
+  mutate(
+    start_date = min(start_date2)
+  ) %>%
+  filter(
+    end_date2 == end_date
   ) %>%
   summarize(
-    start_date = min(start_date2),
-    end_date = unique(end_date),
-    .groups = "drop"
+    across(
+      .cols = c("start_date", "end_date"),
+      .fns = unique
+    ),
+    latest_flag = flag_name2[which.min(match(flag_name2, flag_priority))],
+    .groups = "drop",
   )
 
 # now join the two together and get the full displacement across that time
@@ -131,7 +154,8 @@ df_displacement <- bind_rows(
       date,
       displacement_daily
     ),
-    by = "country"
+    by = "country",
+    multiple = "all"
   ) %>%
   filter(
     date >= start_date,
@@ -141,6 +165,7 @@ df_displacement <- bind_rows(
     iso3, country, flag_name, uuid, start_date, end_date
   ) %>%
   summarize(
+    latest_flag = unique(str_remove_all(latest_flag, "flag_idmc_|global_")),
     total_displacement = sum(displacement_daily),
     message = paste0(
       scales::number(total_displacement, big.mark = ","),
@@ -154,7 +179,7 @@ df_displacement <- bind_rows(
   )
 
 # now join back to the original flags dataset with the full displacement data
-df_idmc_flags_final <- df_idmc_flags %>%
+df_idmc_flags_full <- df_idmc_flags %>%
   left_join(
     select(df_displacement, -ends_with("date")),
     by = c("iso3", "country", "flag_name", "uuid")
@@ -163,9 +188,22 @@ df_idmc_flags_final <- df_idmc_flags %>%
     flag_type = "displacement",
     flag_source = "idmc",
     .before = flag_name
-  ) %>%
+  )
+
+# take the full flags and extract the final flags for sharing
+df_idmc_flags_final <- df_idmc_flags_full %>%
   filter(
     flag_name == "flag_idmc_any"
+  ) %>%
+  select(
+    iso3,
+    country,
+    flag_type,
+    flag_source,
+    start_date,
+    end_date,
+    latest_flag,
+    message
   )
 
 #######################
@@ -243,20 +281,6 @@ ai_summary <- pmap_chr(
 
 df_idmc_flags_final$summary_experimental <- str_remove_all(ai_summary, "\\\n")
 
-# filter final data
-
-df_idmc_flags_final <- df_idmc_flags_final %>%
-  select(
-    iso3,
-    country,
-    flag_type,
-    flag_source,
-    start_date,
-    end_date,
-    message,
-    summary_experimental
-  )
-
 #########################
 #### SAVING OUT DATA ####
 #########################
@@ -287,6 +311,16 @@ write_csv(
     output_dir,
     "idmc",
     "flags.csv"
+  ),
+  na = ""
+)
+
+write_csv(
+  x = df_idmc_flags_full,
+  file = file.path(
+    output_dir,
+    "idmc",
+    "flags_full.csv"
   ),
   na = ""
 )
