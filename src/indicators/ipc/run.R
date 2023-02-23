@@ -167,6 +167,9 @@ df_ipc_flags <- df_ipc_wrangled %>%
     flag_type = "food_security",
     flag_source = "ipc",
     .before = "start_date"
+  ) %>%
+  select(
+    -date_of_analysis
   )
 
 ######################
@@ -217,7 +220,7 @@ ipc_scraper <- function(url) {
     paste(
       "Situation summary: ",
       sit_rep,
-      "Recommendations summary: ",
+      "\n\nRecommendations summary: ",
       recs
     )
 
