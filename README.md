@@ -34,6 +34,16 @@ All analysis is run using the `src/run.R` file. The structure of the
 Analysis is re-run nightly using GitHub Actions. More details will come on
 what is needed to reproduce the analysis.
 
+## Flagging outputs
+
+1. `flags_total.csv`: all total flags generated from the sourced indicators.
+Each row corresponds to a flag, with information indicating the country being
+flagged, the type and source of the flag, and information related to what
+has generated the latest flags.
+2. `flags_total_daily.csv`: the same dataset as `flags_total.csv`, but where
+each flag has a row for the days between `start_date` and `end_date`. Used for
+filtration on the PowerBI dashboard.
+
 ## Indicators
 
 The methodologies for each of the indicators analyzed within the project
