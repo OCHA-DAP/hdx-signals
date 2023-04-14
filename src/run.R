@@ -1,17 +1,11 @@
 library(tidyverse)
 
-inds_dir <- file.path(
-  "src",
-  "indicators"
-)
-
-output_dir <- file.path(
-  Sys.getenv("AA_DATA_DIR"),
-  "private",
-  "exploration",
-  "glb",
-  "global_monitoring",
-  "outputs"
+source(
+  file.path(
+    "src",
+    "utils",
+    "googledrive.R"
+  )
 )
 
 #########################
@@ -39,19 +33,17 @@ walk(
 
 # creates global flags files
 
-flags_total <- list.files(
-  output_dir,
-  recursive = TRUE,
-  pattern = "^flags.csv$"
-) %>%
-  map_dfr(
-    ~read_csv(
-      file.path(
-        output_dir,
-        .x
-      )
-    )
+ind_flags <- c("flags_ipc", "flags_idmc")
+
+flags_total <- map(
+  .x = ind_flags,
+  .f = function(x) {
+      drive_file <- get_drive_file(x)
+      drive_download(file = drive_file, path = f <- tempfile(fileext = ".csv"))
+      read_csv(f)
+    }
   ) %>%
+  list_rbind() %>%
   arrange(
     iso3,
     country,
@@ -59,18 +51,9 @@ flags_total <- list.files(
     end_date
   )
 
-flags_total %>%
-  write_csv(
-    file.path(
-      output_dir,
-     "flags_total.csv"
-    ),
-    na = ""
-  )
-
 # create long format dataset for filtration on the dashboard
 
-flags_total %>%
+flags_total_daily <- flags_total %>%
   rowwise() %>%
   mutate(
     date = list(seq(start_date, end_date, by = "day")),
@@ -78,11 +61,20 @@ flags_total %>%
   ) %>%
   unnest(
     cols = date
-  ) %>%
-  write_csv(
-    file.path(
-      output_dir,
-      "flags_total_daily.csv"
-    ),
-    na = ""
   )
+
+######################
+#### UPDATE DRIVE ####
+######################
+
+update_drive_file(
+  df = flags_total,
+  local_path = tempfile(fileext = ".csv"),
+  drive_file = get_drive_file("flags_total.csv")
+)
+
+update_drive_file(
+  df = flags_total_daily,
+  local_path = tempfile(fileext = ".csv"),
+  drive_file = get_drive_file("flags_total_daily")
+)

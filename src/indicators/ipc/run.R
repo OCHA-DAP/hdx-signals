@@ -4,21 +4,52 @@ library(countrycode)
 library(rvest)
 library(openai)
 
-output_dir <- file.path(
-  Sys.getenv("AA_DATA_DIR"),
-  "private",
-  "exploration",
-  "glb",
-  "global_monitoring",
-  "outputs"
+source(
+  file.path(
+    "src",
+    "utils",
+    "googledrive.R"
+  )
 )
+
+source(
+  file.path(
+    "src",
+    "utils",
+    "get_country_names.R"
+  )
+)
+
+##############################
+#### DRIVE AND LOCAL DATA ####
+##############################
+
+# authorize and prep
+
+# get drive files
+drive_raw_ipc <- get_drive_file("raw_ipc")
+drive_wrangled_ipc <- get_drive_file("wrangled_ipc")
+drive_flags_ipc <- get_drive_file("flags_ipc")
+
+# temp paths for local saving
+local_raw_ipc <- tempfile(fileext = ".csv")
+local_wrangled_ipc <- tempfile(fileext = ".csv")
+local_flags_ipc <- tempfile(fileext = ".csv")
 
 #############
 #### IPC ####
 #############
 
 # get into country level form
-df_ipc_raw <- ipc_get_population()$country
+df_ipc_raw <- ipc_get_population()$country %>%
+  mutate(
+    iso3 = ifelse(
+      country == "LAC",
+      country,
+      countrycode(country, origin = "iso2c", destination = "iso3c")
+    )
+  ) %>%
+  get_country_names()
 
 df_ipc <- df_ipc_raw %>%
   rename_with(
@@ -30,16 +61,6 @@ df_ipc <- df_ipc_raw %>%
     population = estimated_population
   ) %>%
   mutate(
-    iso3 = ifelse(
-      country == "LAC",
-      country,
-      countrycode(country, origin = "iso2c", destination = "iso3c")
-    ),
-    country = ifelse(
-      iso3 == "LAC",
-      "Latin America and the Caribbean",
-      countrycode(iso3, origin = "iso3c", destination = "country.name")
-    ),
     phase_4pl_num = phase_4_num + phase_5_num,
     phase_4pl_pct = phase_4_pct + phase_5_pct
   ) %>% left_join(
@@ -58,8 +79,8 @@ df_cur_delta <- df_ipc %>%
     analysis_type == "current"
   ) %>%
   group_by(
-    country,
-    iso3
+    iso3,
+    country
   ) %>%
   arrange(
     date_of_analysis,
@@ -86,8 +107,8 @@ df_cur_delta <- df_ipc %>%
 # get differences between current and projections (or first to second proj)
 df_proj_delta <- df_ipc %>%
   group_by(
-    country,
     iso3,
+    country,
     date_of_analysis
   ) %>%
   filter(
@@ -125,6 +146,12 @@ df_ipc_wrangled <- left_join(
 ) %>%
   mutate(
     potential_incomparability = replace_na(potential_incomparability, FALSE)
+  ) %>%
+  group_by(
+    iso3
+  ) %>%
+  filter( # keep only latest projections
+    analysis_type == "current" | date_of_analysis == max(date_of_analysis)
   )
 
 #######################
@@ -140,8 +167,8 @@ df_ipc_flags <- df_ipc_wrangled %>%
     ) | potential_incomparability
   ) %>%
   group_by(
-    country,
     iso3,
+    country,
     date_of_analysis
   ) %>%
   summarize(
@@ -170,6 +197,27 @@ df_ipc_flags <- df_ipc_wrangled %>%
   ) %>%
   select(
     -date_of_analysis
+  )
+
+##########################################
+#### COMPARE WITH PREVIOUS FLAGS FILE ####
+##########################################
+
+# load previous flags
+drive_download(file = drive_flags_ipc, path = local_flags_ipc)
+df_ipc_flags_prev <- read_csv(local_flags_ipc) %>%
+  mutate(
+    email = FALSE
+  )
+
+# get the difference between the two
+df_ipc_flags_new <- anti_join(
+  df_ipc_flags,
+  df_ipc_flags_prev,
+  by = c("iso3", "start_date", "end_date")
+) %>%
+  mutate(
+    email = TRUE
   )
 
 ######################
@@ -229,42 +277,50 @@ ipc_scraper <- function(url) {
   }
 }
 
-df_ipc_flags$summary_experimental <- map_chr(
-  df_ipc_flags$url,
+df_ipc_flags_new$summary_experimental <- map_chr(
+  df_ipc_flags_new$url,
   ipc_scraper,
   .progress = TRUE
+)
+
+# get the summaries and add to the flag files
+
+df_ipc_flags_summary <- bind_rows(
+  df_ipc_flags_prev,
+  df_ipc_flags_new
+) %>%
+  select(
+    iso3,
+    start_date,
+    end_date,
+    summary_experimental,
+    email
+  )
+
+df_ipc_flags <- left_join(
+  df_ipc_flags,
+  df_ipc_flags_summary,
+  by = c("iso3", "start_date", "end_date")
 )
 
 ########################
 #### SAVE IPC  DATA ####
 ########################
 
-write_csv(
-  x = df_ipc_raw,
-  file = file.path(
-    output_dir,
-    "ipc",
-    "raw.csv"
-  ),
-  na = ""
+update_drive_file(
+  df = df_ipc_raw,
+  local_path = local_raw_ipc,
+  drive_file = drive_raw_ipc
 )
 
-write_csv(
-  x = df_ipc_wrangled,
-  file = file.path(
-    output_dir,
-    "ipc",
-    "wrangled.csv"
-  ),
-  na = ""
+update_drive_file(
+  df = df_ipc_wrangled,
+  local_path = local_wrangled_ipc,
+  drive_file = drive_wrangled_ipc
 )
 
-write_csv(
-  x = df_ipc_flags,
-  file = file.path(
-    output_dir,
-    "ipc",
-    "flags.csv"
-  ),
-  na = ""
+update_drive_file(
+  df = df_ipc_flags,
+  local_path = local_flags_ipc,
+  drive_file = drive_flags_ipc
 )
