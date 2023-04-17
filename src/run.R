@@ -8,6 +8,11 @@ source(
   )
 )
 
+inds_dir <- file.path(
+  "src",
+  "indicators"
+)
+
 #########################
 #### LOAD INDICATORS ####
 #########################
