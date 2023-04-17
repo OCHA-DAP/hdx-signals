@@ -4,11 +4,11 @@
 name: global-monitoring
 
 on:
-  push:
-    branches: [ "main" ]
+  schedule:
+    - cron: "0 11 * * *"
 
 jobs:
-  build:
+  monitor:
     runs-on: macos-latest
     env:
       RENV_PATHS_ROOT: ~/Library/Caches/org.R-project.R/R/renv
@@ -20,7 +20,7 @@ jobs:
         with:
           r-version: 4.2.3
       - name: Cache packages
-        uses: actions/cache@v1
+        uses: actions/cache@v3
         with:
           path: ${{ env.RENV_PATHS_ROOT }}
           key: ${{ runner.os }}-renv-${{ hashFiles('**/renv.lock') }}
