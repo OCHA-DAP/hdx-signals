@@ -6,8 +6,6 @@ name: global-monitoring
 on:
   push:
     branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
 
 jobs:
   build:
@@ -42,7 +40,7 @@ jobs:
           restore-keys: ${{ steps.get-version.outputs.os-version }}-${{ steps.get-version.outputs.r-version }}-${{inputs.cache-version }}-
       - name: Create authorization JSON
         id: create-json
-        uses: jsdaniell/create-json@1.2.2
+        uses: jsdaniell/create-json@v1.2.2
         with:
           name: "auth.json"
           json: ${{ secrets.GCP_CREDENTIALS }}
