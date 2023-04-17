@@ -39,9 +39,9 @@ jobs:
           json: ${{ secrets.GCP_CREDENTIALS }}
       - name: Create R environment from GitHub secrets
         run: |
-          echo IDMC_API="$IDMC_API" >> ~/.Renviron
+          echo IDMC_API="'$IDMC_API'" >> ~/.Renviron
           echo IPC_API_KEY="$IPC_API_KEY" >> ~/.Renviron
-          echo OPENAI_API_KEY="'$OPENAI_API_KEY'" >> ~/.Renviron
+          echo OPENAI_API_KEY="$OPENAI_API_KEY" >> ~/.Renviron
           echo GLOBAL_MONITORING_JSON="auth.json" >> ~/.Renviron
         shell: bash
       - name: Run global monitoring
