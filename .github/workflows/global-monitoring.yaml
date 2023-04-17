@@ -44,6 +44,10 @@ jobs:
           echo OPENAI_API_KEY="$OPENAI_API_KEY" >> ~/.Renviron
           echo GLOBAL_MONITORING_JSON="auth.json" >> ~/.Renviron
         shell: bash
+        env:
+          IDMC_API: ${{ secrets.IDMC_API }}
+          IPC_API_KEY: ${{ secrets.IPC_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
       - name: Run global monitoring
         run: |
           source(file.path("src", "run.R"))
