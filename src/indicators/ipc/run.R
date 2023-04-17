@@ -146,12 +146,6 @@ df_ipc_wrangled <- left_join(
 ) %>%
   mutate(
     potential_incomparability = replace_na(potential_incomparability, FALSE)
-  ) %>%
-  group_by(
-    iso3
-  ) %>%
-  filter( # keep only latest projections
-    analysis_type == "current" | date_of_analysis == max(date_of_analysis)
   )
 
 #######################
@@ -303,6 +297,19 @@ df_ipc_flags <- left_join(
   by = c("iso3", "start_date", "end_date")
 )
 
+###########################################
+#### UPDATE WRANGLED FILE FOR PLOTTING ####
+###########################################
+
+# only keeping current data and latest projections
+df_ipc_wrangled_final <- df_ipc_wrangled %>%
+  group_by(
+    iso3
+  ) %>%
+  filter( # keep only latest projections
+    analysis_type == "current" | date_of_analysis == max(date_of_analysis)
+  )
+
 ########################
 #### SAVE IPC  DATA ####
 ########################
@@ -314,7 +321,7 @@ update_drive_file(
 )
 
 update_drive_file(
-  df = df_ipc_wrangled,
+  df = df_ipc_wrangled_final,
   local_path = local_wrangled_ipc,
   drive_file = drive_wrangled_ipc
 )
