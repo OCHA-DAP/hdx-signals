@@ -24,6 +24,9 @@ jobs:
           echo IDMC_API="$IDMC_API" >> ~/.Renviron
           echo IPC_API_KEY="$IPC_API_KEY" >> ~/.Renviron
         shell: bash
+        env:
+          IDMC_API: ${{ secrets.IDMC_API }}
+          IPC_API_KEY : ${{ secrets.IPC_API_KEY }}
       - name: Check env variables
         run: |
           print(Sys.getenv("IDMC_API"))
