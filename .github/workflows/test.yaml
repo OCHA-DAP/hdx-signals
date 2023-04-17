@@ -22,8 +22,10 @@ jobs:
       - name: Create R environment from GitHub secrets
         run: |
           echo IDMC_API="$IDMC_API" >> ~/.Renviron
+          echo IPC_API_KEY="$IPC_API_KEY" >> ~/.Renviron
         shell: bash
       - name: Check env variables
         run: |
           print(Sys.getenv("IDMC_API"))
+          print(Sys.getenv("IPC_API_KEY"))
         shell: Rscript {0}
