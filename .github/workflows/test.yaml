@@ -1,0 +1,29 @@
+# This workflow uses actions to automatically run the global monitoring
+# script.
+
+name: test
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: macos-latest
+    env:
+      RENV_PATHS_ROOT: ~/Library/Caches/org.R-project.R/R/renv
+    
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up R 4.2.3
+        uses: r-lib/actions/setup-r@f57f1301a053485946083d7a45022b278929a78a
+        with:
+          r-version: 4.2.3
+      - name: Create R environment from GitHub secrets
+        run: |
+          echo IDMC_API="$IDMC_API" >> ~/.Renviron
+        shell: bash
+      - name: Check env variables
+        run: |
+          print(Sys.getenv("IDMC_API"))
+        shell: Rscript {0}
