@@ -101,6 +101,7 @@ plot_ipc <- function(
       x = "",
       y = "Analyzed population (%)",
       color = "",
-      title = paste0(country, ", IPC analysis")
+      title = paste0(country, ", IPC acute food insecurity"),
+      caption = "Data from the IPC, https://www.ipcinfo.org"
     )
 }
