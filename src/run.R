@@ -1,4 +1,5 @@
 library(tidyverse)
+library(knitr)
 
 source(
   file.path(
@@ -83,3 +84,20 @@ update_drive_file(
   local_path = tempfile(fileext = ".csv"),
   drive_file = get_drive_file("flags_total_daily")
 )
+
+########################
+#### GENERATE EMAIL ####
+########################
+
+flags_email <- filter(flags_total, email)
+
+if (nrow(flags_email) > 0) {
+  knit(
+    input = file.path(
+      "src",
+      "email",
+      "email.Rmd"
+    )
+  )
+}
+

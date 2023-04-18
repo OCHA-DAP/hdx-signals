@@ -211,7 +211,7 @@ df_ipc_flags_new <- anti_join(
   by = c("iso3", "start_date", "end_date")
 ) %>%
   mutate(
-    email = TRUE
+    email = end_date - Sys.Date() > -90
   )
 
 ######################

@@ -1,0 +1,13 @@
+---
+title: "email"
+output: blastula::blastula_email
+---
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(stringr)
+```
+
+## `r country` - `r str_to_title(flag_type)` - `r str_to_upper(flag_source)`
+

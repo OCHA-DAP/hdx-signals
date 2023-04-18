@@ -1,0 +1,64 @@
+---
+title: "email"
+output: blastula::blastula_email
+---
+
+<style type ="text/css">
+h1.title {
+  font-family: Arvo
+}
+
+h1 {
+  font-family: Arvo;
+  font-size: 42px;
+  margin-top: 100px
+}
+
+h2 {
+  font-family: Arvo
+}
+
+h3 {
+  font-family: Arvo
+}
+
+</style>
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  fontfamily = "Sans Source Pro"
+)
+
+library(blastula)
+library(googledrive)
+library(purrr)
+```
+
+```{r}
+add_image(
+  file = "humdata_logo.png",
+  align = "left",
+  width = 250
+)
+```
+
+# Global Monitoring Alerts
+## `r format(Sys.Date(), "%d %B %Y")`
+
+The following situations have been flagged by the
+Centre for Humanitarian Data global monitoring alert system. Details on the
+specific alerts alerts are below.
+
+
+```{r, results = "asis"}
+
+pwalk(
+  .l = flags_email,
+  .f = \(country, flag_type, flag_source ) knitr::knit_child(
+    "alert_section.Rmd",
+    envir = environment(),
+    quiet = TRUE
+  ) |>
+    cat()
+)
+```
