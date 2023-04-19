@@ -109,4 +109,3 @@ if (nrow(flags_email) > 0) {
     )
   )
 }
-
