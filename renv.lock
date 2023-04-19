@@ -1334,6 +1334,27 @@
         "units"
       ]
     },
+    "showtext": {
+      "Package": "showtext",
+      "Version": "0.9-5",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "b588dee88e238bf811e27f12edee9433",
+      "Requirements": [
+        "showtextdb",
+        "sysfonts"
+      ]
+    },
+    "showtextdb": {
+      "Package": "showtextdb",
+      "Version": "3.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "c12e756cf947e58b0f2c2a520521a5a8",
+      "Requirements": [
+        "sysfonts"
+      ]
+    },
     "stars": {
       "Package": "stars",
       "Version": "0.6-0",
