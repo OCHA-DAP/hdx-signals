@@ -140,3 +140,10 @@ data/*
 # Notebooks
 *.ipynb
 .Rproj.user
+
+# Don't commit email renderings
+figure/*
+*email.html
+*email.md
+*alert_section.html
+*alert_section.md

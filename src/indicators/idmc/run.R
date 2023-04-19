@@ -34,6 +34,11 @@ local_raw_idmc <- tempfile(fileext = ".csv")
 local_wrangled_idmc <- tempfile(fileext = ".csv")
 local_flags_idmc <- tempfile(fileext = ".csv")
 
+# idmc website link page
+drive_idmc_links <- get_drive_file("idmc_country_links")
+drive_download(drive_idmc_links, f <- tempfile(fileext = ".csv"))
+df_links <- read_csv(f)
+
 ##############
 #### IDMC ####
 ##############
@@ -89,7 +94,17 @@ df_idmc_flags <- df_idmc %>%
   mutate(
     uuid = row_number()
   ) %>%
-  ungroup()
+  ungroup() %>%
+  left_join(
+    df_links,
+    by = "iso3"
+  ) %>%
+  mutate(
+    url = paste0("https://www.internal-displacement.org/countries/", country_link)
+  ) %>%
+  select(
+    -country_link
+  )
 
 # get total displacement within each of the flags
 # difficult for any flag because start date depends on what kind of flags have
@@ -190,9 +205,9 @@ df_displacement <- bind_rows(
     latest_flag = unique(str_remove_all(latest_flag, "flag_idmc_|global_")),
     total_displacement = sum(displacement_daily),
     message = paste0(
-      "Latest alert: ",
-      str_replace(latest_flag, "_", " "),
-      ". ",
+      "<b>Latest alert:</b> ",
+      str_replace_all(latest_flag, "_", " "),
+      ".<br><br>",
       scales::number(total_displacement, big.mark = ","),
       " people have been displaced between ",
       format(min(start_date), format = "%B %d %Y"),
@@ -226,7 +241,8 @@ df_idmc_flags_full <- df_idmc_flags %>%
     end_date,
     uuid,
     latest_flag,
-    message
+    message,
+    url
   )
 
 #####################################
@@ -355,7 +371,7 @@ ai_summary <- pmap_chr(
       "In a short paragraph, please summarize the main reasons for displacement.",
       "Avoid providing specific numbers or dates, just provide the general",
       "reasons behind the displacement and other key qualitative information.",
-      "Only use information from the the below reports:",
+      "Only use the below information:",
       displacement_info
     )
 

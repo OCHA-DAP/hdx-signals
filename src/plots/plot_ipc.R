@@ -70,8 +70,6 @@ plot_ipc <- function(
       color = NA,
       fill = hdx_hex("mint-hdx")
     ) +
-    geom_point() +
-    geom_line() +
     geom_text_hdx(
       aes(
         y = mean(range(value)),
@@ -79,8 +77,11 @@ plot_ipc <- function(
       x = mid_date,
       label = "Projection period",
       angle = -90,
-      color = "white"
+      color = "white",
+      size = 5
     ) +
+    geom_point() +
+    geom_line() +
     expand_limits(y = 0) +
     scale_y_continuous(
       labels = scales::label_percent()
@@ -95,13 +96,13 @@ plot_ipc <- function(
     ) +
     theme(
       axis.text.x = element_text(vjust = 1),
-      legend.box.margin = margin(t = -30)
+      legend.box.margin = margin(t = -25)
     ) +
     labs(
       x = "",
       y = "Analyzed population (%)",
       color = "",
-      title = paste0(country, ", IPC acute food insecurity"),
+      title = "Acute food insecurity, % of population",
       caption = "Data from the IPC, https://www.ipcinfo.org"
     )
 }

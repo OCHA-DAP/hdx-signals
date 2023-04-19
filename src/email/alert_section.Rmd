@@ -4,10 +4,45 @@ output: blastula::blastula_email
 ---
 
 ```{r, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-
 library(stringr)
+
+flag_source_str <- str_to_upper(flag_source)
 ```
 
-## `r country` - `r str_to_title(flag_type)` - `r str_to_upper(flag_source)`
+
+## `r country` - `r str_replace(str_to_title(flag_type), "_", " ")` - `r flag_source_str`
+
+```{r, results = "asis"}
+cat(message)
+```
+
+```{r, fig.dim = c(8, 4), dpi = 300}
+plot_general(flag_source, iso3, country)
+```
+
+<b>Further information:</b>
+
+```{r, results = "asis"}
+if (flag_source_str == "IDMC") {
+  cat(
+    paste0(
+      "You can refer to the [IDMC country page](",
+      url,
+      ") for additional context on displacement, and the [IDMC data ",
+      "portal](https://www.internal-displacement.org/database/displacement-data) ",
+      "to find all relevant data."
+    )
+  )
+} else if (flag_source_str == "IPC") {
+  cat(
+    paste0(
+      "The latest IPC report can be found [here](",
+      url,
+      "). Additional information is available on the [IPC website](https://www.ipcinfo.org)."
+    )
+  )
+}
+```
+
+----
 

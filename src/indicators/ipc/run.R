@@ -160,26 +160,61 @@ df_ipc_flags <- df_ipc_wrangled %>%
       .fns = ~ !is.na(.x) & .x > 0
     ) | potential_incomparability
   ) %>%
+  mutate(
+    phase_incr = case_when(
+      phase_3pl_pct_delta > 0 ~ "phase 3+",
+      phase_4pl_pct_delta > 0 ~ "phase 4+",
+      phase_5_pct_delta > 0 ~ "phase 5",
+    ),
+    phase_incr_pct = case_when(
+      phase_3pl_pct_delta > 0 ~ phase_3pl_pct_delta,
+      phase_4pl_pct_delta > 0 ~ phase_4pl_pct_delta,
+      phase_5_pct_delta > 0 ~ phase_5_pct_delta,
+    )
+  ) %>%
   group_by(
     iso3,
     country,
     date_of_analysis
   ) %>%
-  summarize(
+  mutate(
     start_date = min(analysis_period_start),
-    end_date = max(analysis_period_end),
-    message = paste(
-      c(
-        ifelse(
-          potential_incomparability,
-          "Uncertain if the difference between the current and previous analysis is due to shifting geographic focus, check the IPC for details. ",
-          ""
+    end_date = max(analysis_period_end)
+  ) %>%
+  filter(
+    !is.na(phase_incr) | (potential_incomparability & all(is.na(phase_incr)))
+  ) %>%
+  summarize(
+    start_date = unique(start_date),
+    end_date = unique(end_date),
+    message = ifelse(
+      any(!is.na(phase_incr)),
+      paste(
+        c(
+          "Increases in food insecure populations are estimated: ",
+          paste(
+            scales::percent(phase_incr_pct),
+            "rise in",
+            phase_incr,
+            "populations in the",
+            str_replace(unique(analysis_type), "_", " "),
+            "analysis",
+            collapse = ", "
+          ),
+          ".",
+          ifelse(
+            potential_incomparability,
+            "\n\nUncertain if the difference between the current and previous analysis is due to shifting geographic focus of the analysis, check the IPC for details.",
+            ""
+          )
         ),
-        "Increases in populations in phase 3+ are estimated in the ",
-        paste(str_replace(unique(analysis_type), "_", " "), collapse = ", "),
-        ifelse(n() == 1, " analysis.", " analyses.")
+        collapse = ""
       ),
-      collapse = ""
+      paste(
+        "The most recent analysis likely has different geographic focus than the",
+        "previous analysis, so even though no increase in population was detected",
+        "an alert has been generated. Refer to the IPC for more details."
+      )
     ),
     url = unique(analysis_url)[1],
     .groups = "drop"

@@ -26,19 +26,22 @@ h3 {
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
   echo = FALSE,
-  fontfamily = "Sans Source Pro"
+  warning = FALSE,
+  message = FALSE,
+  fontfamily = "Sans Source Pro",
+  fig.cap = ""
 )
 
 library(blastula)
-library(googledrive)
 library(purrr)
+library(dplyr)
 ```
 
 ```{r}
 add_image(
   file = "humdata_logo.png",
   align = "left",
-  width = 250
+  width = 200
 )
 ```
 
@@ -49,16 +52,41 @@ The following situations have been flagged by the
 Centre for Humanitarian Data global monitoring alert system. Details on the
 specific alerts alerts are below.
 
+----
 
 ```{r, results = "asis"}
 
 pwalk(
-  .l = flags_email,
-  .f = \(country, flag_type, flag_source ) knitr::knit_child(
-    "alert_section.Rmd",
-    envir = environment(),
-    quiet = TRUE
-  ) |>
-    cat()
+  .l = flags_email %>%
+    select(
+      iso3,
+    country,
+    flag_type,
+    flag_source,
+    message,
+    url
+    ),
+  .f = \(
+    iso3,
+    country,
+    flag_type,
+    flag_source,
+    message,
+    url
+  ) {
+    knitr::knit_child(
+      "alert_section.Rmd",
+      envir = environment(),
+      quiet = TRUE
+    ) |>
+      cat()
+  }
 )
 ```
+
+Global monitoring is updated daily at 11AM UTC. The source code and documentation
+for the analysis is available on [GitHub](https://github.com/OCHA-DAP/pa-global-monitoring/).
+Reach out to the Centre for Humanitarian Data's predictive analytics team at
+email@un.org if you have any questions or want to discuss the product.
+
+

@@ -91,6 +91,15 @@ update_drive_file(
 
 flags_email <- filter(flags_total, email)
 
+# plotting functions
+source(
+  file.path(
+    "src",
+    "plots",
+    "plot.R"
+  )
+)
+
 if (nrow(flags_email) > 0) {
   knit(
     input = file.path(

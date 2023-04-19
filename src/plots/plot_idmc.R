@@ -56,7 +56,7 @@ plot_idmc <- function(
       x = "",
       y = "Displacement (weekly)",
       color = "",
-      title = paste0(country, ", IDMC weekly displacement"),
+      title = "Historical weekly displacement",
       caption = "Data from the IDMC, http://www.internal-displacement.org"
     )
 }
