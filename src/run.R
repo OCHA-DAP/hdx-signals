@@ -100,6 +100,23 @@ source(
   )
 )
 
+# Load in e-mail credentials
+email_creds <- creds_envvar(
+  user = Sys.getenv("CHD_DS_EMAIL_USERNAME"),
+  pass_envvar = "CHD_DS_EMAIL_PASSWORD",
+  host = Sys.getenv("CHD_DS_HOST"),
+  port = Sys.getenv("CHD_DS_PORT"),
+  use_ssl = TRUE
+)
+
+smtp_send(
+  email = email_list[[1]],
+  to = "seth.caldwell@un.org",
+  from = "data.science@humdata.org",
+  credentials = email_creds
+)
+
+
 pwalk(
   .l = flags_email %>%
     distinct(
@@ -110,13 +127,24 @@ pwalk(
     flag_type,
     flag_source
   ) {
-    knitr::knit(
+    render_email(
       input = file.path(
         "src",
         "email",
         "email.Rmd"
-      ),
-      output = paste0(flag_type, "_", flag_source, ".md")
-    )
+      )
+    ) %>%
+      smtp_send(
+        to = c("seth.caldwell@un.org", "leonardo.milano@un.org"),
+        from = "data.science@humdata.org",
+        subject = paste(
+          "GMA",
+          str_replace_all(str_to_title(flag_type), "_", " "),
+          str_to_upper(flag_source),
+          format(Sys.Date(), "%Y %B %d"),
+          sep = " - "
+        ),
+        credentials = email_creds
+      )
   }
 )
