@@ -5,21 +5,31 @@ output: blastula::blastula_email
 
 <style type ="text/css">
 h1.title {
-  font-family: Arvo
+  font-family: Arvo;
+  font-weight: normal
 }
 
 h1 {
   font-family: Arvo;
   font-size: 42px;
-  margin-top: 100px
+  margin-top: 20px;
+  font-weight: normal
 }
 
 h2 {
-  font-family: Arvo
+  font-family: Arvo;
+  font-weight: normal
 }
 
 h3 {
-  font-family: Arvo
+  font-family: Arvo;
+  font-weight: normal
+}
+
+.scrollable {
+  overflow-y: scroll;
+  max-height: 400px;
+  font-family: Source Sans Pro
 }
 
 </style>
@@ -29,50 +39,139 @@ knitr::opts_chunk$set(
   warning = FALSE,
   message = FALSE,
   fontfamily = "Sans Source Pro",
-  fig.cap = ""
+  fig.cap = "",
+  fig.path = file.path("figure", paste0(flag_source, "_", flag_type), "")
 )
 
 library(blastula)
 library(purrr)
 library(dplyr)
+library(sf)
+library(stringr)
+library(gghdx)
+gghdx()
+
+flag_source_str <- str_to_upper(flag_source)
+flag_type_str <- str_replace(str_to_title(flag_type), "_", " ")
+
+flags_specific <- filter(
+  flags_email,
+  flag_type == !!flag_type,
+  flag_source == !!flag_source
+)
 ```
 
 ```{r}
 add_image(
-  file = "humdata_logo.png",
-  align = "left",
-  width = 200
+  file = "centre_banner.png",
+  alt = "Centre for Humanitarian Data banner",
+  align = "center",
+  width = "100%"
 )
 ```
 
-# Global Monitoring Alerts
-## `r format(Sys.Date(), "%d %B %Y")`
+# Global Monitoring Alert
+## `r flag_type_str` - `r flag_source_str` - `r format(Sys.Date(), "%d %B %Y")`
 
-The following situations have been flagged by the
-Centre for Humanitarian Data global monitoring alert system. Details on the
-specific alerts alerts are below.
+The following `r tolower(flag_type_str)` situations have been flagged by the
+Centre for Humanitarian Data global monitoring alert system, based on data from
+the `r flag_source_str`. Details on the specific alerts alerts are below.
+
+```{r, out.width="90%", dpi=300, fig.asp=0.55, fig.align="center", fig.wdith = "100%"}
+download.file(
+  url = "https://github.com/datasets/geo-countries/raw/master/data/countries.geojson",
+  destfile = f <- tempfile(fileext = ".geojson")
+)
+
+sf_world <- read_sf(f) %>%
+  filter(
+    ADMIN != "Antarctica"
+  )
+ 
+# create legend fill
+
+legend_fill <- hdx_hex(c("tomato-hdx", "tomato-light"))
+names(legend_fill) <- c("New alert", "Ongoing alert")
+ 
+# map all ongoing alerts
+# and all ongoing alerts specific to this type and source
+# and new alerts
+df_flags <- flags_total %>%
+  filter(
+    email | end_date - Sys.Date() >= -30,
+    flag_source == !!flag_source
+  ) %>%
+  transmute(
+    iso3,
+    map_fill = case_when(
+      email ~ "New alert",
+      TRUE ~ "Ongoing alert"
+    )
+  )
+
+sf_world %>%
+  left_join(
+    df_flags,
+    by = c("ISO_A3" = "iso3")
+  ) %>%
+  st_as_sf() %>%
+  ggplot() +
+  geom_sf(
+    aes(
+      fill = map_fill
+    ),
+    linewidth = 0.1
+  ) +
+  coord_sf(
+    datum = NULL,
+    clip = "off"
+  ) +
+  theme(
+    panel.background = element_rect(
+      fill = "aliceblue",
+      color = hdx_hex("gray-dark"),
+      linewidth = 0.5
+    ),
+    panel.grid = element_blank(),
+    plot.margin = grid::unit(c(0, 0, 0, 0), "mm"),
+    axis.line = element_blank(),
+    axis.ticks = element_blank(),
+    axis.text = element_blank(),
+    legend.title = element_text(face = "bold")
+  ) +
+  scale_fill_manual(
+    values = legend_fill,
+    na.value = "white",
+    name = "Alerts:"
+  ) +
+  labs(
+    caption = "Alerts defined as ongoing if they have ended in the past 30 days."
+  )
+```
 
 ----
 
 ```{r, results = "asis"}
 
 pwalk(
-  .l = flags_email %>%
+  .l = flags_specific %>%
     select(
       iso3,
-    country,
-    flag_type,
-    flag_source,
-    message,
-    url
+      country,
+      start_date,
+      end_date,
+      message,
+      url,
+      summary_experimental
     ),
   .f = \(
     iso3,
     country,
-    flag_type,
-    flag_source,
+    start_date,
+    end_date,
     message,
-    url
+    url,
+    summary_experimental
   ) {
     knitr::knit_child(
       "alert_section.Rmd",
@@ -87,6 +186,24 @@ pwalk(
 Global monitoring is updated daily at 11AM UTC. The source code and documentation
 for the analysis is available on [GitHub](https://github.com/OCHA-DAP/pa-global-monitoring/).
 Reach out to the Centre for Humanitarian Data's predictive analytics team at
-email@un.org if you have any questions or want to discuss the product.
+leonardo.milano@un.org if you have any questions or want to discuss the product.
 
+----
 
+```{r}
+add_image(
+  file = "ocha_logo_wide.png",
+  align = "center",
+  width = "25%"
+)
+```
+
+<p>
+<center>
+
+<b> OCHA Centre For Humanitarian Data </b>
+
+Fluwelen Burgwal 58 | 2511 CJ The Hague | The Netherlands
+
+</center>
+</p>

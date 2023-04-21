@@ -100,12 +100,23 @@ source(
   )
 )
 
-if (nrow(flags_email) > 0) {
-  knit(
-    input = file.path(
-      "src",
-      "email",
-      "email.Rmd"
+pwalk(
+  .l = flags_email %>%
+    distinct(
+      flag_type,
+      flag_source
+    ),
+  .f = \(
+    flag_type,
+    flag_source
+  ) {
+    knitr::knit(
+      input = file.path(
+        "src",
+        "email",
+        "email.Rmd"
+      ),
+      output = paste0(flag_type, "_", flag_source, ".md")
     )
-  )
-}
+  }
+)
