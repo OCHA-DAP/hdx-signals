@@ -4,32 +4,13 @@ output: blastula::blastula_email
 ---
 
 <style type ="text/css">
-h1.title {
-  font-family: Arvo;
+h1.title, h1, h2, h3, {
+  font-family: Arvo, Courier, Georgia, serif;
   font-weight: normal
 }
 
-h1 {
-  font-family: Arvo;
-  font-size: 42px;
-  margin-top: 20px;
-  font-weight: normal
-}
-
-h2 {
-  font-family: Arvo;
-  font-weight: normal
-}
-
-h3 {
-  font-family: Arvo;
-  font-weight: normal
-}
-
-.scrollable {
-  overflow-y: scroll;
-  max-height: 400px;
-  font-family: Source Sans Pro
+p {
+  font-family: Source Sans Pro, Helvetica Neue, Helvetica, Arial, sans-serif
 }
 
 </style>
@@ -183,8 +164,13 @@ pwalk(
 )
 ```
 
+## Methodology and set-up
+
 Global monitoring is updated daily at 11AM UTC. The source code and documentation
 for the analysis is available on [GitHub](https://github.com/OCHA-DAP/pa-global-monitoring/).
+The relevant methods for `r flag_source_str` data are available
+[here](`r paste0("https://github.com/OCHA-DAP/pa-global-monitoring/blob/main/src/indicators/"), flag_source_str, "/README.md"`)
+
 Reach out to the Centre for Humanitarian Data's predictive analytics team at
 leonardo.milano@un.org if you have any questions or want to discuss the product.
 
