@@ -116,6 +116,10 @@ smtp_send(
   credentials = email_creds
 )
 
+# load in recipients
+drive_recipients <- get_drive_file("email_recipients")
+drive_download(drive_recipients, f <- tempfile(fileext = ".csv"))
+df_recipients <- read_csv(f)
 
 pwalk(
   .l = flags_email %>%
@@ -135,7 +139,7 @@ pwalk(
       )
     ) %>%
       smtp_send(
-        to = c("seth.caldwell@un.org", "leonardo.milano@un.org"),
+        to = df_recipients$email,
         from = "data.science@humdata.org",
         subject = paste(
           "GMA",
