@@ -5,17 +5,17 @@ output: blastula::blastula_email
 
 <style type ="text/css">
 h1 {
-  font-family: Arvo, Courier, Georgia, serif;
+  font-family: Arvo, "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-weight: normal
 }
 
 h2 {
-  font-family: Arvo, Courier, Georgia, serif;
+  font-family: Arvo, "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-weight: normal
 }
 
 h3 {
-  font-family: Arvo, Courier, Georgia, serif;
+  font-family: Arvo, "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-weight: normal
 }
 
