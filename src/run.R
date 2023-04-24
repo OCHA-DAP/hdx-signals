@@ -109,13 +109,6 @@ email_creds <- creds_envvar(
   use_ssl = TRUE
 )
 
-smtp_send(
-  email = email_list[[1]],
-  to = "seth.caldwell@un.org",
-  from = "data.science@humdata.org",
-  credentials = email_creds
-)
-
 # load in recipients
 drive_recipients <- get_drive_file("email_recipients")
 drive_download(drive_recipients, f <- tempfile(fileext = ".csv"))
