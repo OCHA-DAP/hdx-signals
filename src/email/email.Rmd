@@ -23,6 +23,11 @@ p {
   font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif
 }
 
+.banner {
+  width: 100%;
+  max-width: 1000px
+}
+
 </style>
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
@@ -52,7 +57,7 @@ flags_specific <- filter(
 )
 ```
 
-```{r}
+```{r, class.output = "banner"}
 add_image(
   file = "centre_banner.png",
   alt = "Centre for Humanitarian Data banner",
@@ -68,7 +73,7 @@ The following `r tolower(flag_type_str)` situations have been flagged by the
 Centre for Humanitarian Data global monitoring alert system, based on data from
 the `r flag_source_str`. Details on the specific alerts alerts are below.
 
-```{r, out.width="90%", dpi=300, fig.asp=0.55, fig.align="center", fig.wdith = "100%"}
+```{r, out.width="90%", dpi=300, fig.asp=0.55, fig.align="center", class.output = "banner"}
 download.file(
   url = "https://github.com/datasets/geo-countries/raw/master/data/countries.geojson",
   destfile = f <- tempfile(fileext = ".geojson")
@@ -81,7 +86,7 @@ sf_world <- read_sf(f) %>%
  
 # create legend fill
 
-legend_fill <- hdx_hex(c("tomato-hdx", "tomato-light"))
+legend_fill <- hdx_hex(c("tomato-dark", "tomato-light"))
 names(legend_fill) <- c("New alert", "Ongoing alert")
  
 # map all ongoing alerts

@@ -191,7 +191,15 @@ df_ipc_flags <- df_ipc_wrangled %>%
       any(!is.na(phase_incr)),
       paste(
         c(
-          "Increases in food insecure populations are estimated: ",
+          ifelse(
+            phase_5_num > 0,
+            paste0(
+              "<b>",
+              scales::label_comma()(phase_5_num),
+              " people are estimated to be in phase 5.</b><br><br>Overall increases in food insecure populations are estimated: "
+            ),
+            "Increases in food insecure populations are estimated: "
+          ),
           paste(
             scales::percent(phase_incr_pct),
             "rise in",
