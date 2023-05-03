@@ -37,9 +37,9 @@ jobs:
         with:
           name: "auth.json"
           json: ${{ secrets.GCP_CREDENTIALS }}
-      - name: Run global monitoring
+      - name: Send test emails
         run: |
-          source(file.path("src", "run.R"))
+          source(file.path("test", "test.R"))
         shell: Rscript {0}
         env:
           GLOBAL_MONITORING_JSON: "auth.json"
