@@ -1,7 +1,7 @@
 # This workflow uses actions to automatically run the global monitoring
 # script.
 
-name: global-monitoring
+name: test-emails
 
 on:
   workflow_dispatch:
