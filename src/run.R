@@ -132,7 +132,8 @@ pwalk(
       )
     ) %>%
       smtp_send(
-        to = df_recipients$email,
+        to = filter(df_recipients, to)$email,
+        bcc = filter(df_recipients, !to)$email,
         from = "data.science@humdata.org",
         subject = paste(
           "GMA",
