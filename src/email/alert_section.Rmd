@@ -44,7 +44,7 @@ if (flag_source == "idmc") {
 cat(message)
 ```
 
-```{r, fig.dim = c(8, 4), dpi = 300, class.output = "banner"}
+```{r, out.width = 1000, fig.asp = 0.66, dpi = 300}
 plot_general(flag_source, iso3, country)
 ```
 
