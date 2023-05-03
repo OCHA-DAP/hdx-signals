@@ -303,9 +303,9 @@ ipc_scraper <- function(url) {
 
     # send these back to the dataset
     paste(
-      "<b>Situation summary:</b> ",
+      "<b> Situation summary: </b> ",
       sit_rep,
-      "\n\n<b>Recommendations summary:</n> ",
+      "\n\n<b>Recommendations summary:</b></n> ",
       recs
     )
 

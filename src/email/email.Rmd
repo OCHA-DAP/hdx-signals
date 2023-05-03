@@ -3,18 +3,9 @@ title: "email"
 output: blastula::blastula_email
 ---
 
-<style type ="text/css">
-h1 {
-  font-family: Arvo, "Helvetica Neue", Helvetica, Arial, sans-serif;
-  font-weight: normal
-}
+<style>
 
-h2 {
-  font-family: Arvo, "Helvetica Neue", Helvetica, Arial, sans-serif;
-  font-weight: normal
-}
-
-h3 {
+h1, h2, h3 {
   font-family: Arvo, "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-weight: normal
 }
@@ -23,12 +14,8 @@ p {
   font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif
 }
 
-.banner {
-  width: 100%;
-  max-width: 1000px
-}
-
 </style>
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
   echo = FALSE,
@@ -57,12 +44,12 @@ flags_specific <- filter(
 )
 ```
 
-```{r, class.output = "banner"}
+```{r}
 add_image(
   file = "centre_banner.png",
   alt = "Centre for Humanitarian Data banner",
   align = "center",
-  width = "100%"
+  width = "1000"
 )
 ```
 
@@ -71,9 +58,34 @@ add_image(
 
 The following `r tolower(flag_type_str)` situations have been flagged by the
 Centre for Humanitarian Data global monitoring alert system, based on data from
-the `r flag_source_str`. Details on the specific alerts alerts are below.
+the `r flag_source_str`. 
 
-```{r, out.width="90%", dpi=300, fig.asp=0.55, fig.align="center", class.output = "banner"}
+```{r}
+countries <- flags_specific$country
+countries_id <- str_replace(tolower(countries), " ", "-")
+
+df_countries <- data.frame(
+  countries = paste0(
+        "<a href=\"#",
+        countries_id,
+        "\">",
+        countries,
+        "</a>"
+      )
+)
+
+knitr::kable(
+    df_countries,
+    table.attr = "class=\"scrollable\"",
+    col.names = "",
+    format = "html",
+    escape = FALSE
+)
+```
+
+Details on the specific alerts alerts are below.
+
+```{r, dpi=300, fig.asp=0.55, fig.align="center", out.width=1000}
 download.file(
   url = "https://github.com/datasets/geo-countries/raw/master/data/countries.geojson",
   destfile = f <- tempfile(fileext = ".geojson")
