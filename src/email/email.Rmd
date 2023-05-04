@@ -63,7 +63,7 @@ add_image_custom(
   file = "centre_banner.png",
   alt = "Centre for Humanitarian Data banner",
   align = "center",
-  width = "700"
+  width = "1000"
 )
 ```
 
@@ -152,7 +152,7 @@ add_ggplot_custom(
   plot_object = p_map,
   width = 5,
   height = 3,
-  html_width = 700,
+  html_width = 1000,
   alt = "Alert map"
 )
 ```

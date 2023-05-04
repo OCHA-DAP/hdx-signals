@@ -51,7 +51,7 @@ add_ggplot_custom(
   alt = "Alert plot",
   height = 4,
   width = 6,
-  html_width = 700
+  html_width = 1000
 )
 ```
 
