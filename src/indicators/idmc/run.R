@@ -295,6 +295,13 @@ df_idmc_flags_email <- df_idmc_flags_final_prev %>%
     start_date <= start_date_prev,
     end_date >= start_date_prev
   ) %>%
+  group_by(
+    iso3
+  ) %>%
+  filter(
+    end_date_prev == max(end_date_prev)
+  ) %>%
+  ungroup() %>%
   mutate(
     prev_flag_level = match(prev_flag, alert_levels),
     latest_flag_level = match(latest_flag, alert_levels),
