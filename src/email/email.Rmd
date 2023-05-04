@@ -3,7 +3,7 @@ title: "email"
 output: blastula::blastula_email
 ---
 
-<style>
+<style type = "text/css">
 
 h1, h2, h3 {
   font-family: Arvo, "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -21,7 +21,7 @@ knitr::opts_chunk$set(
   echo = FALSE,
   warning = FALSE,
   message = FALSE,
-  fontfamily = "Sans Source Pro",
+  fontfamily = "Source Sans Pro",
   fig.cap = "",
   fig.path = file.path("figure", paste0(flag_source, "_", flag_type), "")
 )
@@ -34,6 +34,8 @@ library(stringr)
 library(gghdx)
 gghdx()
 
+source("email.R")
+
 flag_source_str <- str_to_upper(flag_source)
 flag_type_str <- str_replace(str_to_title(flag_type), "_", " ")
 
@@ -42,50 +44,40 @@ flags_specific <- filter(
   flag_type == !!flag_type,
   flag_source == !!flag_source
 )
-```
 
-```{r}
-add_image(
+# get list of country links for putting in first paragraphs
+flags_specific$country_id <- str_replace(tolower(flags_specific$country), " ", "-")
+countries_md <- paste0(
+  "<a href=\"#",
+  flags_specific$country_id,
+  "\">",
+  flags_specific$country,
+  "</a>",
+  collapse = ", "
+)
+
+```
+        
+```{r, results="asis"}
+add_image_custom(
   file = "centre_banner.png",
   alt = "Centre for Humanitarian Data banner",
   align = "center",
-  width = "1000"
+  width = "700"
 )
 ```
+
 
 # Global Monitoring Alert
 ## `r flag_type_str` - `r flag_source_str` - `r format(Sys.Date(), "%d %B %Y")`
 
 The following `r tolower(flag_type_str)` situations have been flagged by the
 Centre for Humanitarian Data global monitoring alert system, based on data from
-the `r flag_source_str`. 
-
-```{r}
-countries <- flags_specific$country
-countries_id <- str_replace(tolower(countries), " ", "-")
-
-df_countries <- data.frame(
-  countries = paste0(
-        "<a href=\"#",
-        countries_id,
-        "\">",
-        countries,
-        "</a>"
-      )
-)
-
-knitr::kable(
-    df_countries,
-    table.attr = "class=\"scrollable\"",
-    col.names = "",
-    format = "html",
-    escape = FALSE
-)
-```
+the `r flag_source_str`: `r countries_md`.
 
 Details on the specific alerts alerts are below.
 
-```{r, dpi=300, fig.asp=0.55, fig.align="center", out.width=1000}
+```{r, results = "asis"}
 download.file(
   url = "https://github.com/datasets/geo-countries/raw/master/data/countries.geojson",
   destfile = f <- tempfile(fileext = ".geojson")
@@ -117,7 +109,7 @@ df_flags <- flags_total %>%
     )
   )
 
-sf_world %>%
+p_map <- sf_world %>%
   left_join(
     df_flags,
     by = c("ISO_A3" = "iso3")
@@ -155,6 +147,14 @@ sf_world %>%
   labs(
     caption = "Alerts defined as ongoing if they have ended in the past 30 days."
   )
+
+add_ggplot_custom(
+  plot_object = p_map,
+  width = 5,
+  height = 3,
+  html_width = 700,
+  alt = "Alert map"
+)
 ```
 
 ----
@@ -166,6 +166,7 @@ pwalk(
     select(
       iso3,
       country,
+      country_id,
       start_date,
       end_date,
       message,
@@ -175,6 +176,7 @@ pwalk(
   .f = \(
     iso3,
     country,
+    country_id,
     start_date,
     end_date,
     message,
