@@ -44,7 +44,7 @@ if (flag_source == "idmc") {
 cat(message)
 ```
 
-```{r, fig.asp = 0.66, dpi = 300, results = "asis"}
+```{r, results = "asis"}
 p <- plot_general(flag_source, iso3, country)
 add_ggplot_custom(
   plot_object = p,
