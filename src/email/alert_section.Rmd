@@ -4,7 +4,7 @@ output: blastula::blastula_email
 ---
 
 
-## `r country`
+## <a name="`r country_id`"></a> `r country`
 
 ```{r, include=FALSE}
 show_table <- flag_source == "idmc"
@@ -44,8 +44,15 @@ if (flag_source == "idmc") {
 cat(message)
 ```
 
-```{r, out.width = 1000, fig.asp = 0.66, dpi = 300}
-plot_general(flag_source, iso3, country)
+```{r, fig.asp = 0.66, dpi = 300, results = "asis"}
+p <- plot_general(flag_source, iso3, country)
+add_ggplot_custom(
+  plot_object = p,
+  alt = "Alert plot",
+  height = 4,
+  width = 6,
+  html_width = 1000
+)
 ```
 
 ### Summary:
