@@ -205,22 +205,11 @@ df_displacement <- bind_rows(
     latest_flag = unique(str_remove_all(latest_flag, "flag_idmc_|global_")),
     total_displacement = sum(displacement_daily),
     message = paste0(
-      "<b>Alert:</b> ",
-      str_replace_all(
-        latest_flag,
-        c(
-          "_" = " ",
-          "1st year" = "1st displacement in a year",
-          "1st 3 months" = "1st displacement in 3 months",
-          "1st 6 months" = "1st displacement in 6 months"
-        )
-      ),
-      ".<br><br>",
       scales::number(total_displacement, big.mark = ","),
       " people have been displaced between ",
-      format(min(start_date), format = "%B %d %Y"),
+      gsub(" 0", " ", format(min(start_date), format = "%d %B %Y")),
       " and ",
-      format(max(end_date), format = "%B %d %Y"),
+      gsub(" 0", " ", format(max(end_date), format = "%d %B %Y")),
       "."
     ),
     .groups = "drop"

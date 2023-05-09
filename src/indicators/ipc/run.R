@@ -71,7 +71,17 @@ df_ipc <- df_ipc_raw %>%
       ),
     by = "anl_id"
   ) %>%
-  relocate(analysis_url, .after = analysis_type)
+  relocate(analysis_url, .after = analysis_type) %>%
+  group_by(
+    country,
+    analysis_period_start,
+    analysis_period_end,
+    analysis_type
+  ) %>%
+  filter(
+    date_of_analysis == max(date_of_analysis)
+  ) %>%
+  ungroup()
 
 # get differences between current values and the previous current value
 df_cur_delta <- df_ipc %>%
@@ -175,7 +185,7 @@ df_ipc_flags <- df_ipc_wrangled %>%
   group_by(
     iso3,
     country,
-    date_of_analysis
+    latest_flag = date_of_analysis
   ) %>%
   mutate(
     start_date = min(analysis_period_start),
@@ -212,16 +222,16 @@ df_ipc_flags <- df_ipc_wrangled %>%
           ".",
           ifelse(
             potential_incomparability,
-            "\n\nUncertain if the difference between the current and previous analysis is due to shifting geographic focus of the analysis, check the IPC for details.",
+            "\n\nThe estimated increase could be due due to shifting geographic focus of the analysis, check the CH/IPC for details.",
             ""
           )
         ),
         collapse = ""
       ),
       paste(
-        "The most recent analysis likely has different geographic focus than the",
+        "The most recent analysis likely has a different geographic focus than the",
         "previous analysis, so even though no increase in population was detected",
-        "an alert has been generated. Refer to the IPC for more details."
+        "an alert has been generated. Refer to the CH/IPC for more details."
       )
     ),
     url = unique(analysis_url)[1],
@@ -232,8 +242,9 @@ df_ipc_flags <- df_ipc_wrangled %>%
     flag_source = "ipc",
     .before = "start_date"
   ) %>%
-  select(
-    -date_of_analysis
+  relocate(
+    latest_flag,
+    .after = end_date
   )
 
 ##########################################
@@ -330,8 +341,8 @@ df_ipc_flags_summary <- bind_rows(
     iso3,
     start_date,
     end_date,
-    summary_experimental,
-    email
+    email,
+    summary_experimental
   )
 
 df_ipc_flags <- left_join(

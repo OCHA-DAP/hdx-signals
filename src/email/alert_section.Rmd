@@ -35,6 +35,8 @@ if (flag_source == "idmc") {
       )
     )
   
+  print(df_display)
+  
   show_idmc <- show_table & nrow(df_display) > 0
 }
 
@@ -74,14 +76,14 @@ if (flag_source_str == "IDMC") {
       url,
       ") for additional context on displacement, and the [IDMC data ",
       "portal](https://www.internal-displacement.org/database/displacement-data) ",
-      "to find all relevant data.\n\n",
+      "for relevant displacement data.\n\n",
       "IDMC identified displacement events for this alert from the below reports."
     )
   )
 } else if (flag_source_str == "IPC") {
   cat(
     paste0(
-      "The latest IPC report can be found [here](",
+      "The latest CH/IPC report can be found [here](",
       url,
       "). Additional information is available on the [IPC website](https://www.ipcinfo.org)."
     )

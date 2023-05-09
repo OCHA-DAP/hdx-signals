@@ -73,13 +73,11 @@ pwalk(
         to = filter(df_recipients, to)$email,
         bcc = filter(df_recipients, !to)$email,
         from = "data.science@humdata.org",
-        subject = paste(
-          "GMA",
+        subject = paste0(
+          "Monitoring Alert: ",
           str_replace_all(str_to_title(flag_type), "_", " "),
-          str_to_upper(flag_source),
-          format(Sys.Date(), "%Y %B %d"),
-          "TEST ALERT",
-          sep = " - "
+          gsub(" 0", " ", format(Sys.Date(), " - %d %B %Y")),
+          " - TEST ALERT"
         ),
         credentials = email_creds
       )

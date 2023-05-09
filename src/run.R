@@ -46,7 +46,7 @@ flags_total <- map(
   .f = function(x) {
       drive_file <- get_drive_file(x)
       drive_download(file = drive_file, path = f <- tempfile(fileext = ".csv"))
-      read_csv(f)
+      read_csv(f, col_types = "ccccDDccclc")
     }
   ) %>%
   list_rbind() %>%
@@ -135,12 +135,11 @@ pwalk(
         to = filter(df_recipients, to)$email,
         bcc = filter(df_recipients, !to)$email,
         from = "data.science@humdata.org",
-        subject = paste(
-          "GMA",
+        subject = paste0(
+          "Monitoring Alert: ",
           str_replace_all(str_to_title(flag_type), "_", " "),
-          str_to_upper(flag_source),
-          format(Sys.Date(), "%Y %B %d"),
-          sep = " - "
+          gsub(" 0", " ", format(Sys.Date(), " - %d %B %Y")),
+          " - TEST ALERT"
         ),
         credentials = email_creds
       )

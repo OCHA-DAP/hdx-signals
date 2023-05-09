@@ -56,106 +56,40 @@ countries_md <- paste0(
   collapse = ", "
 )
 
+# get the intro methods text based on the displacement type
+flag_method <- case_when(
+  flag_type == "displacement" ~ "abnormally high displacement reported by the IDMC",
+  flag_type == "food_security" ~ "estimated increase in populations of phase 3 above by the IPC/CH"
+)
+
 ```
-        
+
+
+<!--Set the preview text of the email-->
+<div style="display:none">`r paste(flags_specific$country, collapse = ", ")`</div>
+
 ```{r, results="asis"}
-add_image_custom(
-  file = "centre_banner.png",
-  alt = "Centre for Humanitarian Data banner",
-  align = "center",
-  width = "1000"
+add_image(
+  file = "centre_logo.png",
+  alt = "Centre for Humanitarian Data logo",
+  align = "left",
+  width = "25%"
 )
 ```
 
 
 # Global Monitoring Alert
-## `r flag_type_str` - `r flag_source_str` - `r format(Sys.Date(), "%d %B %Y")`
 
-The following `r tolower(flag_type_str)` situations have been flagged by the
-Centre for Humanitarian Data global monitoring alert system, based on data from
-the `r flag_source_str`: `r countries_md`.
+## `r flag_type_str` - `r flag_source_str` - `r gsub(" 0", " ", format(Sys.Date(), "%d %B %Y"))`
 
-Details on the specific alerts alerts are below.
+`r str_to_sentence(flag_type_str)` alerts have been flagged by the
+OCHA Centre for Humanitarian Data (CHD) global monitoring alert system in
+the following countries: `r countries_md`.
 
-```{r, results = "asis"}
-download.file(
-  url = "https://github.com/datasets/geo-countries/raw/master/data/countries.geojson",
-  destfile = f <- tempfile(fileext = ".geojson")
-)
-
-sf_world <- read_sf(f) %>%
-  filter(
-    ADMIN != "Antarctica"
-  )
- 
-# create legend fill
-
-legend_fill <- hdx_hex(c("tomato-dark", "tomato-light"))
-names(legend_fill) <- c("New alert", "Ongoing alert")
- 
-# map all ongoing alerts
-# and all ongoing alerts specific to this type and source
-# and new alerts
-df_flags <- flags_total %>%
-  filter(
-    email | end_date - Sys.Date() >= -30,
-    flag_source == !!flag_source
-  ) %>%
-  transmute(
-    iso3,
-    map_fill = case_when(
-      email ~ "New alert",
-      TRUE ~ "Ongoing alert"
-    )
-  )
-
-p_map <- sf_world %>%
-  left_join(
-    df_flags,
-    by = c("ISO_A3" = "iso3")
-  ) %>%
-  st_as_sf() %>%
-  ggplot() +
-  geom_sf(
-    aes(
-      fill = map_fill
-    ),
-    linewidth = 0.1
-  ) +
-  coord_sf(
-    datum = NULL,
-    clip = "off"
-  ) +
-  theme(
-    panel.background = element_rect(
-      fill = "aliceblue",
-      color = hdx_hex("gray-dark"),
-      linewidth = 0.5
-    ),
-    panel.grid = element_blank(),
-    plot.margin = grid::unit(c(0, 0, 0, 0), "mm"),
-    axis.line = element_blank(),
-    axis.ticks = element_blank(),
-    axis.text = element_blank(),
-    legend.title = element_text(face = "bold")
-  ) +
-  scale_fill_manual(
-    values = legend_fill,
-    na.value = "white",
-    name = "Alerts:"
-  ) +
-  labs(
-    caption = "Alerts defined as ongoing if they have ended in the past 30 days."
-  )
-
-add_ggplot_custom(
-  plot_object = p_map,
-  width = 5,
-  height = 3,
-  html_width = 1000,
-  alt = "Alert map"
-)
-```
+The global monitoring alert system has been developed by CHD in collaboration
+with the Central Emergency Response Fund. `r str_to_sentence(flag_type_str)`
+alerts are generated base on `r flag_method`. Full documentation and
+source code is is available on [GitHub](https://github.com/OCHA-DAP/pa-global-monitoring/).
 
 ----
 
@@ -193,15 +127,11 @@ pwalk(
 )
 ```
 
-## Methodology and contact
+## Contact
 
-Global monitoring is updated every weekday at 11AM UTC. The source code and documentation
-for the analysis is available on [GitHub](https://github.com/OCHA-DAP/pa-global-monitoring/).
-The relevant methods for `r flag_source_str` data are detailed
-[here](`r paste0("https://github.com/OCHA-DAP/pa-global-monitoring/blob/main/src/indicators/", flag_source, "/README.md")`).
-
-Reach out to the Centre for Humanitarian Data's predictive analytics team at
-leonardo.milano@un.org if you have any questions or want to discuss the product.
+Reach out to the CHD predictive analytics team lead
+Leonardo Milano at leonardo.milano@un.org if you would like to discuss the
+global monitoring alert system.
 
 ----
 
