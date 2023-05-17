@@ -72,7 +72,7 @@ available via API, use with caution.</sup></sub>
 if (flag_source_str == "IDMC") {
   cat(
     paste0(
-      "You can refer to the [IDMC country page](",
+      "Refer to the [IDMC country page](",
       url,
       ") for additional context on displacement, and the [IDMC data ",
       "portal](https://www.internal-displacement.org/database/displacement-data) ",
@@ -83,7 +83,7 @@ if (flag_source_str == "IDMC") {
 } else if (flag_source_str == "IPC") {
   cat(
     paste0(
-      "The latest CH/IPC report can be found [here](",
+      "Refer to the [latest IPC/CH report](",
       url,
       "). Additional information is available on the [IPC website](https://www.ipcinfo.org)."
     )

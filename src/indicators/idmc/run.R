@@ -206,10 +206,10 @@ df_displacement <- bind_rows(
     total_displacement = sum(displacement_daily),
     message = paste0(
       scales::number(total_displacement, big.mark = ","),
-      " people have been displaced between ",
-      gsub(" 0", " ", format(min(start_date), format = "%d %B %Y")),
+      " people were displaced between ",
+      gsub("^0", "", format(min(start_date), format = "%d %B %Y")),
       " and ",
-      gsub(" 0", " ", format(max(end_date), format = "%d %B %Y")),
+      gsub("^0", "", format(max(end_date), format = "%d %B %Y")),
       "."
     ),
     .groups = "drop"
