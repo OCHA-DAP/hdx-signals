@@ -222,16 +222,16 @@ df_ipc_flags <- df_ipc_wrangled %>%
           ".",
           ifelse(
             potential_incomparability,
-            "\n\nThe estimated increase could be due due to shifting geographic focus of the analysis, check the CH/IPC for details.",
+            "\n\nThe estimated increase could be due due to shifting geographic focus of the analysis, check the IPC/CH for details.",
             ""
           )
         ),
         collapse = ""
       ),
       paste(
-        "The most recent analysis likely has a different geographic focus than the",
-        "previous analysis, so even though no increase in population was detected",
-        "an alert has been generated. Refer to the CH/IPC for more details."
+        "The most recent IPC estimates may have a different geographic focus than the",
+        "previous estimates, so even though no increase in population was detected",
+        "an alert has been generated. Refer to the IPC/CH for more details."
       )
     ),
     url = unique(analysis_url)[1],

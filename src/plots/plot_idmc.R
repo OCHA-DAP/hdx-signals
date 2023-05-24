@@ -87,7 +87,7 @@ plot_idmc <- function(
       y = "Displacement (weekly)",
       color = "",
       title = "Historical weekly displacement",
-      subtitle = "Alerts highlighted in light red",
+      subtitle = "Abnormally high displacement highlighted in light red",
       caption = "Data from the IDMC, http://www.internal-displacement.org"
     )
 }
