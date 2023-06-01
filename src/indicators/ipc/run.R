@@ -229,9 +229,11 @@ df_ipc_flags <- df_ipc_wrangled %>%
         collapse = ""
       ),
       paste(
+        "<div style=\"font-size:10px;padding: 6px 10px 6px 10px;background-color:#CCCCCC;color:#FFFFFF\"><p style=\"margin:0;\">",
         "The most recent IPC estimates may have a different geographic focus than the",
         "previous estimates, so even though no increase in population was detected",
-        "an alert has been generated. Refer to the IPC/CH for more details."
+        "an alert has been generated. Refer to the IPC/CH for more details.",
+        "</p></div>"
       )
     ),
     url = unique(analysis_url)[1],

@@ -138,8 +138,7 @@ pwalk(
         subject = paste0(
           "Monitoring Alert: ",
           str_replace_all(str_to_title(flag_type), "_", " "),
-          gsub(" 0", " ", format(Sys.Date(), " - %d %B %Y")),
-          " - TEST ALERT"
+          gsub(" 0", " ", format(Sys.Date(), " - %d %B %Y"))
         ),
         credentials = email_creds
       )

@@ -78,7 +78,7 @@ plot_ipc <- function(
       label = "Projection period",
       angle = -90,
       color = "white",
-      size = 5
+      size = 3
     ) +
     geom_point() +
     geom_line() +

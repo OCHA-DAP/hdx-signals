@@ -80,15 +80,18 @@ add_image(
 
 # Global Monitoring Alert
 
-The global monitoring alert system is managed by the OCHA Centre for Humanitarian Data in collaboration with the UN Central Emergency Response Fund in order to bring attention to changes in key indicators relevant to humanitarian response. 
+<div style="font-size:10px;padding: 6px 10px 6px 10px;background-color:#CCCCCC;color:#FFFFFF">
+<p style="margin:0;">
+The global monitoring alert system is managed by the OCHA Centre for Humanitarian Data in collaboration with the UN Central Emergency Response Fund in order to bring attention to changes in key indicators relevant to humanitarian response.
+</p>
+</div>
 
 ## `r flag_type_str`, `r gsub("^0", "", format(Sys.Date(), "%d %B %Y"))`
 
 `r str_to_sentence(flag_type_str)` alerts have been flagged for
 the following locations: `r countries_md`.
 
-The global monitoring alert system has been developed by CHD in collaboration
-with the Central Emergency Response Fund. `r str_to_sentence(flag_type_str)`
+`r str_to_sentence(flag_type_str)`
 alerts are generated base on `r flag_method`. Full documentation and
 source code for our  is available on [GitHub](https://github.com/OCHA-DAP/pa-global-monitoring/).
 
