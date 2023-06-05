@@ -62,6 +62,10 @@ flag_method <- case_when(
   flag_type == "food_security" ~ "estimated increase in populations of phase 3 and/or above from Integrated Food Security Phase Classification / Cadre Harmonisé (IPC/CH) data"
 )
 
+# CERF dashboard link
+cerf_link <- case_when(
+  flag_type %in% c("displacement", "food_security") ~ "[CERF global monitoring dashboard](https://app.powerbi.com/groups/2ecadc97-779b-45da-bc5a-f8917fbdc734/reports/a06761fe-5edb-43f4-9d28-b01c8d813a02/ReportSection?experience=power-bi)"
+)
 ```
 
 
@@ -93,7 +97,9 @@ the following locations: `r countries_md`.
 
 `r str_to_sentence(flag_type_str)`
 alerts are generated base on `r flag_method`. Full documentation and
-source code for our  is available on [GitHub](https://github.com/OCHA-DAP/pa-global-monitoring/).
+source code is available on 
+[GitHub](https://github.com/OCHA-DAP/pa-global-monitoring/). See the
+`r cerf_link` for more data, visualizations, and details on the alerts.
 
 ----
 
