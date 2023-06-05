@@ -44,6 +44,12 @@ has generated the latest flags.
 each flag has a row for the days between `start_date` and `end_date`. Used for
 filtration on the PowerBI dashboard.
 
+## Email records
+
+A record of previous emails generated is stored in `flags_emailed.csv`, which
+simply stores records from `flags_total.csv` whenever they are used to generate
+an email, with a single additional column recording the date of the email.
+
 ## Indicators
 
 The methodologies for each of the indicators analyzed within the project

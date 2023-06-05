@@ -144,3 +144,33 @@ pwalk(
       )
   }
 )
+
+##############################
+#### UPDATE FLAGS EMAILED ####
+##############################
+
+drive_emailed <- get_drive_file("flags_emailed")
+drive_download(
+  file = drive_emailed,
+  path = f <- tempfile(fileext = ".csv")
+)
+
+df_emailed <- read_csv(
+  file = f,
+  col_types = "ccccDDccccD"
+) %>%
+  bind_rows(
+    flags_email %>%
+      select(
+        -email
+      ) %>%
+      mutate(
+        email_date = Sys.Date()
+      )
+  )l
+
+update_drive_file(
+  df = df_emailed,
+  local_path = f,
+  drive_file = get_drive_file("flags_emailed")
+)
