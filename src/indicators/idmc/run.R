@@ -313,7 +313,7 @@ df_idmc_flags_new_final <- df_idmc_flags_new %>%
   ) %>%
   mutate(
     email = ifelse(
-      Sys.Date() - end_date > 90, # do not email for old events updated
+      Sys.Date() - end_date > 60, # do not email for old events updated
       FALSE,
       replace_na(email, TRUE) # create emails for new alerts
     )

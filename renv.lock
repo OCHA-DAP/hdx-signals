@@ -943,14 +943,14 @@
     },
     "idmc": {
       "Package": "idmc",
-      "Version": "0.1.4",
+      "Version": "0.1.5",
       "Source": "GitHub",
       "RemoteType": "github",
-      "RemoteHost": "api.github.com",
-      "RemoteRepo": "idmc",
       "RemoteUsername": "OCHA-DAP",
+      "RemoteRepo": "idmc",
       "RemoteRef": "HEAD",
-      "RemoteSha": "e0618009ebf93f60200cc95c7501919a45681d80",
+      "RemoteSha": "da5a684c9b5c677863196d66a29e7a341d35a73f",
+      "RemoteHost": "api.github.com",
       "Requirements": [
         "R",
         "dplyr",
@@ -964,7 +964,7 @@
         "tidyr",
         "zoo"
       ],
-      "Hash": "90c94039d0c74f2e3db2ae918d7cc84a"
+      "Hash": "1d6247325b53a8cce813f46d71995481"
     },
     "ids": {
       "Package": "ids",

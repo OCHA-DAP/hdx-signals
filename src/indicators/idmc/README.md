@@ -55,10 +55,10 @@ The anomaly flags are also only generated when the displacement across that
 period of time is also above a specific minimum value. If it is below that
 value, no flag is generated. These lower limits for flagging are:
 
-- 100 persons displaced in the past week
-- 500 persons displaced in the past month
-- 1500 persons displaced in the past quarter
-- 5000 persons displaced in the past year
+- 1,000 persons displaced in the past week
+- 5,000 persons displaced in the past month
+- 10,000 persons displaced in the past quarter
+- 25,000 persons displaced in the past year
 
 Flags are also generated for the first displacement reported in the past 3 months, 6
 months, or year.
@@ -72,21 +72,17 @@ of flagging). If there is any day in between where there was no flagging, then
 they are considered two separate "events". In this way, the IDMC data is reconstituted
 into an events dataset, but combining multiple events from the raw data.
 
+Since delays exist in the IDMC reporting, emails are only generated when new
+flags are less than 60 days old.
+
 ## Output datasets
 
-`flags.csv`: flagging dataset. Beyond the automated messaging in the flags dataset,
-there is an experimental `summary_experiment` column. This column is an AI generated
-summary of the causes and context of displacement for the IDU events used to generate
-the flag.
+`flags_idmc.csv`: flagging dataset.
 
-`flags_full.csv`: flagging dataset that has all subflags for the IDMC data
-included. Used to determine in recursive runs if there have been additional
-flags identified for a crisis and when to activate email alerts.
-
-`raw.csv`: raw IDU output. This includes all reported events used to feed into the
+`raw_idmc.csv`: raw IDU output. This includes all reported events used to feed into the
 alerts. Can be explored to better contextualize the reported displacement.
 
-`wrangled.csv`: wrangled displacement data. Includes all time series data (daily to
+`wrangled_idmc.csv`: wrangled displacement data. Includes all time series data (daily to
 yearly), whether or not each type of alert was flagged that day, and the total
 number of flags for each day as a time series. Useful for plotting time series of
 displacement and when flags were generated.
