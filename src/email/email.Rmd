@@ -59,7 +59,8 @@ countries_md <- paste0(
 # get the intro methods text based on the displacement type
 flag_method <- case_when(
   flag_type == "displacement" ~ "abnormally high displacement data from the Internal Displacement Monitoring Centre (IDMC)",
-  flag_type == "food_security" ~ "estimated increase in populations of phase 3 and/or above from Integrated Food Security Phase Classification / Cadre Harmonisé (IPC/CH) data"
+  flag_type == "food_security" ~ "estimated increase in populations of phase 3 and/or above from Integrated Food Security Phase Classification / Cadre Harmonisé (IPC/CH) data",
+  flag_type == "cholera" ~ "increases in cholera cases from the WHO's AFRO bulletins"
 )
 
 ```

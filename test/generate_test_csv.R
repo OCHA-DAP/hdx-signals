@@ -25,6 +25,7 @@ flags_total <- read_csv(f)
 ##########################
 #### CREATE TEST DATA ####
 ##########################
+
 f <- tempfile(fileext = ".csv")
 
 # flag specific countries for emailing
@@ -35,6 +36,7 @@ flags_total %>%
       iso3 == "MLI" & start_date == "2023-06-01" & flag_type == "food_security" ~ TRUE, # MLI FS with populations in phase 5
       iso3 == "NGA" & start_date == "2023-03-15" & flag_type == "displacement" ~ TRUE, # NGA displacement
       iso3 == "SSD" & start_date == "2022-11-28" & flag_type == "displacement" ~ TRUE, # SSD displacement
+      iso3 == "ETH" & start_date == "2022-09-17" & flag_type == "cholera" ~ TRUE, # ETH cholera
       TRUE ~ FALSE # ensure all other emails False
     )
   ) %>%

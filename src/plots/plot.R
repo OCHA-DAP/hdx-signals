@@ -4,7 +4,7 @@ walk(
   .x = file.path(
     "src",
     "plots",
-    c("plot_idmc.R", "plot_ipc.R")
+    c("plot_idmc.R", "plot_ipc.R", "plot_cholera.R")
   ),
   .f = source
 )

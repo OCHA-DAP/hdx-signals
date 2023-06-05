@@ -71,14 +71,14 @@
       "Package": "Ripc",
       "Version": "0.1.3",
       "Source": "GitHub",
-      "Remotes": "dickoa/rhdx",
       "RemoteType": "github",
+      "Remotes": "dickoa/rhdx",
       "RemoteHost": "api.github.com",
       "RemoteRepo": "Ripc",
       "RemoteUsername": "OCHA-DAP",
       "RemoteRef": "HEAD",
       "RemoteSha": "040da191388beb6921c10dc765bca2fd844677b1",
-      "Hash": "b7a28308538063ef0873b30b2906cd63",
+      "Hash": "8f8c19e1b8285d7fc4e611f2a7d8036e",
       "Requirements": [
         "countrycode",
         "dplyr",
@@ -822,6 +822,27 @@
       "Hash": "0080607b4a1a7b28979aecef976d8bc2",
       "Requirements": []
     },
+    "janitor": {
+      "Package": "janitor",
+      "Version": "2.2.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "5baae149f1082f466df9d1442ba7aa65",
+      "Requirements": [
+        "dplyr",
+        "hms",
+        "lifecycle",
+        "lubridate",
+        "magrittr",
+        "purrr",
+        "rlang",
+        "snakecase",
+        "stringi",
+        "stringr",
+        "tidyr",
+        "tidyselect"
+      ]
+    },
     "jquerylib": {
       "Package": "jquerylib",
       "Version": "0.1.4",
@@ -1345,6 +1366,17 @@
       "Version": "3.0",
       "Source": "Repository",
       "Requirements": []
+    },
+    "snakecase": {
+      "Package": "snakecase",
+      "Version": "0.11.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "4079070fc210c7901c0832a3aeab894f",
+      "Requirements": [
+        "stringi",
+        "stringr"
+      ]
     },
     "stars": {
       "Package": "stars",
