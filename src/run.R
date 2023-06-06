@@ -167,7 +167,7 @@ df_emailed <- read_csv(
       mutate(
         email_date = Sys.Date()
       )
-  )l
+  )
 
 update_drive_file(
   df = df_emailed,
