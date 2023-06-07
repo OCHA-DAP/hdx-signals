@@ -152,3 +152,6 @@ src/email/figure/*
 *displacement_idmc.md
 *food_security_ipc.html
 *food_security_ipc.md
+
+# auth
+global_monitoring_auth.json
