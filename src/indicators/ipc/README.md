@@ -1,6 +1,6 @@
 # IPC
 
-IPC food security data is extracted from the Humanitarian Data Exchange, where
+IPC food insecurity data is extracted from the Humanitarian Data Exchange, where
 it is stored in a [global dataset](https://data.humdata.org/dataset/ipc-country-data). 
 The codebase for extracting and wrangling the data is done within
 the [Ripc](https://github.com/OCHA-DAP/Ripc) R package. Details on the database can be

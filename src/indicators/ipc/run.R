@@ -240,7 +240,7 @@ df_ipc_flags <- df_ipc_wrangled %>%
     .groups = "drop"
   ) %>%
   mutate(
-    flag_type = "food_security",
+    flag_type = "food_insecurity",
     flag_source = "ipc",
     .before = "start_date"
   ) %>%
@@ -306,7 +306,7 @@ ipc_scraper <- function(url) {
 
     # feed these to the AI to get a summarization
     sit_rep <- ai_summarizer(
-      "Please summarize the current food security situation in 4 sentences based on the following description -->",
+      "Please summarize the current food insecurity situation in 4 sentences based on the following description -->",
       txt[1]
     )
     recs <- ai_summarizer(
