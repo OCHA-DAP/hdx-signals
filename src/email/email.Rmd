@@ -32,6 +32,12 @@ library(dplyr)
 library(sf)
 library(stringr)
 library(gghdx)
+
+# adding these calls because they are optional dependencies
+# so removes renv warning
+library(showtext)
+library(showtextdb)
+library(sysfonts)
 gghdx()
 
 source("email.R")
@@ -59,13 +65,13 @@ countries_md <- paste0(
 # get the intro methods text based on the displacement type
 flag_method <- case_when(
   flag_type == "displacement" ~ "abnormally high displacement data from the Internal Displacement Monitoring Centre (IDMC)",
-  flag_type == "food_security" ~ "estimated increase in populations of phase 3 and/or above from Integrated Food Security Phase Classification / Cadre Harmonisé (IPC/CH) data",
+  flag_type == "food_insecurity" ~ "estimated increase in populations of phase 3 and/or above from Integrated Food Security Phase Classification / Cadre Harmonisé (IPC/CH) data",
   flag_type == "cholera" ~ "increases in cholera cases from the WHO's AFRO bulletins"
 )
 
 # CERF dashboard link
 cerf_link <- case_when(
-  flag_type %in% c("displacement", "food_security") ~ "[CERF global monitoring dashboard](https://app.powerbi.com/groups/2ecadc97-779b-45da-bc5a-f8917fbdc734/reports/a06761fe-5edb-43f4-9d28-b01c8d813a02/ReportSection?experience=power-bi)",
+  flag_type %in% c("displacement", "food_insecurity") ~ "[CERF global monitoring dashboard](https://app.powerbi.com/groups/2ecadc97-779b-45da-bc5a-f8917fbdc734/reports/a06761fe-5edb-43f4-9d28-b01c8d813a02/ReportSection?experience=power-bi)",
   flag_type == "cholera" ~ "[CERF WHO disease tracking dashboard](https://app.powerbi.com/links/jVxHiZwVmR?ctid=0f9e35db-544f-4f60-bdcc-5ea416e6dc70&pbi_source=linkShare)"
 )
 ```
