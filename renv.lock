@@ -95,13 +95,13 @@
     },
     "Ripc": {
       "Package": "Ripc",
-      "Version": "0.1.4",
+      "Version": "0.1.5",
       "Source": "GitHub",
       "RemoteType": "github",
       "RemoteUsername": "OCHA-DAP",
       "RemoteRepo": "Ripc",
       "RemoteRef": "HEAD",
-      "RemoteSha": "b31c546f65d7cda2bfaf388c80a6687828ab87ad",
+      "RemoteSha": "1aff54709dca9a1076d152a3364bb343f0665fe6",
       "RemoteHost": "api.github.com",
       "Remotes": "dickoa/rhdx",
       "Requirements": [
@@ -119,7 +119,7 @@
         "stringr",
         "tidyr"
       ],
-      "Hash": "4c82cae26e61f41c81ca46885e7a02ea"
+      "Hash": "c3f360ee857a1c0bb6cb206f69d8b7a1"
     },
     "abind": {
       "Package": "abind",
