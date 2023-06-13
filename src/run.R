@@ -39,7 +39,7 @@ walk(
 
 # creates global flags files
 
-ind_flags <- c("flags_ipc", "flags_idmc")
+ind_flags <- c("flags_ipc", "flags_idmc", "flags_cholera")
 
 flags_total <- map(
   .x = ind_flags,
@@ -60,6 +60,9 @@ flags_total <- map(
 # create long format dataset for filtration on the dashboard
 
 flags_total_daily <- flags_total %>%
+  filter(
+    flag_type != "cholera"
+  ) %>%
   rowwise() %>%
   mutate(
     date = list(seq(start_date, end_date, by = "day")),
@@ -82,7 +85,7 @@ update_drive_file(
 update_drive_file(
   df = flags_total_daily,
   local_path = tempfile(fileext = ".csv"),
-  drive_file = get_drive_file("flags_total_daily")
+  drive_file = get_drive_file("flags_total_daily.csv")
 )
 
 ########################

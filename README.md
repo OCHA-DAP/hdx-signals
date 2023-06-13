@@ -56,18 +56,19 @@ The methodologies for each of the indicators analyzed within the project
 are contained in their own specific README files, linked below. The code
 output for all data sources are three files:
 
-1. `flags.csv`: a flagging dataset that has a row of flags
+1. `flags_{type}.csv`: a flagging dataset that has a row of flags
 with a start date, end date, and explanatory message. There is only one
 output flag for each source of data.
-2. `raw.csv`: the raw data from the data source that can be used to
+2. `raw_{type}.csv`: the raw data from the data source that can be used to
 contextualize the alert. Typically only useful in tabular format.
-3. `wrangled.csv`: the wrangled data from the data source that can
+3. `wrangled_{type}.csv`: the wrangled data from the data source that can
 be used to contextualize the alert, and is generally ready for plotting.
 
 The current indicators included in the CERF GMS are:
 
 - [Internal Displacement Monitoring Centre (IDMC) displacement data](src/indicators/idmc/README.md)
 - [Integrated Food Security Phase Classification (IPC) food security data](src/indicators/ipc/README.md)
+- [WHO AFRO cholera data](src/indicators/cholera/README.md)
 
 ----
 

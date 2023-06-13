@@ -288,7 +288,7 @@ df_idmc_flags_email <- df_idmc_flags_final_prev %>%
     iso3
   ) %>%
   filter(
-    end_date_prev == max(end_date_prev)
+    end_date_prev == max(end_date_prev, -Inf)
   ) %>%
   ungroup() %>%
   mutate(
