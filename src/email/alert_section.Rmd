@@ -95,9 +95,10 @@ if (flag_type == "displacement") {
 } else if (flag_type == "cholera") {
   cat(
     paste0(
-      "Refer to the [WHO AFRO bulletins,",
-      "](https://www.afro.who.int/health-topics/disease-outbreaks/outbreaks-and-other-emergencies-updates)",
-      " for more information."
+      "All cholera data derived from ",
+      "[WHO AFRO bulletins,",
+      "](https://www.afro.who.int/health-topics/disease-outbreaks/outbreaks-and-other-emergencies-updates).",
+      " Refer to the bulletins for full context on this alert."
     )
   )
 }
