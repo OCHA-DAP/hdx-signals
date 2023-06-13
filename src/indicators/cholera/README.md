@@ -9,7 +9,8 @@ dates and end dates for each outbreak incident.
 
 The data is stored on the CERF servers. Access to it should be provided by link,
 stored as an environment variable `CERF_CHOLERA_DATA`. The data for cases is
-reported cumulatively during an outbreak.
+reported cumulatively during an outbreak, so cases should generally only
+be increasing from the reported start date.
 
 ## Methodology
 
@@ -19,7 +20,11 @@ The methodology for its use for global monitoring is below.
 
 Simple wrangling is done to the data, with column names cleaned and the correct
 start dates for outbreaks classified. There are a few instances of missing data
-from the middle of outbreaks, and those cases are infilled linearly.
+from the middle of outbreaks, and those cases are infilled linearly. As well,
+some countries have 2 separate reports of cases each week, such as the DRC. In
+this instance, we combine them into a single weekly value. Data is cumulative
+from the start of an outbreak, with some exceptions due to presumed reporting
+errors.
 
 ### Flagging
 

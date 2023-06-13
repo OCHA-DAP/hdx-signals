@@ -57,7 +57,7 @@ df_cholera_raw <- read_csv(
 df_cholera_wrangled <- df_cholera_raw %>%
   clean_names() %>%
   filter(
-    event == "Cholera"
+    str_detect(tolower(event), "cholera")
   ) %>%
   transmute(
     iso3 = countryname(country, destination = "iso3c"),
@@ -71,7 +71,18 @@ df_cholera_wrangled <- df_cholera_raw %>%
     date = week_date,
     cholera_cases = total_cases
   ) %>%
-  group_by(iso3) %>%
+  group_by( # some countries have multiple sets of cases reported each date (DRC)
+    iso3,
+    start_date,
+    date
+  ) %>%
+  summarize(
+    cholera_cases = sum(cholera_cases),
+    .groups = "drop"
+  ) %>%
+  group_by(
+    iso3
+  ) %>%
   arrange(
     start_date,
     date,
@@ -89,9 +100,7 @@ df_cholera_flags <- df_cholera_wrangled %>%
   mutate(
     flag_1k = lim_alert(cholera_cases, 1000),
     flag_5k = lim_alert(cholera_cases, 5000),
-    flag_10k = lim_alert(cholera_cases, 10000),
-    flag_stop = cholera_cases < 1000 & lag(cholera_cases, default = 0) >= 1000,
-    group = cumsum(flag_stop)
+    flag_10k = lim_alert(cholera_cases, 10000)
   ) %>%
   ungroup() %>%
   pivot_longer(
@@ -103,8 +112,7 @@ df_cholera_flags <- df_cholera_wrangled %>%
   ) %>%
   group_by(
     iso3,
-    start_date,
-    group
+    start_date
   ) %>%
   summarize(
     end_date = max(date),
@@ -122,9 +130,6 @@ df_cholera_flags <- df_cholera_wrangled %>%
     flag_type = "cholera",
     flag_source = "who",
     .before = start_date
-  ) %>%
-  select(
-    -group
   )
 
 ############################################
