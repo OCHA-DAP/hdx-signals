@@ -46,11 +46,16 @@ local_flags_cholera <- tempfile(fileext = ".csv")
 #### CHOLERA ####
 #################
 
+f <- tempfile(fileext = ".csv")
+download.file(
+  url = Sys.getenv("CERF_CHOLERA_DATA"),
+  destfile = f
+)
+
 # raw data
 df_cholera_raw <- read_csv(
-  url(
-    Sys.getenv("CERF_CHOLERA_DATA")
-  )
+  f,
+  col_types = cols(.default = "c")
 )
 
 # wrangled data
@@ -68,8 +73,8 @@ df_cholera_wrangled <- df_cholera_raw %>%
         !is.na(start_of_reporting_period_3) ~ start_of_reporting_period_3
       )
     ),
-    date = week_date,
-    cholera_cases = total_cases
+    date = as.Date(week_date),
+    cholera_cases = parse_number(total_cases)
   ) %>%
   group_by( # some countries have multiple sets of cases reported each date (DRC)
     iso3,
