@@ -34,7 +34,7 @@ flags_total %>%
     email = case_when(
       iso3 == "CAF" & start_date == "2023-04-01" & flag_type == "food_insecurity" ~ TRUE, # CAR FS with warning about incomparability
       iso3 == "MLI" & start_date == "2023-06-01" & flag_type == "food_insecurity" ~ TRUE, # MLI FS with populations in phase 5
-      iso3 == "NGA" & start_date == "2023-03-15" & flag_type == "displacement" ~ TRUE, # NGA displacement
+      iso3 == "PHL" & start_date == "2023-03-21" & flag_type == "displacement" ~ TRUE, # PHL displacement
       iso3 == "SSD" & start_date == "2022-11-28" & flag_type == "displacement" ~ TRUE, # SSD displacement
       iso3 == "ETH" & start_date == "2022-09-17" & flag_type == "cholera" ~ TRUE, # ETH cholera
       TRUE ~ FALSE # ensure all other emails False

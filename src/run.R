@@ -85,7 +85,7 @@ update_drive_file(
 update_drive_file(
   df = flags_total_daily,
   local_path = tempfile(fileext = ".csv"),
-  drive_file = get_drive_file("flags_total_daily")
+  drive_file = get_drive_file("flags_total_daily.csv")
 )
 
 ########################
