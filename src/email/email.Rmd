@@ -104,7 +104,7 @@ The global monitoring alert system is managed by the OCHA Centre for Humanitaria
 the following locations: `r countries_md`.
 
 `r str_to_sentence(flag_type_str)`
-alerts are generated base on `r flag_method`. Full documentation and
+alerts are generated based on `r flag_method`. Full documentation and
 source code is available on 
 [GitHub](https://github.com/OCHA-DAP/pa-global-monitoring/). See the
 `r cerf_link` for more data, visualizations, and details on the alerts.
