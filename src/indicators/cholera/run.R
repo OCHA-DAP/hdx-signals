@@ -104,6 +104,7 @@ df_cholera_flags <- df_cholera_wrangled %>%
   group_by(iso3) %>%
   mutate(
     flag_1k = lim_alert(cholera_cases, 1000),
+    flag_2k = lim_alert(cholera_cases, 2000),
     flag_5k = lim_alert(cholera_cases, 5000),
     flag_10k = lim_alert(cholera_cases, 10000)
   ) %>%

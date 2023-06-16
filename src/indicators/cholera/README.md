@@ -30,8 +30,8 @@ errors.
 
 Flags are generated when the reported cases in a week cross a specific threshold
 and the threshold was not met in the previous week. The thresholds are 1,000,
-5,000, and 10,000 cases. For each flag, the start date is the onset date of the
-outbreak. The end date is the date that the flag was raised.
+2,000, 5,000, and 10,000 cases. For each flag, the start date is the onset
+date of the outbreak. The end date is the date that the flag was raised.
 
 ## Output datasets
  
