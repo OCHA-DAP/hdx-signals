@@ -6,7 +6,7 @@ name: global-monitoring
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 11 * * 1-5"
+    - cron: "0 11,20 * * *"
 
 jobs:
   monitor:
