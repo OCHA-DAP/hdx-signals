@@ -42,6 +42,9 @@ local_flags_ipc <- tempfile(fileext = ".csv")
 
 # get into country level form
 df_ipc_raw <- ipc_get_population()$country %>%
+  filter(
+    condition == "A" # only use acute for now, chronic doesn't have date info
+  ) %>%
   mutate(
     iso3 = ifelse(
       country == "LAC",
