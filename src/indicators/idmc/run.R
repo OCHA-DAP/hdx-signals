@@ -16,7 +16,7 @@ source(
   file.path(
     "src",
     "utils",
-    "googledrive.R"
+    "google_sheets.R"
   )
 )
 
@@ -24,20 +24,8 @@ source(
 #### DRIVE AND LOCAL DATA ####
 ##############################
 
-# get drive files
-drive_raw_idmc <- get_drive_file("raw_idmc")
-drive_wrangled_idmc <- get_drive_file("wrangled_idmc")
-drive_flags_idmc <- get_drive_file("flags_idmc")
-
-# temp paths for local saving
-local_raw_idmc <- tempfile(fileext = ".csv")
-local_wrangled_idmc <- tempfile(fileext = ".csv")
-local_flags_idmc <- tempfile(fileext = ".csv")
-
-# idmc website link page
-drive_idmc_links <- get_drive_file("idmc_country_links")
-drive_download(drive_idmc_links, f <- tempfile(fileext = ".csv"))
-df_links <- read_csv(f)
+# country links on the IDMC page
+df_links <- read_gs_file("idmc_country_links$")
 
 ##############
 #### IDMC ####
@@ -246,8 +234,7 @@ df_idmc_flags_full <- df_idmc_flags %>%
 #### COMPARE WITH EXISTING FILES ####
 #####################################
 
-drive_download(file = drive_flags_idmc, path = local_flags_idmc)
-df_idmc_flags_final_prev <- read_csv(local_flags_idmc) %>%
+df_idmc_flags_final_prev <- read_gs_file("flags_idmc$") %>%
   mutate(
     email = FALSE
   )
@@ -440,20 +427,17 @@ df_idmc_flags_final <- df_idmc_flags_full %>%
 #### SAVE IDMC DATA ####
 ########################
 
-update_drive_file(
+update_gs_file(
   df = get_country_names(df_idmc_raw),
-  local_path = local_raw_idmc,
-  drive_file = drive_raw_idmc
+  name = "raw_idmc$"
 )
 
-update_drive_file(
+update_gs_file(
   df = get_country_names(df_idmc),
-  local_path = local_wrangled_idmc,
-  drive_file = drive_wrangled_idmc
+  name = "wrangled_idmc$"
 )
 
-update_drive_file(
+update_gs_file(
   df = df_idmc_flags_final,
-  local_path = local_flags_idmc,
-  drive_file = drive_flags_idmc
+  name = "flags_idmc$"
 )

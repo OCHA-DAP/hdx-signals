@@ -8,7 +8,7 @@ source(
   file.path(
     "src",
     "utils",
-    "googledrive.R"
+    "google_sheets.R"
   )
 )
 
@@ -25,22 +25,6 @@ source(
 lim_alert <- function(x, lim) {
   x >= lim & lag(x) < lim
 }
-
-##############################
-#### DRIVE AND LOCAL DATA ####
-##############################
-
-# authorize and prep
-
-# get drive files
-drive_raw_cholera <- get_drive_file("raw_cholera")
-drive_wrangled_cholera <- get_drive_file("wrangled_cholera")
-drive_flags_cholera <- get_drive_file("flags_cholera")
-
-# temp paths for local saving
-local_raw_cholera <- tempfile(fileext = ".csv")
-local_wrangled_cholera <- tempfile(fileext = ".csv")
-local_flags_cholera <- tempfile(fileext = ".csv")
 
 #################
 #### CHOLERA ####
@@ -142,13 +126,8 @@ df_cholera_flags <- df_cholera_wrangled %>%
 #### COMPARE WITH PREVIOUS FLAGGED DATA ####
 ############################################
 
-drive_download(
-  file = drive_flags_cholera,
-  path = local_flags_cholera
-)
-
-df_cholera_flags_prev <- read_csv(
-  local_flags_cholera
+df_cholera_flags_prev <- read_gs_file(
+  name = "flags_cholera$"
 )
 
 df_cholera_flags_new <- anti_join(
@@ -184,20 +163,17 @@ df_cholera_flags_final <- semi_join(
 #### SAVE IPC  DATA ####
 ########################
 
-update_drive_file(
+update_gs_file(
   df = df_cholera_raw,
-  local_path = local_raw_cholera,
-  drive_file = drive_raw_cholera
+  name = "raw_cholera$"
 )
 
-update_drive_file(
+update_gs_file(
   df = df_cholera_wrangled,
-  local_path = local_wrangled_cholera,
-  drive_file = drive_wrangled_cholera
+  name = "wrangled_cholera$"
 )
 
-update_drive_file(
+update_gs_file(
   df = df_cholera_flags_final,
-  local_path = local_flags_cholera,
-  drive_file = drive_flags_cholera
+  name = "flags_cholera$"
 )

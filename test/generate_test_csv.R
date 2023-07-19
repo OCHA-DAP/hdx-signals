@@ -7,7 +7,7 @@ source(
   file.path(
     "src",
     "utils",
-    "googledrive.R"
+    "google_sheets.R"
   )
 )
 
@@ -15,18 +15,14 @@ source(
 #### READ IN FLAGS TOTAL ####
 #############################
 
-drive_download(
-  file = get_drive_file("flags_total.csv"),
-  path = f <- tempfile(fileext = ".csv")
+flags_total <- read_gs_file(
+  name = "flags_total$",
+  col_types = "ccccDDDcclc"
 )
-
-flags_total <- read_csv(f)
 
 ##########################
 #### CREATE TEST DATA ####
 ##########################
-
-f <- tempfile(fileext = ".csv")
 
 # flag specific countries for emailing
 flags_total %>%
@@ -40,11 +36,6 @@ flags_total %>%
       TRUE ~ FALSE # ensure all other emails False
     )
   ) %>%
-  write_csv(
-    file = f
+  update_gs_file(
+    name = "flags_test$"
   )
-
-drive_update(
-  file = get_drive_file("flags_test"),
-  media = f
-)
