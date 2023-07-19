@@ -6,7 +6,7 @@ source(
   file.path(
     "src",
     "utils",
-    "googledrive.R"
+    "google_sheets.R"
   )
 )
 
@@ -16,9 +16,7 @@ plot_who <- function(
 ) {
 
   # load in the data for plotting
-  drive_wrangled_cholera <- get_drive_file("wrangled_cholera")
-  drive_download(drive_wrangled_cholera, path = f <- tempfile(fileext = ".csv"))
-  df_plot <- read_csv(f) %>%
+  df_plot <- read_gs_file("wrangled_cholera$") %>%
     filter(
       iso3 == !!iso3
     )

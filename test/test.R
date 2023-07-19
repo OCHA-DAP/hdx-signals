@@ -5,7 +5,7 @@ source(
   file.path(
     "src",
     "utils",
-    "googledrive.R"
+    "google_sheets.R"
   )
 )
 
@@ -13,12 +13,7 @@ source(
 #### LOAD TEST FLAGS ####
 #########################
 
-drive_download(
-  file = get_drive_file("flags_test"),
-  path = f <- tempfile(fileext = ".csv")
-)
-
-flags_total <- read_csv(f)
+flags_total <- read_gs_file("flags_test$")
 
 ########################
 #### GENERATE EMAIL ####

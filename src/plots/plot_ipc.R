@@ -6,7 +6,7 @@ source(
   file.path(
     "src",
     "utils",
-    "googledrive.R"
+    "google_sheets.R"
   )
 )
 
@@ -16,9 +16,7 @@ plot_ipc <- function(
 ) {
 
   # load in the data for plotting
-  drive_wrangled_ipc <- get_drive_file("wrangled_ipc")
-  drive_download(drive_wrangled_ipc, path = f <- tempfile(fileext = ".csv"))
-  df_plot <- read_csv(f) %>%
+  df_plot <- read_gs_file("wrangled_ipc$") %>%
     filter(
       iso3 == !!iso3
     ) %>%
