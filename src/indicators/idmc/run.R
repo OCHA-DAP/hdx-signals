@@ -25,7 +25,7 @@ source(
 ##############################
 
 # country links on the IDMC page
-df_links <- read_gs_file("idmc_country_links$")
+df_links <- read_gs_file("idmc_country_links")
 
 ##############
 #### IDMC ####
@@ -234,7 +234,7 @@ df_idmc_flags_full <- df_idmc_flags %>%
 #### COMPARE WITH EXISTING FILES ####
 #####################################
 
-df_idmc_flags_final_prev <- read_gs_file("flags_idmc$") %>%
+df_idmc_flags_final_prev <- read_gs_file("flags_idmc") %>%
   mutate(
     email = FALSE
   )
@@ -429,15 +429,15 @@ df_idmc_flags_final <- df_idmc_flags_full %>%
 
 update_gs_file(
   df = get_country_names(df_idmc_raw),
-  name = "raw_idmc$"
+  name = "raw_idmc"
 )
 
 update_gs_file(
   df = get_country_names(df_idmc),
-  name = "wrangled_idmc$"
+  name = "wrangled_idmc"
 )
 
 update_gs_file(
   df = df_idmc_flags_final,
-  name = "flags_idmc$"
+  name = "flags_idmc"
 )

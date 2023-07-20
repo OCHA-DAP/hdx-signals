@@ -35,9 +35,9 @@ date of the outbreak. The end date is the date that the flag was raised.
 
 ## Output datasets
  
-`flags_cholera.csv`: flagging dataset.
+`flags_cholera.gdsheets`: flagging dataset.
 
-`raw_cholera.csv`: raw cholera output from the CERF scraping.
+`raw_cholera.gdsheets`: raw cholera output from the CERF scraping.
 
-`wrangled_cholera.csv`: wrangled cholera data that has a clean time series
+`wrangled_cholera.gdsheets`: wrangled cholera data that has a clean time series
 of cholera casees.

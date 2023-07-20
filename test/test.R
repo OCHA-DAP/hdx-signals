@@ -13,7 +13,7 @@ source(
 #### LOAD TEST FLAGS ####
 #########################
 
-flags_total <- read_gs_file("flags_test$")
+flags_total <- read_gs_file("flags_test")
 
 ########################
 #### GENERATE EMAIL ####
@@ -40,9 +40,7 @@ email_creds <- creds_envvar(
 )
 
 # load in recipients
-drive_recipients <- get_drive_file("email_recipients")
-drive_download(drive_recipients, f <- tempfile(fileext = ".csv"))
-df_recipients <- read_csv(f) %>%
+df_recipients <- read_gs_file("email_recipients") %>%
   filter(
     test
   )

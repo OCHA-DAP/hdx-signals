@@ -12,7 +12,7 @@ source(
 #### READ COUNTRY NAMES DATA ####
 #################################
 
-df_names <- read_gs_file("cerf_dashboard_names$")
+df_names <- read_gs_file("cerf_dashboard_names")
 
 ########################
 #### UTIL FUNCTIONS ####

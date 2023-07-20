@@ -47,13 +47,13 @@ the previous current figures.
 
 ## Output datasets
 
-`flags_ipc.csv`: flagging dataset.
+`flags_ipc.gdsheets`: flagging dataset.
 
-`raw_ipc.csv`: raw IPC output. This data is actually already in a clean format, but is
+`raw_ipc.gdsheets`: raw IPC output. This data is actually already in a clean format, but is
 called raw because it includes subnational data and has not been aggregated to the
 country level. Useful for exploring the subnational context of the alert.
 
-`wrangled_ipc.csv`: wrangled IPC data. National level data that also includes the deltas
+`wrangled_ipc.gdsheets`: wrangled IPC data. National level data that also includes the deltas
 for each period (current or projected). The deltas for a current row are the differences
 with the previous current period. The deltas for a projection row are the differences
 between the first projection and current period in that analysis or between the second

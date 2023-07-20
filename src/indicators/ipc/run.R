@@ -241,7 +241,7 @@ df_ipc_flags <- df_ipc_wrangled %>%
 ##########################################
 
 # load previous flags
-df_ipc_flags_prev <- read_gs_file("flags_ipc$") %>%
+df_ipc_flags_prev <- read_gs_file("flags_ipc") %>%
   mutate(
     email = FALSE
   )
@@ -358,15 +358,15 @@ df_ipc_wrangled_final <- df_ipc_wrangled %>%
 
 update_gs_file(
   df = df_ipc_raw,
-  name = "raw_ipc$"
+  name = "raw_ipc"
 )
 
 update_gs_file(
   df = df_ipc_wrangled_final,
-  name = "wrangled_ipc$"
+  name = "wrangled_ipc"
 )
 
 update_gs_file(
   df = df_ipc_flags,
-  name = "flags_ipc$"
+  name = "flags_ipc"
 )

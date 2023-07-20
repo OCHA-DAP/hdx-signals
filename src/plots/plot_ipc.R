@@ -16,7 +16,7 @@ plot_ipc <- function(
 ) {
 
   # load in the data for plotting
-  df_plot <- read_gs_file("wrangled_ipc$") %>%
+  df_plot <- read_gs_file("wrangled_ipc") %>%
     filter(
       iso3 == !!iso3
     ) %>%

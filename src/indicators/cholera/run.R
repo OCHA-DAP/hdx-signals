@@ -127,7 +127,7 @@ df_cholera_flags <- df_cholera_wrangled %>%
 ############################################
 
 df_cholera_flags_prev <- read_gs_file(
-  name = "flags_cholera$"
+  name = "flags_cholera"
 )
 
 df_cholera_flags_new <- anti_join(
@@ -165,15 +165,15 @@ df_cholera_flags_final <- semi_join(
 
 update_gs_file(
   df = df_cholera_raw,
-  name = "raw_cholera$"
+  name = "raw_cholera"
 )
 
 update_gs_file(
   df = df_cholera_wrangled,
-  name = "wrangled_cholera$"
+  name = "wrangled_cholera"
 )
 
 update_gs_file(
   df = df_cholera_flags_final,
-  name = "flags_cholera$"
+  name = "flags_cholera"
 )

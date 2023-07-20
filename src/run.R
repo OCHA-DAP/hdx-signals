@@ -39,7 +39,7 @@ walk(
 
 # creates global flags files
 
-ind_flags <- c("flags_ipc$", "flags_idmc$", "flags_cholera$")
+ind_flags <- c("flags_ipc", "flags_idmc", "flags_cholera")
 
 flags_total <- map(
   .x = ind_flags,
@@ -75,12 +75,12 @@ flags_total_daily <- flags_total %>%
 
 update_gs_file(
   df = flags_total,
-  name = "flags_total$"
+  name = "flags_total"
 )
 
 update_gs_file(
   df = flags_total_daily,
-  name = "flags_total_daily$"
+  name = "flags_total_daily"
 )
 
 ########################
@@ -108,9 +108,7 @@ email_creds <- creds_envvar(
 )
 
 # load in recipients
-drive_recipients <- get_drive_file("email_recipients")
-drive_download(drive_recipients, f <- tempfile(fileext = ".csv"))
-df_recipients <- read_csv(f)
+df_recipients <- read_gs_file("email_recipients")
 
 pwalk(
   .l = flags_email %>%
@@ -148,7 +146,7 @@ pwalk(
 ##############################
 
 df_emailed <- read_gs_file(
-  name = "flags_emailed$",
+  name = "flags_emailed",
   col_types = "ccccDDccccD"
 ) %>%
   bind_rows(
@@ -163,5 +161,5 @@ df_emailed <- read_gs_file(
 
 update_gs_file(
   df = df_emailed,
-  name = "flags_emailed$"
+  name = "flags_emailed"
 )

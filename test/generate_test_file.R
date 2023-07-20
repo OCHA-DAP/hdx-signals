@@ -16,7 +16,7 @@ source(
 #############################
 
 flags_total <- read_gs_file(
-  name = "flags_total$",
+  name = "flags_total",
   col_types = "ccccDDDcclc"
 )
 
@@ -37,5 +37,5 @@ flags_total %>%
     )
   ) %>%
   update_gs_file(
-    name = "flags_test$"
+    name = "flags_test"
   )

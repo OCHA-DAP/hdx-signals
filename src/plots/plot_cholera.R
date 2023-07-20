@@ -16,7 +16,7 @@ plot_who <- function(
 ) {
 
   # load in the data for plotting
-  df_plot <- read_gs_file("wrangled_cholera$") %>%
+  df_plot <- read_gs_file("wrangled_cholera") %>%
     filter(
       iso3 == !!iso3
     )
