@@ -5,7 +5,7 @@ source(
   file.path(
     "src",
     "utils",
-    "googledrive.R"
+    "google_sheets.R"
   )
 )
 
@@ -43,12 +43,9 @@ ind_flags <- c("flags_ipc", "flags_idmc", "flags_cholera")
 
 flags_total <- map(
   .x = ind_flags,
-  .f = function(x) {
-      drive_file <- get_drive_file(x)
-      drive_download(file = drive_file, path = f <- tempfile(fileext = ".csv"))
-      read_csv(f, col_types = "ccccDDccclc")
-    }
-  ) %>%
+  .f = read_gs_file,
+  col_types = "ccccDDccclc"
+) %>%
   list_rbind() %>%
   arrange(
     iso3,
@@ -76,16 +73,14 @@ flags_total_daily <- flags_total %>%
 #### UPDATE DRIVE ####
 ######################
 
-update_drive_file(
+update_gs_file(
   df = flags_total,
-  local_path = tempfile(fileext = ".csv"),
-  drive_file = get_drive_file("flags_total.csv")
+  name = "flags_total"
 )
 
-update_drive_file(
+update_gs_file(
   df = flags_total_daily,
-  local_path = tempfile(fileext = ".csv"),
-  drive_file = get_drive_file("flags_total_daily.csv")
+  name = "flags_total_daily"
 )
 
 ########################
@@ -113,9 +108,7 @@ email_creds <- creds_envvar(
 )
 
 # load in recipients
-drive_recipients <- get_drive_file("email_recipients")
-drive_download(drive_recipients, f <- tempfile(fileext = ".csv"))
-df_recipients <- read_csv(f)
+df_recipients <- read_gs_file("email_recipients")
 
 pwalk(
   .l = flags_email %>%
@@ -152,14 +145,8 @@ pwalk(
 #### UPDATE FLAGS EMAILED ####
 ##############################
 
-drive_emailed <- get_drive_file("flags_emailed")
-drive_download(
-  file = drive_emailed,
-  path = f <- tempfile(fileext = ".csv")
-)
-
-df_emailed <- read_csv(
-  file = f,
+df_emailed <- read_gs_file(
+  name = "flags_emailed",
   col_types = "ccccDDccccD"
 ) %>%
   bind_rows(
@@ -172,8 +159,7 @@ df_emailed <- read_csv(
       )
   )
 
-update_drive_file(
+update_gs_file(
   df = df_emailed,
-  local_path = f,
-  drive_file = get_drive_file("flags_emailed")
+  name = "flags_emailed"
 )

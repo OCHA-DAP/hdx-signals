@@ -8,7 +8,7 @@ source(
   file.path(
     "src",
     "utils",
-    "googledrive.R"
+    "google_sheets.R"
   )
 )
 
@@ -19,22 +19,6 @@ source(
     "get_country_names.R"
   )
 )
-
-##############################
-#### DRIVE AND LOCAL DATA ####
-##############################
-
-# authorize and prep
-
-# get drive files
-drive_raw_ipc <- get_drive_file("raw_ipc")
-drive_wrangled_ipc <- get_drive_file("wrangled_ipc")
-drive_flags_ipc <- get_drive_file("flags_ipc")
-
-# temp paths for local saving
-local_raw_ipc <- tempfile(fileext = ".csv")
-local_wrangled_ipc <- tempfile(fileext = ".csv")
-local_flags_ipc <- tempfile(fileext = ".csv")
 
 #############
 #### IPC ####
@@ -257,8 +241,7 @@ df_ipc_flags <- df_ipc_wrangled %>%
 ##########################################
 
 # load previous flags
-drive_download(file = drive_flags_ipc, path = local_flags_ipc)
-df_ipc_flags_prev <- read_csv(local_flags_ipc) %>%
+df_ipc_flags_prev <- read_gs_file("flags_ipc") %>%
   mutate(
     email = FALSE
   )
@@ -373,20 +356,17 @@ df_ipc_wrangled_final <- df_ipc_wrangled %>%
 #### SAVE IPC  DATA ####
 ########################
 
-update_drive_file(
+update_gs_file(
   df = df_ipc_raw,
-  local_path = local_raw_ipc,
-  drive_file = drive_raw_ipc
+  name = "raw_ipc"
 )
 
-update_drive_file(
+update_gs_file(
   df = df_ipc_wrangled_final,
-  local_path = local_wrangled_ipc,
-  drive_file = drive_wrangled_ipc
+  name = "wrangled_ipc"
 )
 
-update_drive_file(
+update_gs_file(
   df = df_ipc_flags,
-  local_path = local_flags_ipc,
-  drive_file = drive_flags_ipc
+  name = "flags_ipc"
 )

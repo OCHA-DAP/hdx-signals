@@ -15,7 +15,11 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Install required dependencies
-        run: sudo apt-get install -y libcurl4-openssl-dev libharfbuzz-dev libfribidi-dev libudunits2-dev libgdal-dev
+      # Solution to unstable Azure server access is to update apt-get
+      # Found on: https://github.com/actions/runner-images/issues/675
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y -f libcurl4-openssl-dev libharfbuzz-dev libfribidi-dev libudunits2-dev libgdal-dev
       - name: Set up R 4.2.3
         uses: r-lib/actions/setup-r@v2
         with:

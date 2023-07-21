@@ -4,7 +4,7 @@ source(
   file.path(
     "src",
     "utils",
-    "googledrive.R"
+    "google_sheets.R"
   )
 )
 
@@ -12,9 +12,7 @@ source(
 #### READ COUNTRY NAMES DATA ####
 #################################
 
-drive_country_names <- get_drive_file("cerf_dashboard_names")
-drive_download(drive_country_names, f <- tempfile(fileext = ".csv"))
-df_names <- read_csv(f)
+df_names <- read_gs_file("cerf_dashboard_names")
 
 ########################
 #### UTIL FUNCTIONS ####
