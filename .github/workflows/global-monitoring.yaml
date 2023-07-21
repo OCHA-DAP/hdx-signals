@@ -23,7 +23,8 @@ jobs:
           sudo gem install apt-spy2
           sudo apt-spy2 fix --commit --launchpad --country=US
           sudo apt-get update
-          sudo apt-get install -f -y libcurl4-openssl-dev libharfbuzz-dev libfribidi-dev libudunits2-dev libgdal-dev
+          sudo apt-get install aptitude
+          sudo aptitude -y libcurl4-openssl-dev libharfbuzz-dev libfribidi-dev libudunits2-dev libgdal-dev
       - name: Set up R 4.2.3
         uses: r-lib/actions/setup-r@v2
         with:
