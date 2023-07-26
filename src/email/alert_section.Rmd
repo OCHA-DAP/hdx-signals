@@ -11,9 +11,7 @@ output: blastula::blastula_email
 show_table <- flag_source == "idmc"
 
 if (flag_source == "idmc") {
-  idmc_drive <- get_drive_file("raw_idmc")
-  googledrive::drive_download(file = idmc_drive, path = f <- tempfile(fileext = ".csv"))
-  df_idmc_raw <- read_csv(f)
+  df_idmc_raw <- get_gs_file("raw_idmc")
   df_display <- df_idmc_raw %>%
     filter(
       iso3 == !!iso3,
