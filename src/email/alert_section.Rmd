@@ -11,7 +11,7 @@ output: blastula::blastula_email
 show_table <- flag_source == "idmc"
 
 if (flag_source == "idmc") {
-  df_idmc_raw <- get_gs_file("raw_idmc")
+  df_idmc_raw <- read_gs_file("raw_idmc")
   df_display <- df_idmc_raw %>%
     filter(
       iso3 == !!iso3,

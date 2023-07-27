@@ -16,7 +16,10 @@ plot_idmc <- function(
 ) {
 
   # load in the data for plotting
-  df_plot <- read_gs_file("wrangled_idmc") %>%
+  df_plot <- read_gs_file(
+    "wrangled_idmc",
+    col_types = "cccDdddddllllllllllldl"
+  ) %>%
     filter(
       iso3 == !!iso3
     )
