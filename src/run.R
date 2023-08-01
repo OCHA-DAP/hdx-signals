@@ -146,8 +146,7 @@ pwalk(
 ##############################
 
 df_emailed <- read_gs_file(
-  name = "flags_emailed",
-  col_types = "ccccDDccccD"
+  name = "flags_emailed"
 ) %>%
   bind_rows(
     flags_email %>%
