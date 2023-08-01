@@ -45,9 +45,32 @@ plot_ipc <- function(
       analysis_period_start == max(analysis_period_start)
     )
 
-  mid_date <- mean(range(df_proj$analysis_period_start, df_proj$analysis_period_end))
-  # midway after
-  start_date <- mean(c(min(df_proj$analysis_period_start), min(df_latest_curr$analysis_period_start)))
+  # get the start of the previous current estimate
+  df_prev_curr <- df_plot %>%
+    filter(
+      analysis_type == "current"
+    ) %>%
+    filter(
+      analysis_period_start != max(analysis_period_start)
+    ) %>%
+    filter(
+      analysis_period_start == max(analysis_period_start)
+    )
+
+  # find the start dates of the areas
+  start_date_curr <- mean(c(min(df_prev_curr$analysis_period_start), min(df_latest_curr$analysis_period_start)))
+  start_date_proj <- mean(c(min(df_proj$analysis_period_start), min(df_latest_curr$analysis_period_start)))
+
+  # find the mid dates of the text
+  mid_date_proj <- mean(c(start_date_proj, max(df_proj$analysis_period_end)))
+  mid_date_curr <- mean(c(start_date_curr, max(df_latest_curr$analysis_period_end)))
+
+  # only add in points for the increases for highlighting
+  df_point <- df_plot %>%
+    filter(
+      phase_3pl_pct_delta > 0 | phase_4pl_pct_delta > 0 | phase_5_pct_delta > 0,
+      date_of_analysis == max(date_of_analysis)
+    )
 
   df_plot %>%
     ggplot(
@@ -58,28 +81,51 @@ plot_ipc <- function(
       )
     ) +
     geom_rect(
+      xmin = start_date_curr,
+      xmax = start_date_proj,
+      ymin = 0,
+      ymax = Inf,
+      color = NA,
+      fill = hdx_hex("mint-light")
+    ) +
+    geom_rect(
       data = df_proj,
       mapping = aes(
         xmax = analysis_period_end
       ),
-      xmin = start_date,
+      xmin = start_date_proj,
       ymin = 0,
       ymax = Inf,
       color = NA,
-      fill = hdx_hex("mint-hdx")
+      fill = hdx_hex("sapphire-light")
     ) +
     geom_text_hdx(
       aes(
         y = mean(range(value)),
       ),
-      x = mid_date,
-      label = "Projection period",
+      x = mid_date_proj,
+      label = "Projections",
       angle = -90,
       color = "white",
-      size = 3
+      size = 4
     ) +
-    geom_point() +
+    geom_text_hdx(
+      aes(
+        y = mean(range(value)),
+      ),
+      x = mid_date_curr,
+      label = "Current estimate",
+      angle = -90,
+      color = "white",
+      size = 4
+    ) +
     geom_line() +
+    geom_point(
+      data = df_point,
+      shape = 21,
+      fill = "white",
+      color = "black"
+    ) +
     expand_limits(y = 0) +
     scale_y_continuous(
       labels = scales::label_percent()
