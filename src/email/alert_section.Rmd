@@ -82,7 +82,7 @@ if (flag_type == "displacement") {
       "IDMC identified displacement events for this alert from the below reports."
     )
   )
-} else if (flag_type == "food_security") {
+} else if (flag_type == "food_insecurity") {
   cat(
     paste0(
       "Refer to the [latest IPC/CH report](",
