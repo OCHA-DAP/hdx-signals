@@ -94,7 +94,7 @@ add_image(
 
 <div style="font-size:10px;padding: 6px 10px 6px 10px;background-color:#CCCCCC;color:#FFFFFF">
 <p style="margin:0;">
-The global monitoring alert system is managed by the OCHA Centre for Humanitarian Data in collaboration with the UN Central Emergency Response Fund in order to bring attention to changes in key indicators relevant to humanitarian response.
+The global monitoring and alert system is managed by the OCHA Centre for Humanitarian Data in collaboration with the UN Central Emergency Response Fund in order to bring attention to changes in key indicators relevant to humanitarian response.
 </p>
 </div>
 
