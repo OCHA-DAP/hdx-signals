@@ -41,7 +41,7 @@ if (flag_source == "idmc") {
 
 # check if we present a text summarization
 # not used for the cholera alerts
-print_summary <- flag_type != "cholera"
+print_summary <- flag_type != "cholera" & !is.na(summary_experimental)
 ```
 
 ```{r, results = "asis"}
@@ -112,7 +112,6 @@ if (flag_source == "idmc") {
     escape = FALSE
     )
 }
-
 ```
 
 ----
