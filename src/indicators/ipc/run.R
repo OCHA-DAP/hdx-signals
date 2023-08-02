@@ -300,14 +300,28 @@ ipc_scraper <- function(url) {
       txt[2]
     )
 
-    # send these back to the dataset
-    paste(
-      "<b> Situation summary: </b> ",
-      sit_rep,
-      "\n\n<b>Recommendations summary:</b></n> ",
-      recs
-    )
-
+    # ensure that we are only using those that are not blank
+    # so make sure to check when parts of it are not available
+    if (is.na(sit_rep) & is.na(recs)) {
+      NA
+    } else if (is.na(sit_rep)) {
+      paste(
+        "\n\n<b>Recommendations summary:</b></n> ",
+        recs
+      )
+    } else if (is.na(recs)) {
+      paste(
+        "<b> Situation summary: </b> ",
+        sit_rep
+      )
+    } else {
+      paste(
+        "<b> Situation summary: </b> ",
+        sit_rep,
+        "\n\n<b>Recommendations summary:</b></n> ",
+        recs
+      )
+    }
   } else {
     NA
   }
