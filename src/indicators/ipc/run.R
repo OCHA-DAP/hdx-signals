@@ -2,7 +2,6 @@ library(Ripc)
 library(tidyverse)
 library(countrycode)
 library(rvest)
-library(openai)
 
 source(
   file.path(
@@ -260,25 +259,6 @@ df_ipc_flags_new <- anti_join(
 #### WEB SCRAPING ####
 ######################
 
-# AI summarization function
-
-ai_summarizer <- function(req, text) {
-  text <- str_trunc(text, 4000, ellipsis = "...")
-  req <- paste(req, text, collapse = " ")
-  insistent_ai <- insistently(
-    \(req) {
-      create_completion(
-        model = "text-davinci-003",
-        prompt = req,
-        max_tokens = 100
-      )$choices$text
-    },
-    rate = rate_delay(pause = 1, max_times = 5)
-  )
-
-  insistent_ai(req)
-}
-
 # scrape the IPC URL for additional information and pass that on to the
 # ChatGPT AI model for summarization.
 ipc_scraper <- function(url) {
@@ -292,12 +272,12 @@ ipc_scraper <- function(url) {
 
     # feed these to the AI to get a summarization
     sit_rep <- ai_summarizer(
-      "Please summarize the current food insecurity situation in 4 sentences based on the following description -->",
-      txt[1]
+      prompt = "Please summarize the current food insecurity situation in 4 sentences based on the following description -->",
+      info = txt[1]
     )
     recs <- ai_summarizer(
-      "In 4 sentences, summarize the key recommendations and actions describes below -->",
-      txt[2]
+      prompt = "In 4 sentences, summarize the key recommendations and actions describes below -->",
+      info = txt[2]
     )
 
     # send these back to the dataset
