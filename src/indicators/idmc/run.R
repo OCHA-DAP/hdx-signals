@@ -11,12 +11,28 @@ source(
   )
 )
 
+source(
+  file.path(
+    "src",
+    "utils",
+    "format_date.R"
+  )
+)
+
 # authorize and prep
 source(
   file.path(
     "src",
     "utils",
     "google_sheets.R"
+  )
+)
+
+source(
+  file.path(
+    "src",
+    "utils",
+    "flagging.R"
   )
 )
 
@@ -39,292 +55,115 @@ df_idmc_raw <- idmc_get_data() %>%
 df_idmc <- df_idmc_raw %>%
   idmc_transform_daily() %>%
   idmc_rolling_sum() %>%
-  idmc_flagging()
-
-# get the long flags data frame
-
-df_idmc_flags <- df_idmc %>%
   select(
-    -flag_total
-  ) %>%
-  rename_with(
-    .fn = ~gsub("(flag_)(.*)", "\\1idmc_\\2", .x),
-    .cols = starts_with("flag")
-  ) %>%
-  pivot_longer(
-    cols = starts_with("flag"),
-    names_to = "flag_name",
-    values_to = "flag"
+    iso3,
+    date,
+    displacement_daily
   ) %>%
   group_by(
-    iso3,
-    flag_name
-  ) %>%
-  filter(
-    flag
-  ) %>%
-  mutate(
-    cs_temp_ = cumsum(date - lag(date, default = min(date)) != lubridate::days(1))
-  ) %>%
-  group_by(
-    iso3,
-    flag_name,
-    cs_temp_
-  ) %>%
-  summarize(
-    start_date = min(date),
-    end_date = max(date),
-    .groups = "drop_last"
-  ) %>%
-  select(
-    -cs_temp_
-  ) %>%
-  mutate(
-    uuid = row_number()
-  ) %>%
-  ungroup() %>%
+    iso3
+  )
+
+# calculate the flags using the utilities functions
+df_flagged <- calculate_flags(
+  .data = df_idmc,
+  date = 1,
+  x = displacement_daily,
+  first_since = c(180, 365),
+  periods = c(7, 30, 90, 365),
+  thresholds_pcts = 0.95,
+  thresholds_static = c(5000, 25000, 100000, 500000),
+  thresholds_minimums = c(1000, 5000, 10000, 25000)
+)
+
+df_idmc_flags <- wrangle_alerts(
+  df_flagged,
+  date,
+  displacement_daily
+) %>%
   left_join(
     df_links,
     by = "iso3"
   ) %>%
-  mutate(
+  transmute(
+    iso3,
+    flag_type = "displacement",
+    flag_source = "idmc",
+    start_date = alert_start_date,
+    end_date = alert_end_date,
+    latest_flag = case_when(
+      alert_name == "flag_first_180" ~ "1st_6_months",
+      alert_name == "flag_first_365" ~ "1st_year",
+      alert_name == "flag_anomaly_7" ~ "weekly",
+      alert_name == "flag_anomaly_30" ~ "monthly",
+      alert_name == "flag_anomaly_180" ~ "quarterly",
+      alert_name == "flag_anomaly_365" ~ "yearly"
+    ),
+    message_date = case_when(
+      data_end_date - data_start_date == 0 ~ paste("on", format_date(data_end_date)),
+      year(data_end_date) == year(data_start_date) ~ paste("between", format_date(data_start_date), "and", format_date(data_end_date)),
+      TRUE ~ paste("between", format_date(data_start_date), "and", format_date(data_end_date))
+    ),
+    message = paste0(
+      scales::comma(round(data_sum)),
+      " people were displaced ",
+      message_date,
+      "."
+    ),
     url = paste0("https://www.internal-displacement.org/countries/", country_link)
   ) %>%
   select(
-    -country_link
-  )
-
-# get total displacement within each of the flags
-# difficult for any flag because start date depends on what kind of flags have
-# generated the flags within it
-
-df_flags_start <- df_idmc_flags %>%
-  filter(
-    flag_name != "flag_idmc_any"
-  ) %>%
-  mutate(
-    flag_start_date = start_date,
-    start_date = case_when(
-      str_detect(flag_name, "yearly") ~ start_date - days(364),
-      str_detect(flag_name, "quarterly") ~ start_date - days(89),
-      str_detect(flag_name, "monthly") ~ start_date - days(29),
-      str_detect(flag_name, "weekly") ~ start_date - days(6),
-      TRUE ~ start_date
-    )
-  )
-
-# setting flagging priority for the latest flag for a country
-# we start with the 1st in a period as priority
-# then look at weekly -> yearly in increasing priority so that user sees
-# the more acute, short term fluctuations on the main dashboard page
-flag_priority <- c("flag_idmc_1st_year", "flag_idmc_1st_6_months",
-                   "flag_idmc_1st_3_months", "flag_idmc_global_weekly",
-                   "flag_idmc_weekly", "flag_idmc_global_monthly",
-                   "flag_idmc_monthly", "flag_idmc_global_quarterly",
-                   "flag_idmc_quarterly", "flag_idmc_global_yearly",
-                   "flag_idmc_yearly", "flag_idmc_any")
-
-# for any flags, join up to the other data set
-# and make the start date the minimum of the start date of any
-# other flag in that time frame
-df_flags_start_any <- df_idmc_flags %>%
-  filter(
-    flag_name == "flag_idmc_any"
-  ) %>%
-  full_join(
-      select(
-        df_flags_start,
-        iso3,
-        flag_name2 = flag_name,
-        start_date2 = start_date,
-        end_date2 = end_date,
-        flag_start_date
-      ),
-    by = "iso3",
-    multiple = "all",
-    relationship = "many-to-many"
-  ) %>%
-  group_by(iso3, flag_name, uuid) %>%
-  filter(
-    end_date2 >= start_date,
-    flag_start_date <= end_date
-  ) %>%
-  mutate(
-    start_date = min(start_date2)
-  ) %>%
-  filter(
-    end_date2 == end_date
-  ) %>%
-  summarize(
-    across(
-      .cols = c("start_date", "end_date"),
-      .fns = unique
-    ),
-    latest_flag = flag_name2[which.min(match(flag_name2, flag_priority))],
-    .groups = "drop",
-  )
-
-# now join the two together and get the full displacement across that time
-# period to create meaningful messages and information for the end user
-
-df_displacement <- bind_rows(
-  df_flags_start,
-  df_flags_start_any
-) %>%
-  full_join(
-    select(
-      df_idmc,
-      iso3,
-      date,
-      displacement_daily
-    ),
-    by = "iso3",
-    multiple = "all",
-    relationship = "many-to-many"
-  ) %>%
-  filter(
-    date >= start_date,
-    date <= end_date
-  ) %>%
-  group_by(
-    iso3, flag_name, uuid, start_date, end_date
-  ) %>%
-  summarize(
-    latest_flag = unique(str_remove_all(latest_flag, "flag_idmc_|global_")),
-    total_displacement = sum(displacement_daily),
-    message = paste0(
-      scales::number(total_displacement, big.mark = ","),
-      " people were displaced between ",
-      gsub("^0", "", format(min(start_date), format = "%d %B %Y")),
-      " and ",
-      gsub("^0", "", format(max(end_date), format = "%d %B %Y")),
-      "."
-    ),
-    .groups = "drop"
-  )
-
-# now join back to the original flags dataset with the full displacement data
-# take the full flags and extract the final flags for sharing
-df_idmc_flags_full <- df_idmc_flags %>%
-  left_join(
-    select(df_displacement, -ends_with("date")),
-    by = c("iso3", "flag_name", "uuid")
-  ) %>%
-  mutate(
-    flag_type = "displacement",
-    flag_source = "idmc",
-    .before = flag_name
-  ) %>%
-  filter(
-    flag_name == "flag_idmc_any"
-  ) %>%
-  select(
-    iso3,
-    flag_type,
-    flag_source,
-    start_date,
-    end_date,
-    uuid,
-    latest_flag,
-    message,
-    url
+    -message_date
   )
 
 #####################################
 #### COMPARE WITH EXISTING FILES ####
 #####################################
 
-df_idmc_flags_final_prev <- read_gs_file("flags_idmc") %>%
+df_idmc_flags_prev <- read_gs_file("flags_idmc") %>%
   mutate(
     email = FALSE
   )
 
 # all these new data will need new summaries generated by GPT
+# which can include not new alerts (where the start date is the same,
+# but a later end date because new data has been added)
 df_idmc_flags_new <- anti_join(
-  df_idmc_flags_full,
-  df_idmc_flags_final_prev,
+  df_idmc_flags,
+  df_idmc_flags_prev,
   by = c("iso3", "start_date", "end_date")
-)
-
-# we only generate emails for new alerts, however, so need to do more comparison
-# with the previous flags
-
-alert_levels <- c("1st_year", "1st_6_months",
-                 "1st_3_months", "weekly",
-                 "monthly", "quarterly",
-                 "yearly")
-
-df_idmc_flags_email <- df_idmc_flags_final_prev %>%
-  select(
-    iso3,
-    start_date_prev = start_date,
-    end_date_prev = end_date,
-    prev_flag = latest_flag
-  ) %>%
-  full_join(
-    df_idmc_flags_new,
-    by = "iso3",
-    relationship = "many-to-many"
-  ) %>%
-  filter(
-    !is.na(latest_flag),
-    start_date <= start_date_prev,
-    end_date >= start_date_prev
-  ) %>%
-  group_by(
-    iso3
-  ) %>%
-  filter(
-    end_date_prev == max(end_date_prev, -Inf)
-  ) %>%
-  ungroup() %>%
-  mutate(
-    prev_flag_level = match(prev_flag, alert_levels),
-    latest_flag_level = match(latest_flag, alert_levels),
-    diff_date = end_date - Sys.Date(),
-    email = latest_flag_level < prev_flag_level
-  ) %>%
-  select(
-    iso3,
-    uuid,
-    email
-  )
-
-# some of the new alerts may not have had a previous alert that was ongoing
-# so we join up the email column to all new alerts
-
-df_idmc_flags_new_final <- df_idmc_flags_new %>%
+) %>%
   left_join(
-    df_idmc_flags_email,
-    by = c("iso3", "uuid")
+    select(
+      df_idmc_flags_prev,
+      iso3,
+      start_date,
+      email
+    ),
+    by = c("iso3", "start_date")
   ) %>%
+  group_by(iso3) %>%
   mutate(
     email = ifelse(
-      Sys.Date() - end_date > 60, # do not email for old events updated
+      Sys.Date() - end_date > 60 | start_date != max(start_date), # do not email for old events updated or if not the latest alert
       FALSE,
       replace_na(email, TRUE) # create emails for new alerts
     )
-  )
+  ) %>%
+  ungroup()
 
 #######################
 #### GPT EXPLAINER ####
 #######################
 
-df_explain <- df_displacement %>%
-  filter(
-    flag_name == "flag_idmc_any"
-  ) %>%
-  semi_join(
-    df_idmc_flags_new_final,
-    by = c("iso3", "uuid")
-  ) %>%
+df_explain <- df_idmc_flags_new %>%
   select(
-    iso3, start_date, end_date, total_displacement
+    iso3, start_date, end_date, message
   )
 
 ai_summary <- pmap_chr(
   df_explain,
-  \(iso3, start_date, end_date, total_displacement) {
+  \(iso3, start_date, end_date, message) {
     # get all reports of displacement
     df_filtered <- df_idmc_raw %>%
       filter(
@@ -332,9 +171,8 @@ ai_summary <- pmap_chr(
         displacement_end_date >= !!start_date,
         displacement_start_date <= !!end_date
       )
-    reports <- df_filtered$event_info
-    country <- unique(df_filtered$country)
 
+    reports <- df_filtered$event_info
 
     # concat into input
     displacement_info <- paste(
@@ -349,20 +187,13 @@ ai_summary <- pmap_chr(
     }
 
     # get AI summarization
-    req <- paste(
-      "There have been",
-      scales::number(total_displacement, big.mark = ","),
-      "people displaced by conflict in",
-      country,
-      "between",
-      format(start_date, format = "%B %d %Y"),
-      "and",
-      format(end_date, format = "%B %d %Y"),
-      ". This information comes from a series of small reports.",
-      "In a short paragraph, please summarize the main reasons for displacement.",
-      "Avoid providing specific numbers or dates, just provide the general",
-      "reasons behind the displacement and other key qualitative information.",
-      "Only use the below information:",
+    req <- paste0(
+      message,
+      ". This information comes from a series of small reports. ",
+      "In a short paragraph, please summarize the main reasons for displacement. ",
+      "Avoid providing specific numbers or dates, just provide the general ",
+      "reasons behind the displacement and other key qualitative information. ",
+      "Only use the below information: ",
       displacement_info
     )
 
@@ -383,43 +214,29 @@ ai_summary <- pmap_chr(
   .progress = TRUE
 )
 
-df_idmc_flags_new_final$summary_experimental <- str_remove_all(ai_summary, "\\\n")
+df_idmc_flags_new$summary_experimental <- str_remove_all(ai_summary, "\\\n")
 
 #################################
 #### CREATE FINAL FLAGS FILE ####
 #################################
 
-# previous summary messages pulled
-df_prev_summary <- inner_join(
-  df_idmc_flags_final_prev,
-  df_idmc_flags_full,
-  by = c("iso3", "start_date", "end_date")
-) %>%
-  transmute(
-    iso3,
-    uuid,
-    email = FALSE, # no emails for previous data
-    summary_experimental
-  )
+# create the final flag set by pulling in the previous summaries
+# for flag rows that are not new anymore
 
-# new summaries for new values
-df_new_summary <- df_idmc_flags_new_final %>%
-  select(
-    iso3,
-    uuid,
-    email,
-    summary_experimental
-  )
-
-# create the final flag
-
-df_idmc_flags_final <- df_idmc_flags_full %>%
-  left_join(
-    bind_rows(df_new_summary, df_prev_summary),
-    by = c("iso3", "uuid")
-  ) %>%
-  select(
-    -uuid
+df_idmc_flags_final <- df_idmc_flags_new %>%
+  bind_rows(
+    inner_join(
+      df_idmc_flags,
+      select(
+        df_idmc_flag_prev,
+        iso3,
+        start_date,
+        end_date,
+        email,
+        summary_experimental
+      ),
+      by = c("iso3", "start_date", "end_date")
+    )
   ) %>%
   get_country_names()
 
