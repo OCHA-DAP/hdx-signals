@@ -1,6 +1,6 @@
 # this workflow tests the renv caching and R setup installs necessary dependencies
 
-name: global-monitoring
+name: test-renv
 
 on:
   workflow_dispatch:
