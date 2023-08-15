@@ -395,10 +395,13 @@
     },
     "cpp11": {
       "Package": "cpp11",
-      "Version": "0.4.4",
+      "Version": "0.4.6",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "3f7d8664d7324406cd10cd650ad85e5f"
+      "Requirements": [
+        "R"
+      ],
+      "Hash": "707fae4bbf73697ec8d85f9d7076c061"
     },
     "crayon": {
       "Package": "crayon",
@@ -414,13 +417,13 @@
     },
     "curl": {
       "Package": "curl",
-      "Version": "5.0.1",
+      "Version": "5.0.2",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
         "R"
       ],
-      "Hash": "2118af9cb164c8d2dddc7b89eaf732d9"
+      "Hash": "511bacbfa153a15251166b463b4da4f9"
     },
     "data.table": {
       "Package": "data.table",
@@ -880,7 +883,7 @@
     },
     "httr": {
       "Package": "httr",
-      "Version": "1.4.6",
+      "Version": "1.4.7",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -891,18 +894,18 @@
         "mime",
         "openssl"
       ],
-      "Hash": "7e5e3cbd2a7bc07880c94e22348fb661"
+      "Hash": "ac107251d9d9fd72f0ca8049988f1d7f"
     },
     "idmc": {
       "Package": "idmc",
-      "Version": "0.1.5",
+      "Version": "0.2.0",
       "Source": "GitHub",
       "RemoteType": "github",
-      "RemoteUsername": "OCHA-DAP",
-      "RemoteRepo": "idmc",
-      "RemoteRef": "HEAD",
-      "RemoteSha": "da5a684c9b5c677863196d66a29e7a341d35a73f",
       "RemoteHost": "api.github.com",
+      "RemoteRepo": "idmc",
+      "RemoteUsername": "OCHA-DAP",
+      "RemoteRef": "HEAD",
+      "RemoteSha": "5f1b29d600844727553c7eceb0a5acd209f9ae44",
       "Requirements": [
         "R",
         "dplyr",
@@ -916,7 +919,7 @@
         "tidyr",
         "zoo"
       ],
-      "Hash": "1d6247325b53a8cce813f46d71995481"
+      "Hash": "72b35d61ecdfb7f4d596b3f33a231131"
     },
     "ids": {
       "Package": "ids",
@@ -1252,7 +1255,7 @@
     },
     "purrr": {
       "Package": "purrr",
-      "Version": "1.0.1",
+      "Version": "1.0.2",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -1263,7 +1266,7 @@
         "rlang",
         "vctrs"
       ],
-      "Hash": "d71c815267c640f17ddbf7f16144b4bb"
+      "Hash": "1cba04a4e9414bdefc9dcaa99649a8dc"
     },
     "ragg": {
       "Package": "ragg",

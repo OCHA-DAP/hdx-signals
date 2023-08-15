@@ -54,7 +54,6 @@ df_idmc_raw <- idmc_get_data() %>%
 
 df_idmc <- df_idmc_raw %>%
   idmc_transform_daily() %>%
-  idmc_rolling_sum() %>%
   select(
     iso3,
     date,
