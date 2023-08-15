@@ -159,14 +159,14 @@ df_ipc_flags <- df_ipc_wrangled %>%
   ) %>%
   mutate(
     phase_incr = case_when(
-      phase_3pl_pct_delta > 0 ~ "phase 3+",
-      phase_4pl_pct_delta > 0 ~ "phase 4+",
       phase_5_pct_delta > 0 ~ "phase 5",
+      phase_4pl_pct_delta > 0 ~ "phase 4+",
+      phase_3pl_pct_delta > 0 ~ "phase 3+"
     ),
     phase_incr_pct = case_when(
-      phase_3pl_pct_delta > 0 ~ phase_3pl_pct_delta,
-      phase_4pl_pct_delta > 0 ~ phase_4pl_pct_delta,
       phase_5_pct_delta > 0 ~ phase_5_pct_delta,
+      phase_4pl_pct_delta > 0 ~ phase_4pl_pct_delta,
+      phase_3pl_pct_delta > 0 ~ phase_3pl_pct_delta
     )
   ) %>%
   group_by(
