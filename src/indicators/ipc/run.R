@@ -92,7 +92,7 @@ df_cur_delta <- df_ipc %>%
     title_detail = str_extract(title, "(?<=[0-9]{4})(.*)$"),
     potential_incomparability = title_detail != lag(title_detail)
   ) %>%
-  slice(-1) %>%
+  slice(-1) %>% # drop the first observations where change is NA
   ungroup() %>%
   select(
     anl_id,
@@ -122,7 +122,7 @@ df_proj_delta <- df_ipc %>%
       .names = "{col}_delta"
     )
   ) %>%
-  slice(-1) %>%
+  slice(-1) %>% # drop the first observations where change is NA
   ungroup() %>%
   select(
     anl_id,
