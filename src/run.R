@@ -24,7 +24,7 @@ walk(
   .x = list.files(
     inds_dir,
     recursive = TRUE,
-    pattern = "^run.R$"
+    pattern = "^run_(.*).R$"
   ),
   .f = ~source(
     file.path(inds_dir, .x),
