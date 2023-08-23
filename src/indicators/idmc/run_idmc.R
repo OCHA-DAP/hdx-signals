@@ -76,8 +76,7 @@ df_idmc <- df_idmc_raw %>%
 # calculate the flags using the utilities functions
 df_flagged <- calculate_flags(
   .data = df_idmc,
-  date = 1,
-  x = displacement_daily,
+  x_col = "displacement_daily",
   first_since = c(180, 365),
   periods = c(7, 30, 90, 365),
   thresholds_pcts = 0.95,
@@ -85,10 +84,10 @@ df_flagged <- calculate_flags(
   thresholds_minimums = c(1000, 5000, 10000, 25000)
 )
 
-df_idmc_flags <- wrangle_alerts(
-  df_flagged,
-  date,
-  displacement_daily
+df_idmc_flags <- generate_alerts(
+  .data = df_flagged,
+  date_col = "date",
+  x_col = "displacement_daily"
 ) %>%
   left_join(
     df_links,
@@ -105,7 +104,7 @@ df_idmc_flags <- wrangle_alerts(
       alert_name == "flag_first_365" ~ "1st_year",
       alert_name == "flag_anomaly_7" ~ "weekly",
       alert_name == "flag_anomaly_30" ~ "monthly",
-      alert_name == "flag_anomaly_180" ~ "quarterly",
+      alert_name == "flag_anomaly_90" ~ "quarterly",
       alert_name == "flag_anomaly_365" ~ "yearly"
     ),
     message_date = case_when(
@@ -170,7 +169,7 @@ df_explain <- df_idmc_flags_new %>%
     iso3, start_date, end_date, message
   )
 
-ai_summary <- pmap_chr(
+df_idmc_flags_new$summary_experimental <- pmap_chr(
   df_explain,
   \(iso3, start_date, end_date, message) {
     # get all reports of displacement
@@ -182,19 +181,11 @@ ai_summary <- pmap_chr(
       )
 
     reports <- df_filtered$event_info
-    country <- unique(df_filtered$country)
 
     # get AI summarization
     prompt <- paste(
-      "There have been",
-      scales::number(total_displacement, big.mark = ","),
-      "people displaced by conflict in",
-      country,
-      "between",
-      format(start_date, format = "%B %d %Y"),
-      "and",
-      format(end_date, format = "%B %d %Y"),
-      ". This information comes from a series of small reports.",
+      message,
+      "This information comes from a series of small reports.",
       "In a short paragraph, please summarize the main reasons for displacement.",
       "Avoid providing specific numbers or dates, just provide the general",
       "reasons behind the displacement and other key qualitative information.",
@@ -210,8 +201,6 @@ ai_summary <- pmap_chr(
   .progress = TRUE
 )
 
-df_idmc_flags_new$summary_experimental <- str_remove_all(ai_summary, "\\\n")
-
 #################################
 #### CREATE FINAL FLAGS FILE ####
 #################################
@@ -224,7 +213,7 @@ df_idmc_flags_final <- df_idmc_flags_new %>%
     inner_join(
       df_idmc_flags,
       select(
-        df_idmc_flag_prev,
+        df_idmc_flags_prev,
         iso3,
         start_date,
         end_date,
@@ -246,7 +235,7 @@ update_gs_file(
 )
 
 update_gs_file(
-  df = get_country_names(df_idmc),
+  df = get_country_names(df_flagged),
   name = "wrangled_idmc"
 )
 

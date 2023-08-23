@@ -26,10 +26,10 @@ plot_idmc <- function(
   # generate flagging times for plotting
   df_flag_times <- df_plot %>%
     mutate(
-      flag_group = cumsum(!flag_any)
+      flag_group = cumsum(!alert_any)
     ) %>%
     filter(
-      flag_any
+      alert_any
     ) %>%
     group_by(
       flag_group

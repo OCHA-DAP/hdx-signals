@@ -5,11 +5,13 @@ library(tidyverse)
 #' Generates a flag when `x` is above `pct` percent of historic data or the
 #' static `threshold`, whichever is lower.
 #'
-#' @param x Vector to flag
-#' @param pct Percent anomaly (passed to quantile) that will generate a flag
-#'     if `x` is above.
-#' @param threshold Flag if `x` above this static value
-#' @param minimum
+#' @param x `numeric` vector to flag.
+#' @param pct `numeric` Percent anomaly (passed to quantile) that will generate
+#'     a flag if `x` is above.
+#' @param threshold `numeric` threshold that generates flag if `x` above
+#'     this static value.
+#' @param minimum `numeric` minimum value where no flag is generated unless
+#'     `x` is above this value.
 flag_fun <- function(x, pct, threshold, minimum) {
   # use lowest of percent threshold or static
   threshold <- min(
@@ -30,25 +32,25 @@ flag_fun <- function(x, pct, threshold, minimum) {
 #' Works based on the groups in the data frame already passed in, such as `iso3`.
 #'
 #' @param .data Data frame
-#' @param date Date column, must be daily data.
-#' @param x Numeric column to flag
-#' @param first_since Numeric vector indicating when to flag the first positive
+#' @param x_col `character` name of column to flag upon, which should be numeric.
+#' @param first_since `numeric` vector indicating when to flag the first positive
 #'     values. For instance, `180` would indicate flagging whenever there is a
 #'     positive value after 180 days.
-#' @param periods Numeric vector of times that flags are calculated, used
+#' @param periods `numeric` vector of cumulation periods (in days) that flags
+#'     are calculated, used
 #'     for all of the `thresholds_...` arguments. For instance, `c(7, 30, 90)`
 #'     would specify that flags are calculated for rolling sums of 7 days,
 #'     30 days, and 90 days.
-#' @param thresholds_pcts Numeric vector of percentile to use for flagging,
+#' @param thresholds_pcts `numeric` vector of percentile to use for flagging,
 #'     so that any time the value for `x` is over that percent quantile based
 #'     on the historic data, a flag is
 #'     generated. If a single value, the value is recycled. If the same length
 #'     as `periods`, the thresholds are matched one-to-one with `periods`.
-#' @param thresholds_static Numeric vector of static thresholds to use for
+#' @param thresholds_static `numeric` vector of static thresholds to use for
 #'     flagging, so that any time the value of `x` is above that value, a flag
 #'     is generated. If a single value, the value is recycled. If the same length
 #'     as `periods`, the thresholds are matched one-to-one with `periods`.
-#' @param thresholds_minimums Numeric vector of minimum values such that if `x`
+#' @param thresholds_minimums `numeric` vector of minimum values such that if `x`
 #'     is above it, no flags are generated. If a single value, the value is
 #'     recycled. If the same length as `periods`, the thresholds are matched
 #'     one-to-one with `periods`.
@@ -56,8 +58,7 @@ flag_fun <- function(x, pct, threshold, minimum) {
 #' @returns Data frame with rolling sums and flags generated.
 calculate_flags <- function(
     .data,
-    date,
-    x,
+    x_col,
     first_since = NULL,
     periods = NULL,
     thresholds_pcts = NULL,
@@ -89,7 +90,7 @@ calculate_flags <- function(
     if (null_tp && null_ts) {
       stop(
         "One of `thresholds_pcts` or `thresholds_static` must be ",
-        "passed to `calculate_alerts()` if `periods` is ",
+        "passed to `generate_alerts()` if `periods` is ",
         "not NULL.",
         call. = FALSE
       )
@@ -113,7 +114,7 @@ calculate_flags <- function(
     if ((ln_p != ln_tp && ln_tp != 1) || (ln_p != ln_ts && ln_ts != 1)) {
       stop(
         "`thresholds_pcts` and `thresholds_static` must have the same length ",
-        "as `periods` if passed to `calculate_alerts()`, unless length 1, in ",
+        "as `periods` if passed to `generate_alerts()`, unless length 1, in ",
         " which case they are recycled.",
         call. = FALSE
       )
@@ -147,7 +148,7 @@ calculate_flags <- function(
       if (ln_p != ln_m && (ln_m != 1)) {
         stop(
           "`thresholds_minimum` must have the same length ",
-          "as `periods` if passed to `calculate_alerts()`, unless length 1, in ",
+          "as `periods` if passed to `generate_alerts()`, unless length 1, in ",
           " which case it is recycled.",
           call. = FALSE
         )
@@ -172,7 +173,7 @@ calculate_flags <- function(
     .data <- mutate(
       .data,
       "rs_{{ period }}" := zoo::rollsumr(
-        x = {{ x }},
+        x = .data[[x_col]],
         k = !!period,
         fill = NA
       )
@@ -188,7 +189,7 @@ calculate_flags <- function(
     for (fs_period in first_since) {
       .data <- mutate(
         .data,
-        "flag_first_{{ fs_period }}" := {{ x }} > 0 & lag(.data[[paste0("rs_", fs_period)]]) == 0
+        "flag_first_{{ fs_period }}" := .data[[x_col]] > 0 & lag(.data[[paste0("rs_", fs_period)]]) == 0
       )
     }
   }
@@ -233,18 +234,26 @@ calculate_flags <- function(
 
   # find the flag levels for each time point
   # the higher the level, the more critical the flag
+  # this includes the flag first variables (which are the lowest levels of alert)
+  # all the way to the longest time period
+
+  # what we do below is select only the numeric flag columns and then for speed
+  # convert those to a matrix and find the last column with a 1 (since boolean
+  # flags converted to numeric)
+  # so we end up with a column from 0 to length(flags) that means we can
+  # later easily see when alerts are increasing (this value increases!)
 
   .data$alert_levels <- .data %>%
     ungroup() %>%
     select(
-      starts_with("flag_")
+      matches("^flag_(first|anomaly)_\\d+$")
     ) %>%
     data.matrix() %>%
     apply(
       MARGIN = 1,
       FUN = \(x) max(which(x == 1), -Inf)
     ) %>%
-    pmax(
+    pmax( # make the minimum 0
       0
     )
 
@@ -264,13 +273,14 @@ calculate_flags <- function(
 #' Works by
 #'
 #' @param .data Data frame, output of `calculate_flags()`
-#' @inheritParams calculate_flags
+#' @param date_col `character` name of date vector.
+#' @param x `character` name of numeric vector that was used for flagging.
 #'
 #' @return Data frame with flags and flag metadata
 generate_alerts <- function(
     .data,
-    date,
-    x
+    date_col,
+    x_col
 ) {
   # automatically detect flag columns and the days used to generate
   col_names <- names(.data)
@@ -286,8 +296,7 @@ generate_alerts <- function(
   df_x <- select(
     .data,
     group_cols(),
-    {{ date }},
-    {{ x }}
+    all_of(c(date_col, x_col))
   )
 
   # use the output of calculate_flags and now generate alert metadata
@@ -307,10 +316,10 @@ generate_alerts <- function(
       any(alert)
     ) %>%
     summarize(
-      alert_days = flag_days[unique(alert_levels)],
-      alert_name = flag_cols[unique(alert_levels)],
-      alert_start_date = min({{ date }}),
-      alert_end_date = max({{ date }}),
+      alert_days = flag_days[unique(alert_levels)], # use flag_days as calculated above to ensure correct days used for each column
+      alert_name = flag_cols[unique(alert_levels)], # alert_levels will always have a single unique value per group as defined above in alert_group
+      alert_start_date = min(.data[[date_col]]),
+      alert_end_date = max(.data[[date_col]]),
       x_start_date = alert_start_date - days(alert_days),
       .groups = "keep"
     ) %>%
@@ -320,17 +329,17 @@ generate_alerts <- function(
       relationship = "many-to-many"
     ) %>%
     filter( # filter between start and end dates and only positive displacement days so the final start date starts when displacement starts
-      {{ date }} >= x_start_date,
-      {{ date }} <= alert_end_date,
-      {{ x }} > 0
+      .data[[date_col]] >= x_start_date,
+      .data[[date_col]] <= alert_end_date,
+      .data[[x_col]] > 0
     ) %>%
     summarize(
       alert_name = unique(alert_name),
       alert_start_date = unique(alert_start_date),
       alert_end_date = unique(alert_end_date),
-      data_start_date = min({{ date }}),
-      data_end_date = max({{ date }}),
-      data_sum = sum({{ x }}),
+      data_start_date = min(.data[[date_col]]),
+      data_end_date = max(.data[[date_col]]),
+      data_sum = sum(.data[[x_col]]),
       .groups = "drop"
     )
 }

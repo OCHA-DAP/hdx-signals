@@ -5,11 +5,20 @@ library(stringr)
 # function that insistently calls the OpenAI API in case of failure
 # utilizing the GPT4 32k token model which allows for loads of context
 insistent_ai <- insistently(
-  \(prompt) {
-    create_completion(
-      model = "gpt-4-32k",
-      prompt = prompt
-    )$choices$text
+  \(prompt, info) {
+    create_chat_completion(
+      model = "gpt-3.5-turbo-16k",
+      messages = list(
+        list(
+          "role" = "user",
+          "content" = prompt
+        ),
+        list(
+          "role" = "user",
+          "content" = info
+        )
+      )
+    )$choices$message.content
   },
   rate = rate_delay(pause = 3, max_times = 5)
 )
@@ -21,7 +30,7 @@ insistent_ai <- insistently(
 ai_summarizer <- function(prompt, info) {
   nchars <- nchar(info)
   total_nchar <- sum(nchars)
-  if (total_nchar > 30000) {
+  if (total_nchar > 15000) {
     # if a single block of text, split on new lines and sentences
     # so we can pass in separate chunks to the AI
     if (length(info) == 1) {
@@ -51,7 +60,7 @@ ai_summarizer <- function(prompt, info) {
     }
 
     insistent_ai(
-      paste(prompt, info)
+      prompt, info
     )
   }
 }
