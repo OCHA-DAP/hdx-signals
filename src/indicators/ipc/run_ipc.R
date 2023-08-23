@@ -2,7 +2,6 @@ library(Ripc)
 library(tidyverse)
 library(countrycode)
 library(rvest)
-library(openai)
 
 source(
   file.path(
@@ -92,7 +91,7 @@ df_cur_delta <- df_ipc %>%
     title_detail = str_extract(title, "(?<=[0-9]{4})(.*)$"),
     potential_incomparability = title_detail != lag(title_detail)
   ) %>%
-  slice(-1) %>%
+  slice(-1) %>% # drop the first observations where change is NA
   ungroup() %>%
   select(
     anl_id,
@@ -122,7 +121,7 @@ df_proj_delta <- df_ipc %>%
       .names = "{col}_delta"
     )
   ) %>%
-  slice(-1) %>%
+  slice(-1) %>% # drop the first observations where change is NA
   ungroup() %>%
   select(
     anl_id,
@@ -159,14 +158,14 @@ df_ipc_flags <- df_ipc_wrangled %>%
   ) %>%
   mutate(
     phase_incr = case_when(
-      phase_3pl_pct_delta > 0 ~ "phase 3+",
-      phase_4pl_pct_delta > 0 ~ "phase 4+",
       phase_5_pct_delta > 0 ~ "phase 5",
+      phase_4pl_pct_delta > 0 ~ "phase 4+",
+      phase_3pl_pct_delta > 0 ~ "phase 3+"
     ),
     phase_incr_pct = case_when(
-      phase_3pl_pct_delta > 0 ~ phase_3pl_pct_delta,
-      phase_4pl_pct_delta > 0 ~ phase_4pl_pct_delta,
       phase_5_pct_delta > 0 ~ phase_5_pct_delta,
+      phase_4pl_pct_delta > 0 ~ phase_4pl_pct_delta,
+      phase_3pl_pct_delta > 0 ~ phase_3pl_pct_delta
     )
   ) %>%
   group_by(
@@ -188,17 +187,9 @@ df_ipc_flags <- df_ipc_wrangled %>%
       any(!is.na(phase_incr)),
       paste(
         c(
-          ifelse(
-            phase_5_num > 0,
-            paste0(
-              "<b>",
-              scales::label_comma()(phase_5_num),
-              " people are estimated to be in phase 5.</b><br><br>Overall increases in food insecure populations are estimated: "
-            ),
-            "Increases in food insecure populations are estimated: "
-          ),
+          "Increases in food insecure populations are estimated: ",
           paste(
-            scales::percent(phase_incr_pct),
+            scales::percent(phase_incr_pct, accuracy = 1),
             "rise in",
             phase_incr,
             "populations in the",
@@ -260,25 +251,6 @@ df_ipc_flags_new <- anti_join(
 #### WEB SCRAPING ####
 ######################
 
-# AI summarization function
-
-ai_summarizer <- function(req, text) {
-  text <- str_trunc(text, 4000, ellipsis = "...")
-  req <- paste(req, text, collapse = " ")
-  insistent_ai <- insistently(
-    \(req) {
-      create_completion(
-        model = "text-davinci-003",
-        prompt = req,
-        max_tokens = 100
-      )$choices$text
-    },
-    rate = rate_delay(pause = 1, max_times = 5)
-  )
-
-  insistent_ai(req)
-}
-
 # scrape the IPC URL for additional information and pass that on to the
 # ChatGPT AI model for summarization.
 ipc_scraper <- function(url) {
@@ -292,22 +264,36 @@ ipc_scraper <- function(url) {
 
     # feed these to the AI to get a summarization
     sit_rep <- ai_summarizer(
-      "Please summarize the current food insecurity situation in 4 sentences based on the following description -->",
-      txt[1]
+      prompt = "Please summarize the current food insecurity situation in 4 sentences based on the following description -->",
+      info = txt[1]
     )
     recs <- ai_summarizer(
-      "In 4 sentences, summarize the key recommendations and actions describes below -->",
-      txt[2]
+      prompt = "In 4 sentences, summarize the key recommendations and actions describes below -->",
+      info = txt[2]
     )
 
-    # send these back to the dataset
-    paste(
-      "<b> Situation summary: </b> ",
-      sit_rep,
-      "\n\n<b>Recommendations summary:</b></n> ",
-      recs
-    )
-
+    # ensure that we are only using those that are not blank
+    # so make sure to check when parts of it are not available
+    if (is.na(sit_rep) & is.na(recs)) {
+      NA
+    } else if (is.na(sit_rep)) {
+      paste(
+        "\n\n<b>Recommendations summary:</b></n> ",
+        recs
+      )
+    } else if (is.na(recs)) {
+      paste(
+        "<b> Situation summary: </b> ",
+        sit_rep
+      )
+    } else {
+      paste(
+        "<b> Situation summary: </b> ",
+        sit_rep,
+        "\n\n<b>Recommendations summary:</b></n> ",
+        recs
+      )
+    }
   } else {
     NA
   }

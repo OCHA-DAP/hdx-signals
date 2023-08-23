@@ -62,10 +62,10 @@ df_cholera_wrangled <- df_cholera_raw %>%
   ) %>%
   group_by( # some countries have multiple sets of cases reported each date (DRC)
     iso3,
-    start_date,
     date
   ) %>%
   summarize(
+    start_date = min(start_date),
     cholera_cases = sum(cholera_cases),
     .groups = "drop"
   ) %>%

@@ -42,17 +42,18 @@ flag_fun <- function(x, pct, threshold, minimum) {
 #' @param thresholds_pcts Numeric vector of percentile to use for flagging,
 #'     so that any time the value for `x` is over that percent quantile based
 #'     on the historic data, a flag is
-#'     generated. If a single value, is recycled, otherwise must have the
-#'     same length as `periods`.
+#'     generated. If a single value, the value is recycled. If the same length
+#'     as `periods`, the thresholds are matched one-to-one with `periods`.
 #' @param thresholds_static Numeric vector of static thresholds to use for
 #'     flagging, so that any time the value of `x` is above that value, a flag
-#'     is generated. If a single value, is recycled, otherwise must have the
-#'     same length as `periods`.
+#'     is generated. If a single value, the value is recycled. If the same length
+#'     as `periods`, the thresholds are matched one-to-one with `periods`.
 #' @param thresholds_minimums Numeric vector of minimum values such that if `x`
-#'     is above it, no flags are generated. If a single value, is recyled,
-#'     otherwise must have the same length as `periods`.
+#'     is above it, no flags are generated. If a single value, the value is
+#'     recycled. If the same length as `periods`, the thresholds are matched
+#'     one-to-one with `periods`.
 #'
-#' @return Data frame with rolling sums and flags generated.
+#' @returns Data frame with rolling sums and flags generated.
 calculate_flags <- function(
     .data,
     date,
@@ -118,12 +119,24 @@ calculate_flags <- function(
       )
     }
 
-    # reorderig for later pmap
+    # reordering for later pmap
+    # user has to pass in the correct order, and these keeps the order the same
+    # since we reordered the percentiles
     if (ln_tp > 1) {
       thresholds_pcts <- thresholds_pcts[p_order]
     }
 
     if (ln_ts > 1) {
+      # generate a warning if the static threshold don't monotonically increase
+      # alongside `period`
+      if (any(order(thresholds_static, decreasing = TRUE) < p_order)) {
+        warning(
+          "`thresholds_static` does not increase as `period` increases, which ",
+          "may be in error. Ensure that the thresholds are passed correctly.",
+          call. = FALSE
+        )
+      }
+
       thresholds_static <- thresholds_static[p_order]
     }
 
@@ -139,6 +152,15 @@ calculate_flags <- function(
           call. = FALSE
         )
       } else if (ln_m > 1) {
+        # generate a warning if the minimum threshold don't monotonically increase
+        # alongside `period`
+        if (any(order(thresholds_minimums, decreasing = TRUE) < p_order)) {
+          warning(
+            "`thresholds_minimums` does not increase as `period` increases, which ",
+            "may be in error. Ensure that the thresholds are passed correctly.",
+            call. = FALSE
+          )
+        }
         thresholds_minimums <- thresholds_minimums[p_order]
       }
     }
@@ -157,18 +179,23 @@ calculate_flags <- function(
     )
   }
 
-  # if first since is passed
+  # if first since is passed as an argument
+  # then we loop throw those periods and for each one
+  # check when we had a day with value above x
+  # and 0 in the previous # number of dates
   if (!null_fs) {
     first_since <- sort(first_since, decreasing = FALSE)
-    for (period in first_since) {
+    for (fs_period in first_since) {
       .data <- mutate(
         .data,
-        "flag_first_{{ period }}" := {{ x }} > 0 & lag(.data[[paste0("rs_", period)]]) == 0
+        "flag_first_{{ fs_period }}" := {{ x }} > 0 & lag(.data[[paste0("rs_", fs_period)]]) == 0
       )
     }
   }
 
-  # if period is passed
+  # if period is passed as an argument
+  # then we map across all of those periods, percent thresholds, static thresholds
+  # and minimums to generate flags using flag_fun
   if (!null_p) {
     new_df <- pmap(
       .l = list(
@@ -233,11 +260,14 @@ calculate_flags <- function(
 
 #' Generate alert metadata
 #'
+#' Generates alerts from a flagging data frame output by `calculate_flags()`.
+#' Works by
+#'
 #' @param .data Data frame, output of `calculate_flags()`
 #' @inheritParams calculate_flags
 #'
 #' @return Data frame with flags and flag metadata
-wrangle_alerts <- function(
+generate_alerts <- function(
     .data,
     date,
     x
@@ -251,9 +281,9 @@ wrangle_alerts <- function(
     parse_number(flag_cols)
   )
 
-  # get displacement data that can be used to accurately capture
-  # flag dates and total displacement for each alert
-  df_displacement <- select(
+  # get raw data that can be used to accurately capture
+  # flag_dates and displacement for each alert
+  df_x <- select(
     .data,
     group_cols(),
     {{ date }},
@@ -281,16 +311,16 @@ wrangle_alerts <- function(
       alert_name = flag_cols[unique(alert_levels)],
       alert_start_date = min({{ date }}),
       alert_end_date = max({{ date }}),
-      displacement_start_date = alert_start_date - days(alert_days),
+      x_start_date = alert_start_date - days(alert_days),
       .groups = "keep"
     ) %>%
     full_join(
-      y = df_displacement,
-      by = group_vars(df_displacement),
+      y = df_x,
+      by = group_vars(df_x),
       relationship = "many-to-many"
     ) %>%
-    filter(
-      {{ date }} >= displacement_start_date,
+    filter( # filter between start and end dates and only positive displacement days so the final start date starts when displacement starts
+      {{ date }} >= x_start_date,
       {{ date }} <= alert_end_date,
       {{ x }} > 0
     ) %>%

@@ -1,7 +1,6 @@
 library(idmc)
 library(tidyverse)
 library(lubridate)
-library(openai)
 
 source(
   file.path(
@@ -28,11 +27,22 @@ source(
   )
 )
 
+# flagging functions
 source(
   file.path(
     "src",
     "utils",
     "flagging.R"
+  )
+)
+
+
+# ai summarization
+source(
+  file.path(
+    "src",
+    "utils",
+    "ai_summarizer.R"
   )
 )
 
@@ -172,43 +182,30 @@ ai_summary <- pmap_chr(
       )
 
     reports <- df_filtered$event_info
-
-    # concat into input
-    displacement_info <- paste(
-      reports,
-      collapse = "\n"
-    )
-
-    # random sample reports to ensure token length not problem for OpenAI
-    while (nchar(displacement_info) > 3800) {
-      reports <- reports[-sample(seq_along(reports), size = 1)]
-      displacement_info <- paste(reports, collapse = "\n")
-    }
+    country <- unique(df_filtered$country)
 
     # get AI summarization
-    req <- paste0(
-      message,
-      ". This information comes from a series of small reports. ",
-      "In a short paragraph, please summarize the main reasons for displacement. ",
-      "Avoid providing specific numbers or dates, just provide the general ",
-      "reasons behind the displacement and other key qualitative information. ",
-      "Only use the below information: ",
-      displacement_info
+    prompt <- paste(
+      "There have been",
+      scales::number(total_displacement, big.mark = ","),
+      "people displaced by conflict in",
+      country,
+      "between",
+      format(start_date, format = "%B %d %Y"),
+      "and",
+      format(end_date, format = "%B %d %Y"),
+      ". This information comes from a series of small reports.",
+      "In a short paragraph, please summarize the main reasons for displacement.",
+      "Avoid providing specific numbers or dates, just provide the general",
+      "reasons behind the displacement and other key qualitative information.",
+      "Only use the below information:"
     )
 
     # get AI summarization
-    insistent_ai <- insistently(
-      \(req) {
-        create_completion(
-          model = "text-davinci-003",
-          prompt = req,
-          max_tokens = 100
-        )$choices$text
-      },
-      rate = rate_delay(pause = 3, max_times = 5)
+    ai_summarizer(
+      prompt = prompt,
+      info = reports
     )
-
-    insistent_ai(req)
   },
   .progress = TRUE
 )
