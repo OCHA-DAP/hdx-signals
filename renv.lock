@@ -222,6 +222,17 @@
       ],
       "Hash": "40415719b5a479b87949f3aa0aee737c"
     },
+    "box": {
+      "Package": "box",
+      "Version": "1.1.3",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "tools"
+      ],
+      "Hash": "ce8187a260e8e3abc2294284badc3b76"
+    },
     "broom": {
       "Package": "broom",
       "Version": "1.0.5",

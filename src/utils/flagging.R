@@ -1,26 +1,12 @@
-library(tidyverse)
-
-#' Helper function for generating flags
-#'
-#' Generates a flag when `x` is above `pct` percent of historic data or the
-#' static `threshold`, whichever is lower.
-#'
-#' @param x `numeric` vector to flag.
-#' @param pct `numeric` Percent anomaly (passed to quantile) that will generate
-#'     a flag if `x` is above.
-#' @param threshold `numeric` threshold that generates flag if `x` above
-#'     this static value.
-#' @param minimum `numeric` minimum value where no flag is generated unless
-#'     `x` is above this value.
-flag_fun <- function(x, pct, threshold, minimum) {
-  # use lowest of percent threshold or static
-  threshold <- min(
-    stats::quantile(x, probs = pct, na.rm = TRUE),
-    threshold
-  )
-
-  x >= max(threshold, minimum)
-}
+box::use(stats)
+box::use(dplyr)
+box::use(zoo)
+box::use(rlang[`:=`, .data, `!!`])
+box::use(purrr)
+box::use(tidyr)
+box::use(stringr)
+box::use(readr)
+box::use(lubridate)
 
 #' Calculate flags in a data frame
 #'
@@ -56,6 +42,8 @@ flag_fun <- function(x, pct, threshold, minimum) {
 #'     one-to-one with `periods`.
 #'
 #' @returns Data frame with rolling sums and flags generated.
+#'
+#' @export
 calculate_flags <- function(
     .data,
     x_col,
@@ -170,9 +158,9 @@ calculate_flags <- function(
   # create the rolling sum columns necessary for flagging
   rs_periods <- c(first_since, periods)
   for (period in rs_periods) {
-    .data <- mutate(
+    .data <- dplyr$mutate(
       .data,
-      "rs_{{ period }}" := zoo::rollsumr(
+      "rs_{{ period }}" := zoo$rollsumr(
         x = .data[[x_col]],
         k = !!period,
         fill = NA
@@ -187,9 +175,9 @@ calculate_flags <- function(
   if (!null_fs) {
     first_since <- sort(first_since, decreasing = FALSE)
     for (fs_period in first_since) {
-      .data <- mutate(
+      .data <- dplyr$mutate(
         .data,
-        "flag_first_{{ fs_period }}" := .data[[x_col]] > 0 & lag(.data[[paste0("rs_", fs_period)]]) == 0
+        "flag_first_{{ fs_period }}" := .data[[x_col]] > 0 & dplyr$lag(.data[[paste0("rs_", fs_period)]]) == 0
       )
     }
   }
@@ -198,7 +186,7 @@ calculate_flags <- function(
   # then we map across all of those periods, percent thresholds, static thresholds
   # and minimums to generate flags using flag_fun
   if (!null_p) {
-    new_df <- pmap(
+    new_df <- purrr$pmap(
       .l = list(
         periods,
         thresholds_pcts,
@@ -206,7 +194,7 @@ calculate_flags <- function(
         thresholds_minimums
       ),
       .f = \(period, pct, threshold, minimum) {
-        mutate(
+        dplyr$mutate(
           .data,
           "flag_anomaly_{{ period }}" := flag_fun(
             x = .data[[paste0("rs_", period)]],
@@ -214,20 +202,20 @@ calculate_flags <- function(
             threshold = threshold,
             minimum = minimum
           )
-        ) %>%
-          ungroup() %>%
-          select(
+        ) |>
+          dplyr$ungroup() |>
+          dplyr$select(
             starts_with("flag_anomaly_")
           )
       }
-    ) %>%
-      list_cbind()
+    ) |>
+      purrr$list_cbind()
 
-    .data <- bind_cols(.data, new_df) %>%
-      mutate(
+    .data <- dplyr$bind_cols(.data, new_df) |>
+      dplyr$mutate(
         across(
-          .cols = starts_with("flag_"),
-          .fns = \(x) replace_na(x, FALSE)
+          .cols = dplyr$starts_with("flag_"),
+          .fns = \(x) tidyr$replace_na(x, FALSE)
         )
       )
   }
@@ -243,22 +231,21 @@ calculate_flags <- function(
   # so we end up with a column from 0 to length(flags) that means we can
   # later easily see when alerts are increasing (this value increases!)
 
-  .data$alert_levels <- .data %>%
-    ungroup() %>%
-    select(
-      matches("^flag_(first|anomaly)_\\d+$")
-    ) %>%
-    data.matrix() %>%
+  .data$alert_levels <- .data |>
+    dplyr$ungroup() |>
+    dplyr$select(
+      dplyr$matches("^flag_(first|anomaly)_\\d+$")
+    ) |>
+    data.matrix() |>
     apply(
       MARGIN = 1,
       FUN = \(x) max(which(x == 1), -Inf)
-    ) %>%
+    ) |>
     pmax( # make the minimum 0
       0
     )
 
   .data$alert_any <- .data$alert_levels > 0
-
 
   # generate an alert if the flag level has increased
   # from a previous time point
@@ -277,6 +264,8 @@ calculate_flags <- function(
 #' @param x `character` name of numeric vector that was used for flagging.
 #'
 #' @return Data frame with flags and flag metadata
+#'
+#' @export
 generate_alerts <- function(
     .data,
     date_col,
@@ -284,56 +273,56 @@ generate_alerts <- function(
 ) {
   # automatically detect flag columns and the days used to generate
   col_names <- names(.data)
-  flag_cols <- col_names[str_detect(col_names, "^flag_")]
+  flag_cols <- col_names[stringr$str_detect(col_names, "^flag_")]
   flag_days <- ifelse(
-    str_detect(flag_cols, "^flag_first"),
+    stringr$str_detect(flag_cols, "^flag_first"),
     0,
-    parse_number(flag_cols)
+    readr$parse_number(flag_cols)
   )
 
   # get raw data that can be used to accurately capture
   # flag_dates and displacement for each alert
-  df_x <- select(
+  df_x <- dplyr$select(
     .data,
-    group_cols(),
-    all_of(c(date_col, x_col))
+    dplyr$group_cols(),
+    dplyr$all_of(c(date_col, x_col))
   )
 
   # use the output of calculate_flags and now generate alert metadata
   # including start and end date for the alerts, start and end date for
   # the data itself, and total displacement, useful for messaging
   # later on
-  .data %>%
-    mutate(
-      alert = alert_levels - lag(alert_levels, default = 0) > 0,
-      alert_group = cumsum(alert_levels != lag(alert_levels, default = 0))
-    ) %>%
-    group_by(
+  .data |>
+    dplyr$mutate(
+      alert = alert_levels - dplyr$lag(alert_levels, default = 0) > 0,
+      alert_group = cumsum(alert_levels != dplyr$lag(alert_levels, default = 0))
+    ) |>
+    dplyr$group_by(
       alert_group,
       .add = TRUE
-    ) %>%
-    filter(
+    ) |>
+    dplyr$filter(
       any(alert)
-    ) %>%
-    summarize(
+    ) |>
+    dplyr$summarize(
       alert_days = flag_days[unique(alert_levels)], # use flag_days as calculated above to ensure correct days used for each column
       alert_name = flag_cols[unique(alert_levels)], # alert_levels will always have a single unique value per group as defined above in alert_group
       alert_start_date = min(.data[[date_col]]),
       alert_end_date = max(.data[[date_col]]),
-      x_start_date = alert_start_date - days(alert_days),
+      x_start_date = alert_start_date - lubridate$days(alert_days),
       .groups = "keep"
-    ) %>%
-    full_join(
+    ) |>
+    dplyr$full_join(
       y = df_x,
-      by = group_vars(df_x),
+      by = dplyr$group_vars(df_x),
       relationship = "many-to-many"
-    ) %>%
-    filter( # filter between start and end dates and only positive displacement days so the final start date starts when displacement starts
+    ) |>
+    dplyr$filter( # filter between start and end dates and only positive displacement days so the final start date starts when displacement starts
       .data[[date_col]] >= x_start_date,
       .data[[date_col]] <= alert_end_date,
       .data[[x_col]] > 0
-    ) %>%
-    summarize(
+    ) |>
+    dplyr$summarize(
       alert_name = unique(alert_name),
       alert_start_date = unique(alert_start_date),
       alert_end_date = unique(alert_end_date),
@@ -342,4 +331,26 @@ generate_alerts <- function(
       data_sum = sum(.data[[x_col]]),
       .groups = "drop"
     )
+}
+
+#' Helper function for generating flags
+#'
+#' Generates a flag when `x` is above `pct` percent of historic data or the
+#' static `threshold`, whichever is lower.
+#'
+#' @param x `numeric` vector to flag.
+#' @param pct `numeric` Percent anomaly (passed to quantile) that will generate
+#'     a flag if `x` is above.
+#' @param threshold `numeric` threshold that generates flag if `x` above
+#'     this static value.
+#' @param minimum `numeric` minimum value where no flag is generated unless
+#'     `x` is above this value.
+flag_fun <- function(x, pct, threshold, minimum) {
+  # use lowest of percent threshold or static
+  threshold <- min(
+    stats$quantile(x, probs = pct, na.rm = TRUE),
+    threshold
+  )
+
+  x >= max(threshold, minimum)
 }
