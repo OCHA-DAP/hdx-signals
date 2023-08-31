@@ -180,7 +180,7 @@ df_idmc_flags_new$summary_experimental <- pmap_chr(
         displacement_start_date <= !!end_date
       )
 
-    reports <- df_filtered$event_info
+    reports <- df_filtered$event_info[!is.na(df_filtered$event_info)]
 
     # get AI summarization
     prompt <- paste(
