@@ -11,20 +11,20 @@ output: blastula::blastula_email
 show_table <- flag_source == "idmc"
 
 if (flag_source == "idmc") {
-  df_idmc_raw <- read_gs_file("raw_idmc")
-  df_display <- df_idmc_raw %>%
-    filter(
+  df_idmc_raw <- gs$read_gs_file("raw_idmc")
+  df_display <- df_idmc_raw |>
+    dplyr$filter(
       iso3 == !!iso3,
       displacement_end_date >= !!start_date,
       displacement_start_date <= !!end_date
-    ) %>%
-    distinct(
+    ) |> 
+    dplyr$distinct(
       event_url, event_name
-    ) %>%
-    filter(
+    ) |>
+    dplyr$filter(
       !is.na(event_url)
-    ) %>%
-    transmute(
+    ) |> 
+    dplyr$transmute(
       Reports = paste0(
         "<a href=\"",
         event_url,
@@ -49,14 +49,9 @@ cat(message)
 ```
 
 ```{r, results = "asis"}
-p <- plot_general(flag_source, iso3, country) +
-  theme(
-    plot.title = element_text(size = 14),
-    axis.title = element_text(size = 10),
-    axis.text = element_text(size = 10)
-  )
+p <- plot_general(flag_type, iso3)
 
-add_ggplot_custom(
+email$add_ggplot_custom(
   plot_object = p,
   alt = "Alert plot",
   height = 3,
@@ -105,7 +100,7 @@ if (flag_type == "displacement") {
 ```{r, eval = show_table}
 if (flag_source == "idmc") {
   # load idmc data
-  knitr::kable(
+  knitr$kable(
     df_display,
     table.attr = "class=\"scrollable\"",
     format = "html",
