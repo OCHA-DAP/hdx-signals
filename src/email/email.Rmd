@@ -11,48 +11,56 @@ h1, h2, h3 {
 }
 
 p {
-  font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif
+  font-family: "Source Sans 3", "Helvetica Neue", Helvetica, Arial, sans-serif
 }
 
 </style>
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(
+box::use(knitr)
+knitr$opts_chunk$set(
   echo = FALSE,
   warning = FALSE,
   message = FALSE,
-  fontfamily = "Source Sans Pro",
+  fontfamily = "Source Sans 3",
   fig.cap = "",
   fig.path = file.path("figure", paste0(flag_source, "_", flag_type), "")
 )
 
-library(blastula)
-library(purrr)
-library(dplyr)
-library(sf)
-library(stringr)
-library(gghdx)
+box::use(blastula)
+box::use(purrr)
+box::use(dplyr)
+box::use(stringr)
+box::use(gghdx)
+box::use(rlang[`:=`, `!!`])
+box::use(gg = ggplot2)
 
 # adding these calls because they are optional dependencies
 # so removes renv warning
-library(showtext)
-library(showtextdb)
-library(sysfonts)
-gghdx()
+box::use(showtext)
+box::use(showtextdb)
+box::use(sysfonts)
+gghdx$gghdx()
 
-source("email.R")
+# local utilities
+box::use(../../src/utils/email)
+box::use(../../src/utils/format_date[format_date])
+box::use(gs = ../../src/utils/google_sheets)
+box::use(../../src/utils/plots/plot[plot_general])
 
-flag_source_str <- str_to_upper(flag_source)
-flag_type_str <- str_replace(str_to_title(flag_type), "_", " ")
+# getting types and sources in proper format
 
-flags_specific <- filter(
-  flags_email,
+flag_source_str <- stringr$str_to_upper(flag_source)
+flag_type_str <- stringr$str_replace(stringr$str_to_title(flag_type), "_", " ")
+
+flags_specific <- dplyr$filter(
+  df_email,
   flag_type == !!flag_type,
   flag_source == !!flag_source
 )
 
 # get list of country links for putting in first paragraphs
-flags_specific$country_id <- str_replace(tolower(flags_specific$country), " ", "-")
+flags_specific$country_id <- stringr$str_replace(tolower(flags_specific$country), " ", "-")
 countries_md <- paste0(
   "<a href=\"#",
   flags_specific$country_id,
@@ -63,14 +71,14 @@ countries_md <- paste0(
 )
 
 # get the intro methods text based on the displacement type
-flag_method <- case_when(
+flag_method <- dplyr$case_when(
   flag_type == "displacement" ~ "abnormally high displacement data from the Internal Displacement Monitoring Centre (IDMC)",
   flag_type == "food_insecurity" ~ "estimated increase in populations of phase 3 and/or above from Integrated Food Security Phase Classification / Cadre Harmonisé (IPC/CH) data",
   flag_type == "cholera" ~ "increases in cholera cases from the WHO's AFRO bulletins"
 )
 
 # CERF dashboard link
-cerf_link <- case_when(
+cerf_link <- dplyr$case_when(
   flag_type %in% c("displacement", "food_insecurity") ~ "[CERF global monitoring dashboard](https://app.powerbi.com/groups/2ecadc97-779b-45da-bc5a-f8917fbdc734/reports/a06761fe-5edb-43f4-9d28-b01c8d813a02/ReportSection?experience=power-bi)",
   flag_type == "cholera" ~ "[CERF WHO disease tracking dashboard](https://app.powerbi.com/links/jVxHiZwVmR?ctid=0f9e35db-544f-4f60-bdcc-5ea416e6dc70&pbi_source=linkShare)"
 )
@@ -81,7 +89,7 @@ cerf_link <- case_when(
 <div style="display:none">`r paste(flags_specific$country, collapse = ", ")`</div>
 
 ```{r, results="asis"}
-add_image(
+blastula$add_image(
   file = "centre_logo.png",
   alt = "Centre for Humanitarian Data logo",
   align = "left",
@@ -98,12 +106,12 @@ The global monitoring and alert system is managed by the OCHA Centre for Humanit
 </p>
 </div>
 
-## `r flag_type_str`, `r gsub("^0", "", format(Sys.Date(), "%d %B %Y"))`
+## `r flag_type_str`, `r format_date(Sys.Date())`
 
-`r str_to_sentence(flag_type_str)` alerts have been flagged for
+`r stringr$str_to_sentence(flag_type_str)` alerts have been flagged for
 the following locations: `r countries_md`.
 
-`r str_to_sentence(flag_type_str)`
+`r stringr$str_to_sentence(flag_type_str)`
 alerts are generated based on `r flag_method`. Full documentation and
 source code is available on 
 [GitHub](https://github.com/OCHA-DAP/pa-global-monitoring/). See the
@@ -113,9 +121,9 @@ source code is available on
 
 ```{r, results = "asis"}
 
-pwalk(
-  .l = flags_specific %>%
-    select(
+purrr$pwalk(
+  .l = flags_specific |>
+    dplyr$select(
       iso3,
       country,
       country_id,
@@ -135,7 +143,7 @@ pwalk(
     url,
     summary_experimental
   ) {
-    knitr::knit_child(
+    knitr$knit_child(
       "alert_section.Rmd",
       envir = environment(),
       quiet = TRUE
@@ -153,7 +161,7 @@ for Data Science at leonardo.milano@un.org with any questions or feedback.
 ----
 
 ```{r}
-add_image(
+blastula$add_image(
   file = "ocha_logo_wide.png",
   align = "center",
   width = "25%"

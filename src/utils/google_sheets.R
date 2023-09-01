@@ -55,6 +55,7 @@ update_gs_file <- function(df, name) {
       "Set `GMAS_TEST_RUN` env variable to `FALSE` if you want the data to be ",
       "saved, but be careful of sending emails or calling the OpenAI API."
     )
+    return(invisible(NULL))
   }
   googlesheets4$write_sheet(
     data = df,

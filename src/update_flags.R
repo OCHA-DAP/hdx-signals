@@ -1,37 +1,15 @@
-library(tidyverse)
-library(blastula)
+box::use(dplyr)
+box::use(purrr)
+box::use(tidyr)
 
-source(
-  file.path(
-    "src",
-    "utils",
-    "google_sheets.R"
-  )
-)
+# local modules
+box::use(gs = utils/google_sheets)
 
-inds_dir <- file.path(
-  "src",
-  "indicators"
-)
-
-#########################
-#### LOAD INDICATORS ####
-#########################
-
-# runs all indicator scripts
-
-walk(
-  .x = list.files(
-    inds_dir,
-    recursive = TRUE,
-    pattern = "^run_(.*).R$"
-  ),
-  .f = ~source(
-    file.path(inds_dir, .x),
-    local = TRUE,
-    verbose = FALSE
-  )
-)
+# the scripts to update the source datasets are called in a bash script
+# in the GitHub actions workflow. If you need to manually run an update
+# then make sure that you run the necessary scripts and update the
+# flags_... Google Sheets files before loading them in here and running the
+# emails.
 
 #############################
 #### CREATE GLOBAL FLAGS ####
@@ -41,13 +19,12 @@ walk(
 
 ind_flags <- c("flags_ipc", "flags_idmc", "flags_cholera")
 
-flags_total <- map(
+flags_total <- purrr$map(
   .x = ind_flags,
-  .f = read_gs_file,
-  col_types = "ccccDDccclc"
-) %>%
-  list_rbind() %>%
-  arrange(
+  .f = \(x) gs$read_gs_file(name = x, col_types = "ccccDDccclc")
+) |>
+  purrr$list_rbind() |>
+  dplyr$arrange(
     iso3,
     country,
     start_date,
@@ -56,16 +33,16 @@ flags_total <- map(
 
 # create long format dataset for filtration on the dashboard
 
-flags_total_daily <- flags_total %>%
-  filter(
+flags_total_daily <- flags_total |>
+  dplyr$filter(
     flag_type != "cholera"
   ) %>%
-  rowwise() %>%
-  mutate(
+  dplyr$rowwise() %>%
+  dplyr$mutate(
     date = list(seq(start_date, end_date, by = "day")),
     .before = start_date
   ) %>%
-  unnest(
+  tidyr$unnest(
     cols = date
   )
 
