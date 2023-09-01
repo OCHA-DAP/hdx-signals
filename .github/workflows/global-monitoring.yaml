@@ -31,7 +31,7 @@ jobs:
       CHD_DS_HOST: ${{ secrets.CHD_DS_HOST }}
       CHD_DS_PORT: ${{ secrets.CHD_DS_PORT }}
       CERF_CHOLERA_DATA: ${{ secrets.CERF_CHOLERA_DATA }}
-      GMAS_TEST_RUN: %{{ inputs.test_run || 'FALSE' }}
+      GMAS_TEST_RUN: ${{ inputs.test_run || 'FALSE' }}
 
     steps:
       - uses: actions/checkout@v3
