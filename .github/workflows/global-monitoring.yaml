@@ -72,4 +72,3 @@ jobs:
         run |
           Rscript src/send_updates.R
         shell: bash
-
