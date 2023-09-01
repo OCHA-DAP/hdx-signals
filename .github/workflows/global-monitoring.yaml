@@ -70,5 +70,5 @@ jobs:
         shell: bash
       - name: Update flags and send emails
         run: |
-          Rscript src/send_updates.R
+          Rscript src/send_alerts.R
         shell: bash
