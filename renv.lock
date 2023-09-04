@@ -99,11 +99,11 @@
       "Version": "0.1.6",
       "Source": "GitHub",
       "RemoteType": "github",
-      "RemoteUsername": "OCHA-DAP",
-      "RemoteRepo": "Ripc",
-      "RemoteRef": "HEAD",
-      "RemoteSha": "1ced2b6d341c72be5cf42027ca9590527fc344c5",
       "RemoteHost": "api.github.com",
+      "RemoteRepo": "Ripc",
+      "RemoteUsername": "OCHA-DAP",
+      "RemoteRef": "HEAD",
+      "RemoteSha": "c9d3ebc7b45f1515b092d17edbd49cd43440e144",
       "Requirements": [
         "countrycode",
         "dplyr",
@@ -117,17 +117,17 @@
         "stringr",
         "tidyr"
       ],
-      "Hash": "edaf92f08f5a8739ae28ad67368712f9"
+      "Hash": "6a0643a9cdef2ed1d4670f2168c05fec"
     },
     "askpass": {
       "Package": "askpass",
-      "Version": "1.1",
+      "Version": "1.2.0",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
         "sys"
       ],
-      "Hash": "e8a22846fff485f0be3770c2da758713"
+      "Hash": "cad6cf7f1d5f6e906700b9d3e718c796"
     },
     "assertthat": {
       "Package": "assertthat",
@@ -477,7 +477,7 @@
     },
     "dplyr": {
       "Package": "dplyr",
-      "Version": "1.1.2",
+      "Version": "1.1.3",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -496,7 +496,7 @@
         "utils",
         "vctrs"
       ],
-      "Hash": "dea6970ff715ca541c387de363ff405e"
+      "Hash": "e85ffbebaad5f70e1a2e2ef4302b4949"
     },
     "dtplyr": {
       "Package": "dtplyr",
@@ -898,28 +898,25 @@
     },
     "idmc": {
       "Package": "idmc",
-      "Version": "0.2.0",
+      "Version": "0.3.0.9000",
       "Source": "GitHub",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
       "RemoteRepo": "idmc",
       "RemoteUsername": "OCHA-DAP",
       "RemoteRef": "HEAD",
-      "RemoteSha": "5f1b29d600844727553c7eceb0a5acd209f9ae44",
+      "RemoteSha": "88ecfa7f7cb9bb5a2cdeb1f14494e81fc151a95f",
       "Requirements": [
         "R",
         "dplyr",
         "httr",
         "jsonlite",
         "lifecycle",
-        "lubridate",
         "magrittr",
-        "memoise",
         "stringr",
-        "tidyr",
-        "zoo"
+        "tidyr"
       ],
-      "Hash": "72b35d61ecdfb7f4d596b3f33a231131"
+      "Hash": "f9a62efa5e197b662d102e306c722bd3"
     },
     "ids": {
       "Package": "ids",
