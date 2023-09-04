@@ -11,28 +11,17 @@ rapid response, is justified.
 
 ## Analysis
 
-These early warnings are run on different global indicators. All of the
+Early warnings are run from different sets of global indicators. All of the
 analysis code is contained under the `src` folder. Each indicator has
-its own folder with a `run.R` file that generates the alerts for that
+its own folder with a `update_(...).R` file that downloads raw data for the
+indicator, wrangles into a usable file for visualizations and alerts, and
+generates flags for that indicator. These files are all standalone files that
+generates alerts for that
 indicator, as well as a `README.md` file with details on the analysis
 specific to that indicator.
 
 All analysis is run using the `src/run.R` file. The structure of the
 `src` folder looks like the below:
-
-```
-├── indicators
-│   ├── indicator1
-│   │   ├── README.md
-│   │   └── run.R
-│   └── indicator2
-│       ├── README.md
-│       └── run.R
-└── run.R
-```
-
-Analysis is re-run nightly using GitHub Actions. More details will come on
-what is needed to reproduce the analysis.
 
 ## Flagging outputs
 
@@ -49,26 +38,6 @@ filtration on the PowerBI dashboard.
 A record of previous emails generated is stored in `flags_emailed.gdsheets`, which
 simply stores records from `flags_total.gdsheets` whenever they are used to generate
 an email, with a single additional column recording the date of the email.
-
-## Indicators
-
-The methodologies for each of the indicators analyzed within the project
-are contained in their own specific README files, linked below. The code
-output for all data sources are three files:
-
-1. `flags_{type}.gdsheets`: a flagging dataset that has a row of flags
-with a start date, end date, and explanatory message. There is only one
-output flag for each source of data.
-2. `raw_{type}.gdsheets`: the raw data from the data source that can be used to
-contextualize the alert. Typically only useful in tabular format.
-3. `wrangled_{type}.gdsheets`: the wrangled data from the data source that can
-be used to contextualize the alert, and is generally ready for plotting.
-
-The current indicators included in the CERF GMS are:
-
-- [Internal Displacement Monitoring Centre (IDMC) displacement data](src/indicators/idmc/README.md)
-- [Integrated Food Security Phase Classification (IPC) food security data](src/indicators/ipc/README.md)
-- [WHO AFRO cholera data](src/indicators/cholera/README.md)
 
 ----
 
