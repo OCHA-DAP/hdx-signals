@@ -1,4 +1,4 @@
-# Testing
+## Testing
 
 Testing for the global monitoring system is currently designed around testing
 shifts in email design without sending out emails to all recipients of the alert
