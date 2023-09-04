@@ -24,6 +24,6 @@ be used to contextualize the alert, and is generally ready for plotting.
 
 The current indicators included in the CERF GMS are:
 
-- [Internal Displacement Monitoring Centre (IDMC) displacement data](src/indicators/idmc/README.md)
-- [Integrated Food Security Phase Classification (IPC) food security data](src/indicators/ipc/README.md)
-- [WHO AFRO cholera data](src/indicators/cholera/README.md)
+- [Internal Displacement Monitoring Centre (IDMC) displacement data](/src/indicators/idmc/README.md)
+- [Integrated Food Security Phase Classification (IPC) food security data](/src/indicators/ipc/README.md)
+- [WHO AFRO cholera data](/src/indicators/cholera/README.md)
