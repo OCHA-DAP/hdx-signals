@@ -19,6 +19,15 @@ source(
   )
 )
 
+source(
+  file.path(
+    "src",
+    "utils",
+    "ai_summarizer.R"
+  )
+)
+
+
 #############
 #### IPC ####
 #############
@@ -142,6 +151,39 @@ df_ipc_wrangled <- left_join(
 ) %>%
   mutate(
     potential_incomparability = replace_na(potential_incomparability, FALSE)
+  ) %>%
+  select(
+    # ordering for consisent saving out
+    iso3,
+    country,
+    anl_id,
+    title,
+    condition,
+    analysis_type,
+    date_of_analysis,
+    analysis_period_start,
+    analysis_period_end,
+    potential_incomparability,
+    population,
+    phase_1_num,
+    phase_1_pct,
+    phase_2_num,
+    phase_2_pct,
+    phase_3_num,
+    phase_3_pct,
+    phase_3pl_num,
+    phase_3pl_pct,
+    phase_4_num,
+    phase_4_pct,
+    phase_4pl_num,
+    phase_4pl_pct,
+    phase_5_num,
+    phase_5_pct,
+    phase_3_pct_delta,
+    phase_3pl_pct_delta,
+    phase_4_pct_delta,
+    phase_4pl_pct_delta,
+    phase_5_pct_delta
   )
 
 #######################
