@@ -64,7 +64,7 @@ get_col_types <- function(name) {
   } else if (name == "wrangled_ipc") {
     col_types <- "ccccccDDDldddddddddddddddddddd"
   } else if (name == "wrangled_cholera") {
-    col_types <- "cDDd"
+    col_types <- "cDcDd"
   } else if (name %in% c("cerf_dashboard_names", "idmc_country_links")) {
     col_types <- "cc"
   } else if (name == "email_recipients") {

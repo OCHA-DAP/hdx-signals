@@ -50,6 +50,7 @@ df_cholera_wrangled <- df_cholera_raw %>%
   ) %>%
   transmute(
     iso3 = countryname(country, destination = "iso3c"),
+    event = event,
     start_date = lubridate::dmy(
       case_when(
         !is.na(start_of_reporting_period) ~ start_of_reporting_period,
@@ -65,6 +66,7 @@ df_cholera_wrangled <- df_cholera_raw %>%
     date
   ) %>%
   summarize(
+    event = paste(unique(event), collapse = "; "),
     start_date = min(start_date),
     cholera_cases = sum(cholera_cases),
     .groups = "drop"
@@ -107,10 +109,13 @@ df_cholera_flags <- df_cholera_wrangled %>%
   summarize(
     end_date = max(date),
     latest_flag = tail(flag, n = 1),
-    message = paste(
-      "There have been",
+    message = paste0(
+      "<b>WHO reported event:</b> ",
+      unique(event),
+      "\n\n",
+      "There have been ",
       scales::comma(tail(cholera_cases, n = 1)),
-      "cholera cases reported since",
+      " cases reported since ",
       gsub("^0", "", format(min(start_date), format = "%d %B %Y."))
     ),
     .groups = "drop"
