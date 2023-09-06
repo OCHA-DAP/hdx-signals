@@ -46,7 +46,7 @@ df_cholera_raw <- read_csv(
 df_cholera_wrangled <- df_cholera_raw %>%
   clean_names() %>%
   filter(
-    str_detect(tolower(event), "cholera")
+    str_detect(tolower(event), "cholera") & !str_detect(tolower(event), "intestinal|bacterial|shigellosis|salmonellosis")
   ) %>%
   transmute(
     iso3 = countryname(country, destination = "iso3c"),
