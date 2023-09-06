@@ -62,7 +62,7 @@ get_col_types <- function(name) {
   } else if (name == "wrangled_idmc") {
     col_types <- "ccDddddddlllllldl"
   } else if (name == "wrangled_ipc") {
-    col_types <- "ccccccDDDldddddddddddddddddddd"
+    col_types <- "cccccccDDDldddddddddddddddddddd"
   } else if (name == "wrangled_cholera") {
     col_types <- "cDcDd"
   } else if (name %in% c("cerf_dashboard_names", "idmc_country_links")) {

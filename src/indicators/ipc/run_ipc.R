@@ -160,6 +160,7 @@ df_ipc_wrangled <- left_join(
     title,
     condition,
     analysis_type,
+    analysis_url,
     date_of_analysis,
     analysis_period_start,
     analysis_period_end,
