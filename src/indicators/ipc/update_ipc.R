@@ -14,6 +14,15 @@ box::use(gs = ../../utils/google_sheets)
 box::use(../../utils/ai_summarizer[ai_summarizer])
 box::use(../../utils/get_country_names[get_country_names])
 
+source(
+  file.path(
+    "src",
+    "utils",
+    "ai_summarizer.R"
+  )
+)
+
+
 #############
 #### IPC ####
 #############
@@ -138,6 +147,39 @@ df_ipc_wrangled <- dplyr$left_join(
 ) |>
   dplyr$mutate(
     potential_incomparability = tidyr$replace_na(potential_incomparability, FALSE)
+  ) |>
+  dplyr$select(
+    # ordering for consisent saving out
+    iso3,
+    country,
+    anl_id,
+    title,
+    condition,
+    analysis_type,
+    date_of_analysis,
+    analysis_period_start,
+    analysis_period_end,
+    potential_incomparability,
+    population,
+    phase_1_num,
+    phase_1_pct,
+    phase_2_num,
+    phase_2_pct,
+    phase_3_num,
+    phase_3_pct,
+    phase_3pl_num,
+    phase_3pl_pct,
+    phase_4_num,
+    phase_4_pct,
+    phase_4pl_num,
+    phase_4pl_pct,
+    phase_5_num,
+    phase_5_pct,
+    phase_3_pct_delta,
+    phase_3pl_pct_delta,
+    phase_4_pct_delta,
+    phase_4pl_pct_delta,
+    phase_5_pct_delta
   )
 
 #######################
