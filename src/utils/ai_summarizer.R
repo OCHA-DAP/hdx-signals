@@ -39,7 +39,7 @@ ai_summarizer <- function(prompt, info) {
     }
 
     # now we split down the middle and send back to the summarizer
-    split_idx <- which.min(cumsum(nchars) >= total_nchar / 2)
+    split_idx <- min(which(cumsum(nchars) >= total_nchar / 2))
     ai_summarizer(
       prompt = prompt,
       info = paste(
