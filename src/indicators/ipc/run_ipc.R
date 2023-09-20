@@ -1,4 +1,4 @@
-library(Ripc)
+library(ripc)
 library(tidyverse)
 library(countrycode)
 library(rvest)
@@ -61,10 +61,10 @@ df_ipc <- df_ipc_raw %>%
   ) %>% left_join(
     ipc_get_analyses() %>%
       transmute(
-        anl_id,
+        analysis_id,
         analysis_url = str_replace(link, "http://www-test.fao.org/ipcinfo-portal", "https://www.ipcinfo.org")
       ),
-    by = "anl_id"
+    by = "analysis_id"
   ) %>%
   relocate(analysis_url, .after = analysis_type) %>%
   group_by(
@@ -103,7 +103,7 @@ df_cur_delta <- df_ipc %>%
   slice(-1) %>% # drop the first observations where change is NA
   ungroup() %>%
   select(
-    anl_id,
+    analysis_id,
     analysis_type,
     ends_with("delta"),
     potential_incomparability
@@ -133,7 +133,7 @@ df_proj_delta <- df_ipc %>%
   slice(-1) %>% # drop the first observations where change is NA
   ungroup() %>%
   select(
-    anl_id,
+    analysis_id,
     analysis_type,
     ends_with("delta")
   )
@@ -147,7 +147,7 @@ df_proj_delta <- df_ipc %>%
 df_ipc_wrangled <- left_join(
   df_ipc,
   bind_rows(df_cur_delta, df_proj_delta),
-  by = c("anl_id", "analysis_type")
+  by = c("analysis_id", "analysis_type")
 ) %>%
   mutate(
     potential_incomparability = replace_na(potential_incomparability, FALSE)
@@ -156,7 +156,7 @@ df_ipc_wrangled <- left_join(
     # ordering for consisent saving out
     iso3,
     country,
-    anl_id,
+    analysis_id,
     title,
     condition,
     analysis_type,
