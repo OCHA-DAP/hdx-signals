@@ -25,13 +25,15 @@ get_country_names <- function(df) {
     df <- dplyr$select(df, -country)
   }
 
-  dplyr$left_join(df, df_names, by = "iso3") |>
-    dplyr$relocate(country, .after = iso3) |>
-    dplyr$mutate(
-      country = ifelse(
-        is.na(country),
-        countrycode$countrycode(iso3, origin = "iso3c", destination = "country.name.en"),
-        country
-      )
-    )
+  df_ret <- dplyr$left_join(df, df_names, by = "iso3") |>
+    dplyr$relocate(country, .after = iso3)
+
+  # only fill in missing country values
+  df_ret[is.na(df_ret$country), "country"] <- countrycode$countrycode(
+    df_ret$iso3[is.na(df_ret$country)],
+    origin = "iso3c",
+    destination = "country.name.en"
+  )
+
+  df_ret
 }

@@ -5,6 +5,7 @@ box::use(lubridate)
 box::use(purrr)
 box::use(rlang[`!!`])
 box::use(tidyr)
+box::use(scales)
 
 # internal utilities
 # first set the root search path for utilities
@@ -81,7 +82,7 @@ df_idmc_flags <- flagging$generate_alerts(
       TRUE ~ paste("between", format_date(data_start_date), "and", format_date(data_end_date))
     ),
     message = paste0(
-      scales::comma(round(data_sum)),
+      scales$comma(round(data_sum)),
       " people were displaced ",
       message_date,
       "."

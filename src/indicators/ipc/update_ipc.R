@@ -1,5 +1,5 @@
 # external packages
-box::use(Ripc)
+box::use(ripc)
 box::use(dplyr)
 box::use(countrycode)
 box::use(stringr)
@@ -14,33 +14,27 @@ box::use(gs = ../../utils/google_sheets)
 box::use(../../utils/ai_summarizer[ai_summarizer])
 box::use(../../utils/get_country_names[get_country_names])
 
-source(
-  file.path(
-    "src",
-    "utils",
-    "ai_summarizer.R"
-  )
-)
-
-
 #############
 #### IPC ####
 #############
 
-# get into country level form
-df_ipc_raw <- Ripc$ipc_get_population()$country |>
+# get into country level form and correct the names
+df_ipc_raw <- ripc$ipc_get_population()$country |>
   dplyr$filter(
     condition == "A" # only use acute for now, chronic doesn't have date info
-  ) |>
-  dplyr$mutate(
-    iso3 = ifelse(
-      country == "LAC",
-      country,
-      countrycode$countrycode(country, origin = "iso2c", destination = "iso3c")
-    )
-  ) |>
-  get_country_names()
+  )
 
+# separately run countrycode to avoid warning for no match for LAC
+df_ipc_raw[df_ipc_raw$country == "LAC", "iso3"] <- "LAC"
+df_ipc_raw[df_ipc_raw$country != "LAC", "iso3"] <- countrycode$countrycode(
+  df_ipc_raw$country[df_ipc_raw$country != "LAC"],
+  origin = "iso2c",
+  destination = "iso3c"
+)
+
+df_ipc_raw <- get_country_names(df_ipc_raw)
+
+# now create the wrangled file
 df_ipc <- df_ipc_raw |>
   dplyr$rename_with(
     .fn = ~stringr$str_replace(.x, "phase", "phase_")
@@ -55,12 +49,12 @@ df_ipc <- df_ipc_raw |>
     phase_4pl_pct = phase_4_pct + phase_5_pct
   ) |>
   dplyr$left_join(
-    Ripc$ipc_get_analyses() |>
+    ripc$ipc_get_analyses() |>
       dplyr$transmute(
-        anl_id,
+        analysis_id,
         analysis_url = stringr$str_replace(link, "http://www-test.fao.org/ipcinfo-portal", "https://www.ipcinfo.org")
       ),
-    by = "anl_id"
+    by = "analysis_id"
   ) |>
   dplyr$relocate(analysis_url, .after = analysis_type) |>
   dplyr$group_by(
@@ -99,7 +93,7 @@ df_cur_delta <- df_ipc |>
   dplyr$slice(-1) |> # drop the first observations where change is NA
   dplyr$ungroup() |>
   dplyr$select(
-    anl_id,
+    analysis_id,
     analysis_type,
     dplyr$ends_with("delta"),
     potential_incomparability
@@ -129,7 +123,7 @@ df_proj_delta <- df_ipc |>
   dplyr$slice(-1) |> # drop the first observations where change is NA
   dplyr$ungroup() |>
   dplyr$select(
-    anl_id,
+    analysis_id,
     analysis_type,
     dplyr$ends_with("delta")
   )
@@ -143,7 +137,7 @@ df_proj_delta <- df_ipc |>
 df_ipc_wrangled <- dplyr$left_join(
   df_ipc,
   dplyr$bind_rows(df_cur_delta, df_proj_delta),
-  by = c("anl_id", "analysis_type")
+  by = c("analysis_id", "analysis_type")
 ) |>
   dplyr$mutate(
     potential_incomparability = tidyr$replace_na(potential_incomparability, FALSE)
@@ -152,10 +146,11 @@ df_ipc_wrangled <- dplyr$left_join(
     # ordering for consisent saving out
     iso3,
     country,
-    anl_id,
+    analysis_id,
     title,
     condition,
     analysis_type,
+    analysis_url,
     date_of_analysis,
     analysis_period_start,
     analysis_period_end,

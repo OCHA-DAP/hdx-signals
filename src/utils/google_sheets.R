@@ -93,7 +93,7 @@ all_files <- googledrive$drive_ls(
 #' @returns Google Drive row that matches the name, which can be used to download
 #'     to download and update the file.
 get_gs_file <- function(name) {
-  dplyr$filter(all_files, stringr::str_starts(name, !!name))
+  dplyr$filter(all_files, stringr$str_starts(name, !!name))
 }
 
 #' Retrieve static column types for specified sheet

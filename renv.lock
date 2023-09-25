@@ -61,31 +61,6 @@
       ],
       "Hash": "45f0398006e83a5b10b72a90663d8d8c"
     },
-    "Ripc": {
-      "Package": "Ripc",
-      "Version": "0.1.6",
-      "Source": "GitHub",
-      "RemoteType": "github",
-      "RemoteHost": "api.github.com",
-      "RemoteRepo": "Ripc",
-      "RemoteUsername": "OCHA-DAP",
-      "RemoteRef": "HEAD",
-      "RemoteSha": "c9d3ebc7b45f1515b092d17edbd49cd43440e144",
-      "Requirements": [
-        "countrycode",
-        "dplyr",
-        "httr",
-        "lifecycle",
-        "lubridate",
-        "magrittr",
-        "memoise",
-        "purrr",
-        "rlang",
-        "stringr",
-        "tidyr"
-      ],
-      "Hash": "6a0643a9cdef2ed1d4670f2168c05fec"
-    },
     "askpass": {
       "Package": "askpass",
       "Version": "1.2.0",
@@ -671,10 +646,10 @@
       "Source": "GitHub",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
-      "RemoteRepo": "idmc",
       "RemoteUsername": "OCHA-DAP",
-      "RemoteRef": "HEAD",
-      "RemoteSha": "557cd42af25d978520c6febff0f14a5e57d521e5",
+      "RemoteRepo": "idmc",
+      "RemoteRef": "main",
+      "RemoteSha": "a18516cf2148b6d4ac5093c381dffc70011b4879",
       "Requirements": [
         "R",
         "dplyr",
@@ -685,7 +660,7 @@
         "stringr",
         "tidyr"
       ],
-      "Hash": "5302dcbe94f410611b131426ff6193d7"
+      "Hash": "4dcd6e558752625bdfaf8c3e57ee3c47"
     },
     "ids": {
       "Package": "ids",
@@ -1039,6 +1014,30 @@
         "utils"
       ],
       "Hash": "c321cd99d56443dbffd1c9e673c0c1a2"
+    },
+    "ripc": {
+      "Package": "ripc",
+      "Version": "0.2.0.9000",
+      "Source": "GitHub",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteUsername": "OCHA-DAP",
+      "RemoteRepo": "ripc",
+      "RemoteRef": "main",
+      "RemoteSha": "eb9cd063d6830c21ddc7dd1c372f0e170db303a5",
+      "Requirements": [
+        "countrycode",
+        "dplyr",
+        "httr",
+        "lifecycle",
+        "lubridate",
+        "magrittr",
+        "purrr",
+        "rlang",
+        "stringr",
+        "tidyr"
+      ],
+      "Hash": "fe42e961b172229ff3c29abef14df4ea"
     },
     "rlang": {
       "Package": "rlang",
