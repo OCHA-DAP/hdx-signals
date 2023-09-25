@@ -1039,6 +1039,30 @@
       ],
       "Hash": "fe42e961b172229ff3c29abef14df4ea"
     },
+    "ripc": {
+      "Package": "ripc",
+      "Version": "0.2.0.9000",
+      "Source": "GitHub",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteUsername": "OCHA-DAP",
+      "RemoteRepo": "ripc",
+      "RemoteRef": "main",
+      "RemoteSha": "eb9cd063d6830c21ddc7dd1c372f0e170db303a5",
+      "Requirements": [
+        "countrycode",
+        "dplyr",
+        "httr",
+        "lifecycle",
+        "lubridate",
+        "magrittr",
+        "purrr",
+        "rlang",
+        "stringr",
+        "tidyr"
+      ],
+      "Hash": "fe42e961b172229ff3c29abef14df4ea"
+    },
     "rlang": {
       "Package": "rlang",
       "Version": "1.1.1",
