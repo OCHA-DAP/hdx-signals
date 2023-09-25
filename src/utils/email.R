@@ -1,5 +1,6 @@
 box::use(blastula)
 box::use(stringr)
+box::use(here)
 
 # local modules
 box::use(gs = ../utils/google_sheets)
@@ -53,7 +54,7 @@ send_email <- function(flag_type, flag_source, df_email, test_email) {
   bcc = df_recipients[!df_recipients$to,]$email
 
   rendered_email <- blastula$render_email(
-    input = file.path(
+    input = here$here(
       "src",
       "email",
       "email.rmd"
