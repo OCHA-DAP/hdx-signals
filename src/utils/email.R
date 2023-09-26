@@ -55,6 +55,7 @@ send_email <- function(flag_type, flag_source, df_email, test_email) {
 
   rendered_email <- blastula$render_email(
     input = here$here(
+      ".",
       "src",
       "email",
       "email.rmd"
