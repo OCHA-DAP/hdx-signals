@@ -1,29 +1,41 @@
-library(tidyverse)
-library(gghdx)
-gghdx()
+box::use(dplyr)
+box::use(tidyr)
+box::use(rlang[`!!`])
+box::use(gghdx)
+box::use(gg = ggplot2)
+box::use(scales)
 
-source(
-  file.path(
-    "src",
-    "utils",
-    "google_sheets.R"
-  )
-)
+gghdx$gghdx()
 
-plot_ipc <- function(
-    iso3,
-    country
+# local modules
+box::use(gs = ../../utils/google_sheets)
+
+#' Plot IPC food insecurity data
+#'
+#' Plots IPC food insecurity data for a specific country, defined by an ISO3 code.
+#' The wrangled IPC data is loaded in and filtered to that country.
+#' Food insecurity is plotted as population % in phases 3+, 4+, and 5. Points
+#' are added to the current and projected estimates that generated the alerts
+#' (i.e. those that saw a rise in estimates). Colored areas indicate the
+#' current estimates and projected estimates in the plot.
+#'
+#' @param iso3 ISO3 code.
+#'
+#' @returns Plot of food insecurity for that country.
+#'
+#' @export
+plot_food_insecurity <- function(
+    iso3
 ) {
-
   # load in the data for plotting
-  df_plot <- read_gs_file("wrangled_ipc") %>%
-    filter(
+  df_plot <- gs$read_gs_file("wrangled_ipc") |>
+    dplyr$filter(
       iso3 == !!iso3
-    ) %>%
-    pivot_longer(
+    ) |>
+    tidyr$pivot_longer(
       cols = c(phase_3pl_pct, phase_4pl_pct, phase_5_pct)
-    ) %>%
-    mutate(
+    ) |>
+    dplyr$mutate(
       type_label = ifelse(
         analysis_type == "current",
         "estimate",
@@ -32,28 +44,28 @@ plot_ipc <- function(
     )
 
   # get date for plotting text areas
-  df_proj <- df_plot %>%
-    filter(
+  df_proj <- df_plot |>
+    dplyr$filter(
       analysis_type != "current"
     )
 
-  df_latest_curr <- df_plot %>%
-    filter(
+  df_latest_curr <- df_plot |>
+    dplyr$filter(
       analysis_type == "current"
-    ) %>%
-    filter(
+    ) |>
+    dplyr$filter(
       analysis_period_start == max(analysis_period_start)
     )
 
   # get the start of the previous current estimate
-  df_prev_curr <- df_plot %>%
-    filter(
+  df_prev_curr <- df_plot |>
+    dplyr$filter(
       analysis_type == "current"
-    ) %>%
-    filter(
+    ) |>
+    dplyr$filter(
       analysis_period_start != max(analysis_period_start)
-    ) %>%
-    filter(
+    ) |>
+    dplyr$filter(
       analysis_period_start == max(analysis_period_start)
     )
 
@@ -66,41 +78,41 @@ plot_ipc <- function(
   mid_date_curr <- mean(c(start_date_curr, max(df_latest_curr$analysis_period_end)))
 
   # only add in points for the increases for highlighting
-  df_point <- df_plot %>%
-    filter(
+  df_point <- df_plot |>
+    dplyr$filter(
       phase_3pl_pct_delta > 0 | phase_4pl_pct_delta > 0 | phase_5_pct_delta > 0,
       date_of_analysis == max(date_of_analysis)
     )
 
-  df_plot %>%
-    ggplot(
-      aes(
+  df_plot |>
+    gg$ggplot(
+      gg$aes(
         x = analysis_period_start,
         y = value,
         color = name
       )
     ) +
-    geom_rect(
+    gg$geom_rect(
       xmin = start_date_curr,
       xmax = start_date_proj,
       ymin = 0,
       ymax = Inf,
       color = NA,
-      fill = hdx_hex("mint-light")
+      fill = gghdx$hdx_hex("mint-light")
     ) +
-    geom_rect(
+    gg$geom_rect(
       data = df_proj,
-      mapping = aes(
+      mapping = gg$aes(
         xmax = analysis_period_end
       ),
       xmin = start_date_proj,
       ymin = 0,
       ymax = Inf,
       color = NA,
-      fill = hdx_hex("sapphire-light")
+      fill = gghdx$hdx_hex("sapphire-light")
     ) +
-    geom_text_hdx(
-      aes(
+    gghdx$geom_text_hdx(
+      gg$aes(
         y = mean(range(value)),
       ),
       x = mid_date_proj,
@@ -109,8 +121,8 @@ plot_ipc <- function(
       color = "white",
       size = 3.5
     ) +
-    geom_text_hdx(
-      aes(
+    gghdx$geom_text_hdx(
+      gg$aes(
         y = mean(range(value)),
       ),
       x = mid_date_curr,
@@ -119,30 +131,30 @@ plot_ipc <- function(
       color = "white",
       size = 3.5
     ) +
-    geom_line() +
-    geom_point(
+    gg$geom_line() +
+    gg$geom_point(
       data = df_point,
       shape = 21,
       fill = "white",
       color = "black"
     ) +
-    expand_limits(y = 0) +
-    scale_y_continuous(
-      labels = scales::label_percent()
+    gg$expand_limits(y = 0) +
+    gg$scale_y_continuous(
+      labels = scales$label_percent()
     ) +
-    scale_x_date(
+    gg$scale_x_date(
       date_breaks = "6 months",
-      labels = scales::label_date_short()
+      labels = scales$label_date_short()
     ) +
-    scale_color_manual(
+    gg$scale_color_manual(
       values = c("#E67800", "#C80000", "#640000"),
       labels = c("Phase 3+", "Phase 4+", "Phase 5")
     ) +
-    theme(
-      axis.text.x = element_text(vjust = 1),
-      legend.box.margin = margin(t = -25)
+    gg$theme(
+      axis.text.x = gg$element_text(vjust = 1),
+      legend.box.margin = gg$margin(t = -25)
     ) +
-    labs(
+    gg$labs(
       x = "",
       y = "Analyzed population (%)",
       color = "",
