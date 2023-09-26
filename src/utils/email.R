@@ -59,7 +59,7 @@ send_email <- function(flag_type, flag_source, df_email, test_email) {
     input = here$here(
       "src",
       "email",
-      "email.rmd"
+      "email.Rmd"
     )
   )
 
