@@ -80,6 +80,8 @@ send_email <- function(flag_type, flag_source, df_email, test_email) {
       stringr$str_replace_all(stringr$str_to_title(flag_type), "_", " "),
       " - ",
       format_date(Sys.Date()),
+      " - ",
+      paste(df_email$country, collapse = ", "),
       if (test_email) " - TEST" else ""
     ),
     credentials = email_creds
