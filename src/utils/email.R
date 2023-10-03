@@ -1,5 +1,6 @@
 box::use(blastula)
 box::use(stringr)
+box::use(dplyr)
 
 # local modules
 box::use(gs = ../utils/google_sheets)
@@ -47,6 +48,13 @@ send_email <- function(flag_type, flag_source, df_email, test_email) {
   if (test_email) {
     df_recipients <- df_recipients[df_recipients$test,]
   }
+
+  # filter the emailing data frame to the specific flag type and source
+  df_email <- dplyr$filter(
+    df_email,
+    flag_type == !!flag_type,
+    flag_source == !!flag_source
+  )
 
   # extract who we are sending to and from
   to = df_recipients[df_recipients$to,]$email

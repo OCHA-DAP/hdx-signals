@@ -22,6 +22,14 @@ box::use(lubridate)
 #' @param first_since `numeric` vector indicating when to flag the first positive
 #'     values. For instance, `180` would indicate flagging whenever there is a
 #'     positive value after 180 days.
+#' @param first_since_minimums `numeric` vector of minimum values such that if `x`
+#'     is above it, no flags are generated. If a single value, the value is
+#'     recycled. If the same length as `first_since`, the thresholds are matched
+#'     one-to-one with `first_since`. Since `first_since` is concerned with the
+#'     first value in a period of time, it only triggers on the first instance.
+#'     The minimum is therefore not just on the single first day, but is measured
+#'     against the following 60 days (which matches the period in which an email
+#'     would be generated, older flags would not generate any email).
 #' @param periods `numeric` vector of cumulation periods (in days) that flags
 #'     are calculated, used
 #'     for all of the `thresholds_...` arguments. For instance, `c(7, 30, 90)`
@@ -48,6 +56,7 @@ calculate_flags <- function(
     .data,
     x_col,
     first_since = NULL,
+    first_since_minimums = NULL,
     periods = NULL,
     thresholds_pcts = NULL,
     thresholds_static = NULL,
@@ -130,7 +139,7 @@ calculate_flags <- function(
     }
 
     if (is.null(thresholds_minimums)) {
-      thresholds_minimums <- 0
+      thresholds_minimums <- -Inf
     } else {
       ln_m <- length(thresholds_minimums)
       if (ln_p != ln_m && (ln_m != 1)) {
@@ -155,6 +164,32 @@ calculate_flags <- function(
     }
   }
 
+  # also check the same for first since
+
+  if (!null_fs) {
+    fs_order <- order(first_since, decreasing = TRUE)
+    first_since <- first_since[fs_order]
+    if (is.null(first_since_minimums)) {
+      first_since_minimums <- -Inf
+    } else {
+      ln_fsm <- length(first_since_minimums)
+      ln_fs <- length(first_since)
+      if (ln_fs != ln_fsm && (ln_fsm != 1)) {
+        stop(
+          "`first_since_minimum` must have the same length ",
+          "as `first_since` if passed to `generate_alerts()`, unless length 1, in ",
+          " which case it is recycled.",
+          call. = FALSE
+        )
+      }
+
+      # ensuring order is correct
+      if (ln_fsm > 1) {
+        first_since_minimums <- first_since_minimums[fs_order]
+      }
+    }
+  }
+
   # create the rolling sum columns necessary for flagging
   rs_periods <- c(first_since, periods)
   for (period in rs_periods) {
@@ -173,13 +208,32 @@ calculate_flags <- function(
   # check when we had a day with value above x
   # and 0 in the previous # number of dates
   if (!null_fs) {
-    first_since <- sort(first_since, decreasing = FALSE)
-    for (fs_period in first_since) {
-      .data <- dplyr$mutate(
-        .data,
-        "flag_first_{{ fs_period }}" := .data[[x_col]] > 0 & dplyr$lag(.data[[paste0("rs_", fs_period)]]) == 0
+    # create the forward looking 60 day period for checking the minimums
+    .data <- dplyr$mutate(
+      .data,
+      rs_next_60 = zoo$rollsum(
+        x = .data[[x_col]],
+        k = 60,
+        fill = "extend",
+        align = "left"
       )
-    }
+    )
+
+    df_fs <- purrr$map2(
+      .x = first_since,
+      .y = first_since_minimums,
+      .f = \(fs_period, fs_minimum) {
+        dplyr$mutate(
+          .data,
+          "flag_first_{{ fs_period }}" := .data[[x_col]] > 0 & dplyr$lag(.data[[paste0("rs_", fs_period)]]) == 0 & rs_next_60 >= fs_minimum
+        ) |>
+          dplyr$ungroup() |>
+          dplyr$select(paste0("flag_first_", fs_period))
+      }
+    ) |>
+      dplyr$bind_cols()
+
+    .data <- dplyr$bind_cols(.data, df_fs)
   }
 
   # if period is passed as an argument
@@ -319,7 +373,7 @@ generate_alerts <- function(
     ) |>
     dplyr$filter( # filter between start and end dates and only positive displacement days so the final start date starts when displacement starts
       .data[[date_col]] >= x_start_date,
-      .data[[date_col]] <= alert_end_date,
+      .data[[date_col]] <= alert_end_date + lubridate$days(60), # use so data_sum has all data when reported (emails can't go out after 60 days)
       .data[[x_col]] > 0
     ) |>
     dplyr$summarize(

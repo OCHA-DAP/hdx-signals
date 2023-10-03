@@ -35,8 +35,8 @@ January 1 to January 3 would be considered 1,000 persons displaced each day.
 
 For each country, all displacements for each day is summed up to create a dataset of daily
 displacement (no reported displacement results in 0). Rolling sums are then calculated
-to generate displacement in the past week (7 days), month (30 days), quarter (90 days) and
-year (365 days). 
+to generate displacement in the past week (7 days), month (30 days), and 
+quarter (90 days).
 
 ### Individual flagging
 
@@ -49,7 +49,6 @@ be flagged for new, large scale conflict displacement events. The thresholds are
 - Over 5,000 persons displaced in the past week
 - Over 25,000 persons displaced in the past month
 - Over 100,000 persons displaced in the past quarter
-- Over 500,000 persons displaced in the past year
 
 The anomaly flags are also only generated when the displacement across that
 period of time is also above a specific minimum value. If it is below that
@@ -58,7 +57,6 @@ value, no flag is generated. These lower limits for flagging are:
 - 1,000 persons displaced in the past week
 - 5,000 persons displaced in the past month
 - 10,000 persons displaced in the past quarter
-- 25,000 persons displaced in the past year
 
 Flags are also generated for the first displacement reported in the past 3 months, 6
 months, or year.

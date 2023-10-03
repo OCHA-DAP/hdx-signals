@@ -53,19 +53,13 @@ box::use(../../src/utils/plots/plot[plot_general])
 flag_source_str <- stringr$str_to_upper(flag_source)
 flag_type_str <- stringr$str_replace(stringr$str_to_title(flag_type), "_", " ")
 
-flags_specific <- dplyr$filter(
-  df_email,
-  flag_type == !!flag_type,
-  flag_source == !!flag_source
-)
-
 # get list of country links for putting in first paragraphs
-flags_specific$country_id <- stringr$str_replace(tolower(flags_specific$country), " ", "-")
+df_email$country_id <- stringr$str_replace(tolower(df_email$country), " ", "-")
 countries_md <- paste0(
   "<a href=\"#",
-  flags_specific$country_id,
+  df_email$country_id,
   "\">",
-  flags_specific$country,
+  df_email$country,
   "</a>",
   collapse = ", "
 )
@@ -86,7 +80,7 @@ cerf_link <- dplyr$case_when(
 
 
 <!--Set the preview text of the email-->
-<div style="display:none">`r paste(flags_specific$country, collapse = ", ")`</div>
+<div style="display:none">`r paste(df_email$country, collapse = ", ")`</div>
 
 ```{r, results="asis"}
 blastula$add_image(
@@ -122,7 +116,7 @@ source code is available on
 ```{r, results = "asis"}
 
 purrr$pwalk(
-  .l = flags_specific |>
+  .l = df_email |>
     dplyr$select(
       iso3,
       country,
