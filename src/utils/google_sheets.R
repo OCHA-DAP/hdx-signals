@@ -123,7 +123,7 @@ get_col_types <- function(name) {
   } else if (name == "raw_cholera") {
     col_types <- "c"
   } else if (name == "wrangled_idmc") {
-    col_types <- "ccDddddddlllllldl"
+    col_types <- "ccDddddddlllldl"
   } else if (name == "wrangled_ipc") {
     col_types <- "cccccccDDDldddddddddddddddddddd"
   } else if (name == "wrangled_cholera") {
