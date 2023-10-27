@@ -219,6 +219,11 @@ calculate_flags <- function(
       )
     )
 
+    # here we map across the data and only keep the generated columns each time
+    # so we can bind back to the original data frame
+    # this is so we don't require specific columns passed in originally, so we
+    # bind cols rather than join
+
     df_fs <- purrr$map2(
       .x = first_since,
       .y = first_since_minimums,
