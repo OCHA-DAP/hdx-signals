@@ -24,7 +24,7 @@ the `src` folder looks like the below:
 ```
 
 * [`src/email`](/src/email): contains all RMarkdown files for generating email alerts.
-* [`src/indicators`]((/src/indicators): contains code for updating individual indicator data, where
+* [`src/indicators`](/src/indicators): contains code for updating individual indicator data, where
 each indicator has a folder with documentation and an `update_(...).R` script.
 * [`src/utils`](/src/utils): has a set of utilities that are used across various scripts, for
 reading and writing to the Google Drive, sending emails, generating flags, and

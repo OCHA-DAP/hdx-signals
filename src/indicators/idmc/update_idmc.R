@@ -46,11 +46,12 @@ df_idmc <- df_idmc_raw |>
 df_flagged <- flagging$calculate_flags(
   .data = df_idmc,
   x_col = "displacement_daily",
-  first_since = c(180, 365),
-  periods = c(7, 30, 90, 365),
+  first_since = c(180),
+  first_since_minimums = 1000,
+  periods = c(7, 30, 90),
   thresholds_pcts = 0.95,
-  thresholds_static = c(5000, 25000, 100000, 500000),
-  thresholds_minimums = c(1000, 5000, 10000, 25000)
+  thresholds_static = c(5000, 25000, 100000),
+  thresholds_minimums = c(1000, 5000, 10000)
 )
 
 df_idmc_flags <- flagging$generate_alerts(
@@ -70,27 +71,17 @@ df_idmc_flags <- flagging$generate_alerts(
     end_date = alert_end_date,
     latest_flag = dplyr$case_when(
       alert_name == "flag_first_180" ~ "1st_6_months",
-      alert_name == "flag_first_365" ~ "1st_year",
       alert_name == "flag_anomaly_7" ~ "weekly",
       alert_name == "flag_anomaly_30" ~ "monthly",
-      alert_name == "flag_anomaly_90" ~ "quarterly",
-      alert_name == "flag_anomaly_365" ~ "yearly"
-    ),
-    message_date = dplyr$case_when(
-      data_end_date - data_start_date == 0 ~ paste("on", format_date(data_end_date)),
-      lubridate$year(data_end_date) == lubridate$year(data_start_date) ~ paste("between", format_date(data_start_date), "and", format_date(data_end_date)),
-      TRUE ~ paste("between", format_date(data_start_date), "and", format_date(data_end_date))
+      alert_name == "flag_anomaly_90" ~ "quarterly"
     ),
     message = paste0(
       scales$comma(round(data_sum)),
-      " people were displaced ",
-      message_date,
+      " people have been displaced since ",
+      format_date(data_start_date),
       "."
     ),
     url = paste0("https://www.internal-displacement.org/countries/", country_link)
-  ) |>
-  dplyr$select(
-    -message_date
   )
 
 #####################################

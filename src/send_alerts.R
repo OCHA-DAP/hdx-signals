@@ -65,7 +65,20 @@ gs$update_gs_file(
 #### GENERATE EMAIL ####
 ########################
 
-flags_email <- dplyr$filter(flags_total, email)
+# load in previously sent emails
+df_emailed <- gs$read_gs_file(
+  name = "flags_emailed"
+)
+
+# ensure that emails are not sent again within one month of being sent
+flags_email <- dplyr$filter(flags_total, email) |>
+  dplyr$anti_join(
+    dplyr$filter(
+      df_emailed, # get emails sent in past 30 days
+      Sys.Date() - email_date <= 30
+    ),
+    by = c("iso3", "flag_type", "flag_source")
+  )
 
 purrr$pwalk(
   .l = flags_email |>
@@ -76,25 +89,22 @@ purrr$pwalk(
   .f = \(flag_type, flag_source) email$send_email(flag_type, flag_source, flags_email, FALSE)
 )
 
-
 ##############################
 #### UPDATE FLAGS EMAILED ####
 ##############################
 
-df_emailed <- gs$read_gs_file(
-  name = "flags_emailed"
-) |>
-  dplyr$bind_rows(
-    flags_email |>
-      dplyr$select(
-        -email
-      ) |>
-      dplyr$mutate(
-        email_date = Sys.Date()
-      )
-  )
+df_emailed_update <- dplyr$bind_rows(
+  df_emailed,
+  flags_email |>
+    dplyr$select(
+      -email
+    ) |>
+    dplyr$mutate(
+      email_date = Sys.Date()
+    )
+)
 
 gs$update_gs_file(
-  df = df_emailed,
+  df = df_emailed_update,
   name = "flags_emailed"
 )

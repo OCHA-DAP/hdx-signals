@@ -13,12 +13,16 @@ rapid response, is justified.
 
 The system works by updating a series of indicators data, generating alerts when
 abnormalities are detected, and sending emails for any new and recent alerts.
-You can get an overview of the codebase in [src](/src).
+Refer to the [system document](/src) for full details.
 
 ### Testing and development
 
 For testing email design and interactive development, testing whether the system
 runs properly, refer to the [testing documentation](/src/test).
+
+### Changes
+
+All changes to the repository are tracked in [NEWS.md](NEWS.md).
 
 ----
 
