@@ -1,10 +1,10 @@
-# CERF Global Monitoring System
+# CERF Global Monitoring and Alert System (GMAS)
 
-This repository contains the code base for the CERF Global Monitoring System (GMS).
+This repository contains the code base for the CERF GMAS.
 
 ## Introduction
 
-The CERF GMS is an early warning system designed to generate alerts on
+The CERF GMAS is an early warning system designed to generate alerts on
 potentially new or worsening crises. Alerts are intended to be just an initial
 signal that a crisis should be further explored and see if action, such as
 rapid response, is justified.
