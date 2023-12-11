@@ -2,6 +2,7 @@ box::use(googlesheets4)
 box::use(googledrive)
 box::use(dplyr)
 box::use(stringr)
+box::use(arrow)
 
 box::use(../utils/gmas_test_run[gmas_test_run])
 
@@ -13,23 +14,18 @@ box::use(../utils/gmas_test_run[gmas_test_run])
 #' adding ^ and $ to denote start and end of string respectively and avoid
 #' matching anything like "name.csv". The file is then read in using `read_sheet`.
 #'
-#' The function uses `get_col_types()` to automatically provide column types
-#' when reading sheets, unless `col_types` is not `NULL`. The `sheet` name is
+#' The `sheet` name is
 #' specified to be `name`, matching `update_gs_file()`.
 #'
 #' @param name Name of the Google Sheet.
 #' @param col_types Column type specifications as specified in
-#'     [googlesheets4::read_sheet]. If `NULL`, applies the column types from
-#'     `get_col_types()`
+#'     [googlesheets4::read_sheet].
 #'
 #' @returns Data frame.
 #'
 #' @export
-read_gs_file <- function(name, col_types = NULL, ...) {
+read_gs_file <- function(name, col_types, ...) {
   ss <- get_gs_file(paste0("^", name, "$"))
-  if (is.null(col_types)) {
-    col_types <- get_col_types(name)
-  }
   googlesheets4$read_sheet(
     ss = ss,
     sheet = name,
@@ -38,7 +34,71 @@ read_gs_file <- function(name, col_types = NULL, ...) {
   )
 }
 
+#' Read a Parquet file stored on Google Drive
+#'
+#' Finds the specified Google Drive parquet file by looking for the file `name`.
+#' The function looks for an exact match to the name in the list of files accessed,
+#' adding ^ and .parquet$ to denote start and end of string respectively and avoid
+#' matching anything like "name.csv". The file is then read in using `arrow::read_parquet`.
+#'
+#' The function uses `get_col_types()` to automatically provide column types
+#' when reading sheets, unless `col_types` is not `NULL`. The `sheet` name is
+#' specified to be `name`, matching `update_pq_file()`.
+#'
+#' @param name Name of the file, without the .parquet suffix.
+#' @param ... Additional arguments passed to `arrow::read_parquet`.
+#'
+#' @returns Data frame.
+#'
+#' @export
+read_pq_file <- function(name, ...) {
+  file_id <- get_gs_file(paste0("^", name, ".parquet$"))
+  tf <- tempfile(fileext = ".parquet")
+  googledrive$drive_download(file = file_id, path = tf)
+  arrow$read_parquet(
+    file = tf,
+    ...
+  )
+}
+
+#' Save data frame to parquet file on Google Drive
+#'
+#' A convenient file saver that saves the data frame to the specified
+#' name. Performs the same file name searching with ^ and .parquet$ as in `read_pq_file()`
+#' then simply writes out the data frame using [arrow::write_parquet()] and
+#' uploads that to the Google Drive using [googledrive::drive_upload()].
+#'
+#' @param df Data frame to save out.
+#' @param name Name of the file.
+#'
+#' @export
+update_pq_file <- function(df, name) {
+  file_id <- get_gs_file(paste0("^", name, ".parquet$"))
+  tf <- tempfile(fileext = ".parquet")
+  arrow$write_parquet(
+    x = df,
+    sink = tf
+  )
+
+  if (gmas_test_run()) {
+    message(
+      "`update_pq_file()` not saving data as `gmas_test_run()` is `TRUE`. ",
+      "Set `GMAS_TEST_RUN` env variable to `FALSE` if you want the data to be ",
+      "saved, but be careful of sending emails or calling the OpenAI API."
+    )
+    return(invisible(NULL))
+  }
+
+  googledrive$drive_update(
+    file = file_id,
+    media = tf
+  )
+}
+
 #' Save data frame to Google Sheet
+#'
+#' DEPRECATED: This only exists to save out files for CERF, but will eventually
+#' be removed once CERF switches to API access.
 #'
 #' A convenient file saver that saves the data frame to the specified
 #' name. Performs the same file name searching with ^ and $ as in `read_gs_file()`
@@ -98,41 +158,16 @@ get_gs_file <- function(name) {
   dplyr$filter(all_files, stringr$str_starts(name, !!name))
 }
 
-#' Retrieve static column types for specified sheet
-#'
-#' Since column types are static for most datasets read through the global
-#' monitoring platform, this stores those types by name to automatically use
-#' with `read_gs_file()`. This was done because certain unexpected errors were
-#' occurring when date columns were being read in as POSIX types.
-#'
-#' @param name Name of the Google Sheet.
-get_col_types <- function(name) {
-  # flags files all the same
-  if (name %in% c("flags_idmc", "flags_cholera", "flags_total", "flags_test")) {
-    col_types <- "ccccDDccclc"
-  } else if (name == "flags_ipc") {
-    col_types <- "ccccDDDcclc"
-  } else if (name == "flags_total_daily") {
-    col_types <- "ccccDDDccclc"
-  } else if (name == "flags_emailed") {
-    col_types <- "ccccDDccccD"
-  } else if (name == "raw_idmc") {
-    col_types <- "dccddcccdDDDdcDDllllcccclD"
-  } else if (name == "raw_ipc") {
-    col_types <- "cccDccccDDdddddddddddddcc"
-  } else if (name == "raw_cholera") {
-    col_types <- "c"
-  } else if (name == "wrangled_idmc") {
-    col_types <- "ccDddddddlllldl"
-  } else if (name == "wrangled_ipc") {
-    col_types <- "cccccccDDDldddddddddddddddddddd"
-  } else if (name == "wrangled_cholera") {
-    col_types <- "cDcDd"
-  } else if (name %in% c("cerf_dashboard_names", "idmc_country_links")) {
-    col_types <- "cc"
-  } else if (name == "email_recipients") {
-    col_types <- "ccll"
-  } else {
-    NULL
-  }
+convert_file <- function(name) {
+  ss <- get_gs_file(paste0("^", name, "$"))
+  col_types <- get_col_types(name)
+  df <- googlesheets4$read_sheet(
+    ss = ss,
+    sheet = name,
+    col_types = col_types
+  )
+  arrow$write_parquet(
+    x = df,
+    sink = paste0("/Users/caldwellst/Desktop/", name, ".parquet")
+  )
 }

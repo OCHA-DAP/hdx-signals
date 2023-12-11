@@ -47,14 +47,17 @@ df_cholera_wrangled <- df_cholera_raw |>
   dplyr$transmute(
     iso3 = countrycode$countryname(country, destination = "iso3c"),
     event,
-    start_date = lubridate$dmy(
-      dplyr$case_when(
-        !is.na(start_of_reporting_period) ~ start_of_reporting_period,
-        !is.na(start_of_reporting_period_2) ~ start_of_reporting_period_2,
-        !is.na(start_of_reporting_period_3) ~ start_of_reporting_period_3
-      )
+    start_date_raw = dplyr$case_when(
+      !is.na(start_of_reporting_period) ~ start_of_reporting_period,
+      !is.na(start_of_reporting_period_2) ~ start_of_reporting_period_2,
+      !is.na(start_of_reporting_period_3) ~ start_of_reporting_period_3
     ),
     date = as.Date(week_date),
+    start_date = dplyr$case_when(
+      stringr$str_detect(start_date_raw, "[A-Za-z]{3}") ~ lubridate$dmy(start_date_raw),
+      date >= "2023-09-25" ~ lubridate$mdy(start_date_raw),
+      date < "2023-09-25" ~ lubridate$dmy(start_date_raw)
+    ),
     cholera_cases = readr$parse_number(total_cases)
   ) |>
   dplyr$group_by( # some countries have multiple sets of cases reported each date (DRC)
@@ -128,7 +131,7 @@ df_cholera_flags <- df_cholera_wrangled |>
 #### COMPARE WITH PREVIOUS FLAGGED DATA ####
 ############################################
 
-df_cholera_flags_prev <- gs$read_gs_file(
+df_cholera_flags_prev <- gs$read_pq_file(
   name = "flags_cholera"
 )
 
@@ -165,6 +168,23 @@ df_cholera_flags_final <- dplyr$semi_join(
 #### SAVE IPC  DATA ####
 ########################
 
+gs$update_pq_file(
+  df = df_cholera_raw,
+  name = "raw_cholera"
+)
+
+gs$update_pq_file(
+  df = df_cholera_wrangled,
+  name = "wrangled_cholera"
+)
+
+gs$update_pq_file(
+  df = df_cholera_flags_final,
+  name = "flags_cholera"
+)
+
+# TODO: REMOVE ONCE CERF MOVES TO DOWNLOADING PARQUET FILES
+
 gs$update_gs_file(
   df = df_cholera_raw,
   name = "raw_cholera"
@@ -173,9 +193,4 @@ gs$update_gs_file(
 gs$update_gs_file(
   df = df_cholera_wrangled,
   name = "wrangled_cholera"
-)
-
-gs$update_gs_file(
-  df = df_cholera_flags_final,
-  name = "flags_cholera"
 )

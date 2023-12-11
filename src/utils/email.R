@@ -42,7 +42,7 @@ box::use(../utils/gmas_test_run[gmas_test_run])
 #'
 #' @export
 send_email <- function(flag_type, flag_source, df_email, test_email) {
-  df_recipients <- gs$read_gs_file("email_recipients")
+  df_recipients <- gs$read_gs_file("email_recipients", col_types = "ccll")
 
   # only send out to individuals designated for testing if necessary
   if (test_email) {

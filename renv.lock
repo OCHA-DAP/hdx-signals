@@ -61,6 +61,28 @@
       ],
       "Hash": "45f0398006e83a5b10b72a90663d8d8c"
     },
+    "arrow": {
+      "Package": "arrow",
+      "Version": "14.0.0.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "R6",
+        "assertthat",
+        "bit64",
+        "cpp11",
+        "glue",
+        "methods",
+        "purrr",
+        "rlang",
+        "stats",
+        "tidyselect",
+        "utils",
+        "vctrs"
+      ],
+      "Hash": "75782a533f9cddf70709455abcc52d5d"
+    },
     "askpass": {
       "Package": "askpass",
       "Version": "1.2.0",
@@ -1014,30 +1036,6 @@
         "utils"
       ],
       "Hash": "c321cd99d56443dbffd1c9e673c0c1a2"
-    },
-    "ripc": {
-      "Package": "ripc",
-      "Version": "0.2.0.9000",
-      "Source": "GitHub",
-      "RemoteType": "github",
-      "RemoteHost": "api.github.com",
-      "RemoteUsername": "OCHA-DAP",
-      "RemoteRepo": "ripc",
-      "RemoteRef": "main",
-      "RemoteSha": "eb9cd063d6830c21ddc7dd1c372f0e170db303a5",
-      "Requirements": [
-        "countrycode",
-        "dplyr",
-        "httr",
-        "lifecycle",
-        "lubridate",
-        "magrittr",
-        "purrr",
-        "rlang",
-        "stringr",
-        "tidyr"
-      ],
-      "Hash": "fe42e961b172229ff3c29abef14df4ea"
     },
     "ripc": {
       "Package": "ripc",
