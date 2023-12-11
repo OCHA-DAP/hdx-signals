@@ -1,3 +1,10 @@
+## December 11, 2023
+
+### Indicator: cholera
+
+- Adjusted start date parsing adjusted to address change in date format from
+`%d-%b-%y` to `%m/%d/%Y` in the WHO AFRO bulletins.
+
 ## October 3, 2023
 
 ### Email alerts
