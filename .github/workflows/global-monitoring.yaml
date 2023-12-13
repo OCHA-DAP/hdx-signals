@@ -13,8 +13,8 @@ on:
         options:
           - "TRUE"
           - "FALSE"
-  schedule:
-    - cron: "0 11 * * 1-5"
+ # schedule:
+ #   - cron: "0 11 * * 1-5"
 
 jobs:
   monitor:
