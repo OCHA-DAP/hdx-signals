@@ -1,3 +1,24 @@
+## December 13, 2023
+
+### System
+
+- Storage solution for all data moved to Google Cloud Storage `global-monitoring`
+bucket. `google_drive.R` changed to `cloud_storage.R`, and all usage of the functionality
+moved to the new setup. Some remnants of Google Sheets remain to update data that
+CERF relies on, but long term this will be removed from the system entirely.
+
+### Documentation
+
+- All documentation adjusted to reflect shift from Google Drive/Sheets to 
+Google Cloud Storage 
+
+## December 11, 2023
+
+### Indicator: cholera
+
+- Adjusted start date parsing adjusted to address change in date format from
+`%d-%b-%y` to `%m/%d/%Y` in the WHO AFRO bulletins.
+
 ## October 3, 2023
 
 ### Email alerts

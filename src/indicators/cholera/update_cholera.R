@@ -53,12 +53,16 @@ df_cholera_wrangled <- df_cholera_raw |>
       !is.na(start_of_reporting_period_3) ~ start_of_reporting_period_3
     ),
     date = as.Date(week_date),
-    start_date = dplyr$case_when(
-      stringr$str_detect(start_date_raw, "[A-Za-z]{3}") ~ lubridate$dmy(start_date_raw),
+    start_date = dplyr$case_when( # formats for start dates have switched in bulletins
+      stringr$str_detect(start_date_raw, "[0-9]{1,2}[-|//][A-Za-z]{3}") ~ lubridate$dmy(start_date_raw),
+      stringr$str_detect(start_date_raw, "^[A-Za-z]{3}") ~ lubridate$mdy(start_date_raw),
       date >= "2023-09-25" ~ lubridate$mdy(start_date_raw),
       date < "2023-09-25" ~ lubridate$dmy(start_date_raw)
     ),
     cholera_cases = readr$parse_number(total_cases)
+  ) |>
+  dplyr$select(
+    -start_date_raw
   ) |>
   dplyr$group_by( # some countries have multiple sets of cases reported each date (DRC)
     iso3,
