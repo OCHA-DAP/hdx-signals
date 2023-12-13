@@ -131,8 +131,8 @@ df_cholera_flags <- df_cholera_wrangled |>
 #### COMPARE WITH PREVIOUS FLAGGED DATA ####
 ############################################
 
-df_cholera_flags_prev <- gs$read_pq_file(
-  name = "flags_cholera"
+df_cholera_flags_prev <- cs$read_gcs_file(
+  name = "output/cholera/flags.parquet"
 )
 
 df_cholera_flags_new <- dplyr$anti_join(
@@ -168,29 +168,24 @@ df_cholera_flags_final <- dplyr$semi_join(
 #### SAVE IPC  DATA ####
 ########################
 
-gs$update_pq_file(
+cs$update_gcs_file(
   df = df_cholera_raw,
-  name = "raw_cholera"
+  name = "output/cholera/raw.parquet"
 )
 
-gs$update_pq_file(
+cs$update_gcs_file(
   df = df_cholera_wrangled,
-  name = "wrangled_cholera"
+  name = "output/cholera/wrangled.parquet"
 )
 
-gs$update_pq_file(
+cs$update_gcs_file(
   df = df_cholera_flags_final,
-  name = "flags_cholera"
+  name = "output/cholera/raw.parquet"
 )
 
 # TODO: REMOVE ONCE CERF MOVES TO DOWNLOADING PARQUET FILES
 
-gs$update_gs_file(
-  df = df_cholera_raw,
-  name = "raw_cholera"
-)
-
-gs$update_gs_file(
+cs$update_gs_file(
   df = df_cholera_wrangled,
   name = "wrangled_cholera"
 )

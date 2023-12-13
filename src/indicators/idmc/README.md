@@ -75,12 +75,12 @@ flags are less than 60 days old.
 
 ## Output datasets
 
-`flags_idmc.gdsheets`: flagging dataset.
+`flags.parquet`: flagging dataset.
 
-`raw_idmc.gdsheets`: raw IDU output. This includes all reported events used to feed into the
+`raw.parquet`: raw IDU output. This includes all reported events used to feed into the
 alerts. Can be explored to better contextualize the reported displacement.
 
-`wrangled_idmc.gdsheets`: wrangled displacement data. Includes all time series data (daily to
+`wrangled.parquet`: wrangled displacement data. Includes all time series data (daily to
 yearly), whether or not each type of alert was flagged that day, and the total
 number of flags for each day as a time series. Useful for plotting time series of
 displacement and when flags were generated.

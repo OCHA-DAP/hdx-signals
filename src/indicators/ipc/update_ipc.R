@@ -10,7 +10,7 @@ box::use(purrr)
 
 # internal utilities
 # first set the root search path for utilities
-box::use(gs = ../../utils/google_sheets)
+box::use(cs = ../../utils/cloud_storage)
 box::use(../../utils/ai_summarizer[ai_summarizer])
 box::use(../../utils/get_country_names[get_country_names])
 
@@ -265,7 +265,7 @@ df_ipc_flags <- df_ipc_wrangled |>
 ##########################################
 
 # load previous flags
-df_ipc_flags_prev <- gs$read_gs_file("flags_ipc") |>
+df_ipc_flags_prev <- cs$read_gcs_file("output/ipc/flags.parquet") |>
   dplyr$mutate(
     email = FALSE
   )
@@ -375,17 +375,24 @@ df_ipc_wrangled_final <- df_ipc_wrangled |>
 #### SAVE IPC  DATA ####
 ########################
 
-gs$update_gs_file(
+cs$update_gcs_file(
   df = df_ipc_raw,
-  name = "raw_ipc"
+  name = "output/ipc/raw.parquet"
 )
 
-gs$update_gs_file(
+cs$update_gs_file(
+  df = df_ipc_wrangled_final,
+  name = "output/ipc/wrangled.parquet"
+)
+
+cs$update_gs_file(
+  df = df_ipc_flags,
+  name = "output/ipc/flags.parquet"
+)
+
+# TODO: remove all of this google sheets once CERF has shifted their system
+
+cs$update_gs_file(
   df = df_ipc_wrangled_final,
   name = "wrangled_ipc"
-)
-
-gs$update_gs_file(
-  df = df_ipc_flags,
-  name = "flags_ipc"
 )

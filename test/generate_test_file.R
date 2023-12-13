@@ -2,14 +2,14 @@
 # in formatting of email.Rmd. To do this, we have a test dataset in the same
 # format as flags_total
 box::use(dplyr)
-box::use(gs = ../src/utils/google_sheets)
+box::use(cs = ../src/utils/cloud_storage)
 
 #############################
 #### READ IN FLAGS TOTAL ####
 #############################
 
-flags_total <- gs$read_gs_file(
-  name = "flags_total"
+flags_total <- cs$read_gcs_file(
+  name = "output/flags_total.parquet"
 )
 
 ##########################
@@ -32,9 +32,9 @@ flags_total |>
     \(df) { # only temporarily set not as test run to ensure that data is saved out
       orig <- Sys.getenv("GMAS_TEST_RUN", unset = NA)
       Sys.setenv(GMAS_TEST_RUN = FALSE)
-      gs$update_gs_file(
+      cs$update_gcs_file(
         df = df,
-        name = "flags_test"
+        name = "input/flags_test.parquet"
       )
       # reset
       if (is.na(orig)) {

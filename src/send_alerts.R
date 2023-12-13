@@ -3,7 +3,7 @@ box::use(purrr)
 box::use(tidyr)
 
 # local modules
-box::use(gs = ./utils/google_sheets)
+box::use(cs = ./utils/cloud_storage)
 box::use(./utils/email)
 
 # the scripts to update the source datasets are called in a bash script
@@ -16,13 +16,15 @@ box::use(./utils/email)
 #### CREATE GLOBAL FLAGS ####
 #############################
 
-# creates global flags files
-
-ind_flags <- c("flags_ipc", "flags_idmc", "flags_cholera")
+# detect all indicator flags stored as output/indicator_name/flags.parquet
+ind_flags <- cs$gcs_file_detect("([a-z]+)/([a-z]+)/flags.parquet")
 
 flags_total <- purrr$map(
   .x = ind_flags,
-  .f = \(x) gs$read_gs_file(name = x, col_types = "ccccDDccclc")
+  .f = \(x) cs$read_gcs_file(name = x) |>
+    dplyr$mutate(
+      latest_flag = as.character(latest_flag) # so they bind together properly
+    )
 ) |>
   purrr$list_rbind() |>
   dplyr$arrange(
@@ -33,6 +35,7 @@ flags_total <- purrr$map(
   )
 
 # create long format dataset for filtration on the dashboard
+# TODO: Drop when CERF is able to switch their platform
 
 flags_total_daily <- flags_total |>
   dplyr$filter(
@@ -51,12 +54,19 @@ flags_total_daily <- flags_total |>
 #### UPDATE DRIVE ####
 ######################
 
-gs$update_gs_file(
+cs$update_gcs_file(
+  df = flags_total,
+  name = "output/flags_total.parquet"
+)
+
+# TODO: remove these updates once CERF has switched to new process
+
+cs$update_gs_file(
   df = flags_total,
   name = "flags_total"
 )
 
-gs$update_gs_file(
+cs$update_gs_file(
   df = flags_total_daily,
   name = "flags_total_daily"
 )
@@ -66,8 +76,8 @@ gs$update_gs_file(
 ########################
 
 # load in previously sent emails
-df_emailed <- gs$read_gs_file(
-  name = "flags_emailed"
+df_emailed <- cs$read_gcs_file(
+  name = "output/email/flags_emailed.parquet"
 )
 
 # ensure that emails are not sent again within one month of being sent
@@ -104,7 +114,7 @@ df_emailed_update <- dplyr$bind_rows(
     )
 )
 
-gs$update_gs_file(
+cs$update_gcs_file(
   df = df_emailed_update,
-  name = "flags_emailed"
+  name = "output/email/flags_emailed.parquet"
 )

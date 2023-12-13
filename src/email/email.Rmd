@@ -45,7 +45,7 @@ gghdx$gghdx()
 # local utilities
 box::use(../../src/utils/email)
 box::use(../../src/utils/format_date[format_date])
-box::use(gs = ../../src/utils/google_sheets)
+box::use(cs = ../../src/utils/cloud_storage)
 box::use(../../src/utils/plots/plot[plot_general])
 
 # getting types and sources in proper format

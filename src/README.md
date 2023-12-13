@@ -27,7 +27,7 @@ the `src` folder looks like the below:
 * [`src/indicators`](/src/indicators): contains code for updating individual indicator data, where
 each indicator has a folder with documentation and an `update_(...).R` script.
 * [`src/utils`](/src/utils): has a set of utilities that are used across various scripts, for
-reading and writing to the Google Drive, sending emails, generating flags, and
+reading and writing to the Google Cloud Storage bucket, sending emails, generating flags, and
 other common tasks.
 * [`send_alerts.R`](/src/ALERTS.md) is the overall alerting script that pulls together updated
 data and generates email alerts when necessary.
