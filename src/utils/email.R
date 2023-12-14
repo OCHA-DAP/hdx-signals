@@ -78,9 +78,6 @@ send_email <- function(flag_type, flag_source, df_email, test_email) {
     return(invisible(NULL))
   }
 
-  print(to)
-  print(bcc)
-
   blastula$smtp_send(
     email = rendered_email,
     to = to,
