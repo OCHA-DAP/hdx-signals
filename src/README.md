@@ -37,7 +37,9 @@ data and generates email alerts when necessary.
 Data is stored within a Google Cloud Storage bucket, `global-monitoring`. Access
 to the bucket is provided through a service account with an authorization JSON
 file. The filepath to the authorization file should be saved to
-`GLOBAL_MONITORING_JSON` env variable.
+`GLOBAL_MONITORING_JSON` environment variable. Once this is done, the code,
+particularly that to save to and read from the bucket in `cloud_storage.R`
+works on personal machines for testing and in GitHub Actions.
 
 ## Automation
 
