@@ -9,7 +9,7 @@ box::use(./utils/email)
 # the scripts to update the source datasets are called in a bash script
 # in the GitHub actions workflow. If you need to manually run an update
 # then make sure that you run the necessary scripts and update the
-# flags_... Google Sheets files before loading them in here and running the
+# flags.parquet files before loading them in here and running the
 # emails.
 
 #############################

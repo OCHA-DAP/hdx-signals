@@ -32,6 +32,13 @@ other common tasks.
 * [`send_alerts.R`](/src/ALERTS.md) is the overall alerting script that pulls together updated
 data and generates email alerts when necessary.
 
+## Data storage
+
+Data is stored within a Google Cloud Storage bucket, `global-monitoring`. Access
+to the bucket is provided through a service account with an authorization JSON
+file. The filepath to the authorization file should be saved to
+`GLOBAL_MONITORING_JSON` env variable.
+
 ## Automation
 
 Analysis is re-run nightly using
