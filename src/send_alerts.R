@@ -62,11 +62,6 @@ cs$update_gcs_file(
 # TODO: remove these updates once CERF has switched to new process
 
 cs$update_gs_file(
-  df = flags_total,
-  name = "flags_total"
-)
-
-cs$update_gs_file(
   df = flags_total_daily,
   name = "flags_total_daily"
 )
