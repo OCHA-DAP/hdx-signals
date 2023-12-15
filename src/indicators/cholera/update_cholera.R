@@ -186,10 +186,3 @@ cs$update_gcs_file(
   df = df_cholera_flags_final,
   name = "output/cholera/raw.parquet"
 )
-
-# TODO: REMOVE ONCE CERF MOVES TO DOWNLOADING PARQUET FILES
-
-cs$update_gs_file(
-  df = df_cholera_wrangled,
-  name = "wrangled_cholera"
-)
