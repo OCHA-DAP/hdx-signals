@@ -66,9 +66,7 @@ jobs:
           json: ${{ secrets.GCP_CREDENTIALS }}
       - name: Update source indicators
         run: |
-          shopt -s globstar
-          set -e
-          for x in "**/update_*.R"; do Rscript "$x"; done
+          find src/indicators -name "update_*.R" -exec Rscript {} +
         shell: bash
       - name: Update flags and send emails
         run: |
