@@ -287,7 +287,7 @@ df_ipc_flags_new <- dplyr$anti_join(
 # scrape the IPC URL for additional information and pass that on to the
 # ChatGPT AI model for summarization.
 ipc_scraper <- function(url) {
-  if (!is.na(url)) {
+  if (!is.na(url) & url != "http://www.ipcinfo.org/cadre-harmonise") {
     txt <- rvest$read_html(url) |>
       rvest$html_nodes("._undmaptext") |>
       rvest$html_text()
@@ -380,12 +380,12 @@ cs$update_gcs_file(
   name = "output/ipc/raw.parquet"
 )
 
-cs$update_gs_file(
+cs$update_gcs_file(
   df = df_ipc_wrangled_final,
   name = "output/ipc/wrangled.parquet"
 )
 
-cs$update_gs_file(
+cs$update_gcs_file(
   df = df_ipc_flags,
   name = "output/ipc/flags.parquet"
 )
