@@ -37,7 +37,8 @@ date of the outbreak. The end date is the date that the flag was raised.
  
 `flags.parquet`: flagging dataset.
 
-`raw.parquet`: raw cholera output from the CERF scraping.
+`raw.parquet`: raw cholera output from the CERF scraping, downloaded as CSV and
+converted to partquet file on the Google Cloud Storage bucket.
 
 `wrangled.parquet`: wrangled cholera data that has a clean time series
 of cholera casees.

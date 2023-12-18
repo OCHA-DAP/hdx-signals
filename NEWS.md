@@ -1,16 +1,24 @@
-## December 13, 2023
+## December 18, 2023
 
 ### System
 
 - Storage solution for all data moved to Google Cloud Storage `global-monitoring`
-bucket. `google_drive.R` changed to `cloud_storage.R`, and all usage of the functionality
-moved to the new setup. Some remnants of Google Sheets remain to update data that
-CERF relies on, but long term this will be removed from the system entirely.
+bucket. `google_drive.R` deprecated, and all functionality moved to `cloud_storage.R`.
+Some remnants of Google Sheets remain to update data that
+CERF relies on, but long term the `google_drive.R` module will be removed.
+- GitHub Actions file searching to update source indicators changed from using
+`find -exec` to globbing, since `find` doesn't explicitly fail. See here:
+https://apple.stackexchange.com/questions/49042/how-do-i-make-find-fail-if-exec-fails
 
 ### Documentation
 
 - All documentation adjusted to reflect shift from Google Drive/Sheets to 
 Google Cloud Storage 
+
+### Indicator: IPC
+
+- Link scraping fixed to not search Cadre Harmonisé links since they do not have
+the consistent structure of IPC outputs.
 
 ## December 11, 2023
 

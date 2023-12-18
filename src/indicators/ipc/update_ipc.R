@@ -11,6 +11,7 @@ box::use(purrr)
 # internal utilities
 # first set the root search path for utilities
 box::use(cs = ../../utils/cloud_storage)
+box::use(gd = ../../utils/google_drive)
 box::use(../../utils/ai_summarizer[ai_summarizer])
 box::use(../../utils/get_country_names[get_country_names])
 
@@ -392,7 +393,7 @@ cs$update_gcs_file(
 
 # TODO: remove all of this google sheets once CERF has shifted their system
 
-cs$update_gs_file(
+gd$update_gs_file(
   df = df_ipc_wrangled_final,
   name = "wrangled_ipc"
 )

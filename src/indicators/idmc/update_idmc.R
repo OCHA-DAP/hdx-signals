@@ -10,6 +10,7 @@ box::use(scales)
 # internal utilities
 # first set the root search path for utilities
 box::use(cs = ../../utils/cloud_storage)
+box::use(gd = ../../utils/google_drive)
 box::use(../../utils/ai_summarizer[ai_summarizer])
 box::use(../../utils/get_country_names[get_country_names])
 box::use(../../utils/format_date[format_date])
@@ -88,7 +89,7 @@ df_idmc_flags <- flagging$generate_alerts(
 #### COMPARE WITH EXISTING FILES ####
 #####################################
 
-df_idmc_flags_prev <- cs$read_gcs_file("output/flags/idmc.parquet") |>
+df_idmc_flags_prev <- cs$read_gcs_file("output/idmc/flags.parquet") |>
   dplyr$mutate(
     email = FALSE
   )
@@ -206,7 +207,7 @@ cs$update_gcs_file(
 
 # TODO: remove
 
-cs$update_gs_file(
+gd$update_gs_file(
   df = get_country_names(df_flagged),
   name = "wrangled_idmc"
 )
