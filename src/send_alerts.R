@@ -4,7 +4,7 @@ box::use(tidyr)
 
 # local modules
 box::use(cs = ./utils/cloud_storage)
-box::use(gd = ../../utils/google_drive)
+box::use(gd = ./utils/google_drive)
 box::use(./utils/email)
 
 # the scripts to update the source datasets are called in a bash script

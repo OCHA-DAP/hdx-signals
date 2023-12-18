@@ -2,6 +2,7 @@ box::use(stringr)
 box::use(readr)
 box::use(arrow)
 box::use(gcs = googleCloudStorageR)
+box::use(httr)
 
 box::use(../utils/gmas_test_run[gmas_test_run])
 
@@ -35,7 +36,7 @@ read_gcs_file <- function(name) {
 #'
 #' @param object Object to parse
 gcs_parse_parquet <- function(object) {
-  con <- gzcon(rawConnection(httr::content(object)))
+  con <- gzcon(rawConnection(httr$content(object)))
   on.exit(close(con))
   file_raw <- readr$read_file_raw(con)
   file_buffer <- arrow$buffer(file_raw)
