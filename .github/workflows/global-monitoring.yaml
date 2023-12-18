@@ -68,7 +68,7 @@ jobs:
         run: |
           shopt -s globstar
           set -e
-          for x in src/indicators/update_*.R; do Rscript "$x"; done
+          for x in src/indicators/**/update_*.R; do Rscript "$x"; done
         shell: bash
       - name: Update flags and send emails
         run: |
