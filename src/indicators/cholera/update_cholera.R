@@ -12,7 +12,7 @@ box::use(scales)
 
 # internal utilities
 # first set the root search path for utilities
-box::use(gs = ../../utils/google_sheets)
+box::use(cs = ../../utils/cloud_storage)
 box::use(../../utils/get_country_names[get_country_names])
 box::use(../../utils/format_date[format_date])
 
