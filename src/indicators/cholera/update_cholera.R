@@ -12,7 +12,7 @@ box::use(scales)
 
 # internal utilities
 # first set the root search path for utilities
-box::use(gs = ../../utils/google_sheets)
+box::use(cs = ../../utils/cloud_storage)
 box::use(../../utils/get_country_names[get_country_names])
 box::use(../../utils/format_date[format_date])
 
@@ -135,8 +135,8 @@ df_cholera_flags <- df_cholera_wrangled |>
 #### COMPARE WITH PREVIOUS FLAGGED DATA ####
 ############################################
 
-df_cholera_flags_prev <- gs$read_gs_file(
-  name = "flags_cholera"
+df_cholera_flags_prev <- cs$read_gcs_file(
+  name = "output/cholera/flags.parquet"
 )
 
 df_cholera_flags_new <- dplyr$anti_join(
@@ -172,17 +172,17 @@ df_cholera_flags_final <- dplyr$semi_join(
 #### SAVE IPC  DATA ####
 ########################
 
-gs$update_gs_file(
+cs$update_gcs_file(
   df = df_cholera_raw,
-  name = "raw_cholera"
+  name = "output/cholera/raw.parquet"
 )
 
-gs$update_gs_file(
+cs$update_gcs_file(
   df = df_cholera_wrangled,
-  name = "wrangled_cholera"
+  name = "output/cholera/wrangled.parquet"
 )
 
-gs$update_gs_file(
+cs$update_gcs_file(
   df = df_cholera_flags_final,
-  name = "flags_cholera"
+  name = "output/cholera/raw.parquet"
 )

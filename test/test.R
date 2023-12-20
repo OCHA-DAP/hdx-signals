@@ -2,14 +2,14 @@ box::use(dplyr)
 box::use(purrr)
 
 # local modules
-box::use(gs = ../src/utils/google_sheets)
+box::use(cs = ../src/utils/cloud_storage)
 box::use(../src/utils/email)
 
 #########################
 #### LOAD TEST FLAGS ####
 #########################
 
-flags_total <- gs$read_gs_file("flags_test")
+flags_total <- cs$read_gcs_file("input/flags_test.parquet")
 
 ########################
 #### GENERATE EMAIL ####

@@ -27,10 +27,19 @@ the `src` folder looks like the below:
 * [`src/indicators`](/src/indicators): contains code for updating individual indicator data, where
 each indicator has a folder with documentation and an `update_(...).R` script.
 * [`src/utils`](/src/utils): has a set of utilities that are used across various scripts, for
-reading and writing to the Google Drive, sending emails, generating flags, and
+reading and writing to the Google Cloud Storage bucket, sending emails, generating flags, and
 other common tasks.
 * [`send_alerts.R`](/src/ALERTS.md) is the overall alerting script that pulls together updated
 data and generates email alerts when necessary.
+
+## Data storage
+
+Data is stored within a Google Cloud Storage bucket, `global-monitoring`. Access
+to the bucket is provided through a service account with an authorization JSON
+file. The filepath to the authorization file should be saved to
+`GLOBAL_MONITORING_JSON` environment variable. Once this is done, the code,
+particularly that to save to and read from the bucket in `cloud_storage.R`
+works on personal machines for testing and in GitHub Actions.
 
 ## Automation
 

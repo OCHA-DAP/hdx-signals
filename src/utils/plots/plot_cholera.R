@@ -8,7 +8,7 @@ box::use(scales)
 gghdx$gghdx()
 
 # local modules
-box::use(gs = ../../utils/google_sheets)
+box::use(cs = ../../utils/cloud_storage)
 
 #' Plot WHO cholera data
 #'
@@ -27,7 +27,7 @@ plot_cholera <- function(
 ) {
 
   # load in the data for plotting
-  df_plot <- gs$read_gs_file("wrangled_cholera") |>
+  df_plot <- cs$read_gcs_file("output/cholera/wrangled.parquet") |>
     dplyr$filter(
       iso3 == !!iso3
     )

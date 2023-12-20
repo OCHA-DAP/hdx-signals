@@ -14,13 +14,16 @@ The specific methodologies used for each of the indicators within the project
 are contained in their own specific README files, linked below. The
 output for all data sources are three files:
 
-1. `flags_{type}.gdsheets`: a flagging dataset that has a row of flags
+1. `flags.parquet`: a flagging dataset that has a row of flags
 with a start date, end date, and explanatory message. There is only one
 output flag for each source of data.
-2. `raw_{type}.gdsheets`: the raw data from the data source that can be used to
+2. `raw.parquet`: the raw data from the data source that can be used to
 contextualize the alert. Typically only useful in tabular format.
-3. `wrangled_{type}.gdsheets`: the wrangled data from the data source that can
+3. `wrangleds.parquet`: the wrangled data from the data source that can
 be used to contextualize the alert, and is generally ready for plotting.
+
+When stored in the Google Cloud Storage bucket, each of these files is stored with
+the path `output/{indicator}/{file}.parquet`.
 
 The current indicators included in the CERF GMS are:
 

@@ -9,7 +9,8 @@ box::use(scales)
 
 # internal utilities
 # first set the root search path for utilities
-box::use(gs = ../../utils/google_sheets)
+box::use(cs = ../../utils/cloud_storage)
+box::use(gd = ../../utils/google_drive)
 box::use(../../utils/ai_summarizer[ai_summarizer])
 box::use(../../utils/get_country_names[get_country_names])
 box::use(../../utils/format_date[format_date])
@@ -20,7 +21,7 @@ box::use(../../utils/flagging)
 ##############################
 
 # country links on the IDMC page
-df_links <- gs$read_gs_file("idmc_country_links")
+df_links <- cs$read_gcs_file("input/idmc_country_links.parquet")
 
 ##############
 #### IDMC ####
@@ -88,7 +89,7 @@ df_idmc_flags <- flagging$generate_alerts(
 #### COMPARE WITH EXISTING FILES ####
 #####################################
 
-df_idmc_flags_prev <- gs$read_gs_file("flags_idmc") |>
+df_idmc_flags_prev <- cs$read_gcs_file("output/idmc/flags.parquet") |>
   dplyr$mutate(
     email = FALSE
   )
@@ -189,17 +190,24 @@ df_idmc_flags_final <- df_idmc_flags_new |>
 #### SAVE IDMC DATA ####
 ########################
 
-gs$update_gs_file(
+cs$update_gcs_file(
   df = get_country_names(df_idmc_raw),
-  name = "raw_idmc"
+  name = "output/idmc/raw.parquet"
 )
 
-gs$update_gs_file(
+cs$update_gcs_file(
+  df = get_country_names(df_flagged),
+  name = "output/idmc/wrangled.parquet"
+)
+
+cs$update_gcs_file(
+  df = df_idmc_flags_final,
+  name = "output/idmc/flags.parquet"
+)
+
+# TODO: remove
+
+gd$update_gs_file(
   df = get_country_names(df_flagged),
   name = "wrangled_idmc"
-)
-
-gs$update_gs_file(
-  df = df_idmc_flags_final,
-  name = "flags_idmc"
 )

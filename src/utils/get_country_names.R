@@ -2,7 +2,9 @@ box::use(dplyr)
 box::use(tidyr)
 box::use(countrycode)
 
-box::use(gs = ../utils/google_sheets)
+box::use(cs = ../utils/cloud_storage)
+
+# TODO: Remove once CERF advances their system
 
 #' Add country names to data frame
 #'
@@ -18,7 +20,7 @@ box::use(gs = ../utils/google_sheets)
 #' @export
 get_country_names <- function(df) {
   # read the CERF names list
-  df_names <- gs$read_gs_file("cerf_dashboard_names")
+  df_names <- cs$read_gcs_file("input/cerf_dashboard_names.parquet")
 
   # replace existing column name
   if ("country" %in% names(df)) {

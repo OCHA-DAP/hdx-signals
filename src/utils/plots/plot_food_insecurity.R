@@ -8,7 +8,7 @@ box::use(scales)
 gghdx$gghdx()
 
 # local modules
-box::use(gs = ../../utils/google_sheets)
+box::use(cs = ../../utils/cloud_storage)
 
 #' Plot IPC food insecurity data
 #'
@@ -28,7 +28,7 @@ plot_food_insecurity <- function(
     iso3
 ) {
   # load in the data for plotting
-  df_plot <- gs$read_gs_file("wrangled_ipc") |>
+  df_plot <- cs$read_gcs_file("output/ipc/wrangled.parquet") |>
     dplyr$filter(
       iso3 == !!iso3
     ) |>
