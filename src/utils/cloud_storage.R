@@ -73,7 +73,7 @@ update_gcs_file <- function(df, name) {
 #'
 #' @export
 gcs_file_detect <- function(pattern = NULL) {
-  file_names <- bucket$ls(recursive =)
+  file_names <- bucket$ls(recursive = TRUE)
   if (!is.null(pattern)) {
     file_names <- file_names[stringr$str_detect(file_names, pattern)]
   }
