@@ -532,45 +532,6 @@
       ],
       "Hash": "4f2596dfb05dac67b9dc558e5c6fba2e"
     },
-    "googleAuthR": {
-      "Package": "googleAuthR",
-      "Version": "2.0.1",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Requirements": [
-        "R",
-        "assertthat",
-        "cli",
-        "digest",
-        "gargle",
-        "httr",
-        "jsonlite",
-        "memoise",
-        "rlang",
-        "utils"
-      ],
-      "Hash": "2584be5812542ebadaf1f4fc26d50178"
-    },
-    "googleCloudStorageR": {
-      "Package": "googleCloudStorageR",
-      "Version": "0.7.0",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Requirements": [
-        "R",
-        "assertthat",
-        "cli",
-        "curl",
-        "googleAuthR",
-        "httr",
-        "jsonlite",
-        "openssl",
-        "utils",
-        "yaml",
-        "zip"
-      ],
-      "Hash": "4ca15a842a0ff65d03fa296902e2d752"
-    },
     "googledrive": {
       "Package": "googledrive",
       "Version": "2.1.1",
@@ -1510,13 +1471,6 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "29240487a071f535f5e5d5a323b7afbd"
-    },
-    "zip": {
-      "Package": "zip",
-      "Version": "2.3.0",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "d98c94dacb7e0efcf83b0a133a705504"
     },
     "zoo": {
       "Package": "zoo",
