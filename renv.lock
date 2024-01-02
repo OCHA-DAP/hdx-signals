@@ -844,7 +844,7 @@
     },
     "mgcv": {
       "Package": "mgcv",
-      "Version": "1.9-0",
+      "Version": "1.9-1",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -857,7 +857,7 @@
         "stats",
         "utils"
       ],
-      "Hash": "086028ca0460d0c368028d3bda58f31b"
+      "Hash": "110ee9d83b496279960e162ac97764ce"
     },
     "mime": {
       "Package": "mime",
@@ -1051,11 +1051,11 @@
       "Version": "0.2.0.9000",
       "Source": "GitHub",
       "RemoteType": "github",
-      "RemoteHost": "api.github.com",
       "RemoteUsername": "OCHA-DAP",
       "RemoteRepo": "ripc",
       "RemoteRef": "main",
-      "RemoteSha": "eb9cd063d6830c21ddc7dd1c372f0e170db303a5",
+      "RemoteSha": "bccc53c780639f2100cf214365f5741a14055db6",
+      "RemoteHost": "api.github.com",
       "Requirements": [
         "countrycode",
         "dplyr",
@@ -1068,7 +1068,7 @@
         "stringr",
         "tidyr"
       ],
-      "Hash": "fe42e961b172229ff3c29abef14df4ea"
+      "Hash": "15397f31f060aa90e07a6ad5ebd71961"
     },
     "rlang": {
       "Package": "rlang",
