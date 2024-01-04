@@ -20,10 +20,7 @@ box::use(../../utils/get_country_names[get_country_names])
 #############
 
 # get into country level form and correct the names
-df_ipc_raw <- ripc$ipc_get_population(
-  start = 2018,
-  end = 2023
-)$country |>
+df_ipc_raw <- ripc$ipc_get_population()$country |>
   dplyr$filter(
     condition == "A" # only use acute for now, chronic doesn't have date info
   )
