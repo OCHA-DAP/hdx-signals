@@ -1,3 +1,17 @@
+## January 15, 2024
+
+### System
+
+- Added utilities module `update_recipients.R` to streamline adding and removing
+recipients from the mailing lists.
+
+## January 4, 2024
+
+### Indicator: IPC
+
+- IPC API disruption across the new year received temporary hotfix that has been
+removed once the API was repaired.
+
 ## December 18, 2023
 
 ### System
@@ -13,7 +27,7 @@ https://apple.stackexchange.com/questions/49042/how-do-i-make-find-fail-if-exec-
 ### Documentation
 
 - All documentation adjusted to reflect shift from Google Drive/Sheets to 
-Google Cloud Storage 
+Google Cloud Storage.
 
 ### Indicator: IPC
 

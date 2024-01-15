@@ -1,6 +1,8 @@
 ## Utilities
 
-Email utilities in this folder are all structured as {box} modules. Any functions
+### Box
+
+Utilities in this folder are all structured as {box} modules. Any functions
 exported with the `@export` roxygen tag are available for use in other modules
 and in the main source code. 
 
