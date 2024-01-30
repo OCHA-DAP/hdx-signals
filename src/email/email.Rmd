@@ -108,7 +108,7 @@ the following locations: `r countries_md`.
 `r stringr$str_to_sentence(flag_type_str)`
 alerts are generated based on `r flag_method`. Full documentation and
 source code is available on 
-[GitHub](https://github.com/OCHA-DAP/pa-global-monitoring/). See the
+[GitHub](https://github.com/OCHA-DAP/hdx-signals/). See the
 `r cerf_link` for more data, visualizations, and details on the alerts.
 
 ----

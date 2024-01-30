@@ -1,3 +1,10 @@
+## January 30, 2024
+
+### Overall
+
+- Changed repository name to `hdx-signals` to begin work to shift system for
+public release.
+
 ## January 15, 2024
 
 ### System
