@@ -34,8 +34,6 @@ if (flag_source == "idmc") {
       )
     )
   
-  print(df_display)
-  
   show_idmc <- show_table & nrow(df_display) > 0
 }
 
@@ -108,6 +106,6 @@ if (flag_source == "idmc") {
     )
 }
 ```
-
+ 
 ----
 

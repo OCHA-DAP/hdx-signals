@@ -1,6 +1,7 @@
-box::use(blastula)
 box::use(stringr)
 box::use(dplyr)
+box::use(glue)
+box::use(httr2)
 
 # local modules
 box::use(cs = ../utils/cloud_storage)
@@ -177,7 +178,7 @@ add_ggplot_custom <- function(
 #' on Windows Outlook.
 #'
 #' Used within `add_image_custom()` and `add_ggplot_custom()`
-custom_html <- function(html, width) {
+add_plot <- function(html, width) {
   img_html <- stringr$str_extract(
     html,
     "(<img src.*px;\"/>)",
