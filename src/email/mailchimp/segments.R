@@ -1,173 +1,150 @@
 box::use(httr2)
+box::use(rlang)
+box::use(uuid)
 box::use(purrr)
-box::use(dplyr)
-box::use(glue)
-box::use(tidyr)
 
 # local modules
 box::use(./base_api)
 
-indicators <- c("IDMC", "IPC")
+#' Create conditions list for groups
+#'
+#' Creates a conditions list for groups, using the `interestcontains` operator.
+#' Will create a condition that captures all members in those segments.
+#'
+#' @param category_id String of the category ID
+#' @param segment_ids List of segment IDs.
+#'
+#' @export
+mc_group_conditions <- function(category_id, segment_ids) {
+  list(
+    condition_type = "Interests",
+    field = paste0("interests-", category_id),
+    op = "interestcontains",
+    value = segment_ids
+  )
+}
 
-httr2$request(
-    "https://us14.api.mailchimp.com/3.0/lists/e908cb9d48/segments"
-  ) |>
-  httr2$req_auth_bearer_token(
-    token = Sys.getenv("MAILCHIMP_API_KEY")
-  ) |>
-  httr2$req_body_json(
-    data = list(
-      name = "asdf",
-      options = list(
-        match = "all",
-        conditions = list(
-          list(
-            match = "any",
-            conditions = list(
-              list(
-                condition_type = "Interests",
-                field = "interests-2f263932a3",
-                op = "interestcontains",
-                value = list("1314c9b26e")
-              ),
-              list(
-                condition_type = "Interests",
-                field = "interests-22b9c25441",
-                op = "interestcontains",
-                value = list("ab02282f78")
-              )
-            )
-          ),
-          list(
-            match = "any",
-            conditions = list(
-              condition_type = "SelectMerge",
-              field = "3",
-              op = "contains",
-              value = "concern"
-            )
-          )
+#' Create conditions list for merge fields
+#'
+#' Using a merge field ID, creates a condition list based on a value string
+#' to search for. Allows using the `contains` and `is` operator. The advantage
+#' is that we can use the `contains` operator to capture segments of people
+#' with merge fields with similar strings.
+#'
+#' @param field_id String of the merge field ID
+#' @param value_string String to search for
+#' @param op Either `contains` or `is`, determining the text search.
+#'
+#' @export
+mc_merge_conditions <- function(
+    field_id,
+    value_string,
+    op = c("contains", "is")
+) {
+  op <- rlang$arg_match(op)
+  list(
+    condition_type = "SelectMerge",
+    field = field_id,
+    op = op,
+    value = value_string
+  )
+}
+
+#' Add segment to Mailchimp
+#'
+#' Add a segment to Mailchimp. Requires you to pass in a `conditions` list and
+#' `match_option`. Defaults to using `all`, since that is how the majority of HDX
+#' Signals segmentation will work, but `any` is option in case desired. Returns
+#' the segment `id`.
+#'
+#' @param conditions List of conditions to pass to API
+#' @param match_option `any` or `all`.
+mc_add_segment <- function(conditions, match_option = c("all", "any")) {
+  match_option <- rlang$arg_match(match_option)
+
+  response <- base_api$mc_api() |>
+    httr2$req_url_path_append(
+      "segments"
+    ) |>
+    httr2$req_body_json(
+      data = list(
+        name = uuid$UUIDgenerate(),
+        options = list(
+          match = match_option,
+          conditions = conditions
         )
       )
-    )
-  ) |>
-  httr2$req_perform() |>
-  httr2$resp_body_json()
-
-#' List available merge fields
-#'
-#' Gets list of the available merge fields in MailChimp.
-mc_merge_fields <- function() {
-  # get merge fields list
-  response <- base_api$mc_api() |>
-    httr2$req_url_path_append(
-      "lists",
-      "e908cb9d48",
-      "merge-fields"
     ) |>
     httr2$req_perform() |>
-    httr2$resp_body_json() |>
-    purrr$pluck("merge_fields")
+    httr2$resp_body_json()
 
-  purrr$map(
-    .x = response,
-    .f = \(x) dplyr$tibble(name = x[["name"]], id = x[["merge_id"]])
-  ) |>
-    purrr$list_rbind()
+  response$id
 }
 
-#' List the merge field options for fields
-mc_merge_options <- function(id) {
+#' Get segment information
+#'
+#' Get segment information for a specific `segment_id`.
+#'
+#' @param segment_id Segment ID
+mc_get_segment <- function(segment_id) {
   base_api$mc_api() |>
     httr2$req_url_path_append(
-      "lists",
-      "e908cb9d48",
-      "merge-fields",
-      id
+      "segments",
+      segment_id
     ) |>
     httr2$req_perform() |>
-    httr2$resp_body_json() |>
+    httr2$resp_body_json()
+}
+
+#' Get segment conditions
+#'
+#' Get segment conditions for specific `segment_id`.
+#'
+#' @param segment_id Segment ID
+#'
+#' @return Nested lists of conditions
+mc_get_segment_conditions <- function(segment_id) {
+  mc_get_segment(segment_id) |>
     purrr$pluck("options") |>
-    purrr$pluck("choices") |>
-    as.character()
+    purrr$pluck("conditions")
 }
 
-#' List Mailchimp interest categories
-mc_categories <- function() {
-  response <- base_api$mc_api() |>
+#' Get segment members
+#'
+#' Get segment members for specific `segment_id`, returns their email addresses.
+#' Useful if more complex segmentation needs to occur where static segments
+#' are created and passed in programmatically, and for checking segment updating
+#' rules.
+#'
+#' @param segment_id Segment ID
+mc_get_segment_members <- function(segment_id) {
+  members_list <- base_api$mc_api() |>
     httr2$req_url_path_append(
-      "lists",
-      "e908cb9d48",
-      "interest-categories"
+      "segments",
+      segment_id,
+      "members"
     ) |>
     httr2$req_perform() |>
     httr2$resp_body_json() |>
-    purrr$pluck("categories")
+    purrr$pluck("members")
 
-  purrr$map(
-    .x = response,
-    .f = \(x) dplyr$tibble(title = x[["title"]], category_id = x[["id"]])
-  ) |>
-    purrr$list_rbind()
+  purrr$map_chr(
+    .x = members_list,
+    .f = \(x) x$email_address
+  )
 }
 
-#' List interests in a category
+#' Check conditions equal
 #'
-#' @param id Interest category ID
-mc_interests <- function(id) {
-  response <- base_api$mc_api() |>
-    httr2$req_url_path_append(
-      "lists",
-      "e908cb9d48",
-      "interest-categories",
-      id,
-      "interests"
-    ) |>
-    httr2$req_perform() |>
-    httr2$resp_body_json() |>
-    purrr$pluck("interests")
-
-  purrr$map(
-    .x = response,
-    .f = \(x) dplyr$tibble(name = x[["name"]], interest_id = x[["id"]])
-  ) |>
-    purrr$list_rbind()
-}
-
-#' List all categories and interests on Mailchimp
+#' Checks that two sets of conditions are equal. Does this in a very simplistic
+#' manner by just checking that exactly an identical nested list is returned
+#' from the API, thus misses any reordering of values or conditions. However,
+#' works for this setup since conditions will be programmatically created in the
+#' same order every time. Only even functionalizing this in case more complex
+#' logic needs to be placed within the function, and to allow for this documentation.
 #'
-#' Lists all group categories and interests stored on Mailchimp. Useful
-#' for looping through to create segments programmatically, which can then
-#' be extracted
-#'
-#' @export
-mc_groups <- function() {
-  categories <- mc_categories()
-  categories |>
-    dplyr$mutate(
-      interests = purrr$map(
-        .x = category_id,
-        .f = mc_interests
-      )
-    ) |>
-    tidyr$unnest(interests)
-}
-
-#' Lists all merge closed field options and responses on Mailchimp
-#'
-#' List all merge field options for closed responses. Drops open text options.
-#' Useful for looping through to create segments programmatically, which can
-#' then be extracted
-#'
-#' @export
-mc_fields <- function() {
-  fields <- mc_merge_fields()
-  fields |>
-    dplyr$mutate(
-      options = purrr$map(
-        .x = id,
-        .f = mc_merge_options
-      )
-    ) |>
-    tidyr$unnest(options)
+#' @param conditions1
+#' @param conditions2
+check_conditions_equal <- function(conditions1, conditions2) {
+  all.equal(conditions1, conditions2)
 }

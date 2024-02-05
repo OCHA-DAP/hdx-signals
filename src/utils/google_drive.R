@@ -9,11 +9,11 @@ box::use(../utils/gmas_test_run[gmas_test_run])
 
 # authorize drive access
 googlesheets4$gs4_auth(
-  path = Sys.getenv("GLOBAL_MONITORING_JSON")
+  path = Sys.getenv("HDX_SIGNALS_JSON")
 )
 
 googledrive$drive_auth(
-  path = Sys.getenv("GLOBAL_MONITORING_JSON")
+  path = Sys.getenv("HDX_SIGNALS_JSON")
 )
 
 # list all files that can be accessed

@@ -7,7 +7,7 @@ box::use(../utils/gmas_test_run[gmas_test_run])
 
 #' Read a Parquet file stored on Google Cloud Platform bucket
 #'
-#' Reads a file from the `global-monitoring` bucket.
+#' Reads a file from the `hdx-signals` bucket.
 #' The file is read based on its prefix. Currently, the only support is for
 #' Apache Parquet files, but other support can be added if necessary.
 #'
@@ -44,7 +44,7 @@ read_gcs_file <- function(name) {
 #' @param name Name of the file to read, including prefix (`input/` or `output/`)
 #'     and filetype `.parquet`.
 #'
-#' @returns Nothing, but file is written to the `global-monitoring` bucket.
+#' @returns Nothing, but file is written to the `hdx-signals` bucket.
 #'
 #' @export
 update_gcs_file <- function(df, name) {
@@ -65,7 +65,7 @@ update_gcs_file <- function(df, name) {
 
 #' Find GCS file names matching pattern
 #'
-#' Pulls names from the `global-monitoring` bucket and
+#' Pulls names from the `hdx-signals` bucket and
 #' filters those names by the passed patterns, if passed. If `pattern` is `NULL`,
 #' then all files in the bucket are returned.
 #'
@@ -86,6 +86,6 @@ gcs_file_detect <- function(pattern = NULL) {
 
 # this bucket used to read and write from the GCS parquet
 bucket <- arrow$gs_bucket(
-  bucket = "global-monitoring",
-  json_credentials = Sys.getenv("GLOBAL_MONITORING_JSON")
+  bucket = "hdx-signals",
+  json_credentials = Sys.getenv("HDX_SIGNALS_JSON")
 )

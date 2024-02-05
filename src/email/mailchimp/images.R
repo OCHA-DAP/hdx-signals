@@ -3,6 +3,9 @@ box::use(httr2)
 box::use(ggplot2)
 box::use(purrr)
 
+# local module
+box::use(./base_api)
+
 #' Save and encode image
 #'
 #' Saves image to temporary filepath and then encodes this in base 64. Mailchimp
@@ -41,11 +44,10 @@ mc_upload_image <- function(fp, name) {
   encoded_image <- encode_image(fp)
 
   # upload image to Mailchimp
-  response <- httr2$request(
-    "https://us14.api.mailchimp.com/3.0/file-manager/files"
-  ) |>
-    httr2$req_auth_bearer_token(
-      token = Sys.getenv("MAILCHIMP_API_KEY")
+  response <- base_api$mc_api(lists = FALSE) |>
+    httr2$req_url_path_append(
+      "file-manager",
+      "files"
     ) |>
     httr2$req_body_json(
       data = list(
@@ -54,7 +56,6 @@ mc_upload_image <- function(fp, name) {
         folder_id = 9 # HDX Signals file folder on Mailchimp
       )
     ) |>
-    httr2$req_retry(max_tries = 5) |>
     httr2$req_perform()
 
   # extract the URL from the response
