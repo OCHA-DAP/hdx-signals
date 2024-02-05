@@ -1040,6 +1040,21 @@
       ],
       "Hash": "9de96463d2117f6ac49980577939dfb3"
     },
+    "readxl": {
+      "Package": "readxl",
+      "Version": "1.4.3",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "cellranger",
+        "cpp11",
+        "progress",
+        "tibble",
+        "utils"
+      ],
+      "Hash": "8cf9c239b96df1bbb133b74aef77ad0a"
+    },
     "rematch": {
       "Package": "rematch",
       "Version": "2.0.0",
