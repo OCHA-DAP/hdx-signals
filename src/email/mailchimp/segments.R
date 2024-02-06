@@ -24,6 +24,22 @@ mc_group_conditions <- function(category_id, segment_ids) {
   )
 }
 
+#' Create conditions list for static segment
+#'
+#' Creates a conditions list for all members of a static segment.
+#'
+#' @param segment_id String of the segment ID
+#'
+#' @export
+mc_static_conditions <- function(segment_id) {
+  list(
+    condition_type = "StaticSegment",
+    field = "static_segment",
+    op = "static_is",
+    value = segment_id
+  )
+}
+
 #' Create conditions list for merge fields
 #'
 #' Using a merge field ID, creates a condition list based on a value string
@@ -48,6 +64,64 @@ mc_merge_conditions <- function(
     op = op,
     value = value_string
   )
+}
+
+#' Add static segment to Mailchimp
+#'
+#' Add a static segment to Mailchimp. Requires you to pass in a list of
+#' emails.
+#'
+#' @param segment_name Name of the segment to create
+#' @param emails List of emails to pass to segment
+#'
+#' @returns ID of the created segment
+#'
+#' @export
+mc_add_static_segment <- function(segment_name, emails) {
+  response <- base_api$mc_api() |>
+    httr2$req_url_path_append(
+      "segments"
+    ) |>
+    httr2$req_body_json(
+      data = list(
+        name = segment_name,
+        static_segment = emails
+      )
+    ) |>
+    httr2$req_perform() |>
+    httr2$resp_body_json()
+
+  response$id
+}
+
+#' Update static segment to Mailchimp
+#'
+#' Update a static segment to Mailchimp. Requires you to pass in a list of
+#' emails.
+#'
+#' @param segment_id ID of the segment
+#' @param segment_name Name of the segment to create
+#' @param emails List of emails to pass to segment
+#'
+#' @returns ID of the created segment
+#'
+#' @export
+mc_update_static_segment <- function(segment_id, segment_name, emails) {
+  response <- base_api$mc_api() |>
+    httr2$req_url_path_append(
+      "segments",
+      segment_id
+    ) |>
+    httr2$req_body_json(
+      data = list(
+        name = segment_name,
+        static_segment = emails
+      )
+    ) |>
+    httr2$req_perform() |>
+    httr2$resp_body_json()
+
+  response$id
 }
 
 #' Add segment to Mailchimp
@@ -81,70 +155,23 @@ mc_add_segment <- function(conditions, match_option = c("all", "any")) {
   response$id
 }
 
-#' Get segment information
+#' Find segment based on name
 #'
-#' Get segment information for a specific `segment_id`.
+#' Searches existing segments by name, and if a match is found, returns the ID
 #'
-#' @param segment_id Segment ID
-mc_get_segment <- function(segment_id) {
+#' @param segment_name Segment name to search for
+#'
+#' @returns Segment ID
+mc_find_segment <- function(segment_name) {
   base_api$mc_api() |>
     httr2$req_url_path_append(
-      "segments",
-      segment_id
-    ) |>
-    httr2$req_perform() |>
-    httr2$resp_body_json()
-}
-
-#' Get segment conditions
-#'
-#' Get segment conditions for specific `segment_id`.
-#'
-#' @param segment_id Segment ID
-#'
-#' @return Nested lists of conditions
-mc_get_segment_conditions <- function(segment_id) {
-  mc_get_segment(segment_id) |>
-    purrr$pluck("options") |>
-    purrr$pluck("conditions")
-}
-
-#' Get segment members
-#'
-#' Get segment members for specific `segment_id`, returns their email addresses.
-#' Useful if more complex segmentation needs to occur where static segments
-#' are created and passed in programmatically, and for checking segment updating
-#' rules.
-#'
-#' @param segment_id Segment ID
-mc_get_segment_members <- function(segment_id) {
-  members_list <- base_api$mc_api() |>
-    httr2$req_url_path_append(
-      "segments",
-      segment_id,
-      "members"
+      "segments"
     ) |>
     httr2$req_perform() |>
     httr2$resp_body_json() |>
-    purrr$pluck("members")
-
-  purrr$map_chr(
-    .x = members_list,
-    .f = \(x) x$email_address
-  )
-}
-
-#' Check conditions equal
-#'
-#' Checks that two sets of conditions are equal. Does this in a very simplistic
-#' manner by just checking that exactly an identical nested list is returned
-#' from the API, thus misses any reordering of values or conditions. However,
-#' works for this setup since conditions will be programmatically created in the
-#' same order every time. Only even functionalizing this in case more complex
-#' logic needs to be placed within the function, and to allow for this documentation.
-#'
-#' @param conditions1
-#' @param conditions2
-check_conditions_equal <- function(conditions1, conditions2) {
-  all.equal(conditions1, conditions2)
+    purrr$pluck("segments") |>
+    purrr$keep(
+      \(x) x$name == segment_name
+    ) |>
+    purrr$pluck(1, "id")
 }
