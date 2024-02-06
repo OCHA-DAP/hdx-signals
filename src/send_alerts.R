@@ -62,10 +62,10 @@ cs$update_gcs_file(
 
 # TODO: remove these updates once CERF has switched to new process
 
-gd$update_gs_file(
-  df = flags_total_daily,
-  name = "flags_total_daily"
-)
+# gd$update_gs_file(
+#   df = flags_total_daily,
+#   name = "flags_total_daily"
+# )
 
 ########################
 #### GENERATE EMAIL ####
