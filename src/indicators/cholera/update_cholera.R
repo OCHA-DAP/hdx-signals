@@ -181,6 +181,8 @@ df_cholera_flags_final <- dplyr$semi_join(
     .after = email
   )
 
+df_cholera_flags_new |> dplyr$mutate(summary = NA, hdx_url = NA, .after = map) |> cs$update_gcs_file("output/cholera/flags.parquet")
+
 ########################
 #### SAVE IPC  DATA ####
 ########################
