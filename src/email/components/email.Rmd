@@ -15,7 +15,7 @@ params:
   further_information: ""
 ---
 
-```{r, include=FALSE, echo=FALSE, results="asis"}
+```{r, echo=FALSE, results="asis"}
 box::use(./email_body)
 cat(
   email_body$add_body(
