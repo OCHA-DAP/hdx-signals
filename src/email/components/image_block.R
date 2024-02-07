@@ -1,5 +1,7 @@
 box::use(glue)
 
+box::use(./missing[missing_text])
+
 #' Add image block
 #'
 #' Add image block in the Mailchimp template style. `src` link, `alt` text,
@@ -14,7 +16,7 @@ box::use(glue)
 #'
 #' @export
 add_image <- function(src, alt = "", caption = "") {
-  if (is.null(src) | is.na(src) | src == "") {
+  if (missing_text(src)) {
     ""
   } else {
     glue$glue(
