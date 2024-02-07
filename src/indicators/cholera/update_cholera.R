@@ -9,12 +9,12 @@ box::use(zoo)
 box::use(tidyr)
 box::use(utils)
 box::use(scales)
+box::use(purrr)
 
 # internal utilities
-# first set the root search path for utilities
 box::use(cs = ../../utils/cloud_storage)
-box::use(../../utils/get_country_names[get_country_names])
 box::use(../../utils/format_date[format_date])
+box::use(./plot_cholera)
 
 # alert helper function
 # only generate alert when boundary crossed from below
@@ -92,15 +92,13 @@ df_cholera_wrangled <- df_cholera_raw |>
 df_cholera_flags <- df_cholera_wrangled |>
   dplyr$group_by(iso3) |>
   dplyr$mutate(
-    flag_1k = lim_alert(cholera_cases, 1000),
-    flag_2k = lim_alert(cholera_cases, 2000),
-    flag_5k = lim_alert(cholera_cases, 5000),
-    flag_10k = lim_alert(cholera_cases, 10000)
+    `Medium concern` = lim_alert(cholera_cases, 1000),
+    `High concern` = lim_alert(cholera_cases, 5000),
   ) |>
   dplyr$ungroup() |>
   tidyr$pivot_longer(
-    flag_1k:flag_10k,
-    names_to = "flag"
+    dplyr$ends_with("concern"),
+    names_to = "alert_level"
   ) |>
   dplyr$filter(
     value
@@ -110,25 +108,40 @@ df_cholera_flags <- df_cholera_wrangled |>
     start_date
   ) |>
   dplyr$summarize(
-    end_date = max(date),
-    latest_flag = utils$tail(flag, n = 1),
+    date = max(date),
+    alert_level = utils$tail(alert_level, n = 1),
+    value = tail(cholera_cases, n = 1),
     message = paste0(
-      "<b>WHO reported event:</b> ",
-      unique(event),
-      "\n\n",
-      "There have been ",
       scales$comma_format()(tail(cholera_cases, n = 1)),
-      " cases reported since ",
-      format_date(min(start_date)),
-      "."
+      " cholera cases reported since ",
+      format_date(min(start_date))
     ),
     .groups = "drop"
   ) |>
-  get_country_names() |>
   dplyr$mutate(
-    flag_type = "cholera",
-    flag_source = "who",
-    .before = start_date
+    country = countrycode$countrycode(iso3, "iso3c", "cldr.short.en"),
+    indicator_name = "cholera",
+    indicator_source = "who",
+    .after = iso3
+  ) |>
+  dplyr$select(
+    -start_date
+  )
+
+df_cholera_flags_new <- df_cholera_flags |>
+  dplyr$mutate(
+    plot = purrr$pmap_chr(
+      .l = list(
+        iso3 = iso3,
+        title = message,
+        date = date
+      ),
+      .f = \(iso3, title, date) plot_cholera$plot_timeline(iso3, title, date, df_cholera_wrangled, TRUE)
+    ),
+    map = NA,
+    source_url = "https://www.afro.who.int/health-topics/disease-outbreaks/outbreaks-and-other-emergencies-updates",
+    other_urls = NA,
+    further_information = NA
   )
 
 ############################################
@@ -184,5 +197,5 @@ cs$update_gcs_file(
 
 cs$update_gcs_file(
   df = df_cholera_flags_final,
-  name = "output/cholera/raw.parquet"
+  name = "output/cholera/flags.parquet"
 )

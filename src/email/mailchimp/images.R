@@ -2,9 +2,12 @@ box::use(base64enc)
 box::use(httr2)
 box::use(ggplot2)
 box::use(purrr)
+box::use(png)
+box::use(grid)
 
 # local module
 box::use(./base_api)
+box::use(../../utils/gmas_test_run)
 
 #' Save and encode image
 #'
@@ -44,7 +47,7 @@ mc_upload_image <- function(fp, name) {
   encoded_image <- encode_image(fp)
 
   # upload image to Mailchimp
-  response <- base_api$mc_api(lists = FALSE) |>
+  req <- base_api$mc_api(lists_api = FALSE) |>
     httr2$req_url_path_append(
       "file-manager",
       "files"
@@ -55,13 +58,19 @@ mc_upload_image <- function(fp, name) {
         name = name,
         folder_id = 9 # HDX Signals file folder on Mailchimp
       )
-    ) |>
-    httr2$req_perform()
+    )
 
-  # extract the URL from the response
-  response |>
-    httr2$resp_body_json() |>
-    purrr$pluck("full_size_url")
+  if (gmas_test_run$gmas_test_run()) {
+    # print out the image and return the dry run
+    mc_test_image_view(fp)
+    "test-image-url"
+  } else {
+    # upload the image and extract URL
+    req |>
+      httr2$req_perform() |>
+      httr2$resp_body_json() |>
+      purrr$pluck("full_size_url")
+  }
 }
 
 #' Upload plot to Mailchimp
@@ -95,4 +104,16 @@ mc_upload_plot <- function(plot, name, ...) {
     fp = tf,
     name = name
   )
+}
+
+#' View image for testing
+#'
+#' Used if `gmas_test_run()`, will read a saved out image and view directly the
+#' png on the active graphics device for interactive testing.
+mc_test_image_view <- function(fp) {
+  # read and view new plot
+  png$readPNG(fp) |>
+    grid$grid.raster()
+
+  "test-image-url"
 }
