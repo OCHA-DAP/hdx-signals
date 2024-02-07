@@ -38,7 +38,7 @@ add_text <- function(text = "", header = "", header_level = 2, header_class = "t
 
                         <td valign="top" class="mcnTextContent" style="padding: 0px 18px 9px; font-size: 16px; line-height: 150%;">
 
-                            {conditional_header(header, header_level)}
+                            {conditional_header(header, header_level, header_class)}
 
                             {conditional_text(text)}
 

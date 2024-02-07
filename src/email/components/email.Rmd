@@ -1,0 +1,33 @@
+---
+title: "email"
+output:
+  html_document:
+    template: hdx_signals_template.html
+params:
+  shock_title: "Test"
+  iso3: "AFG"
+  country: ""
+  message: ""
+  plot: ""
+  map: ""
+  other_images: ""
+  summary: ""
+  further_information: ""
+---
+
+```{r, include=FALSE, echo=FALSE, results="asis"}
+box::use(./email_body)
+cat(
+  email_body$add_body(
+    shock_title = params$shock_title,
+    iso3 = params$iso3,
+    country = params$country,
+    message = params$message,
+    plot = params$plot,
+    map = params$map,
+    other_images = params$other_images,
+    summary = params$summary,
+    further_information = params$further_information
+  )
+)
+```

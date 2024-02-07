@@ -1,5 +1,6 @@
 box::use(glue)
 box::use(purrr)
+box::use(stringr)
 
 box::use(./text_block)
 box::use(./boxed_text_block)
@@ -28,7 +29,7 @@ box::use(../mailchimp/audience)
 #' @returns HTML for country block
 #'
 #' @export
-country_block <- function(
+add_country <- function(
     iso3,
     country,
     message = "",
@@ -42,11 +43,10 @@ country_block <- function(
     text_block$add_text(header = country, header_class = "title"),
     image_block$add_image(src = plot, alt = message),
     image_block$add_image(src = map, alt = "Geographic map"),
-    purrr$map_chr(.x = strsplit(other_images, ";"), .f = image_block$add_image),
+    purrr$map_chr(.x = stringr$str_split(other_images, ";"), .f = image_block$add_image),
     summary_block$add_summary(text = summary),
     further_info_block$add_further_info(text = further_information),
-    line_block$add_line(),
-    sep = ""
+    line_block$add_line()
   ) |>
     conditional_merge(iso3)
 }
