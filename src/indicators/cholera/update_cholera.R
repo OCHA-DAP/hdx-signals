@@ -184,5 +184,5 @@ cs$update_gcs_file(
 
 cs$update_gcs_file(
   df = df_cholera_flags_final,
-  name = "output/cholera/raw.parquet"
+  name = "output/cholera/flags.parquet"
 )
