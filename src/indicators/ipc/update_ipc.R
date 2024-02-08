@@ -397,3 +397,5 @@ gd$update_gs_file(
   df = df_ipc_wrangled_final,
   name = "wrangled_ipc"
 )
+
+message("Updated IDMC!")

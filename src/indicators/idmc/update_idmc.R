@@ -211,3 +211,5 @@ gd$update_gs_file(
   df = get_country_names(df_flagged),
   name = "wrangled_idmc"
 )
+
+message("Updated IDMC!")

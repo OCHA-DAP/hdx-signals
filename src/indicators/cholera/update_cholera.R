@@ -186,3 +186,5 @@ cs$update_gcs_file(
   df = df_cholera_flags_final,
   name = "output/cholera/flags.parquet"
 )
+
+message("Updated IDMC!")
