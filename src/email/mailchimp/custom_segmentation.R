@@ -1,4 +1,5 @@
 box::use(dplyr)
+box::use(rlang[`!!`, arg_match])
 
 # local modules
 box::use(./base_api)
@@ -14,7 +15,7 @@ box::use(cs = ../../utils/cloud_storage)
 #' regions receiving emails. The other is based on signal level and indicator.
 #'
 #' @param indicator_id Unique indicator ID
-#' @param iso3 List of ISO3 codes to generate conditions for
+#' @param iso3 Vector of ISO3 codes to generate conditions for
 #' @param signal_level Level to alert from, either "Medium concern" or "High concern".
 #'
 #'
@@ -48,7 +49,7 @@ mc_segment_conditions <- function(indicator_id, iso3, signal_level) {
 mc_iso3_conditions <- function(iso3) {
   segments$mc_group_conditions(
     category_id = "22b9c25441",
-    segment_ids = audience$mc_interests_iso3(iso3, ids = TRUE)
+    segment_ids = audience$mc_interests_iso3(iso3, use = "segmentation")
   )
 }
 
@@ -67,13 +68,13 @@ mc_iso3_conditions <- function(iso3) {
 mc_indicator_conditions <- function(indicator_id, signal_level) {
   df_ind <- cs$read_gcs_file("input/indicator_mapping.parquet") |>
     dplyr$filter(
-      indicator_id == !indicator_id
+      indicator_id == !!indicator_id
     )
 
   if (!is.na(df_ind$mc_field)) {
     mc_field_conditions(
       field = df_ind$mc_field,
-      options = signal_level
+      option = signal_level
     )
   } else if (!is.na(df_ind$mc_tag)) {
     mc_tag_conditions(df_ind$mc_tag)
@@ -91,9 +92,9 @@ mc_indicator_conditions <- function(indicator_id, signal_level) {
 #'
 #' @returns Conditions list
 mc_field_conditions <- function(field, option = c("Medium concern", "High concern")) {
-  option <- rlang$arg_match(option)
+  option <- arg_match(option)
   segments$mc_merge_conditions(
-    field_id = audience$mc_fields_ids(shock_field),
+    field_id = audience$mc_fields_ids(field),
     value_string = option,
     op = "is"
   )
@@ -128,4 +129,12 @@ mc_tag_conditions <- function(tag_name) {
     )
   }
   segments$mc_static_conditions(segment_id)
+}
+
+
+mc_empty_segment <- function() {
+  segments$mc_add_static_segment(
+    segment_name = "hdx-signals-empty",
+    emails = list()
+  )
 }

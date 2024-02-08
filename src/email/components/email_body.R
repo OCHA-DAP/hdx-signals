@@ -18,7 +18,7 @@ box::use(./text_block)
 #' @param further_information Vector of further information texts
 #'
 #' @export
-add_body <- function(
+create_body <- function(
     shock_title,
     iso3,
     country,

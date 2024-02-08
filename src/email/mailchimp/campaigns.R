@@ -1,6 +1,7 @@
 box::use(httr2)
 
 box::use(./base_api)
+box::use(../../utils/gmas_test_run)
 
 #' Adds a campaign to Mailchimp
 #'
@@ -15,29 +16,36 @@ box::use(./base_api)
 #'
 #' @export
 mc_add_campaign <- function(subject_line, preview_text, title, recipients, template_id) {
-  response <- base_api$mc_api(lists_api = FALSE) |>
-    httr2$req_url_path_append(
-      "campaigns"
-    ) |>
-    httr2$req_body_json(
-      data = list(
-        type = "regular",
-        recipients = recipients,
-        settings = list(
-          title = title,
-          subject_line = subject,
-          preview_text = preview_text,
-          from_name = "HDX Signals",
-          reply_to = "seth.caldwell@un.org",
-          template_id = template_id,
-          folder_id = "56104f0a36"
+  if (gmas_test_run$gmas_test_run()) {
+    message(
+      "Since `gmas_test_run()`, no campaign added to Mailchimp."
+    )
+    "test-id"
+  } else {
+    response <- base_api$mc_api(lists_api = FALSE) |>
+      httr2$req_url_path_append(
+        "campaigns"
+      ) |>
+      httr2$req_body_json(
+        data = list(
+          type = "regular",
+          recipients = recipients,
+          settings = list(
+            title = title,
+            subject_line = subject,
+            preview_text = preview_text,
+            from_name = "HDX Signals",
+            reply_to = "seth.caldwell@un.org",
+            template_id = template_id,
+            folder_id = "56104f0a36"
+          )
         )
-      )
-    ) |>
-    httr2$req_perform() |>
-    httr2$resp_body_json()
+      ) |>
+      httr2$req_perform() |>
+      httr2$resp_body_json()
 
-  response$id
+    response$id
+  }
 }
 
 #' Send Mailchimp campaign
@@ -50,13 +58,21 @@ mc_add_campaign <- function(subject_line, preview_text, title, recipients, templ
 #'
 #' @export
 mc_send_campaign <- function(campaign_id) {
-  base_api$mc_api(lists_api = FALSE) |>
+  req <- base_api$mc_api(lists_api = FALSE) |>
     httr2$req_url_path_append(
       "campaigns",
       campaign_id,
       "actions",
       "send"
     ) |>
-    httr2$req_method("POST") |>
-    httr2$req_perform()
+    httr2$req_method("POST")
+
+  if (gmas_test_run$gmas_test_run()) {
+    message(
+      "Since `gmas_test_run()`, no campaign sent, dry run returned."
+    )
+    httr2$req_dry_run(req)
+  } else {
+    httr2$req_perform(req)
+  }
 }

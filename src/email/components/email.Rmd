@@ -14,6 +14,10 @@ params:
   summary: ""
   further_information: ""
 ---
+```{r include=FALSE}
+box::use(knitr)
+knitr$opts_knit$set(upload.fun = identity)
+```
 
 ```{r, echo=FALSE, results="asis"}
 box::use(./email_body)

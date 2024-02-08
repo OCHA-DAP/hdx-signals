@@ -66,7 +66,7 @@ conditional_header <- function(header, header_level, header_class) {
   if (missing_text(header)) {
     ""
   } else {
-    glue$glue('"<h{header_level} class="{header_class}">{header}</h{header_level}>"')
+    glue$glue('<h{header_level} class="{header_class}">{header}</h{header_level}>')
   }
 }
 
