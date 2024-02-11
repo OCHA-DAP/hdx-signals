@@ -37,6 +37,9 @@ flags_total <- purrr$map(
 
 # create long format dataset for filtration on the dashboard
 # TODO: Drop when CERF is able to switch their platform
+# Note this file is created but not sent anywhere as the Google Sheets for CERF
+# is too large now. Thus they just need to use flags_total. However leaving this
+# active in case they demand this file in some format in the next month.
 
 flags_total_daily <- flags_total |>
   dplyr$filter(
@@ -62,10 +65,10 @@ cs$update_gcs_file(
 
 # TODO: remove these updates once CERF has switched to new process
 
-# gd$update_gs_file(
-#   df = flags_total_daily,
-#   name = "flags_total_daily"
-# )
+gd$update_gs_file(
+  df = flags_total,
+  name = "flags_total"
+)
 
 ########################
 #### GENERATE EMAIL ####
