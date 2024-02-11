@@ -16,11 +16,11 @@ df_alerts <- alert_cholera$alert(
 ############################
 
 cs$update_gcs_file(
-  df = df_cholera_wrangled,
+  df = df_wrangled,
   name = "output/cholera/wrangled.parquet"
 )
 
 cs$update_gcs_file(
-  df = df_cholera_flags_final,
+  df = df_alerts,
   name = "output/cholera/flags.parquet"
 )
