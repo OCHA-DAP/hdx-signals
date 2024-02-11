@@ -6,7 +6,7 @@ box::use(../../utils/gmas_test_run)
 #' Adds a campaign to Mailchimp
 #'
 #' Adds a campaign to Mailchimp, using the default settings for HDX Signals, and
-#' adding that campaign to the HDX Signals folder. Returns the ID of the campaign
+#' adding that campaign to the HDX Signals folder. Returns the URL of the campaign.
 #'
 #' @param subject_line Subject of the email
 #' @param preview_text Preview text for the email
@@ -14,13 +14,15 @@ box::use(../../utils/gmas_test_run)
 #' @param recipients Recipients list for the email
 #' @param template_id ID of the template to be used in the email
 #'
+#' @returns ID and URL of the campaign
+#'
 #' @export
 mc_add_campaign <- function(subject_line, preview_text, title, recipients, template_id) {
   if (gmas_test_run$gmas_test_run()) {
     message(
       "Since `gmas_test_run()`, no campaign added to Mailchimp."
     )
-    "test-id"
+    list(id = "test-id", url = "test-url")
   } else {
     response <- base_api$mc_api(lists_api = FALSE) |>
       httr2$req_url_path_append(
@@ -32,7 +34,7 @@ mc_add_campaign <- function(subject_line, preview_text, title, recipients, templ
           recipients = recipients,
           settings = list(
             title = title,
-            subject_line = subject,
+            subject_line = subject_line,
             preview_text = preview_text,
             from_name = "HDX Signals",
             reply_to = "seth.caldwell@un.org",
@@ -44,7 +46,7 @@ mc_add_campaign <- function(subject_line, preview_text, title, recipients, templ
       httr2$req_perform() |>
       httr2$resp_body_json()
 
-    response$id
+    list(id = response$id, url = response$archive_url)
   }
 }
 
@@ -76,3 +78,5 @@ mc_send_campaign <- function(campaign_id) {
     httr2$req_perform(req)
   }
 }
+
+box::use(./campaigns)

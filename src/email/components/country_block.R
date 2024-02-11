@@ -53,14 +53,22 @@ add_country <- function(
 
 #' Wraps text in conditional merge text
 #'
-#' Wraps text in conditional merge text based on the ISO3 code passed in.
+#' Wraps text in conditional merge text based on the ISO3 code passed in. This is
+#' also wrapped in text so the conditional merge tags only appear if the campaign
+#' is viewed in the email! Thus, the archive page can show all content.
 conditional_merge <- function(text, iso3) {
   regions <- audience$mc_interests_iso3(iso3, "conditional_blocks")
   opening_tag <- glue$glue("*|INTERESTED:Regions of interest:{regions}|*")
   closing_tag <- "*|END:INTERESTED|*"
   paste0(
-    opening_tag,
+    archive_wrapper(opening_tag),
     text,
-    closing_tag
+    archive_wrapper(closing_tag)
   )
+}
+
+#' Wraps text so that it appears if not in the archive. Used to wrap the conditional
+#' merge tags to not drop blocks in the archive URL!
+archive_wrapper <- function(text) {
+  paste0("*|IFNOT:ARCHIVE_PAGE|*", text, "*|END:IF|*")
 }

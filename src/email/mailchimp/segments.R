@@ -175,3 +175,23 @@ mc_find_segment <- function(segment_name) {
     ) |>
     purrr$pluck(1, "id")
 }
+
+#' Get segment members
+#'
+#' Get members of a segment.
+#'
+#' @param segment_id Segment ID
+#'
+#' @returns Member count
+#'
+#' @export
+mc_segment_member_count <- function(segment_id) {
+  base_api$mc_api() |>
+    httr2$req_url_path_append(
+      "segments",
+      segment_id
+    ) |>
+    httr2$req_perform() |>
+    httr2$resp_body_json() |>
+    purrr$pluck("member_count")
+}

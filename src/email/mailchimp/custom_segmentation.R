@@ -16,14 +16,14 @@ box::use(cs = ../../utils/cloud_storage)
 #'
 #' @param indicator_id Unique indicator ID
 #' @param iso3 Vector of ISO3 codes to generate conditions for
-#' @param signal_level Level to alert from, either "Medium concern" or "High concern".
+#' @param alert_level Level to alert from, either "Medium concern" or "High concern".
 #'
 #'
 #' @returns List to be used as `recipients` to add or update a campaign.
 #'
 #' @export
-mc_segment_conditions <- function(indicator_id, iso3, signal_level) {
-  indicator_conditions <- mc_indicator_conditions(indicator_id, signal_level)
+mc_segment_conditions <- function(indicator_id, iso3, alert_level) {
+  indicator_conditions <- mc_indicator_conditions(indicator_id, alert_level)
   iso3_conditions <- mc_iso3_conditions(iso3)
 
   list(
@@ -34,6 +34,31 @@ mc_segment_conditions <- function(indicator_id, iso3, signal_level) {
         indicator_conditions,
         iso3_conditions
       )
+    )
+  )
+}
+
+#' Returns the empty segment ID
+#'
+#' Checks that the empty segment is still empty, and updates if not.
+#'
+#' @returns Segment conditions for `hdx-signals-empty`, which is always ID 24989.
+#'
+#' @export
+mc_empty_segment <- function() {
+  # always ensure the segment is empty
+  if (segments$mc_segment_member_count(24989) != 0) {
+    segments$mc_update_static_segment(
+      segment_id = 24989,
+      segment_name = "hdx-signals-empty",
+      emails = list()
+    )
+  }
+
+  list(
+    list_id = "e908cb9d48",
+    segment_opts = list(
+      saved_segment_id = 24989
     )
   )
 }
@@ -56,7 +81,7 @@ mc_iso3_conditions <- function(iso3) {
 #' Get conditions for a specific indicator
 #'
 #' For a specific indicator, return the relevant conditions for the email. For
-#' publicly subscribable groups, this produces a segment based on the `signal_levels`
+#' publicly subscribable groups, this produces a segment based on the `alert_level`
 #' and the merge field. If it is a private indicator only mailed it to tags, a
 #' tag conditions list is returned.
 #'
@@ -64,8 +89,8 @@ mc_iso3_conditions <- function(iso3) {
 #' in the dataset `input/indicator_mapping.parquet`.
 #'
 #' @param indicator_id Unique identifier for the indicator
-#' @param signal_level To what level email should be sent
-mc_indicator_conditions <- function(indicator_id, signal_level) {
+#' @param alert_level To what level email should be sent
+mc_indicator_conditions <- function(indicator_id, alert_level) {
   df_ind <- cs$read_gcs_file("input/indicator_mapping.parquet") |>
     dplyr$filter(
       indicator_id == !!indicator_id
@@ -74,7 +99,7 @@ mc_indicator_conditions <- function(indicator_id, signal_level) {
   if (!is.na(df_ind$mc_field)) {
     mc_field_conditions(
       field = df_ind$mc_field,
-      option = signal_level
+      option = alert_level
     )
   } else if (!is.na(df_ind$mc_tag)) {
     mc_tag_conditions(df_ind$mc_tag)
@@ -129,12 +154,4 @@ mc_tag_conditions <- function(tag_name) {
     )
   }
   segments$mc_static_conditions(segment_id)
-}
-
-
-mc_empty_segment <- function() {
-  segments$mc_add_static_segment(
-    segment_name = "hdx-signals-empty",
-    emails = list()
-  )
 }

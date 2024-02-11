@@ -1,20 +1,31 @@
 # external packages
 box::use(dplyr)
-box::use(readr)
-box::use(lubridate)
-box::use(janitor)
-box::use(stringr)
 box::use(countrycode)
-box::use(zoo)
+box::use(purrr)
+box::use(glue)
 box::use(tidyr)
 box::use(utils)
 box::use(scales)
-box::use(purrr)
 
 # internal utilities
+box::use(./plot_cholera)
 box::use(cs = ../../utils/cloud_storage)
 box::use(../../utils/format_date[format_date])
+box::use(../../email/email)
 
+#' Generate alerts information and create campaign
+#'
+#' Generates alerts for cholera data. This creates a data frame with all information
+#' relevant for creating email campaigns in `email$generate_campaigns()`, including
+#' putting plots onto the Mailchimp servers.
+#'
+#' If `recreate` is `TRUE`, then the alerts dataset is recreated and new campaigns
+#' are created
+#'
+#' @param df_wrangled Data frame of wrangled data
+#' @param recreate Whether or not to recreate the alerts dataset
+#'
+#' @export
 alert <- function(df_wrangled, recreate = FALSE) {
   df_alerts <- base_alert(df_wrangled)
   df_alerts_prev <- cs$read_gcs_file(
@@ -22,11 +33,48 @@ alert <- function(df_wrangled, recreate = FALSE) {
   )
 
   if (!recreate) {
-    df_alerts_new <- new_alerts(df_alerts, df_alerts_prev)
-    df_campaign_new <- campaign_info(df_alerts_new, df_wrangled, recreate)
+    df_alerts_new <- new_alerts(df_alerts, df_alerts_prev) |>
+      campaign_info(df_wrangled, recreate)
+
+    df_alerts_new$campaign <- email$generate_campaigns(
+      indicator_id = "who_cholera",
+      shock_title = "Cholera",
+      alerts_df = df_campaign_new
+    )
+
+    df_campaign <- dplyr$bind_rows(df_alerts_prev, df_alerts_new)
   } else {
-    campaign_info(df_alerts, df_wrangled, recreate)
+    # create a new campaign data frame
+    # with each row having a separate campaign URL since cholera alerts
+    # are distinct from each other
+    input <- readline(
+      paste0(
+        "You set `recreate` to `TRUE`. This will overwrite the existing ",
+        "alerts dataset and create new campaigns on Mailchimp. Enter Y to confirm:\n\n"
+      )
+    )
+    if (tolower(input) == "y") {
+      df_campaign <- campaign_info(df_alerts, df_wrangled, recreate)
+      df_campaign$campaign <- purrr$map_chr(
+        .x = split(df_campaign, 1:nrow(df_campaign)),
+        .f = \(df) {
+          email$generate_campaigns(
+            indicator_id = "who_cholera",
+            shock_title = "Cholera",
+            alerts_df = df,
+            send_email = FALSE
+          )
+        }
+      )
+    } else {
+      message(
+        "No alerts generated as you did not confirm recreation of alerts data."
+      )
+      return(NULL)
+    }
   }
+
+  df_campaign
 }
 
 #' Creates base alert dataset
@@ -61,9 +109,9 @@ base_alert <- function(df_wrangled) {
     dplyr$summarize(
       date = max(date),
       alert_level = utils$tail(alert_level, n = 1),
-      value = tail(cholera_cases, n = 1),
+      value = utils$tail(cholera_cases, n = 1),
       message = paste0(
-        scales$comma_format()(tail(cholera_cases, n = 1)),
+        scales$comma_format()(utils$tail(cholera_cases, n = 1)),
         " cholera cases reported since ",
         format_date(min(start_date))
       ),
@@ -120,8 +168,7 @@ new_alerts <- function(df_alerts, df_alerts_prev) {
 #' @param df_alerts Alerts dataset to create campaign info for
 #' @param df_wrangled Wrangled data frame
 #' @param recreate Whether or not we are recreating the campaign information, which
-#'     determines the timeline of the plots in `plot_timeline()`. `email` set to
-#'     the opposite of `recreate`.
+#'     determines the timeline of the plots in `plot_timeline()`.
 #'
 #' @returns Data frame with campaign information
 campaign_info <- function(df_alerts, df_wrangled, recreate) {
@@ -142,10 +189,13 @@ campaign_info <- function(df_alerts, df_wrangled, recreate) {
         )
       ),
       map = NA_character_,
+      other_images = NA_character_,
       summary = NA_character_,
       hdx_url = NA_character_,
       source_url = "https://www.afro.who.int/health-topics/disease-outbreaks/outbreaks-and-other-emergencies-updates",
       other_urls = NA_character_,
-      further_information = NA_character_
+      further_information = glue$glue(
+        'Refer to the <a href="{source_url}">WHO Afro Bulletins for more detailed information.</a>'
+      )
     )
 }

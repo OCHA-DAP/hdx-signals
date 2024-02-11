@@ -18,7 +18,7 @@ box::use(zoo)
 #'
 #' @export
 wrangle <- function(df_raw) {
-  df_cholera_raw |>
+  df_raw |>
     janitor$clean_names() |>
     dplyr$filter( # need to drop some mentions of possible cholera and other issues
       stringr$str_detect(tolower(event), "cholera") & !stringr$str_detect(tolower(event), "intestinal|bacterial|shigellosis|salmonellosis")
