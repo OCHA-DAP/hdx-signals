@@ -61,9 +61,9 @@ conditional_merge <- function(text, iso3) {
   opening_tag <- glue$glue("*|INTERESTED:Regions of interest:{regions}|*")
   closing_tag <- "*|END:INTERESTED|*"
   paste0(
-    archive_wrapper(opening_tag),
+    opening_tag,
     text,
-    archive_wrapper(closing_tag)
+    closing_tag
   )
 }
 
