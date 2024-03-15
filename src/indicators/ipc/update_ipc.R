@@ -284,7 +284,8 @@ df_ipc_flags_new <- dplyr$anti_join(
   ) |>
   dplyr$mutate(
     email = end_date - Sys.Date() > - 90 & latest_flag == max(latest_flag, -Inf)
-  )
+  ) |>
+  dplyr$ungroup()
 
 ######################
 #### WEB SCRAPING ####
