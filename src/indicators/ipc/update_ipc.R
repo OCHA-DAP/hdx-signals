@@ -279,8 +279,11 @@ df_ipc_flags_new <- dplyr$anti_join(
   df_ipc_flags_prev,
   by = c("iso3", "start_date", "end_date", "latest_flag")
 ) |>
+  dplyr$group_by(
+    iso3, start_date, end_date
+  ) |>
   dplyr$mutate(
-    email = end_date - Sys.Date() > -90
+    email = end_date - Sys.Date() > - 90 & latest_flag == max(latest_flag, -Inf)
   )
 
 ######################
