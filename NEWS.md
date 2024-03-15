@@ -1,3 +1,9 @@
+## March 15, 2024
+
+### Indicator: IPC
+
+- Adjusted methods to remove duplicate flags from continually being generated.
+
 ## January 30, 2024
 
 ### Overall

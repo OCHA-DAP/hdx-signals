@@ -14,7 +14,7 @@ box::use(cs = ../../utils/cloud_storage)
 box::use(gd = ../../utils/google_drive)
 box::use(../../utils/ai_summarizer[ai_summarizer])
 box::use(../../utils/get_country_names[get_country_names])
-box::use(ipc_fix= ../../utils/ipc_get)
+box::use(ipc_fix = ../../utils/ipc_get)
 
 
 #############
@@ -277,7 +277,7 @@ df_ipc_flags_prev <- cs$read_gcs_file("output/ipc/flags.parquet") |>
 df_ipc_flags_new <- dplyr$anti_join(
   df_ipc_flags,
   df_ipc_flags_prev,
-  by = c("iso3", "start_date", "end_date")
+  by = c("iso3", "start_date", "end_date", "latest_flag")
 ) |>
   dplyr$mutate(
     email = end_date - Sys.Date() > -90
@@ -351,6 +351,7 @@ df_ipc_flags_summary <- dplyr$bind_rows(
     iso3,
     start_date,
     end_date,
+    latest_flag,
     email,
     summary_experimental
   )
@@ -358,7 +359,7 @@ df_ipc_flags_summary <- dplyr$bind_rows(
 df_ipc_flags <- dplyr$left_join(
   df_ipc_flags,
   df_ipc_flags_summary,
-  by = c("iso3", "start_date", "end_date")
+  by = c("iso3", "start_date", "end_date", "latest_flag")
 )
 
 ###########################################
