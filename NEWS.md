@@ -3,6 +3,8 @@
 ### Indicator: IPC
 
 - Adjusted methods to remove duplicate flags from continually being generated.
+- Switched to the updated {ripc} package to remove the temporary `ipc_get.R`
+fix in this repository.
 
 ## January 30, 2024
 
