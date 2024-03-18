@@ -14,15 +14,13 @@ box::use(cs = ../../utils/cloud_storage)
 box::use(gd = ../../utils/google_drive)
 box::use(../../utils/ai_summarizer[ai_summarizer])
 box::use(../../utils/get_country_names[get_country_names])
-box::use(ipc_fix = ../../utils/ipc_get)
-
 
 #############
 #### IPC ####
 #############
 
 # get into country level form and correct the names
-df_ipc_raw <- ipc_fix$ipc_get_population()$country |>
+df_ipc_raw <- ripc$ipc_get_population()$country |>
   dplyr$filter(
     condition == "A" # only use acute for now, chronic doesn't have date info
   )
