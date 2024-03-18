@@ -114,7 +114,7 @@ df_idmc_flags_new <- dplyr$anti_join(
   dplyr$group_by(iso3) |>
   dplyr$mutate(
     email = ifelse(
-      Sys.Date() - end_date > 60 | start_date != max(start_date), # do not email for old events updated or if not the latest alert
+      Sys.Date() - end_date > 60 | start_date != max(start_date, -Inf), # do not email for old events updated or if not the latest alert
       FALSE,
       tidyr$replace_na(email, TRUE) # create emails for new alerts
     )
