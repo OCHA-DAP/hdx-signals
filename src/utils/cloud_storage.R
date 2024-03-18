@@ -1,10 +1,10 @@
 box::use(stringr)
-box::use(readr)
 box::use(arrow)
 box::use(httr)
 box::use(az = AzureStor)
 box::use(glue)
 box::use(rlang)
+box::use(utils)
 
 box::use(../utils/gmas_test_run[gmas_test_run])
 
@@ -27,10 +27,15 @@ box::use(../utils/gmas_test_run[gmas_test_run])
 read_az_file <- function(name) {
   tf <- tempfile(fileext = ".parquet")
 
-  az$download_blob(
-    container = blob,
-    src = name,
-    dest = tf
+  # wrapping to suppress printing of progress bar
+  invisible(
+    utils$capture.output(
+      az$download_blob(
+        container = blob,
+        src = name,
+        dest = tf
+      )
+    )
   )
 
   arrow$read_parquet(tf)
@@ -74,10 +79,14 @@ update_az_file <- function(df, name) {
     return(invisible(NULL))
   }
 
-  az$upload_blob(
-    container = blob,
-    src = tf,
-    dest = name
+  invisible(
+    utils$capture.output(
+      az$upload_blob(
+        container = blob,
+        src = tf,
+        dest = name
+      )
+    )
   )
 }
 
