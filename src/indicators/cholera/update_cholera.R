@@ -135,7 +135,7 @@ df_cholera_flags <- df_cholera_wrangled |>
 #### COMPARE WITH PREVIOUS FLAGGED DATA ####
 ############################################
 
-df_cholera_flags_prev <- cs$read_gcs_file(
+df_cholera_flags_prev <- cs$read_az_file(
   name = "output/cholera/flags.parquet"
 )
 
@@ -172,17 +172,17 @@ df_cholera_flags_final <- dplyr$semi_join(
 #### SAVE IPC  DATA ####
 ########################
 
-cs$update_gcs_file(
+cs$update_az_file(
   df = df_cholera_raw,
   name = "output/cholera/raw.parquet"
 )
 
-cs$update_gcs_file(
+cs$update_az_file(
   df = df_cholera_wrangled,
   name = "output/cholera/wrangled.parquet"
 )
 
-cs$update_gcs_file(
+cs$update_az_file(
   df = df_cholera_flags_final,
   name = "output/cholera/flags.parquet"
 )

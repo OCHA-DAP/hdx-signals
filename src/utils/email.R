@@ -42,7 +42,7 @@ box::use(../utils/gmas_test_run[gmas_test_run])
 #'
 #' @export
 send_email <- function(flag_type, flag_source, df_email, test_email) {
-  df_recipients <- cs$read_gcs_file("input/email_recipients.parquet")
+  df_recipients <- cs$read_az_file("input/email_recipients.parquet")
 
   # only send out to individuals designated for testing if necessary
   if (test_email) {

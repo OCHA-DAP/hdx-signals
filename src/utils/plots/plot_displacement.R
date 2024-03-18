@@ -28,7 +28,7 @@ plot_displacement <- function(
 ) {
 
   # load in the data for plotting
-  df_plot <- cs$read_gcs_file(
+  df_plot <- cs$read_az_file(
     "output/idmc/wrangled.parquet"
   ) |>
     dplyr$filter(

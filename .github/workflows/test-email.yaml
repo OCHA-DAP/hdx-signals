@@ -42,6 +42,8 @@ jobs:
           Rscript test/test.R
         env:
           GLOBAL_MONITORING_JSON: "auth.json"
+          HDX_SIGNALS_SAS: ${{ secrets.HDX_SIGNALS_SAS }}
+          HDX_SIGNALS_ENDPOINT: ${{ secrets.HDX_SIGNALS_ENDPOINT }}
           CHD_DS_EMAIL_USERNAME: ${{ secrets.CHD_DS_EMAIL_USERNAME }}
           CHD_DS_EMAIL_ADDRESS: ${{ secrets.CHD_DS_EMAIL_ADDRESS }}
           CHD_DS_EMAIL_PASSWORD: ${{ secrets.CHD_DS_EMAIL_PASSWORD }}

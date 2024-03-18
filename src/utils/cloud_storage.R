@@ -2,90 +2,128 @@ box::use(stringr)
 box::use(readr)
 box::use(arrow)
 box::use(httr)
+box::use(az = AzureStor)
+box::use(glue)
+box::use(rlang)
 
 box::use(../utils/gmas_test_run[gmas_test_run])
 
-#' Read a Parquet file stored on Google Cloud Platform bucket
+#' Read a Parquet file stored on Microsoft Azure Data Storage blob
 #'
-#' Reads a file from the `global-monitoring` bucket.
+#' Reads a file from the `hdx-signals` bucket.
 #' The file is read based on its prefix. Currently, the only support is for
 #' Apache Parquet files, but other support can be added if necessary.
 #'
 #' Function parsing is done based on file type:
 #'
-#' * Apache Parquet: [arrow::read_parquet()].
+#' * Apache Parquet: [arrow::write_parquet()].
 #'
-#' @param name Name of the file to read, including prefix (`input/` or `output/`)
+#' @param name Name of the file to read, including directory prefixes (`input/` or `output/`)
 #'     and filetype `.parquet`.
 #'
 #' @returns Data frame.
 #'
 #' @export
-read_gcs_file <- function(name) {
-  arrow$read_parquet(
-    bucket$path(name)
+read_az_file <- function(name) {
+  tf <- tempfile(fileext = ".parquet")
+
+  az$download_blob(
+    container = blob,
+    src = name,
+    dest = tf
   )
+
+  arrow$read_parquet(tf)
 }
 
-#' Write data frame on Google Cloud Platform
+#' Write data frame to Microsoft Azure Data Storage
 #'
 #' A convenient file saver that saves the data frame to the specified
 #' parquet file. Simply writes out the data frame based on the file extension and
-#' uploads that to the GCS Bucket using [arrow::gs_bucket()] file systems.
+#' uploads that to the MADS container using [AzureStor::upload_blob()].
 #' Currently only supports Apache Parquet files.
 #'
 #' Files written out based on file type:
 #'
 #' * Apache Parquet: [arrow::write_parquet()]
 #'
-#' If `gmas_test_run()`, the file is not uploaded to the bucket.
+#' If `gmas_test_run()`, the file is not uploaded to the container
 #'
 #' @param df Data frame to save out.
-#' @param name Name of the file to read, including prefix (`input/` or `output/`)
+#' @param name Name of the file to write, including prefix (`input/` or `output/`)
 #'     and filetype `.parquet`.
+#' @param
 #'
-#' @returns Nothing, but file is written to the `global-monitoring` bucket.
+#' @returns Nothing, but file is written to the `hdx-signals` bucket.
 #'
 #' @export
-update_gcs_file <- function(df, name) {
+update_az_file <- function(df, name) {
+  tf <- tempfile(fileext = ".parquet")
+
+  arrow$write_parquet(
+    x = df,
+    sink = tf
+  )
+
   if (gmas_test_run()) {
     message(
-      "`update_pq_file()` not saving data as `gmas_test_run()` is `TRUE`. ",
+      "`update_az_file()` not saving data as `gmas_test_run()` is `TRUE`. ",
       "Set `GMAS_TEST_RUN` env variable to `FALSE` if you want the data to be ",
       "saved, but be careful of sending emails or calling the OpenAI API."
     )
     return(invisible(NULL))
   }
 
-  arrow$write_parquet(
-    x = df,
-    sink = bucket$path(name)
+  az$upload_blob(
+    container = blob,
+    src = tf,
+    dest = name
   )
 }
 
-#' Find GCS file names matching pattern
+#' Find MADS file names matching pattern
 #'
-#' Pulls names from the `global-monitoring` bucket and
-#' filters those names by the passed patterns, if passed. If `pattern` is `NULL`,
-#' then all files in the bucket are returned.
+#' Pulls names of files (not folders) from the `hdx-signals` container and
+#' filters those names by the passed patterns, if provided If `pattern` is `NULL`,
+#' then all files in the container are returned.
 #'
 #' @param pattern Pattern to look for. Passed to [stringr::str_detect()]
 #'
 #' @export
-gcs_file_detect <- function(pattern = NULL) {
-  file_names <- bucket$ls(recursive = TRUE)
+az_file_detect <- function(pattern = NULL) {
+  # get blob files but don't return dirs
+  blob_df <- az$list_blobs(blob)
+  blob_df <- blob_df[!blob_df$isdir,]
+  file_names <- blob_df$name
   if (!is.null(pattern)) {
     file_names <- file_names[stringr$str_detect(file_names, pattern)]
   }
   file_names
 }
 
-######################
-#### SETUP BUCKET ####
-######################
+#########################
+#### SETUP CONTAINER ####
+#########################
 
-# this bucket used to read and write from the GCS parquet
-bucket <- arrow$gs_bucket(
-  bucket = "global-monitoring",
-  json_credentials = Sys.getenv("GLOBAL_MONITORING_JSON")
+#' Get the endpoint URL
+#'
+#' Currently system uses the blob endpoint, but allows access to the file endpoint
+#' as well if necessary. Used to create blob object in `blob_endpoint`.
+#'
+#' @param service Service to access, either blob (default) or file.
+azure_endpoint_url <- function(service = c("blob", "file")) {
+  service <- rlang$arg_match(service)
+  endpoint <- glue$glue(Sys.getenv("HDX_SIGNALS_ENDPOINT"))
+}
+
+# gets the Dsci blob endpoint using the HDX Signals SAS
+blob_endpoint <- az$blob_endpoint(
+  endpoint = azure_endpoint_url("blob"),
+  sas = Sys.getenv("HDX_SIGNALS_SAS")
+)
+
+# blob object for HDX Signals, used to read and write data
+blob <- az$blob_container(
+  endpoint = blob_endpoint,
+  name = "hdx-signals"
 )

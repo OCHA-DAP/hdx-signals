@@ -266,7 +266,7 @@ df_ipc_flags <- df_ipc_wrangled |>
 ##########################################
 
 # load previous flags
-df_ipc_flags_prev <- cs$read_gcs_file("output/ipc/flags.parquet") |>
+df_ipc_flags_prev <- cs$read_az_file("output/ipc/flags.parquet") |>
   dplyr$mutate(
     email = FALSE
   )
@@ -381,17 +381,17 @@ df_ipc_wrangled_final <- df_ipc_wrangled |>
 #### SAVE IPC  DATA ####
 ########################
 
-cs$update_gcs_file(
+cs$update_az_file(
   df = df_ipc_raw,
   name = "output/ipc/raw.parquet"
 )
 
-cs$update_gcs_file(
+cs$update_az_file(
   df = df_ipc_wrangled_final,
   name = "output/ipc/wrangled.parquet"
 )
 
-cs$update_gcs_file(
+cs$update_az_file(
   df = df_ipc_flags,
   name = "output/ipc/flags.parquet"
 )

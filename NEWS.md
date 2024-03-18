@@ -1,3 +1,10 @@
+## March 18, 2024
+
+### System
+
+- Data storage solution ported from Google Cloud Platform to Microsoft Azure
+Data Storage containers.
+
 ## March 15, 2024
 
 ### Indicator: IPC

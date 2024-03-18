@@ -10,7 +10,7 @@
 #' accidentally running something. It is used in:
 #' * `ai_summarizer()` to return a standard string instead of pinging the OpenAI
 #'     API for summarization.
-#' * `update_gcs_file()` to prevent saving data back to the Google Cloud Storage
+#' * `update_az_file()` to prevent saving data back to the Google Cloud Storage
 #'     buckets.
 #'
 #' @export
