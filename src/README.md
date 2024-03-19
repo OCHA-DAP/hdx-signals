@@ -37,7 +37,8 @@ data and generates email alerts when necessary.
 Data is stored within a Microsoft Azure Data Storage container, `hdx-signals` on
 the Centre for Humanitarian data blob. Access
 to the bucket is provided through SAS authorization. This needs to be provided
-as an environment variable `HDX_SIGNALS_SAS`.
+as an environment variable `DSCI_AZ_SAS`, with the endpoint provided as
+`DSCI_AZ_ENDPOINT`.
 
 Legacy file saving to Google Drive and Sheets is still maintained, using a
 service account with an authorization file that needs to be saved to

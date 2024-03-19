@@ -79,6 +79,7 @@ update_az_file <- function(df, name) {
     return(invisible(NULL))
   }
 
+  # wrapping to suppress printing of progress bar
   invisible(
     utils$capture.output(
       az$upload_blob(
@@ -122,13 +123,13 @@ az_file_detect <- function(pattern = NULL) {
 #' @param service Service to access, either blob (default) or file.
 azure_endpoint_url <- function(service = c("blob", "file")) {
   service <- rlang$arg_match(service)
-  endpoint <- glue$glue(Sys.getenv("HDX_SIGNALS_ENDPOINT"))
+  endpoint <- glue$glue(Sys.getenv("DSCI_AZ_ENDPOINT"))
 }
 
 # gets the Dsci blob endpoint using the HDX Signals SAS
 blob_endpoint <- az$blob_endpoint(
   endpoint = azure_endpoint_url("blob"),
-  sas = Sys.getenv("HDX_SIGNALS_SAS")
+  sas = Sys.getenv("DSCI_AZ_SAS")
 )
 
 # blob object for HDX Signals, used to read and write data
