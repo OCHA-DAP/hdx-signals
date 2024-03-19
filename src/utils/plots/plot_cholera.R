@@ -27,7 +27,7 @@ plot_cholera <- function(
 ) {
 
   # load in the data for plotting
-  df_plot <- cs$read_gcs_file("output/cholera/wrangled.parquet") |>
+  df_plot <- cs$read_az_file("output/cholera/wrangled.parquet") |>
     dplyr$filter(
       iso3 == !!iso3
     )

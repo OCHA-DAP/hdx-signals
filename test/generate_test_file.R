@@ -8,7 +8,7 @@ box::use(cs = ../src/utils/cloud_storage)
 #### READ IN FLAGS TOTAL ####
 #############################
 
-flags_total <- cs$read_gcs_file(
+flags_total <- cs$read_az_file(
   name = "output/flags_total.parquet"
 )
 
@@ -32,7 +32,7 @@ flags_total |>
     \(df) { # only temporarily set not as test run to ensure that data is saved out
       orig <- Sys.getenv("GMAS_TEST_RUN", unset = NA)
       Sys.setenv(GMAS_TEST_RUN = FALSE)
-      cs$update_gcs_file(
+      cs$update_az_file(
         df = df,
         name = "input/flags_test.parquet"
       )

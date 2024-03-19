@@ -21,7 +21,7 @@ box::use(../../utils/flagging)
 ##############################
 
 # country links on the IDMC page
-df_links <- cs$read_gcs_file("input/idmc_country_links.parquet")
+df_links <- cs$read_az_file("input/idmc_country_links.parquet")
 
 ##############
 #### IDMC ####
@@ -89,7 +89,7 @@ df_idmc_flags <- flagging$generate_alerts(
 #### COMPARE WITH EXISTING FILES ####
 #####################################
 
-df_idmc_flags_prev <- cs$read_gcs_file("output/idmc/flags.parquet") |>
+df_idmc_flags_prev <- cs$read_az_file("output/idmc/flags.parquet") |>
   dplyr$mutate(
     email = FALSE
   )
@@ -114,7 +114,7 @@ df_idmc_flags_new <- dplyr$anti_join(
   dplyr$group_by(iso3) |>
   dplyr$mutate(
     email = ifelse(
-      Sys.Date() - end_date > 60 | start_date != max(start_date), # do not email for old events updated or if not the latest alert
+      Sys.Date() - end_date > 60 | start_date != max(start_date, -Inf), # do not email for old events updated or if not the latest alert
       FALSE,
       tidyr$replace_na(email, TRUE) # create emails for new alerts
     )
@@ -190,17 +190,17 @@ df_idmc_flags_final <- df_idmc_flags_new |>
 #### SAVE IDMC DATA ####
 ########################
 
-cs$update_gcs_file(
+cs$update_az_file(
   df = get_country_names(df_idmc_raw),
   name = "output/idmc/raw.parquet"
 )
 
-cs$update_gcs_file(
+cs$update_az_file(
   df = get_country_names(df_flagged),
   name = "output/idmc/wrangled.parquet"
 )
 
-cs$update_gcs_file(
+cs$update_az_file(
   df = df_idmc_flags_final,
   name = "output/idmc/flags.parquet"
 )

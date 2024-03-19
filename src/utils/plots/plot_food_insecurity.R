@@ -28,7 +28,7 @@ plot_food_insecurity <- function(
     iso3
 ) {
   # load in the data for plotting
-  df_plot <- cs$read_gcs_file("output/ipc/wrangled.parquet") |>
+  df_plot <- cs$read_az_file("output/ipc/wrangled.parquet") |>
     dplyr$filter(
       iso3 == !!iso3
     ) |>

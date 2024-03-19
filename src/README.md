@@ -34,11 +34,16 @@ data and generates email alerts when necessary.
 
 ## Data storage
 
-Data is stored within a Google Cloud Storage bucket, `global-monitoring`. Access
-to the bucket is provided through a service account with an authorization JSON
-file. The filepath to the authorization file should be saved to
+Data is stored within a Microsoft Azure Data Storage container, `hdx-signals` on
+the Centre for Humanitarian data blob. Access
+to the bucket is provided through SAS authorization. This needs to be provided
+as an environment variable `DSCI_AZ_SAS`, with the endpoint provided as
+`DSCI_AZ_ENDPOINT`.
+
+Legacy file saving to Google Drive and Sheets is still maintained, using a
+service account with an authorization file that needs to be saved to
 `GLOBAL_MONITORING_JSON` environment variable. Once this is done, the code,
-particularly that to save to and read from the bucket in `cloud_storage.R`
+particularly that to save to and read from the bucket in `google_drive.R`
 works on personal machines for testing and in GitHub Actions.
 
 ## Automation

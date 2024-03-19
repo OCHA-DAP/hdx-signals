@@ -5,7 +5,7 @@ box::use(cs = ../utils/cloud_storage)
 #' Remove recipient from recipients data frame
 #'
 #' Pass the name of a recipient to remove from the recipients data frame. Once
-#' removal is confirmed, data frame updated on GCS. A backup is always saved
+#' removal is confirmed, data frame updated on MADS. A backup is always saved
 #' to mirror the previous version before these changes, just in case something
 #' is erroneously removed.
 #'
@@ -14,14 +14,14 @@ box::use(cs = ../utils/cloud_storage)
 #'     if necessary.
 #'
 #' @returns No return value, but `input/email_recipients.parquet` updated on
-#'     the GCS.
+#'     the MADS container.
 #'
 #' @export
 remove_recipients <- function(recipients) {
   # read the recipients list
-  df_recipients <- cs$read_gcs_file("input/email_recipients.parquet")
+  df_recipients <- cs$read_az_file("input/email_recipients.parquet")
 
-  # check that all recipients to remove are in the GCS file
+  # check that all recipients to remove are in the MADS file
   recip_check <- recipients %in% df_recipients$recipient
 
   if (!all(recip_check)) {
@@ -51,14 +51,14 @@ remove_recipients <- function(recipients) {
   }
 
   df_recipients_new <- dplyr$filter(df_recipients, !(recipient %in% recipients))
-  cs$update_gcs_file(df_recipients, "input/email_recipients_backup.parquet")
-  cs$update_gcs_file(df_recipients_new, "input/email_recipients.parquet")
+  cs$update_az_file(df_recipients, "input/email_recipients_backup.parquet")
+  cs$update_az_file(df_recipients_new, "input/email_recipients.parquet")
 }
 
 #' Add recipients to recipients data frame
 #'
 #' Pass the name of recipient(s) to remove from the recipients data frame. Once
-#' addition is confirmed, data frame updated on GCS. A backup is always saved
+#' addition is confirmed, data frame updated on MADS. A backup is always saved
 #' to mirror the previous version before these changes, just in case something
 #' is erroneously added.
 #'
@@ -73,12 +73,12 @@ remove_recipients <- function(recipients) {
 #'     of `recipients`.
 #'
 #' @returns No return value, but `input/email_recipients.parquet` updated on
-#'     the GCS.
+#'     the MADS container.
 #'
 #' @export
 add_recipients <- function(recipients, emails) {
   # read the recipients list
-  df_recipients <- cs$read_gcs_file("input/email_recipients.parquet")
+  df_recipients <- cs$read_az_file("input/email_recipients.parquet")
 
   # check that length of emails matches length of names
 
@@ -115,7 +115,7 @@ add_recipients <- function(recipients, emails) {
     )
   )
 
-  cs$update_gcs_file(df_recipients, "input/email_recipients_backup.parquet")
-  cs$update_gcs_file(df_recipients_new, "input/email_recipients.parquet")
+  cs$update_az_file(df_recipients, "input/email_recipients_backup.parquet")
+  cs$update_az_file(df_recipients_new, "input/email_recipients.parquet")
 }
 

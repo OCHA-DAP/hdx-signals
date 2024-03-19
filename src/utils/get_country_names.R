@@ -20,7 +20,7 @@ box::use(cs = ../utils/cloud_storage)
 #' @export
 get_country_names <- function(df) {
   # read the CERF names list
-  df_names <- cs$read_gcs_file("input/cerf_dashboard_names.parquet")
+  df_names <- cs$read_az_file("input/cerf_dashboard_names.parquet")
 
   # replace existing column name
   if ("country" %in% names(df)) {

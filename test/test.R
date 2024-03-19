@@ -9,7 +9,7 @@ box::use(../src/utils/email)
 #### LOAD TEST FLAGS ####
 #########################
 
-flags_total <- cs$read_gcs_file("input/flags_test.parquet")
+flags_total <- cs$read_az_file("input/flags_test.parquet")
 
 ########################
 #### GENERATE EMAIL ####
