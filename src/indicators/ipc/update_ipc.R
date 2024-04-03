@@ -266,7 +266,7 @@ df_ipc_flags <- df_ipc_wrangled |>
 ##########################################
 
 # load previous flags
-df_ipc_flags_prev <- cs$read_gcs_file("output/ipc/flags.parquet") |>
+df_ipc_flags_prev <- cs$read_az_file("output/ipc/flags.parquet") |>
   dplyr$mutate(
     email = FALSE
   )
@@ -275,11 +275,15 @@ df_ipc_flags_prev <- cs$read_gcs_file("output/ipc/flags.parquet") |>
 df_ipc_flags_new <- dplyr$anti_join(
   df_ipc_flags,
   df_ipc_flags_prev,
-  by = c("iso3", "start_date", "end_date")
+  by = c("iso3", "start_date", "end_date", "latest_flag")
 ) |>
+  dplyr$group_by(
+    iso3, start_date, end_date
+  ) |>
   dplyr$mutate(
-    email = end_date - Sys.Date() > -90
-  )
+    email = end_date - Sys.Date() > - 90 & latest_flag == max(latest_flag, -Inf)
+  ) |>
+  dplyr$ungroup()
 
 ######################
 #### WEB SCRAPING ####
@@ -349,6 +353,7 @@ df_ipc_flags_summary <- dplyr$bind_rows(
     iso3,
     start_date,
     end_date,
+    latest_flag,
     email,
     summary_experimental
   )
@@ -356,7 +361,7 @@ df_ipc_flags_summary <- dplyr$bind_rows(
 df_ipc_flags <- dplyr$left_join(
   df_ipc_flags,
   df_ipc_flags_summary,
-  by = c("iso3", "start_date", "end_date")
+  by = c("iso3", "start_date", "end_date", "latest_flag")
 )
 
 ###########################################
@@ -376,17 +381,17 @@ df_ipc_wrangled_final <- df_ipc_wrangled |>
 #### SAVE IPC  DATA ####
 ########################
 
-cs$update_gcs_file(
+cs$update_az_file(
   df = df_ipc_raw,
   name = "output/ipc/raw.parquet"
 )
 
-cs$update_gcs_file(
+cs$update_az_file(
   df = df_ipc_wrangled_final,
   name = "output/ipc/wrangled.parquet"
 )
 
-cs$update_gcs_file(
+cs$update_az_file(
   df = df_ipc_flags,
   name = "output/ipc/flags.parquet"
 )
@@ -397,3 +402,5 @@ gd$update_gs_file(
   df = df_ipc_wrangled_final,
   name = "wrangled_ipc"
 )
+
+message("Updated IDMC!")

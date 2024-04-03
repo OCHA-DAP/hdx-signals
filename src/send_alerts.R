@@ -18,11 +18,11 @@ box::use(./utils/email)
 #############################
 
 # detect all indicator flags stored as output/indicator_name/flags.parquet
-ind_flags <- cs$gcs_file_detect("([a-z]+)/([a-z]+)/flags.parquet")
+ind_flags <- cs$az_file_detect("([a-z]+)/([a-z]+)/flags.parquet")
 
 flags_total <- purrr$map(
   .x = ind_flags,
-  .f = \(x) cs$read_gcs_file(name = x) |>
+  .f = \(x) cs$read_az_file(name = x) |>
     dplyr$mutate(
       latest_flag = as.character(latest_flag) # so they bind together properly
     )
@@ -37,6 +37,9 @@ flags_total <- purrr$map(
 
 # create long format dataset for filtration on the dashboard
 # TODO: Drop when CERF is able to switch their platform
+# Note this file is created but not sent anywhere as the Google Sheets for CERF
+# is too large now. Thus they just need to use flags_total. However leaving this
+# active in case they demand this file in some format in the next month.
 
 flags_total_daily <- flags_total |>
   dplyr$filter(
@@ -55,7 +58,7 @@ flags_total_daily <- flags_total |>
 #### UPDATE DRIVE ####
 ######################
 
-cs$update_gcs_file(
+cs$update_az_file(
   df = flags_total,
   name = "output/flags_total.parquet"
 )
@@ -63,8 +66,8 @@ cs$update_gcs_file(
 # TODO: remove these updates once CERF has switched to new process
 
 gd$update_gs_file(
-  df = flags_total_daily,
-  name = "flags_total_daily"
+  df = flags_total,
+  name = "flags_total"
 )
 
 ########################
@@ -72,7 +75,7 @@ gd$update_gs_file(
 ########################
 
 # load in previously sent emails
-df_emailed <- cs$read_gcs_file(
+df_emailed <- cs$read_az_file(
   name = "output/email/flags_emailed.parquet"
 )
 
@@ -110,7 +113,7 @@ df_emailed_update <- dplyr$bind_rows(
     )
 )
 
-cs$update_gcs_file(
+cs$update_az_file(
   df = df_emailed_update,
   name = "output/email/flags_emailed.parquet"
 )

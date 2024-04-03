@@ -1,3 +1,18 @@
+## March 19, 2024
+
+### System
+
+- Data storage solution ported from Google Cloud Platform to Microsoft Azure
+Data Storage containers.
+
+## March 15, 2024
+
+### Indicator: IPC
+
+- Adjusted methods to remove duplicate flags from continually being generated.
+- Switched to the updated {ripc} package to remove the temporary `ipc_get.R`
+fix in this repository.
+
 ## January 30, 2024
 
 ### Overall
