@@ -28,7 +28,7 @@ box::use(../../email/email)
 #' @export
 alert <- function(df_wrangled, recreate = FALSE) {
   df_alerts <- base_alert(df_wrangled)
-  df_alerts_prev <- cs$read_gcs_file(
+  df_alerts_prev <- cs$read_az_file(
     name = "output/cholera/flags.parquet"
   )
 

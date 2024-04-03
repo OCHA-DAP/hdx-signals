@@ -63,7 +63,7 @@ mc_interests_ids <- function(interest_names, category_id = NULL) {
 mc_interests_iso3 <- function(iso3,  use = c("segmentation", "conditional_blocks")) {
   use <- rlang$arg_match(use)
   regions <- countrycode$countrycode(iso3, origin = "iso3c", destination = "unhcr.region")
-  hrp_countries <- cs$read_gcs_file("input/hrp_countries.parquet")
+  hrp_countries <- cs$read_az_file("input/hrp_countries.parquet")
 
   if (any(iso3 %in% hrp_countries$iso3)) {
     regions <- c(regions, "HRP countries")

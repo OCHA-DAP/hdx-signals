@@ -91,7 +91,7 @@ mc_iso3_conditions <- function(iso3) {
 #' @param indicator_id Unique identifier for the indicator
 #' @param alert_level To what level email should be sent
 mc_indicator_conditions <- function(indicator_id, alert_level) {
-  df_ind <- cs$read_gcs_file("input/indicator_mapping.parquet") |>
+  df_ind <- cs$read_az_file("input/indicator_mapping.parquet") |>
     dplyr$filter(
       indicator_id == !!indicator_id
     )
