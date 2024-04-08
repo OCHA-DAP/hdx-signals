@@ -37,7 +37,7 @@ readxl$read_excel(
       )
     ),
   ) |>
-  cs$update_gcs_file(
+  cs$update_az_file(
     name = "input/hrp_countries.parquet"
   )
 

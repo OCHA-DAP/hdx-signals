@@ -9,9 +9,9 @@ box::use(scales)
 
 # internal utilities
 box::use(./plot_cholera)
-box::use(cs = ../../utils/cloud_storage)
-box::use(../../utils/format_date[format_date])
-box::use(../../email/email)
+box::use(cs = ../../../utils/cloud_storage)
+box::use(../../../utils/format_date[format_date])
+box::use(../../../email/email)
 
 #' Generate alerts information and create campaign
 #'
@@ -39,6 +39,7 @@ alert <- function(df_wrangled, recreate = FALSE) {
     df_alerts_new$campaign <- email$generate_campaigns(
       indicator_id = "who_cholera",
       shock_title = "Cholera",
+      template_folder = "HDX Signals - Cholera",
       alerts_df = df_campaign_new
     )
 
@@ -61,6 +62,7 @@ alert <- function(df_wrangled, recreate = FALSE) {
           email$generate_campaigns(
             indicator_id = "who_cholera",
             shock_title = "Cholera",
+            template_folder = "HDX Signals - Cholera",
             alerts_df = df,
             send_email = FALSE
           )
@@ -172,6 +174,23 @@ new_alerts <- function(df_alerts, df_alerts_prev) {
 #'
 #' @returns Data frame with campaign information
 campaign_info <- function(df_alerts, df_wrangled, recreate) {
+  # generate plot
+  cholera_plot <- purrr$pmap(
+    .l = list(
+      iso3 = df_alerts$iso3,
+      title = df_alerts$message,
+      date = df_alerts$date
+    ),
+    .f = \(iso3, title, date) plot_cholera$plot_timeline(
+      iso3 = iso3,
+      title = title,
+      date = date,
+      df = df_wrangled,
+      date_filter = recreate
+    )
+  ) |>
+    purrr$list_rbind()
+
   df_alerts |>
     dplyr$mutate(
       plot = purrr$pmap_chr(

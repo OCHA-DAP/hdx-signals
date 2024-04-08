@@ -78,5 +78,3 @@ mc_send_campaign <- function(campaign_id) {
     httr2$req_perform(req)
   }
 }
-
-box::use(./campaigns)

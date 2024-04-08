@@ -9,9 +9,9 @@ box::use(lubridate)
 gghdx$gghdx()
 
 # local modules
-box::use(cs = ../../utils/cloud_storage)
-box::use(../../utils/gmas_test_run)
-box::use(../../email/mailchimp/images)
+box::use(cs = ../../../utils/cloud_storage)
+box::use(../../../utils/gmas_test_run)
+box::use(../../../email/mailchimp/images)
 
 #' Plot WHO cholera data
 #'
@@ -26,12 +26,13 @@ box::use(../../email/mailchimp/images)
 #' @param df Data frame to plot (wrangled data).
 #' @param date_filter Filter data frame to on or before `date`. Useful for
 #'     producing plots for "historic" alerts.
+#' @param id Mailchimp file ID
 #'
 #' @returns Plot of cholera for that country.
 #'
 #' @export
 plot_timeline <- function(
-    iso3, title, date, df, date_filter = FALSE
+    iso3, title, date, df, date_filter = FALSE, id = NULL
 ) {
 
   # load in the data for plotting
@@ -79,8 +80,10 @@ plot_timeline <- function(
     )
 
   images$mc_upload_plot(
-    p,
-    paste(iso3, "cholera", format(date, "%Y_%m_%b.png"), sep = "_"),
+    plot = p,
+    name = paste(iso3, "cholera", format(date, "%Y_%m_%b.png"), sep = "_"),
+    folder = "HDX Signals - Cholera",
+    id = id,
     width = 3,
     height = 2,
     dpi = 300

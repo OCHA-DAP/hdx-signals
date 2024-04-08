@@ -12,7 +12,8 @@ raw <- function() {
   f <- tempfile(fileext = ".csv")
   utils$download.file(
     url = Sys.getenv("CERF_CHOLERA_DATA"),
-    destfile = f
+    destfile = f,
+    quiet = TRUE
   )
 
   readr$read_csv(

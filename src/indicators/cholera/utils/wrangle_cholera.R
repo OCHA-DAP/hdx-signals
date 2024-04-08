@@ -33,10 +33,10 @@ wrangle <- function(df_raw) {
       ),
       date = as.Date(week_date),
       start_date = dplyr$case_when( # formats for start dates have switched in bulletins
-        stringr$str_detect(start_date_raw, "[0-9]{1,2}[-|//][A-Za-z]{3}") ~ lubridate$dmy(start_date_raw),
-        stringr$str_detect(start_date_raw, "^[A-Za-z]{3}") ~ lubridate$mdy(start_date_raw),
-        date >= "2023-09-25" ~ lubridate$mdy(start_date_raw),
-        date < "2023-09-25" ~ lubridate$dmy(start_date_raw)
+        stringr$str_detect(start_date_raw, "[0-9]{1,2}[-|//][A-Za-z]{3}") ~ lubridate$dmy(start_date_raw, quiet = TRUE),
+        stringr$str_detect(start_date_raw, "^[A-Za-z]{3}") ~ lubridate$mdy(start_date_raw, quiet = TRUE),
+        date >= "2023-09-25" ~ lubridate$mdy(start_date_raw, quiet = TRUE),
+        date < "2023-09-25" ~ lubridate$dmy(start_date_raw, quiet = TRUE)
       ),
       cholera_cases = readr$parse_number(total_cases)
     ) |>

@@ -115,8 +115,25 @@ az_file_detect <- function(pattern = NULL) {
 #### SETUP CONTAINER ####
 #########################
 
-# this bucket used to read and write from the GCS parquet
-bucket <- arrow$gs_bucket(
-  bucket = "hdx-signals",
-  json_credentials = Sys.getenv("HDX_SIGNALS_JSON")
+#' Get the endpoint URL
+#'
+#' Currently system uses the blob endpoint, but allows access to the file endpoint
+#' as well if necessary. Used to create blob object in `blob_endpoint`.
+#'
+#' @param service Service to access, either blob (default) or file.
+azure_endpoint_url <- function(service = c("blob", "file")) {
+  service <- rlang$arg_match(service)
+  endpoint <- glue$glue(Sys.getenv("DSCI_AZ_ENDPOINT"))
+}
+
+# gets the Dsci blob endpoint using the HDX Signals SAS
+blob_endpoint <- az$blob_endpoint(
+  endpoint = azure_endpoint_url("blob"),
+  sas = Sys.getenv("DSCI_AZ_SAS")
+)
+
+# blob object for HDX Signals, used to read and write data
+blob <- az$blob_container(
+  endpoint = blob_endpoint,
+  name = "hdx-signals-mc"
 )
