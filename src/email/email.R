@@ -37,7 +37,7 @@ generate_campaigns <- function(
     indicator_id,
     shock_title,
     template_folder,
-    alerts_df,
+    df_campaign_content,
     send_email = TRUE
 ) {
   # generate email campaign with no conditional logic for the archive
@@ -46,30 +46,30 @@ generate_campaigns <- function(
     shock_title = shock_title,
     template_folder = template_folder,
     alert_level = "High concern",
-    alerts_df = alerts_df,
+    df_campaign_content = df_campaign_content,
     archive = TRUE,
     archive_url = "*|ARCHIVE|*"
   )
 
-  if (send_email && "High concern" %in% alerts_df$alert_level) {
+  if (send_email && "High concern" %in% df_campaign_content$alert_level) {
     # only high concern alerts for the high concern crowd
     url <- generate_campaign(
       indicator_id = indicator_id,
       shock_title = shock_title,
       template_folder = template_folder,
       alert_level = "High concern",
-      alerts_df = dplyr$filter(alerts_df, alert_level == "High concern"),
+      df_campaign_content = dplyr$filter(df_campaign_content, alert_level == "High concern"),
       archive = FALSE,
       archive_url = archive_url
     )
-  } else if (send_email && "Medium concern" %in% alerts_df$alert_level) {
+  } else if (send_email && "Medium concern" %in% df_campaign_content$alert_level) {
     url <- generate_campaign(
       # all alerts goes to the medium concern crowd
       indicator_id = indicator_id,
       shock_title = shock_title,
       template_folder = template_folder,
       alert_level = "Medium concern",
-      alerts_df = alerts_df,
+      df_campaign_content = df_campaign_content,
       archive = FALSE,
       archive_url = archive_url
     )
@@ -103,32 +103,24 @@ generate_campaign <- function(
     shock_title,
     template_folder,
     alert_level,
-    alerts_df,
+    df_campaign_content,
     archive,
     archive_url
 ) {
 
-  # create campaign information
-  subject <- paste0("HDX Signals: ", shock_title, ", ", format_date(Sys.Date()))
-  title <- paste(
-    tolower(shock_title),
-    paste(alerts_df$iso3, collapse = "_"),
-    if (archive) "archive" else "live",
-    format(Sys.Date(),"%Y_%m_%d"),
-    sep = "_"
-  )
-
   # create the email template and add to Mailchimp
   body <- email_body$create_body(
-    shock_title = shock_title,
-    iso3 = alerts_df$iso3,
-    country = alerts_df$country,
-    message = alerts_df$message,
-    plot = alerts_df$plot,
-    map = alerts_df$map,
-    other_images = alerts_df$other_images,
-    summary = alerts_df$summary,
-    further_information = alerts_df$further_information,
+    shock_title = unique(df_campaign_content$indicator_title),
+    iso3 = df_campaign_content$iso3,
+    country = df_campaign_content$country,
+    plot_title = df_campaign_content$plot_title,
+    plot_url = df_campaign_content$plot_url,
+    map_title = df_campaign_content$map_title,
+    map_url = df_campaign_content$map_url,
+    other_images_urls = df_campaign_content$other_images_urls,
+    other_images_captions = df_campaign_content$other_images_captions,
+    summary = df_campaign_content$summary_long,
+    further_information = df_campaign_content$further_information,
     use_conditions = !archive
   )
 
@@ -139,14 +131,14 @@ generate_campaign <- function(
   template_id <- templates$mc_add_template(
     html = template,
     folder = template_folder,
-    preview = archive # only preview the archive template, not those with conditonal logic
+    preview = archive # only preview the archive template, not those with conditional logic
   )
 
   # create segmentation
   if (!archive) {
     segments <- custom_segmentation$mc_segment_conditions(
       indicator_id = indicator_id,
-      iso3 = alerts_df$iso3,
+      iso3 = df_campaign_content$iso3,
       alert_level = alert_level
     )
   } else {
@@ -156,13 +148,14 @@ generate_campaign <- function(
 
   id_url <- campaigns$mc_add_campaign(
     subject_line = subject,
-    preview_text = paste(alerts_df$country, collapse = ", "),
+    preview_text = paste(df_campaign_content$country, collapse = ", "),
     title = title,
     recipients = segments,
     template_id = template_id
   )
 
-  if (!archive) campaigns$mc_send_campaign(id_url[["id"]])
-
-  id_url[["url"]]
+  list(
+    id = id_url[["id"]],
+    url = id_url[["url"]]
+  )
 }

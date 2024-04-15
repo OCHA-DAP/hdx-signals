@@ -32,6 +32,29 @@ mc_tag_members <- function(tag_name) {
     )
 }
 
+#' Get all unique tags int he Mailchimp servers
+#'
+#' Used to find all the tags stored on Mailchimp, to use for filtering private
+#' subscriptions.
+#'
+#' @export
+mc_tags <- function() {
+  base_api$mc_api() |>
+    httr2$req_url_path_append(
+      "members"
+    ) |>
+    httr2$req_perform() |>
+    httr2$resp_body_json() |>
+    purrr$pluck("members") |>
+    purrr$map(
+      .f = \(x) as.data.frame(x[["tags"]])
+    ) |>
+    dplyr$bind_rows() |>
+    dplyr$pull(name) |>
+    unique() |>
+    sort()
+}
+
 #' Check member has tag
 #'
 #' Checks that member has the specified `tag_name`. Returns `TRUE` so can be

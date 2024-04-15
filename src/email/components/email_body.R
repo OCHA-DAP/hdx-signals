@@ -7,7 +7,7 @@ box::use(./text_block)
 #'
 #' Create email body. Uses a set of vectors to create country blocks.
 #'
-#' @param shock_title Shock title text to go next to HDX Signals at the top of the email
+#' @param title Shock title text to go next to HDX Signals at the top of the email
 #' @param iso3 Vector of ISO3 codes
 #' @param country Vector of country names
 #' @param message Vector of messages
@@ -22,13 +22,17 @@ box::use(./text_block)
 #'
 #' @export
 create_body <- function(
-    shock_title,
+    title,
     iso3,
     country,
-    message = "",
-    plot = "",
-    map = "",
-    other_images = "",
+    plot_title = "",
+    plot_url = "",
+    map_title = "",
+    map_url = "",
+    plot2_title = "",
+    plot2_url = "",
+    other_images_urls = "",
+    other_images_captions = "",
     summary = "",
     further_information = "",
     use_conditions = FALSE
@@ -36,7 +40,7 @@ create_body <- function(
   paste0(
     text_block$add_text(
       text = "Signals detected in:\n*|MC:TOC|*",
-      header = paste("HDX Signals:", shock_title),
+      header = title,
       header_level = 1,
       header_class = "null"
     ),
@@ -44,10 +48,14 @@ create_body <- function(
       .l = list(
         iso3 = iso3,
         country = country,
-        message = message,
-        plot = plot,
-        map = map,
-        other_images = other_images,
+        plot_title = plot_title,
+        plot_url = plot_url,
+        map_title = map_title,
+        map_url = map_url,
+        plot2_title = plot2_title,
+        plot2_url = plot2_url,
+        other_images_urls = other_images_urls,
+        other_images_captions = other_images_captions,
         summary = summary,
         further_information = further_information,
         use_conditions = use_conditions

@@ -16,14 +16,14 @@ box::use(cs = ../../utils/cloud_storage)
 #'
 #' @param indicator_id Unique indicator ID
 #' @param iso3 Vector of ISO3 codes to generate conditions for
-#' @param alert_level Level to alert from, either "Medium concern" or "High concern".
-#'
+#' @param subscription_option Subscription option for the segment. Either
+#'     "Receive all alerts" or "Only receive alerts of high concern".
 #'
 #' @returns List to be used as `recipients` to add or update a campaign.
 #'
 #' @export
-mc_segment_conditions <- function(indicator_id, iso3, alert_level) {
-  indicator_conditions <- mc_indicator_conditions(indicator_id, alert_level)
+mc_segment_conditions <- function(indicator_id, iso3, subscription_option) {
+  indicator_conditions <- mc_indicator_conditions(indicator_id, subscription_option)
   iso3_conditions <- mc_iso3_conditions(iso3)
 
   list(
@@ -89,8 +89,8 @@ mc_iso3_conditions <- function(iso3) {
 #' in the dataset `input/indicator_mapping.parquet`.
 #'
 #' @param indicator_id Unique identifier for the indicator
-#' @param alert_level To what level email should be sent
-mc_indicator_conditions <- function(indicator_id, alert_level) {
+#' @param subscription_options To which subscriber segment to send to
+mc_indicator_conditions <- function(indicator_id, subcription_options) {
   df_ind <- cs$read_az_file("input/indicator_mapping.parquet") |>
     dplyr$filter(
       indicator_id == !!indicator_id
@@ -99,7 +99,7 @@ mc_indicator_conditions <- function(indicator_id, alert_level) {
   if (!is.na(df_ind$mc_field)) {
     mc_field_conditions(
       field = df_ind$mc_field,
-      option = alert_level
+      option = subcription_options
     )
   } else if (!is.na(df_ind$mc_tag)) {
     mc_tag_conditions(df_ind$mc_tag)
@@ -116,7 +116,7 @@ mc_indicator_conditions <- function(indicator_id, alert_level) {
 #' @param option Option to segment with, either
 #'
 #' @returns Conditions list
-mc_field_conditions <- function(field, option = c("Medium concern", "High concern")) {
+mc_field_conditions <- function(field, option = c("Receive all alerts", "Only receive alerts of high concern")) {
   option <- arg_match(option)
   segments$mc_merge_conditions(
     field_id = audience$mc_fields_ids(field),

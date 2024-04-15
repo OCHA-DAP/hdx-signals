@@ -1,17 +1,57 @@
 box::use(dplyr)
-box::use(tidyr)
+box::use(purrr)
 box::use(rlang[`!!`])
 box::use(gghdx)
 box::use(gg = ggplot2)
 box::use(scales)
-box::use(lubridate)
+
+box::use(../../../utils/format_date)
 
 gghdx$gghdx()
 
 # local modules
-box::use(cs = ../../../utils/cloud_storage)
-box::use(../../../utils/gmas_test_run)
 box::use(../../../email/mailchimp/images)
+
+#' Plot all WHO cholera cases
+#'
+#' Calls `plot_timeline` for all rows in the alerts data frame `df`, controlling
+#' for errors.
+#'
+#' @param df Data frame of alerts
+#' @param df_wrangled Wrangled data frame
+#' @param preview Whether or not to preview the plots
+#'
+#' @export
+plot <- function(df, df_wrangled, preview = FALSE) {
+  poss_plot <- purrr$possibly(plot_timeline, data.frame(id = "ERROR", url = "ERROR"))
+  df <- dplyr$left_join(
+    df,
+    df_wrangled,
+    by = c("iso3", "date")
+  ) |>
+    dplyr$mutate(
+      plot_title = paste0(
+        scales::label_comma()(value),
+        " cases of cholera reported since ",
+        format_date$format_date(start_date)
+      )
+    )
+
+  cholera_plot <- purrr$pmap(
+    .l = df,
+    .f = \(iso3, plot_title, date, ...) poss_plot(
+      iso3 = iso3,
+      plot_title = plot_title,
+      date = date,
+      df = df_wrangled,
+      preview = preview
+    )
+  ) |>
+    purrr$list_rbind()
+
+  names(cholera_plot) <- paste0("plot_", names(cholera_plot))
+  dplyr$bind_cols(dplyr$select(df, plot_title), cholera_plot)
+}
 
 #' Plot WHO cholera data
 #'
@@ -21,28 +61,23 @@ box::use(../../../email/mailchimp/images)
 #' cases are above 1,000.
 #'
 #' @param iso3 ISO3 code.
-#' @param title Plot title.
+#' @param plot_title Plot title.
 #' @param date Date for file naming.
-#' @param df Data frame to plot (wrangled data).
-#' @param date_filter Filter data frame to on or before `date`. Useful for
-#'     producing plots for "historic" alerts.
-#' @param id Mailchimp file ID
+#' @param df_wrangled Data frame to plot (wrangled data).
+#' @param preview Whether or not to preview the plot
 #'
 #' @returns Plot of cholera for that country.
-#'
-#' @export
 plot_timeline <- function(
-    iso3, title, date, df, date_filter = FALSE, id = NULL
+    iso3, plot_title, date, df_wrangled, preview = FALSE
 ) {
-
   # load in the data for plotting
-  df_plot <- df |>
+  df_plot <- df_wrangled |>
     dplyr$filter(
       iso3 == !!iso3
     )
 
-  # filter to end date, only used if passed in, for building out historic plot database
-  if (!is.null(date)) {
+  # filter the data to the date if it's a historic campaign (older than 90 days)
+  if (Sys.Date() - date > 90) {
     df_plot <- dplyr$filter(df_plot, date <= !!date)
   }
 
@@ -75,7 +110,7 @@ plot_timeline <- function(
       x = "",
       y = "Cholera cases",
       color = "",
-      title = title,
+      title = plot_title,
       caption = "Data from the WHO AFRO, https://www.afro.who.int"
     )
 
@@ -83,9 +118,10 @@ plot_timeline <- function(
     plot = p,
     name = paste(iso3, "cholera", format(date, "%Y_%m_%b.png"), sep = "_"),
     folder = "HDX Signals - Cholera",
-    id = id,
-    width = 3,
-    height = 2,
-    dpi = 300
+    preview = preview,
+    width = 4,
+    height = 3,
+    units = "in",
+    dpi = 30
   )
 }

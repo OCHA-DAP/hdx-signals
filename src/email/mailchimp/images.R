@@ -21,13 +21,13 @@ box::use(./folders)
 #' @param fp File path to the image
 #' @param name Name of the object to be passed into the Mailchimp system.
 #' @param folder Name of the file folder on Mailchimp.
-#' @param id File ID on Mailchimp. If `NULL`, creates a new image. If not `NULL`,
-#'     updates the existing image with that id.
+#' @param preview Whether or not to preview the saved plot when `gmas_test_run()`
+#'     is `TRUE`.
 #'
 #' @returns URL string to reference object on Mailchimp servers
 #'
 #' @export
-mc_upload_image <- function(fp, name, folder, id = NULL) {
+mc_upload_image <- function(fp, name, folder, preview = FALSE) {
   encoded_image <- encode_image(fp)
 
   # upload image to Mailchimp
@@ -46,9 +46,9 @@ mc_upload_image <- function(fp, name, folder, id = NULL) {
 
   if (gmas_test_run$gmas_test_run()) {
     # print out the image and return the dry run
-    list(
+    data.frame(
       id = "test-image-id",
-      url = mc_test_image_view(fp)
+      url = mc_test_image_view(fp, preview)
     )
   } else {
     # upload the image and extract URL
@@ -56,8 +56,8 @@ mc_upload_image <- function(fp, name, folder, id = NULL) {
       httr2$req_perform() |>
       httr2$resp_body_json()
 
-    list(
-      id = resp$id,
+    data.frame(
+      id = as.character(resp$id),
       url = resp$full_size_url
     )
   }
@@ -73,6 +73,8 @@ mc_upload_image <- function(fp, name, folder, id = NULL) {
 #' @param folder Name of the file folder on Mailchimp.
 #' @param id File ID on Mailchimp. If `NULL`, creates a new image. If not `NULL`,
 #'     updates the existing image with that id.
+#' @param preview Whether or not to preview the saved plot when `gmas_test_run()`
+#'     is `TRUE`.
 #' @param ... Additional arguments passed to `ggplot2::ggsave()`
 #'
 #' @returns URL string to reference object on Mailchimp servers
@@ -85,7 +87,7 @@ mc_upload_image <- function(fp, name, folder, id = NULL) {
 #' mc_upload_plot(p, "test.jpg")
 #'
 #' @export
-mc_upload_plot <- function(plot, name, folder, id = NULL, ...) {
+mc_upload_plot <- function(plot, name, folder, preview = FALSE, ...) {
   tf <- tempfile(fileext = ".png")
   ggplot2$ggsave(
     filename = tf,
@@ -97,7 +99,7 @@ mc_upload_plot <- function(plot, name, folder, id = NULL, ...) {
     fp = tf,
     name = name,
     folder = folder,
-    id = id
+    preview = preview
   )
 }
 
@@ -125,10 +127,12 @@ encode_image <- function(fp) {
 #'
 #' Used if `gmas_test_run()`, will read a saved out image and view directly the
 #' png on the active graphics device for interactive testing.
-mc_test_image_view <- function(fp) {
+mc_test_image_view <- function(fp, preview = FALSE) {
   # read and view new plot
-  png$readPNG(fp) |>
-    grid$grid.raster()
+  if (preview) {
+    png$readPNG(fp) |>
+      grid$grid.raster()
+  }
 
   paste0("file://", fp)
 }
