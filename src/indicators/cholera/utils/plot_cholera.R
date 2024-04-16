@@ -101,10 +101,10 @@ plot_timeline <- function(
     ) +
     gg$theme(
       axis.text.x = gg$element_text(vjust = 1),
-      plot.title = gg$element_text(size = 24),
-      axis.title = gg$element_text(size = 18),
-      axis.text = gg$element_text(size = 14),
-      plot.caption = gg$element_text(size = 14, hjust = 1)
+      plot.title = gg$element_text(size = 14),
+      axis.title = gg$element_text(size = 12),
+      axis.text = gg$element_text(size = 11),
+      plot.caption = gg$element_text(size = 11, hjust = 1)
     ) +
     gg$labs(
       x = "",
@@ -119,9 +119,9 @@ plot_timeline <- function(
     name = paste(iso3, "cholera", format(date, "%Y_%m_%b.png"), sep = "_"),
     folder = "HDX Signals - Cholera",
     preview = preview,
-    width = 4,
+    width = 6,
     height = 3,
     units = "in",
-    dpi = 30
+    dpi = 300
   )
 }

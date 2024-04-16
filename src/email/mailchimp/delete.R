@@ -37,7 +37,7 @@ mc_delete_object <- function(id, object_type = c("file", "template", "campaign")
 
   if (gmas_test_run$gmas_test_run()) {
     message(
-      stringr$title(object_type),
+      stringr$str_to_title(object_type),
       " not deleted because `gmas_test_run()` is set to `TRUE`."
     )
   } else {

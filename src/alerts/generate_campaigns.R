@@ -74,10 +74,6 @@ generate_campaigns <- function(
     empty = FALSE
   )
 
-  # upload content to Mailchimp in case campaigns sending fails
-  cs$update_az_file(df_campaign_content, fn_df_campaigns)
-
-  # save up all email content in case creating the template and campaign fails
   # if first run, create multiple campaigns, one for each date
   if (first_run) {
     df_campaigns <- df_campaign_content |>
@@ -94,6 +90,7 @@ generate_campaigns <- function(
       ) |>
       dplyr$bind_rows()
   } else {
+    # otherwise, all new alerts are put into the same campaign
     df_campaigns <- create_campaigns(
       df_campaign_content = df_campaign_content,
       indicator_id = indicator_id,
@@ -101,11 +98,13 @@ generate_campaigns <- function(
     )
   }
 
-  df_campaigns <- validate_campaigns(df_campaigns)
+  # validate campaigns and delete content if any errors have occurred
+  df_campaigns <- validate_campaigns(df_campaigns, df_campaign_content)
 
-  df_campaigns <- dplyr$bind_cols(
+  df_campaigns <- dplyr$left_join(
     df_campaign_content,
-    df_campaigns
+    df_campaigns,
+    by = c("iso3", "date")
   )
 
   cs$update_az_file(
@@ -119,22 +118,22 @@ generate_campaigns <- function(
 #'
 #' Validates campaigns data to ensure template and campaign columns exist,
 #' that no errors are present, and orders them correctly.
-validate_campaigns <- function(df_campaigns) {
+validate_campaigns <- function(df_campaigns, df_campaign_content) {
   df_check <- dplyr$tibble(
+    iso3 = NA_character_,
+    date = as.Date(x = integer(0), origin = "1970-01-01"),
     template_id_archive = NA_character_,
-    template_id_hc = NA_character_,
-    template_id_all = NA_character_,
+    template_id_email = NA_character_,
     campaign_id_archive = NA_character_,
-    campaign_id_hc = NA_character_,
-    campaign_id_all = NA_character_,
+    campaign_id_email = NA_character_,
     campaign_url_archive = NA_character_,
-    campaign_url_hc = NA_character_,
-    campaign_url_all = NA_character_,
+    campaign_url_email = NA_character_,
     campaign_date = as.Date(x = integer(0), origin = "1970-01-01")
   )
 
-  if (any(dplyr$select(df_campaigns, -campaign_date) == "ERROR", na.rm = TRUE) || !janitor$compare_df_cols_same(df_campaigns, df_check, bind_method = "rbind")) {
+  if (any(dplyr$select(df_campaigns, -c(date, campaign_date)) == "ERROR", na.rm = TRUE) || !janitor$compare_df_cols_same(df_campaigns, df_check, bind_method = "rbind")) {
     if (!gmas_test_run$gmas_test_run()) {
+      delete_campaign_content(df_campaign_content)
       delete_campaign_content(df_campaigns)
       rlang$abort(
         stringr$str_wrap(

@@ -23,7 +23,7 @@ box::use(../email/mailchimp/delete)
 #' @export
 delete_campaign_content <- function(df) {
   # first, split out other images if present
-  if ("other_images_ids" %in% names(df)) {
+  if ("other_images_ids" %in% names(df) && any(!is.na(df$other_images_ids))) {
     df <- tidyr$separate_wider_delim(
       data = df,
       cols = other_images_ids,
@@ -97,5 +97,4 @@ delete_ids <- function(df, cols, object_type) {
         \(x) delete$mc_delete_object(x, object_type)
       )
   }
-
 }

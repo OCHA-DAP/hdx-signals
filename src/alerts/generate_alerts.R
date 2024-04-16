@@ -5,6 +5,7 @@ box::use(janitor)
 
 box::use(./filter_alerts)
 box::use(cs = ../utils/cloud_storage)
+box::use(../utils/add_country_info[add_country_info])
 
 #' Generate and upload alerts data frame
 #'
@@ -38,7 +39,7 @@ generate_alerts <- function(df, fn_df_alerts, fn_df_campaigns, first_run = FALSE
       fn_df_campaigns = fn_df_campaigns,
       first_run = first_run
     ) |>
-    add_country_region()
+    add_country_info()
 
   cs$update_az_file(df_alerts, fn_df_alerts)
   df_alerts
@@ -114,54 +115,4 @@ add_alert_level <- function(df) {
   }
 
   df
-}
-
-#' Add country and region columns
-#'
-#' Generates country and region columns for data frame
-add_country_region <- function(df) {
-  dplyr$mutate(
-    df,
-    country = get_country_info(iso3, "un.name.en"),
-    region = get_country_info(iso3, "unhcr.region"),
-    .after = "iso3"
-  )
-}
-
-#' Matches for ISO3 codes not in `countrycode`
-match_df <- data.frame(
-  iso3 = c("XKX", "AB9", "LAC"),
-  `un.name.en` = c("Kosovo", "Abyei Area", "Latin America and the Caribbean"),
-  `unhcr.region` = c("Europe", "East and Horn of Africa", "The Americas")
-)
-
-#' Get country info for ISO3 codes
-#'
-#' Gets country info for ISO3 codes. Pulls specified `destination` value from
-#' the `match_df` data frame or `countrycode`.
-#'
-#' Ensures that no warnings are generated from missing ISO3 codes in `countrycode`.
-#'
-#' @param iso3 Vector of ISO3 codes
-#' @param destination Destination variable, either country name or region
-get_country_info <- function(iso3, destination) {
-  x <- character(length(iso3))
-  iso3_custom <- iso3 %in% match_df$iso3
-  x[iso3_custom] <- match_df[[destination]][match(iso3[iso3_custom], match_df$iso3)]
-  x[!iso3_custom] <- countrycode$countrycode(
-    sourcevar = iso3[!iso3_custom],
-    origin = "iso3c",
-    destination = destination
-  )
-
-  if (any(is.na(x))) {
-    stop(
-      "Missing value for '",
-      destination,
-      "', check that ISO3 code is correct and accounted for when creating the ",
-      "alerts data frame."
-    )
-  }
-
-  x
 }

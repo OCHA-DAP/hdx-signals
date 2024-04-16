@@ -2,6 +2,7 @@ box::use(httr2)
 
 box::use(./base_api)
 box::use(../../utils/gmas_test_run)
+box::use(./folders)
 
 #' Adds a campaign to Mailchimp
 #'
@@ -17,7 +18,7 @@ box::use(../../utils/gmas_test_run)
 #' @returns ID and URL of the campaign
 #'
 #' @export
-mc_add_campaign <- function(subject_line, preview_text, title, recipients, template_id) {
+mc_add_campaign <- function(subject_line, preview_text, title, recipients, template_id, folder) {
   if (gmas_test_run$gmas_test_run()) {
     message(
       "Since `gmas_test_run()`, no campaign added to Mailchimp."
@@ -37,16 +38,16 @@ mc_add_campaign <- function(subject_line, preview_text, title, recipients, templ
             subject_line = subject_line,
             preview_text = preview_text,
             from_name = "HDX Signals",
-            reply_to = "seth.caldwell@un.org",
-            template_id = template_id,
-            folder_id = "56104f0a36"
+            reply_to = "hdx-signals@un.org",
+            template_id = as.numeric(template_id),
+            folder_id = folders$mc_campaign_folder_id(folder)
           )
         )
       ) |>
       httr2$req_perform() |>
       httr2$resp_body_json()
 
-    list(id = response$id, url = response$archive_url)
+    list(id = as.character(response$id), url = response$archive_url)
   }
 }
 

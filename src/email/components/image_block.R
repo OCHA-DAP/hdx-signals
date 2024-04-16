@@ -28,7 +28,7 @@ add_image <- function(src, alt = "", caption = "") {
                         <tbody><tr>
                             <td class="mcnImageContent" valign="top" style="padding-right: 0px; padding-left: 0px; padding-top: 0; padding-bottom: 0; text-align:center;">
                                 <figure>
-                                      <img align="center" alt="{alt}" src="{src}" width="600" style="max-width:1642px; padding-bottom: 0; display: inline !important; vertical-align: bottom;" class="mcnImage">
+                                      <img align="center" alt="{alt}" src="{src}" width="600" style="max-width:100%; padding-bottom: 0; display: inline !important; vertical-align: bottom;" class="mcnImage">
                                       <figcaption>{caption}</figcaption>
                                 </figure>
                             </td>

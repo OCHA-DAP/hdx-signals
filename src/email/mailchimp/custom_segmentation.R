@@ -16,14 +16,12 @@ box::use(cs = ../../utils/cloud_storage)
 #'
 #' @param indicator_id Unique indicator ID
 #' @param iso3 Vector of ISO3 codes to generate conditions for
-#' @param subscription_option Subscription option for the segment. Either
-#'     "Receive all alerts" or "Only receive alerts of high concern".
 #'
 #' @returns List to be used as `recipients` to add or update a campaign.
 #'
 #' @export
-mc_segment_conditions <- function(indicator_id, iso3, subscription_option) {
-  indicator_conditions <- mc_indicator_conditions(indicator_id, subscription_option)
+mc_segment_conditions <- function(indicator_id, iso3) {
+  indicator_conditions <- mc_indicator_conditions(indicator_id)
   iso3_conditions <- mc_iso3_conditions(iso3)
 
   list(
@@ -68,7 +66,7 @@ mc_empty_segment <- function() {
 #' Converts ISO3 codes into a list of conditions, using
 #' `mc_iso3_interests()` to generate the IDs to include in the email.
 #'
-#' @params iso3 Vector of ISO3 codes
+#' @param iso3 Vector of ISO3 codes
 #'
 #' @returns Conditions list
 mc_iso3_conditions <- function(iso3) {
@@ -89,40 +87,20 @@ mc_iso3_conditions <- function(iso3) {
 #' in the dataset `input/indicator_mapping.parquet`.
 #'
 #' @param indicator_id Unique identifier for the indicator
-#' @param subscription_options To which subscriber segment to send to
-mc_indicator_conditions <- function(indicator_id, subcription_options) {
+mc_indicator_conditions <- function(indicator_id) {
   df_ind <- cs$read_az_file("input/indicator_mapping.parquet") |>
     dplyr$filter(
       indicator_id == !!indicator_id
     )
 
   if (!is.na(df_ind$mc_field)) {
-    mc_field_conditions(
-      field = df_ind$mc_field,
-      option = subcription_options
+    segments$mc_group_conditions(
+      category_id = "731bfdea03",
+      segment_ids = audience$mc_interests_ids(df_ind$mc_interest)
     )
   } else if (!is.na(df_ind$mc_tag)) {
     mc_tag_conditions(df_ind$mc_tag)
   }
-}
-
-#' Create Mailchimp conditions for indicators
-#'
-#' For each indicator, creates the conditions necessary to segment by. This only
-#' works for public indicators that are available for signup on the form. The
-#' available options should be"Medium concern" or "High concern".
-#'
-#' @param field Name of the field
-#' @param option Option to segment with, either
-#'
-#' @returns Conditions list
-mc_field_conditions <- function(field, option = c("Receive all alerts", "Only receive alerts of high concern")) {
-  option <- arg_match(option)
-  segments$mc_merge_conditions(
-    field_id = audience$mc_fields_ids(field),
-    value_string = option,
-    op = "is"
-  )
 }
 
 #' Create segment conditions for tag

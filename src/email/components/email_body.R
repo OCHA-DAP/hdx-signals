@@ -44,23 +44,34 @@ create_body <- function(
       header_level = 1,
       header_class = "null"
     ),
-    purrr$pmap_chr(
-      .l = list(
-        iso3 = iso3,
-        country = country,
-        plot_title = plot_title,
-        plot_url = plot_url,
-        map_title = map_title,
-        map_url = map_url,
-        plot2_title = plot2_title,
-        plot2_url = plot2_url,
-        other_images_urls = other_images_urls,
-        other_images_captions = other_images_captions,
-        summary = summary,
-        further_information = further_information,
-        use_conditions = use_conditions
+    paste(
+      purrr$pmap_chr(
+        .l = list(
+          iso3 = iso3,
+          country = country,
+          plot_title = plot_title,
+          plot_url = plot_url,
+          map_title = map_title,
+          map_url = map_url,
+          plot2_title = plot2_title,
+          plot2_url = plot2_url,
+          other_images_urls = other_images_urls,
+          other_images_captions = other_images_captions,
+          summary = summary,
+          further_information = further_information,
+          use_conditions = use_conditions
+        ),
+        .f = country_block$add_country
       ),
-      .f = country_block$add_country
+      collapse = "\n"
+    ),
+    text_block$add_text(
+      text = paste0(
+        "Full documentation and source code for HDX Signals is available on ",
+        "<a href='https://github.com/OCHA-DAP/hdx-signals'>GitHub</a>. Reach ",
+        "out to <a href='mailto:hdx-signals@un.org'>hdx-signals@un.org</a> ",
+        "with any questions, comments, or other feedback."
+      )
     )
   )
 }

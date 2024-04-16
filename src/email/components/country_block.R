@@ -51,7 +51,7 @@ add_country <- function(
     use_conditions = FALSE
 ) {
   paste0(
-    text_block$add_text(header = country, header_class = "title"),
+    text_block$add_text(header = country, header_level = 2, header_class = "title"),
     image_block$add_image(src = plot_url, alt = plot_title),
     image_block$add_image(src = map_url, alt = map_title),
     image_block$add_image(src = plot2_url, alt = plot2_title),

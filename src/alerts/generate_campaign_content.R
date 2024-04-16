@@ -210,6 +210,9 @@ validate_campaign_content <- function(df_campaigns_content) {
     iso3 = NA_character_,
     country = NA_character_,
     region = NA_character_,
+    hrp_country = NA,
+    lat = NA_real_,
+    lon = NA_real_,
     indicator_name = NA_character_,
     indicator_source = NA_character_,
     date = as.Date(x = integer(0), origin = "1970-01-01"),
@@ -245,10 +248,6 @@ validate_campaign_content <- function(df_campaigns_content) {
     )
   }
 
-  # arrange data frame columns to match `df_check` and add row numbers
-  # which are used when creating the different campaigns and templates for
-  # later joining back together
-  df_campaigns_content <- df_campaigns_content[,names(df_check)]
-  df_campaigns_content$campaign_row_number <- 1:nrow(df_campaigns_content)
-  df_campaigns_content
+  # arrange data frame columns to match `df_check`
+  df_campaigns_content[,names(df_check)]
 }

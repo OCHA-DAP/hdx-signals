@@ -20,7 +20,7 @@ add_summary <- function(text) {
     )
 
     cat(
-      text_block$add_text(header = "Summary", header_level = 3, header_class = "null"),
+      text_block$add_text(header = "Summary", header_level = 4, header_class = "null"),
       boxed_text_block$add_boxed_text(block_box_text),
       text_block$add_text(text = text),
       sep = ""

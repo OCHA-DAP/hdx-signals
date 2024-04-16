@@ -34,6 +34,33 @@ mc_template_folders <- function() {
   )
 }
 
+#' Get id for Mailchimp campaign folder
+#'
+#' Takes in the name of a campaign folder and returns the id
+#'
+#' @param name Name of the campaign folder
+#'
+#' @export
+mc_campaign_folder_id <- function(name) {
+  mc_get_folder_id(
+    name = name,
+    url_path = "campaign-folders"
+  )
+}
+
+#' Gets all campaign folders
+#'
+#' Finds all campaign folders on Mailchimp
+#'
+#' @export
+mc_campaign_folders <- function() {
+  mc_list_folders(
+    url_path = c(
+      "campaign-folders"
+    )
+  )
+}
+
 #' Get id for Mailchimp file folder
 #'
 #' Takes in the name of a file folder and returns the id
@@ -99,6 +126,9 @@ mc_list_folders <- function(url_path) {
   base_api$mc_api(lists_api = FALSE) |>
     httr2$req_url_path_append(
       url_path
+    ) |>
+    httr2$req_url_query(
+      count = 1000
     ) |>
     httr2$req_perform() |>
     httr2$resp_body_json() |>

@@ -42,6 +42,6 @@ mc_add_template <- function(html, folder, preview) {
       httr2$req_perform() |>
       httr2$resp_body_json()
 
-    response$id
+    as.character(response$id)
   }
 }
