@@ -55,7 +55,6 @@ create_campaigns <- function(
   )
 
   if (!first_run) {
-    # only high concern alerts for the high concern crowd
     email_df <- create_campaign(
       indicator_id = indicator_id,
       campaign_details = campaign_details,

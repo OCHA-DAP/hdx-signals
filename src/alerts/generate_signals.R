@@ -40,6 +40,7 @@ box::use(./check_existing_signals[check_existing_signals])
 #' @param overwrite_content Overwrite existing content in the indicator signals.
 #'     This is to be used when we don't want to generate new alerts, but want to
 #'     fix something in the campaign content itself.
+#'
 #' @export
 generate_signals <- function(
     df_wrangled,

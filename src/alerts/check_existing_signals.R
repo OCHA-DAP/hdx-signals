@@ -29,7 +29,7 @@ check_existing_signals <- function(indicator_id, first_run, overwrite_content) {
   }
 
 
-  # generate an error if the indicator siganls are non-empty
+  # generate an error if the indicator signals are non-empty
   if (num_ind_signals > 0 && !overwrite_content) {
     stop(
       stringr$str_wrap(

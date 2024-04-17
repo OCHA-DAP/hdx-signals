@@ -1,4 +1,3 @@
-box::use(cs = ../../utils/cloud_storage)
 box::use(./utils/raw_cholera)
 box::use(./utils/wrangle_cholera)
 box::use(./utils/alert_cholera)
@@ -18,6 +17,5 @@ generate_signals(
   indicator_id = "who_cholera",
   alert_fn = alert_cholera$alert,
   plot_fn = plot_cholera$plot,
-  info_fn = info_cholera$info,
-  first_run = TRUE
+  info_fn = info_cholera$info
 )

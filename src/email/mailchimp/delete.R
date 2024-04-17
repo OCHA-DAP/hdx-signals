@@ -16,6 +16,8 @@ box::use(../../utils/gmas_test_run)
 #' @param object_type Type of object to delete, either a file, template, or campaign.
 #'
 #' @returns Nothing, object deleted from Mailchimp servers
+#'
+#' @export
 mc_delete_object <- function(id, object_type = c("file", "template", "campaign")) {
   # get url path from object type
   object_type <- rlang$arg_match(object_type)
