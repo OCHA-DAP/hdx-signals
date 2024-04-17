@@ -3,12 +3,15 @@ box::use(janitor)
 box::use(purrr)
 box::use(stringr)
 box::use(rlang)
+box::use(rlang[`!!`])
 
 box::use(cs = ../utils/cloud_storage)
 box::use(../utils/gmas_test_run)
 box::use(./generate_campaign_content[generate_campaign_content])
 box::use(./create_campaigns[create_campaigns])
 box::use(./delete_campaign_content[delete_campaign_content])
+box::use(./generate_alerts[generate_alerts])
+box::use(./check_existing_signals[check_existing_signals])
 
 #' Generate campaigns for any indicator
 #'
@@ -18,12 +21,11 @@ box::use(./delete_campaign_content[delete_campaign_content])
 #' errors occur. No campaigns are sent at the end of this, but are instead saved
 #' Mailchimp and pending review.
 #'
-#' @param df_alerts Data frame of alerts
 #' @param df_wrangled Data frame of wrangled data
-#' @param fn_df_campaigns File name for the campaigns data frame
 #' @param indicator_id ID of the indicator for the campaign, to match names in
 #'     `input/indicator_mapping.parquet`, which can extract template folders and
 #'     other info for campaigns.
+#' @param alert_fn Function to generate alerts with.
 #' @param plot_fn Plotting function
 #' @param map_fn Mapping function
 #' @param plot2_fn Second plotting function
@@ -35,31 +37,45 @@ box::use(./delete_campaign_content[delete_campaign_content])
 #'     done by splitting the campaigns dataset by data and generating alerts
 #'     across each date individually. If it is not the first run, then the
 #'     entire alerts data frame is converted into a single campaign during monitoring.
-#'
+#' @param overwrite_content Overwrite existing content in the indicator signals.
+#'     This is to be used when we don't want to generate new alerts, but want to
+#'     fix something in the campaign content itself.
 #' @export
-generate_campaigns <- function(
-    df_alerts,
+generate_signals <- function(
     df_wrangled,
-    fn_df_campaigns,
     indicator_id,
+    alert_fn,
     plot_fn = NULL,
     map_fn = NULL,
     plot2_fn = NULL,
     other_images_fn = NULL,
     summary_fn = NULL,
     info_fn = NULL,
-    first_run = FALSE
+    first_run = FALSE,
+    overwrite_content = FALSE
 ) {
-  if (fn_df_campaigns %in% cs$az_file_detect()) {
-    if (nrow(cs$read_az_file(fn_df_campaigns)) != 0) {
-      stop(
-        "You must first triage all existing campaigns in '",
-        fn_df_campaigns,
-        "' before generating new ones from alerts.",
-        call. = FALSE
+  check_existing_signals(
+    indicator_id = indicator_id,
+    first_run = first_run,
+    overwrite_content = overwrite_content
+  )
+
+  fn_signals <- paste0("output/", indicator_id, "/signals.parquet")
+
+  # generate the new alerts that will receive a campaign
+  if (!overwrite_content) {
+    df_alerts <- df_wrangled |>
+      alert_fn() |>
+      generate_alerts(
+        indicator_id = indicator_id,
+        first_run = first_run
       )
-    }
+  } else {
+    # use existing alerts, and just delete the campaign content from Mailchimp and re-create
+    df_alerts <- cs$read_az_file(fn_signals) |>
+      delete_campaign_content()
   }
+
 
   # get content for the campaign
   df_campaign_content <- generate_campaign_content(
@@ -109,7 +125,7 @@ generate_campaigns <- function(
 
   cs$update_az_file(
     df_campaigns,
-    fn_df_campaigns
+    fn_signals
   )
   df_campaigns
 }
@@ -164,5 +180,3 @@ validate_campaigns <- function(df_campaigns, df_campaign_content) {
 
   df_campaigns[,names(df_check)]
 }
-
-

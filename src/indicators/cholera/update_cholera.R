@@ -5,25 +5,18 @@ box::use(./utils/alert_cholera)
 box::use(./utils/plot_cholera)
 box::use(./utils/info_cholera)
 
-box::use(../../alerts/generate_alerts[generate_alerts])
-box::use(../../alerts/generate_campaigns[generate_campaigns])
+box::use(../../alerts/generate_signals[generate_signals])
 
+# get the raw and wrangled data. The wrangled data is passed
+# to generate up the new alerts and campaigns
 df_wrangled <- raw_cholera$raw() |>
   wrangle_cholera$wrangle()
 
-df_alerts <- df_wrangled |>
-  alert_cholera$alert() |>
-  generate_alerts(
-    fn_df_alerts = "output/cholera/alerts.parquet",
-    fn_df_campaigns = "output/cholera/campaigns.parquet",
-    first_run = TRUE
-  )
-
-df_campaigns <- generate_campaigns(
-  df_alerts = df_alerts,
+# now generate signals
+generate_signals(
   df_wrangled = df_wrangled,
-  fn_df_campaigns = "output/cholera/campaigns.parquet",
   indicator_id = "who_cholera",
+  alert_fn = alert_cholera$alert,
   plot_fn = plot_cholera$plot,
   info_fn = info_cholera$info,
   first_run = TRUE

@@ -1050,24 +1050,24 @@
     },
     "renv": {
       "Package": "renv",
-      "Version": "1.0.5",
+      "Version": "1.0.7",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
         "utils"
       ],
-      "Hash": "32c3f93e8360f667ca5863272ec8ba6a"
+      "Hash": "397b7b2a265bc5a7a06852524dabae20"
     },
     "ripc": {
       "Package": "ripc",
       "Version": "0.2.1.9000",
       "Source": "GitHub",
       "RemoteType": "github",
-      "RemoteHost": "api.github.com",
       "RemoteUsername": "OCHA-DAP",
       "RemoteRepo": "ripc",
       "RemoteRef": "api-restructure",
-      "RemoteSha": "7ad246e3f85964dbd07e53521a9995bc1c2e29cb",
+      "RemoteSha": "af9e5a29808fd8ff62b3a988071899138061fdc5",
+      "RemoteHost": "api.github.com",
       "Requirements": [
         "countrycode",
         "dplyr",
@@ -1082,7 +1082,7 @@
         "stringr",
         "tidyr"
       ],
-      "Hash": "63573bc6ce689c37b2cfdd57a5c0292b"
+      "Hash": "61274e2896ab63c86ac710ee999bc5e0"
     },
     "rlang": {
       "Package": "rlang",

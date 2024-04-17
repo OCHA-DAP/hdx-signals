@@ -21,50 +21,22 @@ box::use(../utils/add_country_info[add_country_info])
 #' - Uploads the alerts to Azure.
 #'
 #' @param df Data frame of indicator alerts.
-#' @param fn_df_alerts Name of the alerts data frame on Azure
-#' @param fn_df_campaign Name of the campaigns data frame on Azure
+#' @param indicator_id ID of the indicator
 #' @param first_run Whether or not this is the first run of an indicator. Used
 #'     to determine different filtering methods.
 #'
 #' @returns Nothing, alerts are uploaded to Azure
 #'
 #' @export
-generate_alerts <- function(df, fn_df_alerts, fn_df_campaigns, first_run = FALSE) {
-  check_existing_alerts(fn_df_alerts)
-
-  df_alerts <- df |>
+generate_alerts <- function(df, indicator_id, first_run = FALSE) {
+  df |>
     validate_alerts() |>
     add_alert_level() |>
     filter_alerts$filter_alerts(
-      fn_df_campaigns = fn_df_campaigns,
+      indicator_id = indicator_id,
       first_run = first_run
     ) |>
     add_country_info()
-
-  cs$update_az_file(df_alerts, fn_df_alerts)
-  df_alerts
-}
-
-#' Check existing alerts
-#'
-#' Checks that the alerts data frame on Azure is empty, if it exists.
-#' If not empty, then these still need to be triaged into campaigns before
-#' generating any new alerts.
-#'
-#' @param fn_df_alerts
-check_existing_alerts <- function(fn_df_alerts) {
-  if (fn_df_alerts %in% cs$az_file_detect()) {
-    df <- cs$read_az_file(fn_df_alerts)
-    if (nrow(df) != 0) {
-      stop(
-        "The alerts data ",
-        fn_df_alerts,
-        " on Azure is non-empty. Please triage those alerts prior ",
-        "to generating new alerts.",
-        call. = FALSE
-      )
-    }
-  }
 }
 
 #' Validates that alerts have the correct names and typing when passed in.

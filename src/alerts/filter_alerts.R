@@ -1,4 +1,5 @@
 box::use(dplyr)
+box::use(rlang[`!!`])
 
 box::use(cs = ../utils/cloud_storage)
 
@@ -27,23 +28,24 @@ box::use(cs = ../utils/cloud_storage)
 #' This is to ensure that no accidental re-creation of campaign data is done until
 #' campaigns are explicitly removed.
 #'
-#' @param df_alerts Data frame of alerts to be filtered
-#' @param fn_df_campaigns File name of the campaigns data frame in cloud storage
+#' @param df_alerts Data frame of alerts to be filtered.
+#' @param indicator_id ID of the indicator, matching the first column
+#'      in `input/indicator_mapping.parquet`.
 #' @param first_run Whether or not this is the first run of the campaign.
 #'
 #' @returns Data frame of new alerts matching the criteria above
 #'
 #' @export
-filter_alerts <- function(df_alerts, fn_df_campaigns, first_run = FALSE) {
+filter_alerts <- function(df_alerts, indicator_id, first_run = FALSE) {
   # no need to do anything for empty data frame
   if (nrow(df_alerts) == 0) {
     return(df_alerts)
   }
 
   if (!first_run) {
-    filter_alerts_ongoing(df_alerts, fn_df_campaigns)
+    filter_alerts_ongoing(df_alerts, indicator_id)
   } else {
-    filter_alerts_first_run(df_alerts, fn_df_campaigns)
+    filter_alerts_first_run(df_alerts)
   }
 }
 
@@ -57,10 +59,12 @@ filter_alerts <- function(df_alerts, fn_df_campaigns, first_run = FALSE) {
 #' datasets, historic data shifts. The most reliable way to understand what
 #' campaigns have been sent out is to directly query our campaigns data to ensure
 #' we are not sending out alerts within 180 days.
-filter_alerts_ongoing <- function(df_alerts, fn_df_campaigns) {
-  # get recent campaigns
-  df_campaigns <- cs$read_az_file(fn_df_campaigns) |>
+filter_alerts_ongoing <- function(df_alerts, indicator_id) {
+  # we know that this file exists because it is checked in `check_existing_signals()`
+  # so we get recent campaigns from it
+  df_signals <- cs$read_az_file("output/signals.parquet") |>
     dplyr$filter(
+      indicator_id == !!indicator_id,
       Sys.Date() - campaign_date <= 180
     )
 
@@ -115,18 +119,7 @@ filter_alerts_ongoing <- function(df_alerts, fn_df_campaigns) {
 #' Used to filter alerts for the first run, when no campaign file exists. Uses
 #' recursive filtering to remove alerts within 180 days of each other. Generates
 #' an error if a campaign file exists.
-filter_alerts_first_run <- function(df_alerts, fn_df_campaigns) {
-  if (fn_df_campaigns %in% cs$az_file_detect()) {
-    stop(
-      "The campaign file '",
-      fn_df_campaigns,
-      "' is found on Azure. Cannot do the first campaign run if a campaign",
-      "file exists. Think very carefully before just deleting an existing ",
-      "campaign dataset to re-run the first run.",
-      call. = FALSE
-    )
-  }
-
+filter_alerts_first_run <- function(df_alerts) {
   # recursively filter all of our alerts for each country
   df_alerts |>
     dplyr$group_by(

@@ -93,6 +93,7 @@ delete_ids <- function(df, cols, object_type) {
         !is.na(id) & id != "ERROR"
       ) |>
       dplyr$pull(id) |>
+      unique() |>
       sapply(
         \(x) delete$mc_delete_object(x, object_type)
       )
