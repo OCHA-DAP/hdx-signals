@@ -155,12 +155,19 @@ approve_signals <- function(df, fn_signals) {
 #'
 #' @param df Indicator signals data frame
 send_signals <- function(df) {
+  # first send out the archive campaigns to activate the URLs
+  send_signals_email(df, "campaign_id_archive")
+  send_signals_email(df, "campaign_id_email")
+}
+
+#' Send out emails based on ID column
+send_signals_email <- function(df, id_col) {
   df |>
     dplyr$filter(
-      !is.na(campaign_id_email)
+      !is.na(.data[[id_col]])
     ) |>
     dplyr$pull(
-      campaign_id_email
+      .data[[id_col]]
     ) |>
     unique() |>
     purrr$walk(

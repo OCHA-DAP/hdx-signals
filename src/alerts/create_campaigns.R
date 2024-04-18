@@ -119,6 +119,7 @@ create_campaign <- function(
       body <- email_body$create_body(
         title = campaign_details$title,
         iso3 = df_campaign_content$iso3,
+        alert_level = df_campaign_content$alert_level,
         country = df_campaign_content$country,
         plot_title = df_campaign_content$plot_title,
         plot_url = df_campaign_content$plot_url,
@@ -160,8 +161,10 @@ create_campaign <- function(
             iso3 = df_campaign_content$iso3
           )
         } else {
-          # assign to empty segment for historic campaigns so URL created but no emails sent
-          segments <- custom_segmentation$mc_empty_segment()
+          # assign to archive segment for historic campaigns so URL created but
+          # email is only sent to HDX Signals email (we have to send email
+          # for archive links to be fully functional)
+          segments <- custom_segmentation$mc_archive_segment()
         }
 
         campaigns$mc_add_campaign(

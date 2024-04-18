@@ -38,7 +38,7 @@ mc_add_campaign <- function(subject_line, preview_text, title, recipients, templ
             subject_line = subject_line,
             preview_text = preview_text,
             from_name = "HDX Signals",
-            reply_to = "hdx-signals@un.org",
+            reply_to = Sys.getenv("HDX_SIGNALS_EMAIL"),
             template_id = as.numeric(template_id),
             folder_id = folders$mc_campaign_folder_id(folder)
           )

@@ -39,7 +39,8 @@ alert <- function(df_wrangled) {
     dplyr$summarize(
       date = max(date),
       alert_level_numeric = utils$tail(alert_level_numeric, n = 1),
-      value = utils$tail(cholera_cases, n = 1)
+      value = utils$tail(cholera_cases, n = 1),
+      .groups = "drop"
     ) |>
     dplyr$mutate(
       indicator_name = "cholera",

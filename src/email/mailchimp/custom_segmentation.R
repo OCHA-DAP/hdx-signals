@@ -36,27 +36,29 @@ mc_segment_conditions <- function(indicator_id, iso3) {
   )
 }
 
-#' Returns the empty segment ID
+#' Returns the archive segment ID
 #'
-#' Checks that the empty segment is still empty, and updates if not.
+#' Checks that the archive segment has just one member, and updates it if not.
+#' Used to send emails for the archive simply back to the HDX Signals email
+#' address, not to any external recipients.
 #'
-#' @returns Segment conditions for `hdx-signals-empty`, which is always ID 24989.
+#' @returns Segment conditions for `hdx-signals-archive`, which is always ID 24989.
 #'
 #' @export
-mc_empty_segment <- function() {
-  # always ensure the segment is empty
-  if (segments$mc_segment_member_count(24989) != 0) {
+mc_archive_segment <- function() {
+  # always ensure the segment just has one member
+  if (segments$mc_segment_member_count(25085) != 1) {
     segments$mc_update_static_segment(
-      segment_id = 24989,
-      segment_name = "hdx-signals-empty",
-      emails = list()
+      segment_id = 25085,
+      segment_name = "hdx-signals-archive",
+      emails = list(Sys.getenv("HDX_SIGNALS_EMAIL"))
     )
   }
 
   list(
     list_id = "e908cb9d48",
     segment_opts = list(
-      saved_segment_id = 24989
+      saved_segment_id = 25085
     )
   )
 }

@@ -2,6 +2,7 @@ box::use(purrr)
 
 box::use(./country_block)
 box::use(./text_block)
+box::use(./line_block)
 
 #' Create email body
 #'
@@ -10,6 +11,7 @@ box::use(./text_block)
 #' @param title Shock title text to go next to HDX Signals at the top of the email
 #' @param iso3 Vector of ISO3 codes
 #' @param country Vector of country names
+#' @param alert_level Vector of alert levels
 #' @param message Vector of messages
 #' @param plot Vector of URLs to plot to include
 #' @param map Vector of URLs to map to include
@@ -25,6 +27,7 @@ create_body <- function(
     title,
     iso3,
     country,
+    alert_level,
     plot_title = "",
     plot_url = "",
     map_title = "",
@@ -44,11 +47,13 @@ create_body <- function(
       header_level = 1,
       header_class = "null"
     ),
+    line_block$add_line(),
     paste(
       purrr$pmap_chr(
         .l = list(
           iso3 = iso3,
           country = country,
+          alert_level = alert_level,
           plot_title = plot_title,
           plot_url = plot_url,
           map_title = map_title,
@@ -69,7 +74,11 @@ create_body <- function(
       text = paste0(
         "Full documentation and source code for HDX Signals is available on ",
         "<a href='https://github.com/OCHA-DAP/hdx-signals'>GitHub</a>. Reach ",
-        "out to <a href='mailto:hdx-signals@un.org'>hdx-signals@un.org</a> ",
+        "out to <a href='mailto:",
+        Sys.getenv("HDX_SIGNALS_EMAIL"),
+        "'>",
+        Sys.getenv("HDX_SIGNALS_EMAIL"),
+        "</a> ",
         "with any questions, comments, or other feedback."
       )
     )

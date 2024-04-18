@@ -85,6 +85,7 @@ filter_alerts_ongoing <- function(df_alerts, indicator_id) {
     ) |>
     dplyr$ungroup() |>
     dplyr$arrange(
+      alert_level,
       country
     )
 
