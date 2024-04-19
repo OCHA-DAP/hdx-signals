@@ -5,6 +5,8 @@ box::use(az = AzureStor)
 box::use(glue)
 box::use(rlang)
 box::use(utils)
+box::use(sf)
+box::use(tools)
 
 box::use(../utils/gmas_test_run[gmas_test_run])
 
@@ -12,20 +14,22 @@ box::use(../utils/gmas_test_run[gmas_test_run])
 #'
 #' Reads a file from the `hdx-signals` bucket.
 #' The file is read based on its prefix. Currently, the only support is for
-#' Apache Parquet files, but other support can be added if necessary.
+#' Apache Parquet and GeoJSON files, but other support can be added if necessary.
 #'
 #' Function parsing is done based on file type:
 #'
 #' * Apache Parquet: [arrow::write_parquet()].
+#' * GeoJSON: [sf::st_read()]
 #'
 #' @param name Name of the file to read, including directory prefixes (`input/` or `output/`)
-#'     and filetype `.parquet`.
+#'     and file extension, such as `.parquet`.
 #'
 #' @returns Data frame.
 #'
 #' @export
 read_az_file <- function(name) {
-  tf <- tempfile(fileext = ".parquet")
+  fileext <- tools$file_ext(name)
+  tf <- tempfile(fileext = paste0(".", fileext))
 
   # wrapping to suppress printing of progress bar
   invisible(
@@ -38,7 +42,11 @@ read_az_file <- function(name) {
     )
   )
 
-  arrow$read_parquet(tf)
+  switch(
+    fileext,
+    parquet = arrow$read_parquet(tf),
+    geojson = sf$st_read(tf, quiet = TRUE)
+  )
 }
 
 #' Write data frame to Microsoft Azure Data Storage
