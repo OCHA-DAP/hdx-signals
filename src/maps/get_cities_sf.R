@@ -1,5 +1,7 @@
 box::use(sf)
-box::use(rnaturalearth)
+box::use(dplyr)
+
+box::use(./download_shapefile[download_shapefile])
 
 #' Download and wrangle cities data
 #'
@@ -21,7 +23,7 @@ get_cities_sf <- function(iso3) {
   } else {
     dplyr$filter(
       pop_sf,
-      ADM0_A3 == iso3
+      adm0_a3 == iso3
     )
   }
 }
@@ -37,13 +39,15 @@ create_point_sf <- function(lat, lon, name) {
     )
 
   sf$st_sf(
-    NAME = name,
+    name = name,
     geometry = point
   )
 }
 
 #' Downloading outside the function so just done once when loading the module
-pop_sf <- rnaturalearth$ne_download(
-  type = "populated_places",
-  category = "cultural"
+#' Not using {rnaturalearth} because it doesn't allow passing `quiet = TRUE`
+#' to `download.file()`
+pop_sf <- download_shapefile(
+  url = "https://naciscdn.org/naturalearth/110m/cultural/ne_110m_populated_places_simple.zip",
+  layer = "ne_110m_populated_places_simple"
 )

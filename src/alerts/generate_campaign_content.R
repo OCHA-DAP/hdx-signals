@@ -172,7 +172,7 @@ generate_info <- function(df, df_wrangled, fn = NULL, empty = FALSE) {
 #' @param null_return Value to return if `fn` is `NULL`
 #' @param empty Whether or not to return an empty data frame
 generate_section <- function(df, df_wrangled, fn, fn_name, null_return, empty) {
-  if (is.null(fn)) {
+  if (is.null(fn) || nrow(df) == 0) {
     if (empty) {
       section <- dplyr$tibble(.rows = nrow(df))
     } else {

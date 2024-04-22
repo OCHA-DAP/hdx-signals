@@ -4,6 +4,7 @@ box::use(httr2)
 box::use(purrr)
 box::use(sf)
 box::use(ripc)
+box::use(tidyr)
 
 # prevent geometry errors
 sf$sf_use_s2(FALSE)
@@ -14,8 +15,7 @@ sf$sf_use_s2(FALSE)
 
 iso3_codes <- countrycode$codelist |>
   dplyr$filter(
-    !is.na(iso3c),
-    !is.na(`un.name.en`)
+    !is.na(iso3c)
   ) |>
   dplyr$pull(
     iso3c
@@ -28,35 +28,41 @@ iso3_codes <- c(iso3_codes, "XKX", "AB9", "LAC")
 #### GET CENTROIDS ####
 #######################
 
-get_centroid <- function(iso3) {
-  resp <- httr2$request(
-    "https://www.geoboundaries.org/api/current/gbOpen"
+un_geodata_sf <- cs$read_az_file("input/un_geodata.geojson")
+
+# get centroid coordinates from the UN Geodata geojson file
+sf_centroids <- un_geodata_sf |>
+  dplyr$group_by(
+    iso3 = iso3cd
   ) |>
-    httr2$req_url_path_append(
-      iso3,
-      "ADM0"
-    ) |>
-    httr2$req_error(
-      is_error = \(x) FALSE,
-      body = NULL
-    ) |>
-    httr2$req_perform()
+  dplyr$summarize(
+    geometry = sf$st_union(geometry)
+  ) |>
+  sf$st_centroid() |>
+  dplyr$mutate(
+    centroid_coords = as.data.frame(sf$st_coordinates(geometry))
+  ) |>
+  tidyr$unnest(centroid_coords) |>
+  dplyr$transmute(
+    iso3,
+    lat = Y,
+    lon = X
+  ) |>
+  sf$st_drop_geometry()
 
-  if (httr2$resp_status(resp) != 200) {
-    # try custom centroid function
-    custom_centroid(iso3)
-  } else {
-    centroid <- httr2$resp_body_json(resp) |>
-      purrr$pluck("simplifiedGeometryGeoJSON") |>
-      sf$read_sf() |>
-      sf$st_centroid()
-
-    df_coords <- sf$st_coordinates(centroid) |>
-      dplyr$as_tibble()
-
-    df_coords$iso3 <- if (centroid$shapeISO != "") centroid$shapeISO else centroid$shapeGroup
-    df_coords
-  }
+#' Get centroid from Geoboundaries data
+get_geoboundaries_centroid <- function(iso3) {
+  httr2$request(
+    "https://www.geoboundaries.org/api/current/gbOpen/XKX/ADM0"
+  ) |>
+    httr2$req_perform() |>
+    httr2$resp_body_json() |>
+    purrr$pluck("simplifiedGeometryGeoJSON") |>
+    sf$read_sf() |>
+    sf$st_centroid() |>
+    sf$st_coordinates() |>
+    dplyr$tibble() |>
+    dplyr$mutate(iso3 = !!iso3)
 }
 
 #' Custom centroids for a few countries or regions that we know we need centroids
@@ -91,6 +97,8 @@ custom_centroid <- function(iso3) {
       dplyr$mutate(
         iso3 = "LAC"
       )
+  } else if (iso3 == "XKX") {
+    get_geoboundaries_centroid("XKX")
   } else {
     data.frame(
       X = NA_real_,

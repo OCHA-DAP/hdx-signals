@@ -95,7 +95,7 @@ filter_alerts_ongoing <- function(df_alerts, indicator_id) {
       alert_level == "High concern"
     ) |>
     dplyr$anti_join(
-      dplyr$filter(df_campaigns, alert_level == "High concern"),
+      dplyr$filter(df_signals, alert_level == "High concern"),
       by = "iso3"
     )
 
@@ -105,7 +105,7 @@ filter_alerts_ongoing <- function(df_alerts, indicator_id) {
       alert_level == "Medium concern"
     ) |>
     dplyr$anti_join(
-      df_campaigns,
+      df_signals,
       by = "iso3"
     )
 

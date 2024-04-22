@@ -1,6 +1,5 @@
 box::use(stringr)
 box::use(arrow)
-box::use(httr)
 box::use(az = AzureStor)
 box::use(glue)
 box::use(rlang)

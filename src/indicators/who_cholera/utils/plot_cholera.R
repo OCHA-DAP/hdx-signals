@@ -1,13 +1,10 @@
 box::use(dplyr)
 box::use(purrr)
 box::use(rlang[`!!`])
-box::use(gghdx)
-box::use(gg = ggplot2)
 box::use(scales)
 
 box::use(../../../utils/format_date)
-
-gghdx$gghdx()
+box::use(../../../plots/plot_ts)
 
 # local modules
 box::use(../../../email/mailchimp/images)
@@ -31,7 +28,7 @@ plot <- function(df, df_wrangled, preview = FALSE) {
   ) |>
     dplyr$mutate(
       plot_title = paste0(
-        scales::label_comma()(value),
+        scales$label_comma()(value),
         " cases of cholera reported since ",
         format_date$format_date(start_date)
       )
@@ -81,38 +78,15 @@ plot_timeline <- function(
     df_plot <- dplyr$filter(df_plot, date <= !!date)
   }
 
-  p <- df_plot |>
-    gg$ggplot() +
-    gg$geom_line(
-      gg$aes(
-        x = date,
-        y = cholera_cases
-      )
-    ) +
-    gghdx$scale_y_continuous_hdx(
-      labels = scales$label_comma(),
-    ) +
-    gg$scale_x_date(
-      breaks = scales$pretty_breaks(),
-      labels = scales$label_date_short()
-    ) +
-    gg$coord_cartesian(
-      clip = "off"
-    ) +
-    gg$theme(
-      axis.text.x = gg$element_text(vjust = 1),
-      plot.title = gg$element_text(size = 14),
-      axis.title = gg$element_text(size = 12),
-      axis.text = gg$element_text(size = 11),
-      plot.caption = gg$element_text(size = 11, hjust = 1)
-    ) +
-    gg$labs(
-      x = "",
-      y = "Cholera cases",
-      color = "",
-      title = plot_title,
-      caption = "Data from the WHO AFRO, https://www.afro.who.int"
-    )
+  p <- plot_ts$plot_ts(
+    df = df_plot,
+    date = "date",
+    values = "cholera_cases",
+    y_axis = "Cholera cases",
+    title = plot_title,
+    subtitle = "",
+    caption = "Data from the WHO AFRO, https://www.afro.who.int"
+  )
 
   images$mc_upload_plot(
     plot = p,

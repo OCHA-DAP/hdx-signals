@@ -1,0 +1,42 @@
+box::use(countrycode)
+box::use(purrr)
+
+#' Get ISO3 code from country name
+#'
+#' @param country_names Vector of country names
+#'
+#' @export
+names_to_iso3 <- function(country_names) {
+  # these need custom handling because they don't match in `countryname()`
+  custom_names <- list(
+    Micronesia = "FSM",
+    `US Outlying Minor Islands` = "UMI",
+    Kosovo = "XKX"
+  )
+
+  # separate out names that need custom handling
+  iso3 <- character(length(country_names))
+  custom_iso3 <- country_names %in% names(custom_names)
+  iso3[custom_iso3] <- purrr$map_chr(country_names[custom_iso3], \(x) custom_names[[x]])
+  iso3[!custom_iso3] <- countrycode$countryname(
+    sourcevar = country_names[!custom_iso3],
+    destination = "iso3c"
+  )
+  iso3
+}
+
+#' Get ISO3 code from ISO2
+#'
+#' @param iso2 Vector of ISO2 codes
+#'
+#' @export
+iso2_to_iso3 <- function(iso2) {
+  iso3 <- character(length(iso2))
+  custom_iso2 <- iso2 == "LAC"
+  iso3[custom_iso2] <- "LAC" # IPC uses LAC as an ISO2 code
+  iso3[!custom_iso2] <- countrycode$countrycode(
+    sourcevar = iso2[!custom_iso2],
+    origin = "iso2c",
+    destination = "iso3c"
+  )
+}

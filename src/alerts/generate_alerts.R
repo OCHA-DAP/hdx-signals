@@ -32,11 +32,11 @@ generate_alerts <- function(df, indicator_id, first_run = FALSE) {
   df |>
     validate_alerts() |>
     add_alert_level() |>
+    add_country_info() |>
     filter_alerts$filter_alerts(
       indicator_id = indicator_id,
       first_run = first_run
-    ) |>
-    add_country_info()
+    )
 }
 
 #' Validates that alerts have the correct names and typing when passed in.

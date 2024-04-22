@@ -6,10 +6,39 @@ box::use(stringr)
 box::use(tools)
 
 box::use(cs = ../utils/cloud_storage)
+box::use(./download_shapefile[download_shapefile])
+
+# prevent errors when unioning
+suppressMessages(
+  sf$sf_use_s2(FALSE)
+)
 
 #' Get the ADM0 shapefile for a country
 #'
+#' Takes in an `iso3` code, and downloads and loads the country data.
+#'
+#' Once downloaded and loaded, the file is simplified to ensure that only the
+#' country boundaries are available as a single row, using `sf::st_union()`.
+#' This makes it simple for plotting and for calculating centroids.
+#'
+#' @param iso3 ISO3 code
+#'
+#' @returns Shapefile of the country boundaries
+#'
+#' @export
+get_adm0_sf <- function(iso3) {
+  sf_adm0 <- download_adm0_sf(iso3)
+  suppressMessages(
+    sf$st_union(sf_adm0) |>
+      sf$st_as_sf() # so we can check number of rows
+  )
+}
+
+
+#' Download ADM0 shapefile
+#'
 #' Takes in an `iso3` code, and returns the country shapefile for that country.
+#'
 #' For some `iso3` codes, custom files are required, and these are handled directly
 #' within this function. However, for the rest, the default is to try and pull
 #' the COD shapefile from Fieldmaps (because it has standardized columns and files
@@ -18,12 +47,8 @@ box::use(cs = ../utils/cloud_storage)
 #'
 #' https://geoportal.un.org/arcgis/home/item.html?id=d7caaff3ef4b4f7c82689b7c4694ad92
 #'
-#' @param iso3 ISO3 code
-#'
-#' @returns Shapefile of the country boundaries
-#'
-#' @export
-get_adm0_sf <- function(iso3) {
+#' @param iso3 ISO3
+download_adm0_sf <- function(iso3) {
   if (iso3 == "LAC") {
     # for LAC we get all 3 of El Salvador, Guatemala, and Honduras
     purrr$map(
@@ -34,11 +59,18 @@ get_adm0_sf <- function(iso3) {
         .f = sf$st_union
       )
   } else if (iso3 == "AB9") {
-    fn <- download_file("https://open.africa/dataset/56d1d233-0298-4b6a-8397-d0233a1509aa/resource/76c698c9-e282-4d00-9202-42bcd908535b/download/ssd_admbnda_abyei_imwg_nbs_20180401.zip")
-    sf$read_sf(fn, quiet = TRUE)
+    download_shapefile("https://open.africa/dataset/56d1d233-0298-4b6a-8397-d0233a1509aa/resource/76c698c9-e282-4d00-9202-42bcd908535b/download/ssd_admbnda_abyei_imwg_nbs_20180401.zip")
   } else if (iso3 == "XKX") {
-    fn <- download_file("https://data.geocode.earth/wof/dist/shapefile/whosonfirst-data-admin-xk-latest.zip")
-    sf$read_sf(fn, quiet = TRUE)
+    download_shapefile("https://data.geocode.earth/wof/dist/shapefile/whosonfirst-data-admin-xk-latest.zip")
+  } else if (iso3 == "IOT") {
+    download_shapefile("https://public.opendatasoft.com/api/explore/v2.1/catalog/datasets/world-administrative-boundaries/exports/geojson?lang=en&timezone=Europe%2FLondon") |>
+      dplyr$filter(
+        iso3 == "IOT"
+      )
+  } else if (iso3 == "UMI") {
+    download_shapefile("https://data.geocode.earth/wof/dist/shapefile/whosonfirst-data-admin-um-latest.zip")
+  } else if (iso3 == "WLF") {
+    download_shapefile("https://pacificdata.org/data/dataset/0319bab7-4b09-4fcc-81d6-e2c2a8694078/resource/9f6d96d5-02e5-44d8-bb42-4244bde23aa5/download/wf_tsz_pol_april2022.zip")
   } else {
     # try getting cod, and fallback to the UN geodata
     tryCatch(
@@ -56,58 +88,9 @@ get_adm0_sf <- function(iso3) {
 #' @param iso3 ISO3 code
 download_fieldmaps_sf <- function(iso3) {
   iso3 <- tolower(iso3)
-  fn <- download_file(
+  download_shapefile(
     url = glue$glue("https://data.fieldmaps.io/cod/originals/{iso3}.gpkg.zip")
   )
-
-  sf$st_read(
-    dsn = fn,
-    layer = glue$glue("{iso3}_adm0"),
-    quiet = TRUE
-  )
-}
-
-#' Download file to temp file
-#'
-#' Download file to temp file, unzipping zip files if necessary. Deals wth zipped
-#' files like geojson or gpkg files as well as shapefiles, when the unzipping
-#' returns a folder
-#'
-#' @param url URL to download
-download_file <- function(url) {
-  if (stringr$str_ends(url, ".zip")) {
-    download.file(
-      url = url,
-      destfile = zf <- tempfile(fileext = ".zip"),
-      quiet = TRUE
-    )
-
-    unzip(
-      zipfile = zf,
-      exdir = td <- tempdir()
-    )
-
-    # if the file extension is just `.zip`, we return the temp dir alone
-    # because that works for shapefiles, otherwise we return the file unzipped
-    fn <- stringr$str_remove(basename(url), ".zip")
-    if (tools$file_ext(fn) == "") {
-      return(td)
-    } else {
-      return(
-        file.path(
-          td,
-          fn
-        )
-      )
-    }
-  } else {
-    download.file(
-      url = url,
-      destfile = tf <- tempfile(fileext = paste0(".", tools$file_ext(url))),
-      quiet = TRUE
-    )
-    return(tf)
-  }
 }
 
 #' Get UN geodata for that country

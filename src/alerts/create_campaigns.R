@@ -33,6 +33,21 @@ create_campaigns <- function(
     indicator_id,
     first_run = FALSE
 ) {
+  if (nrow(df_campaign_content) == 0) {
+    return(
+      dplyr$tibble(
+        iso3 = character(),
+        date = as.Date(integer(), origin = "1970-01-01"),
+        template_id_archive = character(),
+        template_id_email = character(),
+        campaign_id_archive = character(),
+        campaign_id_email = character(),
+        campaign_url_archive = character(),
+        campaign_url_email = character(),
+        campaign_date = as.Date(integer(), origin = "1970-01-01")
+      )
+    )
+  }
   # create date for campaigns
   if (first_run) {
     campaign_date <- unique(df_campaign_content$date)
