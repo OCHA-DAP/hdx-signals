@@ -61,7 +61,7 @@ read_az_file <- function(name) {
 #'
 #' If `gmas_test_run()`, the file is not uploaded to the container
 #'
-#' @param df Data frame to save out.
+#' @param df Data frame or simple features to save out.
 #' @param name Name of the file to write, including prefix (`input/` or `output/`)
 #'     and filetype `.parquet`.
 #' @param
@@ -70,11 +70,13 @@ read_az_file <- function(name) {
 #'
 #' @export
 update_az_file <- function(df, name) {
-  tf <- tempfile(fileext = ".parquet")
+  fileext <- tools$file_ext(name)
+  tf <- tempfile(fileext = paste0(".", fileext))
 
-  arrow$write_parquet(
-    x = df,
-    sink = tf
+  switch(
+    fileext,
+    parquet = arrow$write_parquet(x = df, sink = tf),
+    geojson = sf$st_write(obj = df, dsn = tf, quiet = TRUE)
   )
 
   if (gmas_test_run()) {

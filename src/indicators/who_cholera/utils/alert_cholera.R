@@ -5,9 +5,6 @@ box::use(countrycode)
 box::use(utils)
 box::use(scales)
 
-# internal utilities
-box::use(../../../utils/format_date[format_date])
-
 #' Creates cholera alerts dataset
 #'
 #' Creates base alert dataset for cholera. Alerts are generated when
@@ -45,6 +42,7 @@ alert <- function(df_wrangled) {
     dplyr$mutate(
       indicator_name = "cholera",
       indicator_source = "who",
+      indicator_id = paste(indicator_source, indicator_name, sep = "_"),
       .after = iso3
     ) |>
     dplyr$select(

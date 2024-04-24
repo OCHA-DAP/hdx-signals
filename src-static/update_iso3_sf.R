@@ -3,15 +3,19 @@ box::use(sf)
 box::use(dplyr)
 box::use(purrr)
 box::use(stringr)
-box::use(tools)
 
-box::use(cs = ../utils/cloud_storage)
-box::use(./download_shapefile[download_shapefile])
+box::use(cs = ../src/utils/cloud_storage)
+box::use(./utils/download_shapefile[download_shapefile])
+box::use(../src/utils/all_iso3_codes[all_iso3_codes])
 
 # prevent errors when unioning
 suppressMessages(
   sf$sf_use_s2(FALSE)
 )
+
+###################
+#### FUNCTIONS ####
+###################
 
 #' Get the ADM0 shapefile for a country
 #'
@@ -19,18 +23,39 @@ suppressMessages(
 #'
 #' Once downloaded and loaded, the file is simplified to ensure that only the
 #' country boundaries are available as a single row, using `sf::st_union()`.
-#' This makes it simple for plotting and for calculating centroids.
+#' This makes it simple for plotting and for calculating centroids. The file
+#' is then upload to Azure in `input/adm0/{iso3}.geojson`.
 #'
 #' @param iso3 ISO3 code
 #'
 #' @returns Shapefile of the country boundaries
 #'
 #' @export
-get_adm0_sf <- function(iso3) {
+update_adm0_sf <- function(iso3) {
   sf_adm0 <- download_adm0_sf(iso3)
-  suppressMessages(
+
+  sf_union <- suppressMessages(
     sf$st_union(sf_adm0) |>
       sf$st_as_sf() # so we can check number of rows
+  )
+
+  if (sf$st_geometry_type(sf_union) == "GEOMETRYCOLLECTION") {
+    sf_union <- sf$st_collection_extract(sf_union) |>
+      sf$st_union()
+  }
+
+  # simply in projected coordinates
+  sf_simplified <- sf_union |>
+    sf$st_transform(crs = "ESRI:54032") |> # azimuthal equidistant
+    sf$st_simplify(
+      preserveTopology = TRUE,
+      dTolerance = 50
+    ) |>
+    sf$st_transform(crs = 4326)
+
+  cs$update_az_file(
+    df = sf_simplified,
+    name = glue$glue("input/adm0/{iso3}.geojson")
   )
 }
 
@@ -51,13 +76,9 @@ get_adm0_sf <- function(iso3) {
 download_adm0_sf <- function(iso3) {
   if (iso3 == "LAC") {
     # for LAC we get all 3 of El Salvador, Guatemala, and Honduras
-    purrr$map(
-      .x = c("GTM", "SLV", "HND"),
-      .f = download_adm0_sf
-    ) |>
-      purrr$reduce(
-        .f = sf$st_union
-      )
+    sf$st_union(
+      dplyr$filter(sf_world, iso3cd %in% c("SLV", "GTM", "HND"))
+    )
   } else if (iso3 == "AB9") {
     download_shapefile("https://open.africa/dataset/56d1d233-0298-4b6a-8397-d0233a1509aa/resource/76c698c9-e282-4d00-9202-42bcd908535b/download/ssd_admbnda_abyei_imwg_nbs_20180401.zip")
   } else if (iso3 == "XKX") {
@@ -115,3 +136,85 @@ get_un_geodata <- function(iso3) {
 
 #' Loading in module level
 sf_world <- cs$read_az_file("input/un_geodata.geojson")
+
+#' Update the centroids for ISO3
+#'
+#' Done using this method to ensure that if errors are generated, progress is not
+#' lost. So incrementally load the adm0 boundaries for a country, calculate the centroid,
+#' then store on Azure.
+#'
+#' If a centroid is incorrect or needs adjusting due to strange geometries for the
+#' ISO3 code, specific adjustments can be made to the function below to catch
+#' specific errors
+#'
+#' @param iso3 ISO3 code
+#'
+#' @returns
+update_centroids_sf <- function(iso3) {
+  fn <- glue$glue("input/adm0/{iso3}.geojson")
+  cs$read_az_file(fn) |>
+    sf$st_transform(crs = "ESRI:54032") |> # azimuthal equidistant
+    sf$st_centroid() |>
+    sf$st_transform(crs = 4326) |>
+    sf$st_coordinates() |>
+    dplyr$as_tibble() |>
+    dplyr$transmute(
+      iso3 = !!iso3,
+      lat = Y,
+      lon = X
+    ) |>
+    cs$update_az_file(
+      name = glue$glue("input/centroids/{iso3}.geojson")
+    )
+}
+
+#' Update bounding boxes for regions
+#'
+#' Once we have updated country files, we can update again our regional bounding
+#' boxes. These are likely not going to be updated on the webmap, but doing just
+#' in case they are needed so they are always up to date.
+#'
+#' For speed, just uses the UN Geodata for calculation.
+update_region_bboxes <- function() {
+  country_info <- cs$read_az_file("input/country_info.parquet")
+  country_info |>
+    dplyr$group_by(region) |>
+    dplyr$group_map(
+      .f = \(df, x) {
+        bbox <- sf_world |>
+          dplyr$filter(
+            iso3cd %in% df$iso3
+          ) |>
+          sf$st_union() |>
+          sf$st_bbox()
+
+        dplyr$tibble(
+          xmin = bbox$xmin,
+          ymin = bbox$ymin,
+          xmax = bbox$xmax,
+          ymax = bbox$ymax
+        )
+      }
+    ) |>
+    purrr$list_rbind() |>
+    cs$update_az_file("input/region_bbox.parquet")
+}
+
+################
+#### UPDATE ####
+################
+
+# first update adm0 files
+purrr$walk(
+  .x = all_iso3_codes(),
+  .f = update_adm0_sf
+)
+
+# then update centroids
+purrr$walk(
+  .x = all_iso3_codes(),
+  .f = update_centroids_sf
+)
+
+# then update bboxes
+update_region_bboxes()

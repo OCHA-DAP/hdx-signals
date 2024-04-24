@@ -22,6 +22,7 @@ box::use(./check_existing_signals[check_existing_signals])
 #' Mailchimp and pending review.
 #'
 #' @param df_wrangled Data frame of wrangled data
+#' @param df_raw Data frame of raw data
 #' @param indicator_id ID of the indicator for the campaign, to match names in
 #'     `input/indicator_mapping.parquet`, which can extract template folders and
 #'     other info for campaigns.
@@ -40,10 +41,13 @@ box::use(./check_existing_signals[check_existing_signals])
 #' @param overwrite_content Overwrite existing content in the indicator signals.
 #'     This is to be used when we don't want to generate new alerts, but want to
 #'     fix something in the campaign content itself.
+#' @param preview Whether or not to preview the campaigns generated for the
+#'     archive. Defaults to `FALSE`, as it can sometimes open too many browsers.
 #'
 #' @export
 generate_signals <- function(
     df_wrangled,
+    df_raw,
     indicator_id,
     alert_fn,
     plot_fn = NULL,
@@ -53,7 +57,8 @@ generate_signals <- function(
     summary_fn = NULL,
     info_fn = NULL,
     first_run = FALSE,
-    overwrite_content = FALSE
+    overwrite_content = FALSE,
+    preview = FALSE
 ) {
   check_existing_signals(
     indicator_id = indicator_id,
@@ -82,6 +87,7 @@ generate_signals <- function(
   df_campaign_content <- generate_campaign_content(
     df_alerts = df_alerts,
     df_wrangled = df_wrangled,
+    df_raw = df_raw,
     plot_fn = plot_fn,
     map_fn = map_fn,
     plot2_fn = plot2_fn,
@@ -102,7 +108,8 @@ generate_signals <- function(
         .f = \(df) create_campaigns(
           df_campaign_content = df,
           indicator_id = indicator_id,
-          first_run = first_run
+          first_run = first_run,
+          preview = preview
         )
       ) |>
       dplyr$bind_rows()
@@ -111,7 +118,8 @@ generate_signals <- function(
     df_campaigns <- create_campaigns(
       df_campaign_content = df_campaign_content,
       indicator_id = indicator_id,
-      first_run = first_run
+      first_run = first_run,
+      preview = preview
     )
   }
 

@@ -1,6 +1,8 @@
 box::use(countrycode)
 box::use(purrr)
 
+box::use(cs = ./cloud_storage)
+
 #' Get ISO3 code from country name
 #'
 #' @param country_names Vector of country names
@@ -40,3 +42,14 @@ iso2_to_iso3 <- function(iso2) {
     destination = "iso3c"
   )
 }
+
+#' Get name from ISO3 code
+#'
+#' Get name from ISO3 codes. Uses the `country_info.parquet` file to match them up.
+#'
+#' @export
+iso3_to_names <- function(iso3) {
+  df_info[df_info$iso3 == iso3, "country"]
+}
+
+df_info <- cs$read_az_file("input/country_info.parquet")

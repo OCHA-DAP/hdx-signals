@@ -61,8 +61,10 @@ df_acled_start <- dplyr$tibble(
       x = paste("1/", time_period),
       format = "%d/%m/%Y-Present"
     )
+  ) |>
+  dplyr$distinct(
+    iso3, start_date
   )
-
 
 cs$update_az_file(
   df = df_acled_start,

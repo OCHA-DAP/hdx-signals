@@ -1,0 +1,65 @@
+box::use(dplyr)
+box::use(glue)
+
+box::use(cs = ../../../../src/utils/cloud_storage)
+
+#' Add campaign info to cholera alerts
+#'
+#' @returns Data frame with campaign information
+#'
+#' @export
+info <- function(df_alerts, df_wrangled, df_raw) {
+  # get links to point towards the IDMC website
+  df_country_links <- cs$read_az_file("input/idmc_country_links.parquet")
+
+  # get links for all the source urls to provide to the user
+  df_source_links <- df_raw |>
+    dplyr$select(
+      iso3,
+      displacement_start_date,
+      displacement_end_date,
+      event_url
+    )
+
+  # now join together and get key information
+  df_info <- df_alerts |>
+    dplyr$full_join(
+      df_source_links,
+      by = "iso3"
+    ) |>
+    dplyr$group_by(iso3, date) |>
+    dplyr$filter(
+      displacement_end_date >= date - lubridate$days(30),
+      displacement_start_date <= date | (Sys.Date() - displacement_start_date <= 90 & Sys.Date() - date <= 90) # keep recent reports for monitoring
+    ) |>
+    dplyr$summarize(
+      other_urls = paste(event_url, collapse = "; "),
+      other_urls_text = paste(event_url, collapse = "\n"),
+      .groups = "drop"
+    ) |>
+    dplyr$mutate(
+      hdx_url = as.character(glue$glue("https://data.humdata.org/dataset/idmc-event-data-for-{unique(iso3)}")),
+      source_url = as.character(glue$glue("https://www.internal-displacement.org/countries/{unique(country_link})")),
+      further_information = as.character(
+        glue$glue(
+          'Access the data directly <a href="{hdx_url}">on HDX</a>, and see the ',
+          '<a href="{source_url}">IDMC country page</a> for more information. ',
+          'Full context available in the original reports sourced by the IDMC:',
+          '\n\n{other_urls_text}'
+        )
+      )
+    )
+
+  # ensuring the output matches the original input
+  df_alerts |>
+    dplyr$left_join(
+      df_info,
+      by = c("iso3", "date")
+    ) |>
+    dplyr$select(
+      hdx_url,
+      source_url,
+      other_urls,
+      further_information
+    )
+}

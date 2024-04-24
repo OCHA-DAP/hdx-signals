@@ -5,6 +5,8 @@ box::use(./utils/plot_cholera)
 box::use(./utils/info_cholera)
 
 box::use(../../alerts/generate_signals[generate_signals])
+box::use(../../alerts/triage_signals)
+box::use(../../alerts/delete_campaign_content)
 
 # get the raw and wrangled data. The wrangled data is passed
 # to generate up the new alerts and campaigns
@@ -17,5 +19,6 @@ generate_signals(
   indicator_id = "who_cholera",
   alert_fn = alert_cholera$alert,
   plot_fn = plot_cholera$plot,
-  info_fn = info_cholera$info
+  info_fn = info_cholera$info,
+  first_run = TRUE
 )

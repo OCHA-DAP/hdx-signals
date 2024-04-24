@@ -1,5 +1,7 @@
 box::use(gg = ggplot2)
 box::use(scales)
+box::use(gghdx)
+box::use(lubridate)
 
 box::use(./theme_signals)
 
@@ -9,26 +11,27 @@ box::use(./theme_signals)
 #' will be visualized as a line plot. Adds in the basic Signals theme as well.
 #'
 #' @param df Data frame to plot
-#' @param date Date column to plot
-#' @param values Values column to plot
+#' @param val_col Values column to plot
 #' @param y_axis Title for the Y axis
 #' @param title Title for the plot
 #' @param subtitle Subtitle for the plot
 #' @param caption Caption for the plot
 #'
-#' @returns Plot of cholera for that country.
+#' @returns Time series plot
 #'
 #' @export
 plot_ts <- function(
-    df, date, values, y_axis, title, subtitle = gg$waiver(), caption = gg$waiver()
+    df, val_col, y_axis, title, subtitle = gg$waiver(), caption = gg$waiver()
 ) {
   df |>
     gg$ggplot() +
     gg$geom_line(
       gg$aes(
-        x = .data[[date]],
-        y = .data[[values]]
-      )
+        x = date,
+        y = .data[[val_col]]
+      ),
+      linewidth = 1,
+      color = gghdx$hdx_hex("tomato-hdx")
     ) +
     gghdx$scale_y_continuous_hdx(
       labels = scales$label_comma(),

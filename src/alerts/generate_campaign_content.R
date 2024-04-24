@@ -13,6 +13,7 @@ box::use(./delete_campaign_content[delete_campaign_content])
 #'
 #' @param df_alerts Data frame of alerts
 #' @param df_wrangled Data frame of wrangled data
+#' @param df_raw Data frame of raw data
 #' @param subject_fn Function to create subject and title information for the campaign
 #' @param plot_fn Function to create plots for the campaign
 #' @param map_fn Function to create maps for the campaign
@@ -27,6 +28,7 @@ box::use(./delete_campaign_content[delete_campaign_content])
 generate_campaign_content <- function(
     df_alerts,
     df_wrangled,
+    df_raw,
     plot_fn = NULL,
     map_fn = NULL,
     plot2_fn = NULL,
@@ -36,12 +38,12 @@ generate_campaign_content <- function(
     empty = FALSE
 ) {
   df_campaigns <- df_alerts |>
-    generate_images(df_wrangled, plot_fn, "plot", empty) |>
-    generate_images(df_wrangled, map_fn, "map", empty) |>
-    generate_images(df_wrangled, plot2_fn, "plot2", empty) |>
-    generate_other_images(df_wrangled, other_images_fn, empty) |>
-    generate_summary(df_wrangled, summary_fn, empty) |>
-    generate_info(df_wrangled, info_fn, empty) |>
+    generate_images(df_wrangled, df_raw, plot_fn, "plot", empty) |>
+    generate_images(df_wrangled, df_raw, map_fn, "map", empty) |>
+    generate_images(df_wrangled, df_raw, plot2_fn, "plot2", empty) |>
+    generate_other_images(df_wrangled, df_raw, other_images_fn, empty) |>
+    generate_summary(df_wrangled, df_raw, summary_fn, empty) |>
+    generate_info(df_wrangled, df_raw, info_fn, empty) |>
     validate_campaign_content()
 }
 
@@ -53,26 +55,28 @@ generate_campaign_content <- function(
 #' alerts data frame, and returns three columns for the title, ID, and URL of
 #' the plots specifically.
 #'
-#' @param df Alerts data frame
+#' @param df_alerts Alerts data frame
 #' @param df_wrangled Wrangled data frame
+#' @param df_raw Raw data frame
 #' @param fn Plotting function
 #' @param image_name Name of the image to generate, either a `plot`, `map`, or `plot2`,
 #'     corresponding with the final columns in a campaigns data frame.
 #' @param empty Whether or not to return an empty data frame if `fn` is `NULL`.
 #'
 #' @returns Data frame of title, ID, and URLs for the generated images.
-generate_images <- function(df, df_wrangled, fn = NULL, image_name = c("plot", "map", "plot2"), empty = FALSE) {
+generate_images <- function(df_alerts, df_wrangled, df_raw, fn = NULL, image_name = c("plot", "map", "plot2"), empty = FALSE) {
   image_name <- rlang$arg_match(image_name)
   generate_section(
-    df = df,
+    df_alerts = df_alerts,
     df_wrangled = df_wrangled,
+    df_raw = df_raw,
     fn = fn,
     fn_name = deparse(substitute(fn)),
     null_return = dplyr$tibble(
       "{image_name}_title" := NA_character_,
       "{image_name}_id" := NA_character_,
       "{image_name}_url" := NA_character_,
-      .rows = nrow(df)
+      .rows = nrow(df_alerts)
     ),
     empty = empty
   )
@@ -89,17 +93,18 @@ generate_images <- function(df, df_wrangled, fn = NULL, image_name = c("plot", "
 #' @param df_wrangled Wrangled data frame
 #' @param fn Function to generate the linkages to other images
 #' @param empty Whether or not to return an empty data frame if `fn` is `NULL`.
-generate_other_images <- function(df, df_wrangled, fn = NULL, empty = FALSE) {
+generate_other_images <- function(df_alerts, df_wrangled, df_raw, fn = NULL, empty = FALSE) {
   generate_section(
-    df = df,
+    df_alerts = df_alerts,
     df_wrangled = df_wrangled,
+    df_raw = df_raw,
     fn = fn,
     fn_name = deparse(substitute(fn)),
     null_return = dplyr$tibble(
       other_images_ids = NA_character_,
       other_images_urls = NA_character_,
       other_images_captions = NA_character_,
-      .rows = nrow(df)
+      .rows = nrow(df_alerts)
     ),
     empty = empty
   )
@@ -113,16 +118,17 @@ generate_other_images <- function(df, df_wrangled, fn = NULL, empty = FALSE) {
 #' @param df_wrangled Wrangled data frame
 #' @param fn Function to generate the linkages to other images
 #' @param empty Whether or not to return an empty data frame if `fn` is `NULL`.
-generate_summary <- function(df, df_wrangled, fn = NULL, empty = FALSE) {
+generate_summary <- function(df_alerts, df_wrangled, df_raw, fn = NULL, empty = FALSE) {
   generate_section(
-    df = df,
+    df_alerts = df_alerts,
     df_wrangled = df_wrangled,
+    df_raw = df_raw,
     fn = fn,
     fn_name = deparse(substitute(fn)),
     null_return = dplyr$tibble(
       summary_long = NA_character_,
       summary_short = NA_character_,
-      .rows = nrow(df)
+      .rows = nrow(df_alerts)
     ),
     empty = empty
   )
@@ -137,10 +143,11 @@ generate_summary <- function(df, df_wrangled, fn = NULL, empty = FALSE) {
 #' @param df_wrangled Wrangled data frame
 #' @param fn Content generating function
 #' @param empty Whether or not to return an empty data frame
-generate_info <- function(df, df_wrangled, fn = NULL, empty = FALSE) {
+generate_info <- function(df_alerts, df_wrangled, df_raw, fn = NULL, empty = FALSE) {
   generate_section(
-    df = df,
+    df_alerts = df_alerts,
     df_wrangled = df_wrangled,
+    df_raw = df_raw,
     fn = fn,
     fn_name = deparse(substitute(fn)),
     null_return = dplyr$tibble(
@@ -148,7 +155,7 @@ generate_info <- function(df, df_wrangled, fn = NULL, empty = FALSE) {
       source_url = NA_character_,
       other_urls = NA_character_,
       further_information = NA_character_,
-      .rows = nrow(df)
+      .rows = nrow(df_alerts)
     ),
     empty = empty
   )
@@ -165,27 +172,28 @@ generate_info <- function(df, df_wrangled, fn = NULL, empty = FALSE) {
 #' occurs down the line, the previously uploaded content to Mailchimp is deleted
 #' and removed.
 #'
-#' @param df Alerts data frame
+#' @param df_alerts Alerts data frame
 #' @param df_wrangled Wrangled data frame
+#' @param df_raw Raw data frame
 #' @param fn Content generating function
 #' @param fn_name Name of the function
 #' @param null_return Value to return if `fn` is `NULL`
 #' @param empty Whether or not to return an empty data frame
-generate_section <- function(df, df_wrangled, fn, fn_name, null_return, empty) {
-  if (is.null(fn) || nrow(df) == 0) {
+generate_section <- function(df_alerts, df_wrangled, df_raw, fn, fn_name, null_return, empty) {
+  if (is.null(fn) || nrow(df_alerts) == 0) {
     if (empty) {
-      section <- dplyr$tibble(.rows = nrow(df))
+      section <- dplyr$tibble(.rows = nrow(df_alerts))
     } else {
       section <- null_return
     }
   } else {
-    section <- fn(df, df_wrangled)
+    section <- fn(df_alerts, df_wrangled, df_raw)
   }
 
   # if we error out, ensure previously generated content is deleted from Mailchimp
 
   if (any(section == "ERROR", na.rm = TRUE)) {
-    delete_campaign_content(df)
+    delete_campaign_content(df_alerts)
     delete_campaign_content(section)
     stop(
       "Errors generated in ",
@@ -194,7 +202,7 @@ generate_section <- function(df, df_wrangled, fn, fn_name, null_return, empty) {
       call. = FALSE
     )
   }
-  dplyr$bind_cols(df, section)
+  dplyr$bind_cols(df_alerts, section)
 }
 
 #' Validate and arrange campaigns data frame
@@ -215,6 +223,7 @@ validate_campaign_content <- function(df_campaigns_content) {
     lon = NA_real_,
     indicator_name = NA_character_,
     indicator_source = NA_character_,
+    indicator_id = NA_character_,
     date = as.Date(x = integer(0), origin = "1970-01-01"),
     alert_level_numeric = NA_integer_,
     alert_level = NA_character_,

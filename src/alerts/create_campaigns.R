@@ -23,6 +23,7 @@ box::use(../email/mailchimp/delete)
 #'     is the standard format, such as `idmc_displacement`.
 #' @param first_run Whether or not this is the first run for an indicator. On the
 #'     first run, no alerts are sent, just archived campaigns are generated.
+#' @param preview Whether or not to preview the email campaigns for the archive.
 #'
 #' @returns URL of the campaign. If two campaigns sent, then returns the URL
 #' for `Medium concern` since it will contain all country alerts for that run.
@@ -31,7 +32,8 @@ box::use(../email/mailchimp/delete)
 create_campaigns <- function(
     df_campaign_content,
     indicator_id,
-    first_run = FALSE
+    first_run = FALSE,
+    preview = FALSE
 ) {
   if (nrow(df_campaign_content) == 0) {
     return(
@@ -66,7 +68,8 @@ create_campaigns <- function(
     df_campaign_content = df_campaign_content,
     archive = TRUE,
     archive_url = "*|ARCHIVE|*",
-    names_paste = "_archive"
+    names_paste = "_archive",
+    preview = preview
   )
 
   if (!first_run) {
@@ -76,7 +79,8 @@ create_campaigns <- function(
       df_campaign_content = df_campaign_content,
       archive = FALSE,
       archive_url = archive_id_url$campaign_url_archive,
-      names_paste = "_email"
+      names_paste = "_email",
+      preview = FALSE # never preview
     )
   } else {
     email_df <- dplyr$tibble(
@@ -118,6 +122,7 @@ create_campaigns <- function(
 #' @param archive_url URL for the archive.
 #' @param names_paste String to paste on the end of the names, either `_archive`,
 #'     `_hc`, or `_all`.
+#' @param preview Whether or not to preview the campaign.
 #'
 #' @returns URL of the campaign
 create_campaign <- function(
@@ -126,7 +131,8 @@ create_campaign <- function(
     df_campaign_content,
     archive,
     archive_url,
-    names_paste
+    names_paste,
+    preview
 ) {
   template_id <- tryCatch(
     {
@@ -157,7 +163,7 @@ create_campaign <- function(
       templates$mc_add_template(
         html = template,
         folder = campaign_details$folder,
-        preview = archive # only preview the archive template, not those with conditional logic
+        preview = archive && preview # only preview the archive template, not those with conditional logic
       )
     },
     error = function(e) {

@@ -53,21 +53,10 @@ delete_campaign_content <- function(df) {
     object_type = "campaign"
   )
 
-  # now drop all the columns and return the data frame
+  # now drop all the columns and return the data frame of alerts
   df |>
     dplyr$select(
-      -dplyr$any_of(
-        c(
-          dplyr$starts_with("plot"),
-          dplyr$starts_with("map_"),
-          dplyr$starts_with("other"),
-          dplyr$starts_with("summary"),
-          dplyr$contains("url"),
-          "further_information",
-          dplyr$starts_with("template"),
-          dplyr$starts_with("campaign")
-        )
-      )
+      iso3:value
     )
 }
 

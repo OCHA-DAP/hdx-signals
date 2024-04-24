@@ -50,6 +50,7 @@ validate_alerts <- function(df) {
     iso3 = NA_character_,
     indicator_name = NA_character_,
     indicator_source = NA_character_,
+    indicator_id = NA_character_,
     date = as.Date(integer(0), origin = "1970-01-01"),
     alert_level_numeric = NA_integer_,
     value = NA_real_

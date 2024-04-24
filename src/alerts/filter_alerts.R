@@ -2,6 +2,7 @@ box::use(dplyr)
 box::use(rlang[`!!`])
 
 box::use(cs = ../utils/cloud_storage)
+box::use(../utils/all_iso3_codes)
 
 #' Filters alerts only to new alerts
 #'
