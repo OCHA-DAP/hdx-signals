@@ -1,7 +1,7 @@
 box::use(dplyr)
-box::use(glue)
+box::use(lubridate)
+box::use(purrr)
 
-box::use(cs = ../../../../src/utils/cloud_storage)
 box::use(../../../../src/utils/ai_summarizer)
 
 #' Add campaign info to cholera alerts
@@ -45,13 +45,15 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
       .groups = "drop"
     ) |>
     dplyr$mutate(
-      summary_long = purrr$map2(
+      summary_long = purrr$map2_chr(
         .x = prompt_long,
-        .y = event_info
+        .y = event_info,
+        .f = ai_summarizer$ai_summarizer
       ),
-      summary_short = purrr$map2(
+      summary_short = purrr$map2_chr(
         .x = prompt_short,
-        .y = summary_long
+        .y = summary_long,
+        .f = ai_summarizer$ai_summarizer
       )
     )
 

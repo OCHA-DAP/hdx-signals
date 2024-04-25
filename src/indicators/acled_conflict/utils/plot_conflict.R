@@ -43,10 +43,11 @@ plot <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
 #' @param df_wrangled Wrangled data frame for plotting.
 #' @param df_raw Raw data frame, not used for plotting conflict TS
 #' @param title Plot title.
+#' @param date Date of the alert
 #'
 #' @returns Plot of cholera for that wrangled data
 conflict_ts <- function(
-    df_wrangled, df_raw, title
+    df_wrangled, df_raw, title, date
 ) {
   caption <- paste(
     "Data from the Armed Conflict Location & Event Data Project",

@@ -75,7 +75,8 @@ mc_upload_image <- function(fp, name, folder, preview = FALSE) {
 #'     updates the existing image with that id.
 #' @param preview Whether or not to preview the saved plot when `gmas_test_run()`
 #'     is `TRUE`.
-#' @param ... Additional arguments passed to `ggplot2::ggsave()`
+#' @param height Height of the plot (in inches)
+#' @param width Width of the plot (in inches)
 #'
 #' @returns URL string to reference object on Mailchimp servers
 #'
@@ -87,11 +88,15 @@ mc_upload_image <- function(fp, name, folder, preview = FALSE) {
 #' mc_upload_plot(p, "test.jpg")
 #'
 #' @export
-mc_upload_plot <- function(plot, name, folder, preview = FALSE, ...) {
+mc_upload_plot <- function(plot, name, folder, preview = FALSE, height, width, ...) {
   tf <- tempfile(fileext = ".png")
   ggplot2$ggsave(
     filename = tf,
     plot = plot,
+    height = height,
+    width = width,
+    units = "in",
+    dpi = 300,
     ...
   )
 

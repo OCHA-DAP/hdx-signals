@@ -1,3 +1,5 @@
+#' Script to update country boundaries and then their centroids
+
 box::use(glue)
 box::use(sf)
 box::use(dplyr)
@@ -7,6 +9,7 @@ box::use(stringr)
 box::use(cs = ../src/utils/cloud_storage)
 box::use(./utils/download_shapefile[download_shapefile])
 box::use(../src/utils/all_iso3_codes[all_iso3_codes])
+box::use(../src/images/maps/map_test)
 
 # prevent errors when unioning
 suppressMessages(
@@ -32,13 +35,15 @@ suppressMessages(
 #'
 #' @export
 update_adm0_sf <- function(iso3) {
-  sf_adm0 <- download_adm0_sf(iso3)
+  sf_adm0 <- download_adm0_sf(iso3) |>
+    filter_adm0_sf(iso3)
 
   sf_union <- suppressMessages(
     sf$st_union(sf_adm0) |>
       sf$st_as_sf() # so we can check number of rows
   )
 
+  # have to extract geometries from collections
   if (sf$st_geometry_type(sf_union) == "GEOMETRYCOLLECTION") {
     sf_union <- sf$st_collection_extract(sf_union) |>
       sf$st_union()
@@ -51,7 +56,7 @@ update_adm0_sf <- function(iso3) {
       preserveTopology = TRUE,
       dTolerance = 50
     ) |>
-    sf$st_transform(crs = 4326)
+    sf$st_transform(crs = "OGC:CRS84")
 
   cs$update_az_file(
     df = sf_simplified,
@@ -59,6 +64,68 @@ update_adm0_sf <- function(iso3) {
   )
 }
 
+#' Filter ADM0 shapefile
+#'
+#' Filters the shapefile for a given `iso3` code. Used when countries have
+#' small territories far from the main country area in the shapefile, which
+#' makes plotting extremely difficult. Filtering only setup for these
+#' specific `iso3` codes.
+#'
+#' @param sf_adm0 ADM0 shapefile for the country
+#' @param iso3 ISO3 code
+#'
+#' @returns Filtered `sf_adm0`
+filter_adm0_sf <- function(sf_adm0, iso3) {
+  if (iso3 == "CHL") {
+    sf_adm0 <- dplyr$filter(
+      sf_adm0,
+      !(ADM3_PCODE %in% c("CL05201", "CL05104")) # dropping Isla de Pascua and Juan Fernández
+    )
+  } else if (iso3 == "BMU") {
+    sf_adm0 <- st_crop_adj_bbox(sf_adm0, ymax = -0.05)
+  } else if (iso3 == "CRI") {
+    sf_adm0 <- st_crop_adj_bbox(sf_adm0, ymin = 0.1)
+  } else if (iso3 == "ECU") {
+    sf_adm0 <- st_crop_adj_bbox(sf_adm0, xmin = 0.2)
+  } else if (iso3 == "ESP") {
+    sf_adm0 <- st_crop_adj_bbox(sf_adm0, ymin = 1.8)
+  } else if (iso3 == "FJI") {
+    sf_adm0 <- st_crop_adj_bbox(sf_adm0, ymax = -0.05, ymin = 0.5)
+  } else if (iso3 == "NZL") {
+    sf_adm0 <- st_crop_adj_bbox(sf_adm0, xmin = 1)
+  } else if (iso3 == "PRT") {
+    sf_adm0 <- st_crop_adj_bbox(sf_adm0, xmin = 20)
+  } else if (iso3 == "USA") {
+    sf_adm0 <- st_crop_adj_bbox(sf_adm0, xmin = 30, ymax = -19)
+  } else if (iso3 == "VNM") {
+    sf_adm0 <- st_crop_adj_bbox(sf_adm0, xmax = -8, ymin = 1)
+  }
+
+  sf_adm0
+}
+
+#' Crop with adjusted bbox
+#'
+#' Gets the bbox for an `sf` object, and then adjusts it based on the parameters
+#' based in, then crops the `sf`.
+#'
+#' @param sf_obj Simple featuer object
+#' @param xmin Amount to adjust xmin
+#' @param xmax Amount to adjust xmax
+#' @param ymin Amount to adjust ymin
+#' @param ymax Amount to adjust ymax
+#'
+#' @returns Cropped simple feature
+st_crop_adj_bbox <- function(sf_obj, xmin = 0, xmax = 0, ymin = 0, ymax = 0) {
+  old_bbox <- sf$st_bbox(sf_obj)
+  sf$st_crop(
+    sf_obj,
+    xmin = old_bbox[["xmin"]] + xmin,
+    xmax = old_bbox[["xmax"]] + xmax,
+    ymin = old_bbox[["ymin"]] + ymin,
+    ymax = old_bbox[["ymax"]] + ymax
+  )
+}
 
 #' Download ADM0 shapefile
 #'
@@ -80,9 +147,15 @@ download_adm0_sf <- function(iso3) {
       dplyr$filter(sf_world, iso3cd %in% c("SLV", "GTM", "HND"))
     )
   } else if (iso3 == "AB9") {
-    download_shapefile("https://open.africa/dataset/56d1d233-0298-4b6a-8397-d0233a1509aa/resource/76c698c9-e282-4d00-9202-42bcd908535b/download/ssd_admbnda_abyei_imwg_nbs_20180401.zip")
+    download_shapefile(
+      url = "https://open.africa/dataset/56d1d233-0298-4b6a-8397-d0233a1509aa/resource/76c698c9-e282-4d00-9202-42bcd908535b/download/ssd_admbnda_abyei_imwg_nbs_20180401.zip",
+      layer = "ssd_admbnda_abyei_imwg_nbs_20180401"
+    )
   } else if (iso3 == "XKX") {
-    download_shapefile("https://data.geocode.earth/wof/dist/shapefile/whosonfirst-data-admin-xk-latest.zip")
+    download_shapefile(
+      url = "https://data.geocode.earth/wof/dist/shapefile/whosonfirst-data-admin-xk-latest.zip",
+      layer = "whosonfirst-data-admin-xk-country-polygon"
+    )
   } else if (iso3 == "IOT") {
     download_shapefile("https://public.opendatasoft.com/api/explore/v2.1/catalog/datasets/world-administrative-boundaries/exports/geojson?lang=en&timezone=Europe%2FLondon") |>
       dplyr$filter(
@@ -92,8 +165,12 @@ download_adm0_sf <- function(iso3) {
     download_shapefile("https://data.geocode.earth/wof/dist/shapefile/whosonfirst-data-admin-um-latest.zip")
   } else if (iso3 == "WLF") {
     download_shapefile("https://pacificdata.org/data/dataset/0319bab7-4b09-4fcc-81d6-e2c2a8694078/resource/9f6d96d5-02e5-44d8-bb42-4244bde23aa5/download/wf_tsz_pol_april2022.zip")
+  } else if (iso3 == "FJI") {
+    # make sure that we shift the coordinates so it plots correctly
+    download_fieldmaps_sf("FJI") |>
+      sf$st_shift_longitude()
   } else {
-    # try getting cod, and fallback to the UN geodata
+    # first try getting cod, and fallback to the UN geodata
     tryCatch(
       suppressWarnings(download_fieldmaps_sf(iso3)),
       error = \(e) get_un_geodata(iso3)
@@ -155,7 +232,7 @@ update_centroids_sf <- function(iso3) {
   cs$read_az_file(fn) |>
     sf$st_transform(crs = "ESRI:54032") |> # azimuthal equidistant
     sf$st_centroid() |>
-    sf$st_transform(crs = 4326) |>
+    sf$st_transform(crs = "OGC:CRS84") |>
     sf$st_coordinates() |>
     dplyr$as_tibble() |>
     dplyr$transmute(
@@ -164,7 +241,7 @@ update_centroids_sf <- function(iso3) {
       lon = X
     ) |>
     cs$update_az_file(
-      name = glue$glue("input/centroids/{iso3}.geojson")
+      name = glue$glue("input/centroids/{iso3}.parquet")
     )
 }
 
@@ -218,3 +295,9 @@ purrr$walk(
 
 # then update bboxes
 update_region_bboxes()
+
+# if you want, you can test out the maps now
+purrr$walk(
+  .x = all_iso3_codes(),
+  .f = \(iso3) map_test$map_test(iso3, "/Users/caldwellst/Desktop/map_test")
+)

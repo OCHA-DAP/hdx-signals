@@ -16,6 +16,8 @@ theme_signals <- function() {
       plot.title = gg$element_text(size = 14),
       axis.title = gg$element_text(size = 12),
       axis.text = gg$element_text(size = 11),
-      plot.caption = gg$element_text(size = 11, hjust = 1)
+      plot.caption = gg$element_text(size = 11, hjust = 1),
+      legend.text = gg$element_text(size = 9),
+      legend.title = gg$element_text(size = 11)
     )
 }

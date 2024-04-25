@@ -1,6 +1,9 @@
 box::use(glue)
 box::use(rlang)
+box::use(sf)
+
 box::use(cs = ./cloud_storage)
+box::use(./iso3_shift_longitude)
 
 #' Get the ADM0 shapefile for a country
 #'
@@ -23,14 +26,26 @@ box::use(cs = ./cloud_storage)
 #' @export
 get_iso3_sf <- function(iso3, file = c("adm0", "centroids", "cities")) {
   file <- rlang$arg_match(file)
-  fn <- glue$glue("input/{file}/{iso3}.geojson")
+  fileext <- if (file == "centroids") "parquet" else "geojson"
+  fn <- glue$glue("input/{file}/{iso3}.{fileext}")
   if (!(fn %in% azure_files)) {
     return(NULL)
   }
 
-  cs$read_az_file(
+  df <- cs$read_az_file(
     fn
   )
+
+  if (file == "centroids") {
+    sf$st_as_sf(
+      x = df,
+      coords = c("lon", "lat"),
+      crs = "OGC:CRS84"
+    ) |>
+      iso3_shift_longitude$iso3_shift_longitude(iso3)
+  } else {
+    iso3_shift_longitude$iso3_shift_longitude(df, iso3)
+  }
 }
 
 

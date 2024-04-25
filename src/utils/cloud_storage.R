@@ -12,7 +12,7 @@ box::use(../utils/gmas_test_run[gmas_test_run])
 #' Read a Parquet file stored on Microsoft Azure Data Storage blob
 #'
 #' Reads a file from the `hdx-signals` bucket.
-#' The file is read based on its prefix. Currently, the only support is for
+#' Th"e file is read based on its prefix. Currently, the only support is for
 #' Apache Parquet and GeoJSON files, but other support can be added if necessary.
 #'
 #' Function parsing is done based on file type:

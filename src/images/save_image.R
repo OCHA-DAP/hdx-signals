@@ -16,9 +16,12 @@ box::use(../email/mailchimp/images)
 #' @param iso3 ISO3 code
 #' @param indicator_id Indicator ID
 #' @param date Date of the alert
+#' @param width Width of the image (in inches)
+#' @param height Height of the image (in inches)
+#' @param ... Additional arguments passed to `ggplot2::ggsave()`
 #'
 #' @export
-save_image <- function(p, iso3, indicator_id, date) {
+save_image <- function(p, iso3, indicator_id, date, width, height, ...) {
   name <- paste(tolower(iso3), indicator_id, format(date, "%Y_%m_%b.png"), sep = "_")
   # get the folder name for the indicator ID
   folder <- df_folders |>
@@ -34,10 +37,9 @@ save_image <- function(p, iso3, indicator_id, date) {
     name = name,
     folder = folder,
     preview = FALSE,
-    width = 6,
-    height = 3,
-    units = "in",
-    dpi = 300
+    width = width,
+    height = height,
+    ...
   )
 }
 

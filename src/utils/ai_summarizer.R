@@ -1,5 +1,7 @@
 box::use(purrr)
 box::use(openai)
+box::use(stringr)
+
 box::use(../utils/gmas_test_run[gmas_test_run])
 
 #' AI summarizer
@@ -35,7 +37,7 @@ ai_summarizer <- function(prompt, info) {
     # if a single block of text, split on new lines and sentences
     # so we can pass in separate chunks to the AI
     if (length(info) == 1) {
-      info <- paste0(str_split(info, '\\. |\n')[[1]], ". ")
+      info <- paste0(stringr$str_split(info, '\\. |\n')[[1]], ". ")
       nchars <- nchar(info)
     }
 

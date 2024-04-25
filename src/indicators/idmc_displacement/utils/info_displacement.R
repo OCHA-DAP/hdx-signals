@@ -1,5 +1,6 @@
 box::use(dplyr)
 box::use(glue)
+box::use(lubridate)
 
 box::use(cs = ../../../../src/utils/cloud_storage)
 
@@ -18,7 +19,8 @@ info <- function(df_alerts, df_wrangled, df_raw) {
       iso3,
       displacement_start_date,
       displacement_end_date,
-      event_url
+      event_url,
+      sources
     )
 
   # now join together and get key information
@@ -32,20 +34,37 @@ info <- function(df_alerts, df_wrangled, df_raw) {
       displacement_end_date >= date - lubridate$days(30),
       displacement_start_date <= date | (Sys.Date() - displacement_start_date <= 90 & Sys.Date() - date <= 90) # keep recent reports for monitoring
     ) |>
+    dplyr$mutate(
+      other_urls_html = paste0(
+        '<li><a href="',
+        event_url,
+        '">',
+        sources,
+        '</a></li>'
+      )
+    ) |>
     dplyr$summarize(
-      other_urls = paste(event_url, collapse = "; "),
-      other_urls_text = paste(event_url, collapse = "\n"),
+      other_urls = paste(unique(event_url), collapse = "; "),
+      other_urls_html = paste0(
+        "<ul>\n",
+        paste(unique(other_urls_html), collapse = "\n"),
+        "</ul>"
+      ),
       .groups = "drop"
     ) |>
+    dplyr$left_join(
+      df_country_links,
+      by = "iso3"
+    ) |>
     dplyr$mutate(
-      hdx_url = as.character(glue$glue("https://data.humdata.org/dataset/idmc-event-data-for-{unique(iso3)}")),
-      source_url = as.character(glue$glue("https://www.internal-displacement.org/countries/{unique(country_link})")),
+      hdx_url = as.character(glue$glue("https://data.humdata.org/dataset/idmc-event-data-for-{iso3}")),
+      source_url = as.character(glue$glue("https://www.internal-displacement.org/countries/{country_link}")),
       further_information = as.character(
         glue$glue(
           'Access the data directly <a href="{hdx_url}">on HDX</a>, and see the ',
           '<a href="{source_url}">IDMC country page</a> for more information. ',
           'Full context available in the original reports sourced by the IDMC:',
-          '\n\n{other_urls_text}'
+          '\n\n{other_urls_html}'
         )
       )
     )

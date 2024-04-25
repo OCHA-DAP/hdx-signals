@@ -22,9 +22,9 @@ box::use(./save_image)
 #'     the `map`, or `plot2` in the campaign.
 #'
 #' @export
-create_images <- function(df_alerts, df_wrangled, df_raw, image_fn, image_use = c("plot", "map", "plot2")) {
+create_images <- function(df_alerts, df_wrangled, df_raw, image_fn, image_use = c("plot", "map", "plot2"), width = 6, height = 4) {
   validate_images_alerts(df_alerts)
-  validate_wrangled_df(df_wrangled)
+  validate_filter_df(df_wrangled)
   image_use <- rlang$arg_match(image_use)
   df_images <- purrr$pmap(
     .l = df_alerts,
@@ -36,7 +36,9 @@ create_images <- function(df_alerts, df_wrangled, df_raw, image_fn, image_use = 
         indicator_id = indicator_id,
         df_wrangled = df_wrangled,
         df_raw = df_raw,
-        image_fn = image_fn
+        image_fn = image_fn,
+        width = width,
+        heigh = height
       )
     }
   ) |>
@@ -54,32 +56,35 @@ create_images <- function(df_alerts, df_wrangled, df_raw, image_fn, image_use = 
 #' Creates the plot and saves it to Mailchimp. Used within `create_images()` to
 #' safely create plot and catch errors so Mailchimp can be scrubbed of all content
 #' created even if errors happen in the environment.
-create_image <- function(iso3, date, title, indicator_id, df_wrangled, df_raw, image_fn) {
-  df_plot <- filter_wrangled_df(
+create_image <- function(iso3, date, title, indicator_id, df_wrangled, df_raw, image_fn, width, height, filter_raw) {
+  df_wrangled <- filter_plot_df(
     iso3 = iso3,
     date = date,
-    df_wrangled = df_wrangled
+    df = df_wrangled
   )
-  p <- image_fn(df_plot, df_raw, title)
+
+  p <- image_fn(df_wrangled, df_raw, title, date)
   save_image$save_image(
     p = p,
     iso3 = iso3,
     indicator_id = indicator_id,
-    date = date
+    date = date,
+    width = width,
+    height = height
   )
 }
 
 #' Generate errors upon image creation but still create data frame
 create_image_poss <- purrr$possibly(create_image, data.frame(id = "ERROR", url = "ERROR"))
 
-#' Filters wrangled data frame for image generation
+#' Filters data frame for image generation
 #'
-#' Filters the wrangled data frame image generation. Takes in the `iso3` code
+#' Filters the data frame image generation. Takes in the `iso3` code
 #' and `date` of an alert, and filters the wrangled data frame to that country.
 #' If the `date` is older than 90 days, then the wrangled data frame is filtered
 #' to only have data up to the `date`.
-filter_wrangled_df <- function(iso3, date, df_wrangled) {
-  df_iso3 <- dplyr$filter(df_wrangled, iso3 == !!iso3)
+filter_plot_df <- function(iso3, date, df) {
+  df_iso3 <- dplyr$filter(df, iso3 == !!iso3)
   if (Sys.Date() - date > 90) {
     df_iso3 <- dplyr$filter(df_iso3, date <= !!date)
   }
@@ -104,10 +109,10 @@ validate_images_alerts <- function(df) {
 }
 
 #' Validates the wrangled data frame has an `iso3` and `date columns`
-validate_wrangled_df <- function(df) {
+validate_filter_df <- function(df) {
   if (!all(c("iso3", "date") %in% names(df))) {
     stop(
-      "Wrangled data frame is required to have `iso3` and ",
+      "Data frame is required to have `iso3` and ",
       "`date` column for filtering.",
       call. = FALSE
     )

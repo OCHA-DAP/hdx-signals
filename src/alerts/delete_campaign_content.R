@@ -54,10 +54,13 @@ delete_campaign_content <- function(df) {
   )
 
   # now drop all the columns and return the data frame of alerts
-  df |>
-    dplyr$select(
-      iso3:value
-    )
+  # only do this if available
+  if (all(c("iso3", "value") %in% names(df))) {
+    df |>
+      dplyr$select(
+        iso3:value
+      )
+  }
 }
 
 #' Deletes all IDs found in specified columns
