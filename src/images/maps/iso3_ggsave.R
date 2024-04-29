@@ -16,6 +16,7 @@ box::use(cs = ../../utils/cloud_storage)
 #' @param iso3 ISO3 code
 #' @param fp Filepath to save to, should include `.png` extension.
 #'     Defaults to `tempfile()`.
+#' @param crop Whether or not to crop the plot with `knitr::plot_crop()`.
 #'
 #' @returns Filepath the plot is saved to.
 #'

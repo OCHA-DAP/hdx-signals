@@ -55,7 +55,8 @@ map_test <- function(
     fp = file.path(
       dir,
       paste0(iso3, ".png")
-    )
+    ),
+    crop = FALSE
   )
 
   invisible(NULL)

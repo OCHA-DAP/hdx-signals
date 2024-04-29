@@ -25,7 +25,7 @@ iso3_map_ratio <- function(iso3) {
 #' countries.
 iso3_width_height <- function(iso3) {
   ratio <- iso3_map_ratio(iso3)
-  height <- sqrt(24 / ratio)
+  height <- max(min(sqrt(24 / ratio), 8), 3) # ensure the ratios are bound to be 8x3 as most lopsided
   width <- 24 / height
   data.frame(width, height)
 }
