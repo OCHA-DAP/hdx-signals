@@ -133,11 +133,14 @@ approve_signals <- function(df, fn_signals) {
       df
     )
     # adds the indicator signals data to the core file
+    # saves a reduced version as CSV to dev for pipelining to HDX
     # and then empties the indicator one
     cs$update_az_file(df_core_signals, "output/signals.parquet")
+    save_core_signals_hdx(df_core_signals)
     cs$update_az_file(df[0,], fn_signals)
 
   } else if (user_command == "DELETE") {
+    # replace the campaign content with the deleted stuff
     df_deleted <- delete_campaign_content(df)
     cs$update_az_file(
       df = df_deleted,
@@ -185,4 +188,49 @@ read_core_signals <- function() {
   } else {
     data.frame()
   }
+}
+
+#' Save core signals data for HDX
+#'
+#' Filters the core signals data for HDX and then saves to `dev` for use in HDX.
+#'
+#' This just drops a few columns, and
+#' renames some for the final output data CSV that goes onto HDX. The data
+#' is then saved out to the `dev` blob for pipelining into HDX, because currently
+#' pipeline cannot read from `prod`.
+#'
+#' @param df Data frame to save out
+save_core_signals_hdx <- function(df) {
+  df <- dplyr$select(
+    df,
+    iso3,
+    country,
+    region,
+    hrp_country,
+    indicator_name,
+    indicator_source,
+    indicator_id,
+    date,
+    alert_level,
+    value,
+    plot = plot_url,
+    map = map_url,
+    plot2 = plot2_url,
+    other_images = other_images_urls,
+    summary_long,
+    summary_short,
+    hdx_url,
+    source_url,
+    other_urls,
+    further_information,
+    campaign_summary,
+    campaign_url = campaign_url_archive,
+    campaign_date
+  )
+
+  cs$update_az_file(
+    df = df,
+    name = "output/signals.csv",
+    stage = "dev"
+  )
 }

@@ -1,7 +1,7 @@
 box::use(gg = ggplot2)
 box::use(scales)
 box::use(gghdx)
-box::use(lubridate)
+box::use(dplyr)
 
 box::use(./theme_signals)
 
@@ -24,13 +24,19 @@ plot_ts <- function(
     df, val_col, y_axis, title, subtitle = gg$waiver(), caption = gg$waiver()
 ) {
   df |>
-    gg$ggplot() +
-    gg$geom_line(
-      gg$aes(
+    gg$ggplot(
+      mapping = gg$aes(
         x = date,
         y = .data[[val_col]]
-      ),
+      )
+    ) +
+    gg$geom_line(
       linewidth = 1,
+      color = gghdx$hdx_hex("tomato-hdx")
+    ) +
+    gg$geom_point(
+      data = dplyr$filter(df, date == max(date)),
+      size = 1.5,
       color = gghdx$hdx_hex("tomato-hdx")
     ) +
     gghdx$scale_y_continuous_hdx(

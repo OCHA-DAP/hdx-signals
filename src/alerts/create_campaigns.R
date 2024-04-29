@@ -11,6 +11,7 @@ box::use(../email/mailchimp/campaigns)
 box::use(../email/mailchimp/custom_segmentation)
 box::use(../utils/format_date[format_date])
 box::use(../email/mailchimp/delete)
+box::use(./generate_campaign_summary)
 
 #' Create campaigns
 #'
@@ -57,9 +58,9 @@ create_campaigns <- function(
     campaign_date <- Sys.Date()
   }
 
-
-  # get template folder, title, and subject header
+  # get template folder, title, and subject header, as well as generate the summary
   campaign_details <- get_campaign_details(indicator_id, campaign_date)
+  campaign_details$summary <- generate_campaign_summary(df_campaign_content)
 
   # generate email campaign with no conditional logic for the archive
   archive_df <- create_campaign(
@@ -98,6 +99,7 @@ create_campaigns <- function(
     email_df
   )
 
+  # add the date of the campaign and campaign summary to the top
   df_campaigns$campaign_date <- campaign_date
   df_campaigns
 }
@@ -139,6 +141,7 @@ create_campaign <- function(
       # create the email template and add to Mailchimp
       body <- email_body$create_body(
         title = campaign_details$title,
+        campaign_summary = campaign_details$summary,
         iso3 = df_campaign_content$iso3,
         alert_level = df_campaign_content$alert_level,
         country = df_campaign_content$country,

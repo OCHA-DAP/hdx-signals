@@ -1,4 +1,10 @@
 box::use(gg = ggplot2)
+box::use(dplyr)
+box::use(rlang[`!!`])
+box::use(knitr)
+box::use(magick) # silent requirement for knitr::plot_crop()
+
+box::use(cs = ../../utils/cloud_storage)
 
 #' Saves plot to filepath for ISO3
 #'
@@ -12,14 +18,23 @@ box::use(gg = ggplot2)
 #'     Defaults to `tempfile()`.
 #'
 #' @returns Filepath the plot is saved to.
-iso3_ggsave <- function(p, iso3, fp = tempfile(fileext = ".png")) {
+#'
+#' @export
+iso3_ggsave <- function(p, iso3, fp = tempfile(fileext = ".png"), crop = TRUE) {
+  df_wh <- dplyr$filter(df_width_height, iso3 == !!iso3)
   gg$ggsave(
     filename = fp,
     plot = p,
-    width = 5,
-    height = 4,
+    width = df_wh$width,
+    height = df_wh$height,
     units = "in"
   )
 
+  if (crop) {
+    knitr$plot_crop(fp)
+  }
+
   fp
 }
+
+df_width_height <- cs$read_az_file("input/iso3_width_height.parquet")

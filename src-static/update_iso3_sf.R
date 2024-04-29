@@ -5,11 +5,13 @@ box::use(sf)
 box::use(dplyr)
 box::use(purrr)
 box::use(stringr)
+box::use(lwgeom)
 
 box::use(cs = ../src/utils/cloud_storage)
-box::use(./utils/download_shapefile[download_shapefile])
+box::use(../src/utils/download_shapefile[download_shapefile])
 box::use(../src/utils/all_iso3_codes[all_iso3_codes])
 box::use(../src/images/maps/map_test)
+box::use(../src/utils/get_iso3_sf)
 
 # prevent errors when unioning
 suppressMessages(
@@ -228,17 +230,14 @@ sf_world <- cs$read_az_file("input/un_geodata.geojson")
 #'
 #' @returns
 update_centroids_sf <- function(iso3) {
-  fn <- glue$glue("input/adm0/{iso3}.geojson")
-  cs$read_az_file(fn) |>
-    sf$st_transform(crs = "ESRI:54032") |> # azimuthal equidistant
+  get_iso3_sf$get_iso3_sf(iso3) |>
     sf$st_centroid() |>
-    sf$st_transform(crs = "OGC:CRS84") |>
     sf$st_coordinates() |>
     dplyr$as_tibble() |>
     dplyr$transmute(
       iso3 = !!iso3,
       lat = Y,
-      lon = X
+      lon = ifelse(X <= 180, X, X - 360)
     ) |>
     cs$update_az_file(
       name = glue$glue("input/centroids/{iso3}.parquet")
@@ -254,27 +253,37 @@ update_centroids_sf <- function(iso3) {
 #' For speed, just uses the UN Geodata for calculation.
 update_region_bboxes <- function() {
   country_info <- cs$read_az_file("input/country_info.parquet")
-  country_info |>
+  sf_region_bbox <- country_info |>
     dplyr$group_by(region) |>
-    dplyr$group_map(
+    dplyr$group_modify(
       .f = \(df, x) {
-        bbox <- sf_world |>
-          dplyr$filter(
-            iso3cd %in% df$iso3
+        # create bbox for the region by creating country bbox and unioning
+        sfc <- purrr$map(
+          .x = df$iso3,
+          .f = \(iso3) {
+            # read file and get bbox
+            cs$read_az_file(glue$glue("input/adm0/{iso3}.geojson")) |>
+              sf$st_bbox() |>
+              sf$st_as_sfc()
+          }
+        ) |>
+          purrr$reduce(
+            .f = sf$st_union
           ) |>
-          sf$st_union() |>
-          sf$st_bbox()
+          sf$st_shift_longitude() |>
+          sf$st_bbox() |>
+          sf$st_as_sfc()
 
-        dplyr$tibble(
-          xmin = bbox$xmin,
-          ymin = bbox$ymin,
-          xmax = bbox$xmax,
-          ymax = bbox$ymax
-        )
+        sf$st_sf(bbox = sfc)
       }
     ) |>
-    purrr$list_rbind() |>
-    cs$update_az_file("input/region_bbox.parquet")
+    sf$st_as_sf()
+
+  # now just fix the geometries to wrap back to -180 to 180
+  # pulled from here https://github.com/r-spatial/sf/issues/2058
+  sf_wrapped <- lwgeom$st_wrap_x(sf_region_bbox, 180, 360)
+  sf$st_geometry(sf_wrapped) <- sf$st_geometry(sf_wrapped) - c(360, 0)
+  cs$update_az_file(sf_wrapped, "input/region_bbox.geojson")
 }
 
 ################

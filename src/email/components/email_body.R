@@ -9,6 +9,7 @@ box::use(./line_block)
 #' Create email body. Uses a set of vectors to create country blocks.
 #'
 #' @param title Shock title text to go next to HDX Signals at the top of the email
+#' @param campaign_summary Summary text for the campaign
 #' @param iso3 Vector of ISO3 codes
 #' @param country Vector of country names
 #' @param alert_level Vector of alert levels
@@ -25,6 +26,7 @@ box::use(./line_block)
 #' @export
 create_body <- function(
     title,
+    campaign_summary,
     iso3,
     country,
     alert_level,
@@ -42,7 +44,12 @@ create_body <- function(
 ) {
   paste0(
     text_block$add_text(
-      text = "Signals detected in:\n*|MC:TOC|*",
+      text = paste(
+        campaign_summary,
+        "\nJump to a specific signal:",
+        "*|MC:TOC|*",
+        sep = "\n"
+      ),
       header = title,
       header_level = 1,
       header_class = "null"

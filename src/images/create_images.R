@@ -20,9 +20,16 @@ box::use(./save_image)
 #'     `title` to be used for the plot title.
 #' @param image_use Where the image will be used, either as the default `plot`,
 #'     the `map`, or `plot2` in the campaign.
+#' @param height Height of the image in inches.
+#' @param width Width of the image in inches.
+#' @param use_map_dims Whether or not to use the map dimensions when saving. If
+#'     `TRUE`, uses map dimensions in `input/iso3_width_height.parquet` instead
+#'     of the `width` and `height` arguments.
+#' @param crop Whether or not to run `knitr::plot_crop()` is run on the image
+#'     to crop white space around the image automatically.
 #'
 #' @export
-create_images <- function(df_alerts, df_wrangled, df_raw, image_fn, image_use = c("plot", "map", "plot2"), width = 6, height = 4) {
+create_images <- function(df_alerts, df_wrangled, df_raw, image_fn, image_use = c("plot", "map", "plot2"), width = 6, height = 4, use_map_dims = FALSE, crop = FALSE) {
   validate_images_alerts(df_alerts)
   validate_filter_df(df_wrangled)
   image_use <- rlang$arg_match(image_use)
@@ -38,7 +45,9 @@ create_images <- function(df_alerts, df_wrangled, df_raw, image_fn, image_use = 
         df_raw = df_raw,
         image_fn = image_fn,
         width = width,
-        heigh = height
+        heigh = height,
+        use_map_dims = use_map_dims,
+        crop = crop
       )
     }
   ) |>
@@ -56,7 +65,7 @@ create_images <- function(df_alerts, df_wrangled, df_raw, image_fn, image_use = 
 #' Creates the plot and saves it to Mailchimp. Used within `create_images()` to
 #' safely create plot and catch errors so Mailchimp can be scrubbed of all content
 #' created even if errors happen in the environment.
-create_image <- function(iso3, date, title, indicator_id, df_wrangled, df_raw, image_fn, width, height, filter_raw) {
+create_image <- function(iso3, date, title, indicator_id, df_wrangled, df_raw, image_fn, width, height, use_map_dims, crop) {
   df_wrangled <- filter_plot_df(
     iso3 = iso3,
     date = date,
@@ -64,14 +73,25 @@ create_image <- function(iso3, date, title, indicator_id, df_wrangled, df_raw, i
   )
 
   p <- image_fn(df_wrangled, df_raw, title, date)
-  save_image$save_image(
-    p = p,
-    iso3 = iso3,
-    indicator_id = indicator_id,
-    date = date,
-    width = width,
-    height = height
-  )
+  if (use_map_dims) {
+    save_image$save_map(
+      p = p,
+      iso3 = iso3,
+      indicator_id = indicator_id,
+      date = date,
+      crop = crop
+    )
+  } else {
+    save_image$save_image(
+      p = p,
+      iso3 = iso3,
+      indicator_id = indicator_id,
+      date = date,
+      width = width,
+      height = height,
+      crop = crop
+    )
+  }
 }
 
 #' Generate errors upon image creation but still create data frame

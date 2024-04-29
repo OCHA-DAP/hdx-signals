@@ -4,6 +4,8 @@ box::use(ggplot2)
 box::use(purrr)
 box::use(png)
 box::use(grid)
+box::use(knitr)
+box::use(magick) # silent requirement for cropping file
 
 # local module
 box::use(./base_api)
@@ -71,12 +73,12 @@ mc_upload_image <- function(fp, name, folder, preview = FALSE) {
 #' @param plot `ggplot2::gplot` object
 #' @param name Name of the object to be passed into the Mailchimp system.
 #' @param folder Name of the file folder on Mailchimp.
-#' @param id File ID on Mailchimp. If `NULL`, creates a new image. If not `NULL`,
-#'     updates the existing image with that id.
-#' @param preview Whether or not to preview the saved plot when `gmas_test_run()`
-#'     is `TRUE`.
 #' @param height Height of the plot (in inches)
 #' @param width Width of the plot (in inches)
+#' @param crop Whether or not to run `knitr::plot_crop()` is run on the image
+#'     to crop white space around the image automatically.
+#' @param preview Whether or not to preview the saved plot when `gmas_test_run()`
+#'     is `TRUE`.
 #'
 #' @returns URL string to reference object on Mailchimp servers
 #'
@@ -88,7 +90,7 @@ mc_upload_image <- function(fp, name, folder, preview = FALSE) {
 #' mc_upload_plot(p, "test.jpg")
 #'
 #' @export
-mc_upload_plot <- function(plot, name, folder, preview = FALSE, height, width, ...) {
+mc_upload_plot <- function(plot, name, folder, height, width, crop = FALSE, preview = FALSE, ...) {
   tf <- tempfile(fileext = ".png")
   ggplot2$ggsave(
     filename = tf,
@@ -99,6 +101,10 @@ mc_upload_plot <- function(plot, name, folder, preview = FALSE, height, width, .
     dpi = 300,
     ...
   )
+
+  if (crop) {
+    knitr$plot_crop(tf)
+  }
 
   mc_upload_image(
     fp = tf,

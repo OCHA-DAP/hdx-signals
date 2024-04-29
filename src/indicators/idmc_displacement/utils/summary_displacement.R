@@ -36,11 +36,13 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
         "In a short paragraph, please summarize the main reasons for displacement.",
         "Avoid providing specific numbers or dates, just provide the general",
         "reasons behind the displacement and other key qualitative information.",
-        "Only use the below information:\n\n"
+        "Only use the information below:\n\n"
       ),
       prompt_short = paste(
-        "Please condense this summary content into just 2 short sentences, capturing",
-        "only the key messages. Use just the summary content below:\n\n"
+        "Please condense this information into just 2 short sentences, capturing",
+        "only the key messages. Expect the reader to have no context, but this is",
+        "intended to capture their attention, so keep the messaging simple, clear",
+        "and punchy. Use only the information below:\n\n"
       ),
       .groups = "drop"
     ) |>

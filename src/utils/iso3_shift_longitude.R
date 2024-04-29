@@ -12,7 +12,7 @@ box::use(sf)
 #'
 #' @export
 iso3_shift_longitude <- function(sf_obj, iso3) {
-  shift_iso3s <- c("FJI", "NZL", "RUS")
+  shift_iso3s <- c("FJI", "KIR", "NZL", "RUS")
   if (iso3 %in% shift_iso3s) {
     sf_obj <- sf$st_shift_longitude(sf_obj)
   }
