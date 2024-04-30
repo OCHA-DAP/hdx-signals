@@ -40,7 +40,7 @@ generate_campaign_summary <- function(df_campaign_content) {
         "presented in the format {Key figure}: {text summary}', so a short key",
         "figure sentence followed by a longer text summary of the situation,",
         "separated by a colon. Country sections are separated by line breaks.",
-        "Can you please write an introductory section for the whole email?",
+        "Use this information to write a short introduction for the email.",
         "Keep the section very short,",
         min(nrow(df_campaign_content) + 1, 3), # request 2 sentences if only 1 country alerting, 3 otherwise
         "sentences at most, and just use the",

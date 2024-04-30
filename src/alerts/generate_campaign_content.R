@@ -202,6 +202,13 @@ generate_section <- function(df_alerts, df_wrangled, df_raw, fn, fn_name, null_r
       call. = FALSE
     )
   }
+
+  message(
+    "Campaign content generation completed with ",
+    fn_name,
+    "()."
+  )
+
   dplyr$bind_cols(df_alerts, section)
 }
 

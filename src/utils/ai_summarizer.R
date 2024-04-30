@@ -33,7 +33,7 @@ box::use(../utils/gmas_test_run[gmas_test_run])
 ai_summarizer <- function(prompt, info) {
   nchars <- nchar(info)
   total_nchar <- sum(nchars)
-  if (total_nchar > 15000) {
+  if (total_nchar > 120000) {
     # if a single block of text, split on new lines and sentences
     # so we can pass in separate chunks to the AI
     if (length(info) == 1) {
@@ -87,7 +87,7 @@ insistent_ai <- purrr$insistently(
     } else {
       box::use(openai)
       openai$create_chat_completion(
-        model = "gpt-3.5-turbo-16k",
+        model = "gpt-4-turbo",
         messages = list(
           list(
             "role" = "user",

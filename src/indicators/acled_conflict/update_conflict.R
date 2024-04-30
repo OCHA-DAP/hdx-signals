@@ -3,8 +3,10 @@ box::use(./utils/wrangle_conflict)
 box::use(./utils/alert_conflict)
 box::use(./utils/plot_conflict)
 box::use(./utils/info_conflict)
+box::use(./utils/summary_conflict)
 
 box::use(../../alerts/generate_signals[generate_signals])
+box::use(../../alerts/generate_alerts[generate_alerts])
 box::use(../../alerts/triage_signals)
 box::use(../../alerts/delete_campaign_content)
 
@@ -19,6 +21,7 @@ generate_signals(
   indicator_id = "acled_conflict",
   alert_fn = alert_conflict$alert,
   plot_fn = plot_conflict$plot,
-  info_fn = NULL,
+  info_fn = info_conflict$info,
+  summary_fn = summary_conflict$summary,
   first_run = first_run
 )

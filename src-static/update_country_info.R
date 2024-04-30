@@ -5,6 +5,7 @@ box::use(purrr)
 box::use(sf)
 box::use(ripc)
 box::use(tidyr)
+box::use(readr)
 
 box::use(../src/utils/get_iso3_sf)
 box::use(../src/utils/all_iso3_codes)
@@ -24,68 +25,100 @@ iso3_codes <- all_iso3_codes$all_iso3_codes()
 
 df_centroids <- purrr$map(
   .x = iso3_codes,
-  .f = \(iso3) get_iso3_sf$get_iso3_sf(iso3 = iso3, file = "centroids"),
+  .f = \(iso3) {
+    get_iso3_sf$get_iso3_sf(iso3 = iso3, file = "centroids") |>
+      sf$st_coordinates() |>
+      dplyr$as_tibble() |>
+      dplyr$mutate(
+        iso3 = iso3
+      )
+  },
   .progress = TRUE
 ) |>
   purrr$list_rbind() |>
-  dplyr$select(-geometry)
+  dplyr$transmute(
+    iso3,
+    lat = Y,
+    lon = X
+  )
 
 #######################
 #### COUNTRY NAMES ####
 #######################
 
-#' Matches for ISO3 codes not in `countrycode`
-name_match_df <- dplyr$tribble(
-  ~iso3, ~name_custom, ~region_custom,
-  "ASM", "American Samoa", "Asia and the Pacific",
-  "IOT", "British Indian Ocean Territory", "Asia and the Pacific",
-  "CXR", "Christmas Island", "Asia and the Pacific",
-  "CCK", "Cocos (Keeling) Islands", "Asia and the Pacific",
-  "FLK", "Falkland Islands", "The Americas",
-  "ATF", "French Southern Territories", "Southern Africa",
-  "GGY", "Guernsey", "Europe",
-  "HMD", "Heard Island and McDonald Islands", "Southern Africa",
-  "IMN", "Isle of Man", "Europe",
-  "JEY", "Jersey", "Europe",
-  "MYT", "Mayotte", "Southern Africa",
-  "NFK", "Norfolk Island", "Asia and the Pacific",
-  "PCN", "Pitcairn Islands", "Asia and the Pacific",
-  "BLM", "Saint Barthélemy", "The Americas",
-  "SHN", "Saint Helena", "Southern Africa",
-  "TWN", "China - Taiwan Province", "Asia and the Pacific",
-  "TKL", "Tokelau", "Asia and the Pacific",
-  "VIR", "U.S. Virgin Islands", "The Americas",
-  "UMI", "U.S. Minor Outlying Islands", "Asia and the Pacific",
-  "WLF", "Wallis and Futuna", "Asia and the Pacific",
-  "ALA", "Åland Islands", "Europe",
-  "XKX", "Kosovo", "Europe",
-  "AB9", "Abyei Area", "East and Horn of Africa",
-  "LAC", "Tri-national Border of Rio Lempa", "The Americas"
+df_ocha_names <- readr$read_csv("https://docs.google.com/spreadsheets/d/1NjSI2LaS3SqbgYc0HdD8oIb7lofGtiHgoKKATCpwVdY/export?format=csv&gid=1088874596") |>
+  dplyr$slice(-1) |>
+  readr$type_convert() |>
+  dplyr$transmute(
+    iso3 = ifelse(
+      is.na(`ISO 3166-1 Alpha 3-Codes`),
+      `x Alpha3 codes`,
+      `ISO 3166-1 Alpha 3-Codes`
+    ),
+    country = `Preferred Term`
+  ) |>
+  dplyr$filter(
+    !is.na(iso3) # drops Sark
+  ) |>
+  dplyr$add_row(
+    iso3 = c("AB9", "LAC"),
+    country = c("Abyei Area", "Tri-national Border of Rio Lempa")
+  )
+
+#' Matches for ISO3 codes lacking UNHCR regions in `countrycode`
+region_match_df <- dplyr$tribble(
+  ~iso3, ~region_custom,
+  "ASM", "Asia and the Pacific",
+  "ANT", "The Americas",
+  "AZO", "Europe",
+  "CAI", "Middle East and North Africa",
+  "CHI", "Europe",
+  "GLI", "The Americas",
+  "IOT", "Asia and the Pacific",
+  "CXR", "Asia and the Pacific",
+  "CCK", "Asia and the Pacific",
+  "FLK", "The Americas",
+  "ATF", "Southern Africa",
+  "GGY", "Europe",
+  "HMD", "Southern Africa",
+  "IMN", "Europe",
+  "JEY", "Europe",
+  "MYT", "Southern Africa",
+  "NFK", "Asia and the Pacific",
+  "PCN", "Asia and the Pacific",
+  "BLM", "The Americas",
+  "SHN", "Southern Africa",
+  "TWN", "Asia and the Pacific",
+  "TKL", "Asia and the Pacific",
+  "VIR", "The Americas",
+  "UMI", "Asia and the Pacific",
+  "WLF", "Asia and the Pacific",
+  "ALA", "Europe",
+  "XKX", "Europe",
+  "AB9", "East and Horn of Africa",
+  "LAC", "The Americas"
 )
 
-df_names <- dplyr$tibble(
-  iso3 = iso3_codes
-) |>
+df_names <- df_ocha_names |>
   dplyr$left_join(
-    countrycode$codelist,
-    by = c("iso3" = "iso3c")
-  ) |>
-  dplyr$left_join(
-    name_match_df,
+    region_match_df,
     by = "iso3"
   ) |>
   dplyr$transmute(
-    iso3 = iso3,
-    country = dplyr$case_when(
-      !is.na(name_custom) ~ name_custom,
-      !is.na(un.name.en) ~ un.name.en,
-      TRUE ~ country.name.en
-    ),
+    iso3,
+    country,
     region = ifelse(
-      is.na(unhcr.region),
-      region_custom,
-      unhcr.region
+      is.na(region_custom),
+      countrycode$countrycode(
+        sourcevar = iso3,
+        origin = "iso3c",
+        destination = "unhcr.region"
+      ),
+      region_custom
     )
+  ) |>
+  dplyr$filter(
+    !is.na(region) # drops antarctica
   )
 
 #######################

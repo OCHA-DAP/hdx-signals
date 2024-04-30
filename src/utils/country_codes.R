@@ -27,6 +27,22 @@ names_to_iso3 <- function(country_names) {
   iso3
 }
 
+#' Get ISO3 code from ISO numeric codes
+#'
+#' @param ison Vector of ISO numeric codes
+#'
+#' @export
+ison_to_iso3 <- function(ison) {
+  iso3 <- character(length(ison))
+  iso3[ison == 0] <- "XKX"
+  iso3[ison != 0] <- countrycode$countrycode(
+    sourcevar = ison[ison != 0],
+    origin = "iso3n",
+    destination = "iso3c"
+  )
+  iso3
+}
+
 #' Get ISO3 code from ISO2
 #'
 #' @param iso2 Vector of ISO2 codes

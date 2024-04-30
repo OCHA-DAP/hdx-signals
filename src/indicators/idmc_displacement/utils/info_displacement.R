@@ -34,6 +34,10 @@ info <- function(df_alerts, df_wrangled, df_raw) {
       displacement_end_date >= date - lubridate$days(30),
       displacement_start_date <= date | (Sys.Date() - displacement_start_date <= 90 & Sys.Date() - date <= 90) # keep recent reports for monitoring
     ) |>
+    dplyr$arrange(
+      dplyr$desc(displacement_start_date),
+      .by_group = TRUE
+    )
     dplyr$mutate(
       other_urls_html = paste0(
         '<li><a href="',

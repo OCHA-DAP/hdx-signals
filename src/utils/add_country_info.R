@@ -15,7 +15,6 @@ box::use(cs = ./cloud_storage)
 #'
 #' @export
 add_country_info <- function(df) {
-  df_info <- cs$read_az_file("input/country_info.parquet")
   df_new <- df_info |>
     dplyr$right_join(
       df,
@@ -37,3 +36,5 @@ add_country_info <- function(df) {
 
   df_new
 }
+
+df_info <- cs$read_az_file("input/country_info.parquet")

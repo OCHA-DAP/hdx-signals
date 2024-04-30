@@ -135,10 +135,9 @@ filter_alerts_first_run <- function(df_alerts) {
 
 #' Recursively filters country alerts
 #'
-#' Starting with the oldest alerts, recursively
+#' Starting with the oldest alerts, recursively filter out alerts that are within
+#' 180 days of each other.
 recursive_filter_country <- function(df) {
-  # first make sure if anything in the past 90 days, so will generate a
-  # campaign with an email, that we keep the highest concern alert
   df <- dplyr$arrange(df, date)
 
   i <- 1
