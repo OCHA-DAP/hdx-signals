@@ -46,9 +46,9 @@ create_body <- function(
     text_block$add_text(
       text = paste(
         campaign_summary,
-        "\nJump to a specific signal:",
+        "<br>Jump to a specific signal:",
         "*|MC:TOC|*",
-        sep = "\n"
+        sep = "<br>"
       ),
       header = title,
       header_level = 1,

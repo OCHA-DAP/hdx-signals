@@ -15,24 +15,6 @@ box::use(../../alerts/delete_campaign_content)
 df_raw <- raw_displacement$raw()
 df_wrangled <- wrangle_displacement$wrangle(df_raw)
 
-df_wrangled <- dplyr$filter(df_wrangled, iso3 == "AFG")
-df_raw <- dplyr$filter(df_raw, iso3 == "AFG")
-
-# now generate signals individually for each displacement type
-df_conflict <- generate_signals(
-  df_wrangled = dplyr$filter(df_wrangled, displacement_type == "Conflict"),
-  df_raw = dplyr$filter(df_raw, displacement_type == "Conflict"),
-  indicator_id = "idmc_displacement_conflict",
-  alert_fn = alert_displacement$alert,
-  plot_fn = plot_displacement$plot,
-  info_fn = info_displacement$info,
-  summary_fn = summary_displacement$summary,
-  map_fn = map_displacement$map,
-  first_run = TRUE,
-  overwrite_content = TRUE
-)
-
-
 # now generate signals individually for each displacement type
 df_conflict <- generate_signals(
   df_wrangled = dplyr$filter(df_wrangled, displacement_type == "Conflict"),
@@ -51,7 +33,9 @@ df_disaster <- generate_signals(
   df_raw = dplyr$filter(df_raw, displacement_type == "Disaster"),
   indicator_id = "idmc_displacement_disaster",
   alert_fn = alert_displacement$alert,
-  plot_fn = plot_conflict$plot,
-  info_fn = NULL,
-  first_run = first_run
+  plot_fn = plot_displacement$plot,
+  info_fn = info_displacement$info,
+  summary_fn = summary_displacement$summary,
+  map_fn = map_displacement$map,
+  first_run = TRUE
 )

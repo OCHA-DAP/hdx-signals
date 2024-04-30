@@ -9,8 +9,5 @@ box::use(dplyr)
 #'
 #' @export
 raw <- function() {
-  idmc$idmc_get_data() |>
-    dplyr$filter(
-      displacement_type == "Conflict"
-    )
+  idmc$idmc_get_data()
 }

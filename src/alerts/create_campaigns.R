@@ -37,6 +37,7 @@ create_campaigns <- function(
     preview = FALSE
 ) {
   if (nrow(df_campaign_content) == 0) {
+    # if the content data frame is empty, just return empty campaigns
     return(
       dplyr$tibble(
         iso3 = character(),
@@ -47,7 +48,8 @@ create_campaigns <- function(
         campaign_id_email = character(),
         campaign_url_archive = character(),
         campaign_url_email = character(),
-        campaign_date = as.Date(integer(), origin = "1970-01-01")
+        campaign_date = as.Date(integer(), origin = "1970-01-01"),
+        campaign_summary = character()
       )
     )
   }
@@ -60,7 +62,7 @@ create_campaigns <- function(
 
   # get template folder, title, and subject header, as well as generate the summary
   campaign_details <- get_campaign_details(indicator_id, campaign_date)
-  campaign_details$summary <- generate_campaign_summary(df_campaign_content)
+  campaign_details$summary <- generate_campaign_summary$generate_campaign_summary(df_campaign_content)
 
   # generate email campaign with no conditional logic for the archive
   archive_df <- create_campaign(
@@ -101,6 +103,7 @@ create_campaigns <- function(
 
   # add the date of the campaign and campaign summary to the top
   df_campaigns$campaign_date <- campaign_date
+  df_campaigns$campaign_summary <- campaign_details$summary
   df_campaigns
 }
 
