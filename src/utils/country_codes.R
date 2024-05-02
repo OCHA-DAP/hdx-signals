@@ -57,6 +57,7 @@ iso2_to_iso3 <- function(iso2) {
     origin = "iso2c",
     destination = "iso3c"
   )
+  iso3
 }
 
 #' Get name from ISO3 code
@@ -65,7 +66,7 @@ iso2_to_iso3 <- function(iso2) {
 #'
 #' @export
 iso3_to_names <- function(iso3) {
-  df_info[df_info$iso3 == iso3, "country"]
+  df_info$country[match(iso3, df_info$iso3)]
 }
 
 df_info <- cs$read_az_file("input/country_info.parquet")
