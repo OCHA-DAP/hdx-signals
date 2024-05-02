@@ -85,7 +85,6 @@ insistent_ai <- purrr$insistently(
 
       "Test output."
     } else {
-      box::use(openai)
       openai$create_chat_completion(
         model = "gpt-4-turbo",
         messages = list(

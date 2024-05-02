@@ -34,24 +34,27 @@ info <- function(df_alerts, df_wrangled, df_raw) {
       displacement_end_date >= date - lubridate$days(30),
       displacement_start_date <= date | (Sys.Date() - displacement_start_date <= 90 & Sys.Date() - date <= 90) # keep recent reports for monitoring
     ) |>
-    dplyr$arrange(
-      dplyr$desc(displacement_start_date),
-      .by_group = TRUE
-    )
+    dplyr$group_by(iso3, date, sources) |>
     dplyr$mutate(
+      # number repeated sources and put them into HTML as a list
+      sources_num = ifelse(
+        n() == 1,
+        "",
+        paste("#", dplyr$row_number())
+      ),
       other_urls_html = paste0(
         '<li><a href="',
         event_url,
         '">',
-        sources,
+        sources_num,
         '</a></li>'
       )
     ) |>
-    dplyr$summarize(
-      other_urls = paste(unique(event_url), collapse = "; "),
+    dplyr$summarize( # only keep the first 3 unique URLs
+      other_urls = paste(unique(event_url)[1:min(3, length(unique(event_url)))], collapse = "; "),
       other_urls_html = paste0(
         "<ul>\n",
-        paste(unique(other_urls_html), collapse = "\n"),
+        paste(unique(other_urls_html)[1:min(3, length(unique(event_url)))], collapse = "\n"),
         "</ul>"
       ),
       .groups = "drop"

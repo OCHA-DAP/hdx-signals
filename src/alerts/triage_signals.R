@@ -43,7 +43,7 @@ box::use(../email/mailchimp/campaigns)
 #' @param n_campaigns When previewing the campaigns, how many to open at one
 #'      time. Defaults to `10`, which is fine for most runs, but if `first_run`
 #'      creates many at a time, you may need to be increase or decrease based
-#'      on your preference.
+#'      on your preference. If `0`, no signals are previewed.
 #'
 #' @export
 triage_signals <- function(indicator_id, n_campaigns = 10) {
@@ -85,11 +85,15 @@ get_signals_df <- function(fn_signals) {
 #' Preview signals
 #'
 #' Preview `n_campaigns` at a time. These are opened in the browser and the user
-#' just needs to press any button to continue and preview additional ones.
+#' just needs to press any button to continue and preview additional ones. If
+#' `n_campaigns` is `0`, no previews are generated.
 #'
 #' @param df Signals data frame
 #' @param n_campaigns Number of campaigns to preview at a time
 preview_signals <- function(df, n_campaigns) {
+  if (n_campaigns == 0) {
+    return(invisible(NULL))
+  }
   urls <- df$campaign_url_archive
   url_list <- split(urls, ceiling(seq_along(urls) / n_campaigns))
   purrr$walk(

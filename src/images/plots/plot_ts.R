@@ -36,7 +36,7 @@ plot_ts <- function(
     ) +
     gg$geom_point(
       data = dplyr$filter(df, date == max(date)),
-      size = 2,
+      size = 3,
       color = gghdx$hdx_hex("tomato-hdx")
     ) +
     gghdx$scale_y_continuous_hdx(

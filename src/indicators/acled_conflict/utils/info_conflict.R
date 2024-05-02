@@ -6,10 +6,10 @@ box::use(glue)
 #' @returns Data frame with campaign information
 #'
 #' @export
-info <- function(df_alerts, df_wrangled) {
+info <- function(df_alerts, df_wrangled, df_raw) {
   df_alerts |>
     dplyr$left_join(
-      dplyr$select(
+      dplyr$distinct(
         df_wrangled, iso3, acled_hdx_url
       ),
       by = "iso3"

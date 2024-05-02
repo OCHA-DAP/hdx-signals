@@ -29,7 +29,7 @@ wrangle <- function(df_raw, first_run = FALSE) {
   df_info <- cs$read_az_file("input/acled_info.parquet")
 
   # lowest possible start_date based on when data was downloaded
-  start_date_min <- if (first_run) as.Date("1500-01-01") else Sys.Date() - lubridate$days(1500)
+  start_date_min <- if (first_run) as.Date("2018-01-01") else Sys.Date() - lubridate$days(1500)
 
   df_raw |>
     dplyr$mutate(

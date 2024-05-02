@@ -83,7 +83,7 @@ create_campaigns <- function(
       archive = FALSE,
       archive_url = archive_id_url$campaign_url_archive,
       names_paste = "_email",
-      preview = FALSE # never preview
+      preview = FALSE # never preview the emails
     )
   } else {
     email_df <- dplyr$tibble(

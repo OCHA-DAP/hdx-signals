@@ -62,7 +62,7 @@ raw <- function(first_run = FALSE) {
       httr2$resp_body_json() |>
       purrr$pluck("data") |>
       purrr$map(dplyr$as_tibble) |>
-      purrr$list_rbind() |>
+      purrr$list_rbind()
 
 
       # since the ACLED API takes significant amount of time to call
@@ -75,6 +75,9 @@ raw <- function(first_run = FALSE) {
       cs$update_az_file("output/acled_conflict/download_date.parquet")
 
     cs$update_az_file(df_acled, "output/acled_conflict/raw.parquet")
-    df_acled
+    df_acled |>
+      dplyr$filter(
+        event_date >= start.date
+      )
   }
 }

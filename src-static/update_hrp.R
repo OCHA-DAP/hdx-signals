@@ -1,6 +1,7 @@
 box::use(dplyr)
 box::use(countrycode)
 box::use(readxl)
+box::use(stringr)
 
 box::use(cs = ../src/utils/cloud_storage)
 
@@ -27,6 +28,9 @@ readxl$read_excel(
   sheet = "food 1",
   range = "A5:A31"
 ) |>
+  dplyr$filter(
+    !stringr$str_detect(Plan, "\\*")
+  ) |>
   dplyr$transmute(
     iso3 = ifelse(
       grepl("Congo", Plan),

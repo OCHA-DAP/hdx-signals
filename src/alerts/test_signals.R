@@ -13,10 +13,10 @@ box::use(./delete_campaign_content[delete_campaign_content])
 box::use(./generate_alerts[generate_alerts])
 box::use(./check_existing_signals[check_existing_signals])
 
-#' Generate campaigns for any indicator
+#' Test campaigns for any indicator
 #'
 #' Using all of the passed in data frames (alerts and wrangled) and functions,
-#' generates the entire Mailchimp campaign for an indicator. Has many controls
+#' generates a test Mailchimp campaign for an indicator. Has many controls
 #' internally to ensure that partially generated material is deleted when
 #' errors occur. No campaigns are sent at the end of this, but are instead saved
 #' Mailchimp and pending review.
@@ -41,16 +41,8 @@ box::use(./check_existing_signals[check_existing_signals])
 #' @param overwrite_content Overwrite existing content in the indicator signals.
 #'     This is to be used when we don't want to generate new alerts, but want to
 #'     fix something in the campaign content itself.
-#' @param test Whether or not to generate the signals for testing (defaults to
-#'     `FALSE`. If `TRUE`, only a limited number of alerts are generated, based
-#'     on the `test_filter` argument. If `GMAS_TEST_RUN` is `TRUE`, previews are
-#'     generated using local HTML. Certain browsers cannot display local files
-#'     correctly, so you may need to test on Mailchimp. If `GMAS_TEST_RUN` is
-#'     `FALSE`, the campaigns are saved to Azure in
-#'     `output/{indicator_id}/test/signals.parquet`. The campaign is uploaded
-#'     to Mailchimp and then used for test visualization.
-#' @param test_filter Used only if `test` is `TRUE`. If `NULL`, the default, then
-#'     2 random alerts are selected for
+#' @param preview Whether or not to preview the campaigns generated for the
+#'     archive. Defaults to `FALSE`, as it can sometimes open too many browsers.
 #'
 #' @export
 generate_signals <- function(

@@ -128,16 +128,16 @@ filter_alerts_first_run <- function(df_alerts) {
       iso3
     ) |>
     dplyr$group_modify(
-      .f = \(df, y) recursive_filter_country(df)
+      .f = \(df, y) recursive_subsequent_alerts(df)
     ) |>
     dplyr$ungroup()
 }
 
-#' Recursively filters country alerts
+#' Filters out country alerts
 #'
-#' Starting with the oldest alerts, recursively filter out alerts that are within
-#' 180 days of each other.
-recursive_filter_country <- function(df) {
+#' Starting with the oldest alerts, filter out alerts that are within
+#' 180 days of it, moving on to the next remaining alert.
+recursive_subsequent_alerts <- function(df) {
   df <- dplyr$arrange(df, date)
 
   i <- 1
