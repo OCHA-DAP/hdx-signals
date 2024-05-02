@@ -14,7 +14,7 @@ box::use(cs = ../src/utils/cloud_storage)
 tf <- tempfile(fileext = ".xlsx")
 
 download.file(
-  url = "https://data.humdata.org/dataset/6cb35657-975e-46a0-99a7-a558eddb924f/resource/7039cc9a-acd1-41fe-9be1-cc02530cc532/download/section1_section3_data_n.xlsx",
+  url = "https://data.humdata.org/dataset/6cb35657-975e-46a0-99a7-a558eddb924f/resource/28be64d3-adaf-4f61-887c-87a8b5d9c625/download/section3_plan_tables_2024-n.xlsx",
   destfile = tf
 )
 
@@ -25,21 +25,18 @@ Sys.setenv(GMAS_TEST_RUN = FALSE)
 # Read in specific range, get ISO3, and save out
 readxl$read_excel(
   path = tf,
-  sheet = "food 1",
-  range = "A5:A31"
+  sheet = "GHO 2024 (Overview)",
+  skip = 1
 ) |>
   dplyr$filter(
-    !stringr$str_detect(Plan, "\\*")
+    !stringr$str_detect(Plan, "\\*"),
+    `Plan type` == "HRP"
   ) |>
   dplyr$transmute(
-    iso3 = ifelse(
-      grepl("Congo", Plan),
-      "COD",
-      countrycode$countryname(
+    iso3 = countrycode$countryname(
         sourcevar = Plan,
         destination = "iso3c"
       )
-    ),
   ) |>
   cs$update_az_file(
     name = "input/hrp_countries.parquet"
