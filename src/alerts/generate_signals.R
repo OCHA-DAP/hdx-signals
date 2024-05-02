@@ -7,6 +7,7 @@ box::use(rlang[`!!`])
 
 box::use(cs = ../utils/cloud_storage)
 box::use(../utils/gmas_test_run)
+box::use(./filter_test_data[filter_test_data])
 box::use(./generate_campaign_content[generate_campaign_content])
 box::use(./create_campaigns[create_campaigns])
 box::use(./delete_campaign_content[delete_campaign_content])
@@ -50,7 +51,9 @@ box::use(./check_existing_signals[check_existing_signals])
 #'     `output/{indicator_id}/test/signals.parquet`. The campaign is uploaded
 #'     to Mailchimp and then used for test visualization.
 #' @param test_filter Used only if `test` is `TRUE`. If `NULL`, the default, then
-#'     2 random alerts are selected for
+#'     2 random signals from different countries are selected for testing. If you
+#'     pass in a vector of `iso3` codes, then the latest signals from those
+#'     countries are used for testing.
 #'
 #' @export
 generate_signals <- function(
@@ -66,19 +69,33 @@ generate_signals <- function(
     info_fn = NULL,
     first_run = FALSE,
     overwrite_content = FALSE,
-    preview = FALSE
+    test = FALSE,
+    test_filter = NULL
 ) {
+  # file name differs if testing or not
+  fn_signals <- paste0(
+    "output/",
+    indicator_id,
+    if (test) "/test" else "",
+    "/signals.parquet"
+  )
+
   check_existing_signals(
     indicator_id = indicator_id,
     first_run = first_run,
-    overwrite_content = overwrite_content
+    overwrite_content = overwrite_content,
+    fn_signals = fn_signals,
+    test = test
   )
-
-  fn_signals <- paste0("output/", indicator_id, "/signals.parquet")
 
   # generate the new alerts that will receive a campaign
   if (!overwrite_content) {
+    # filter out the data before generating new alerts
     df_alerts <- df_wrangled |>
+      filter_test_data(
+        test = test,
+        test_filter = test_filter
+      ) |>
       alert_fn() |>
       generate_alerts(
         indicator_id = indicator_id,
@@ -86,6 +103,8 @@ generate_signals <- function(
       )
   } else {
     # use existing alerts, and just delete the campaign content from Mailchimp and re-create
+    # we don't filter the wrangled data here because no need to, we already
+    # should have a limited set of alerts
     df_alerts <- cs$read_az_file(fn_signals) |>
       delete_campaign_content()
   }
@@ -106,7 +125,8 @@ generate_signals <- function(
   )
 
   # if first run, create multiple campaigns, one for each date
-  if (first_run) {
+  # don't do this if testing, just create one test email
+  if (first_run && !test) {
     df_campaigns <- df_campaign_content |>
       dplyr$group_by(
         date
@@ -117,7 +137,7 @@ generate_signals <- function(
           df_campaign_content = df,
           indicator_id = indicator_id,
           first_run = first_run,
-          preview = preview
+          preview = FALSE
         )
       ) |>
       dplyr$bind_rows()
@@ -127,7 +147,7 @@ generate_signals <- function(
       df_campaign_content = df_campaign_content,
       indicator_id = indicator_id,
       first_run = first_run,
-      preview = preview
+      preview = test
     )
   }
 

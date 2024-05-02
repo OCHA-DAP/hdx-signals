@@ -19,11 +19,15 @@ box::use(cs = ../utils/cloud_storage)
 #' @param first_run Whether or not this is the first run
 #' @param overwrite_content Whether or not to overwrite the content of existing rows
 #'     in a `signals.parquet` file, rather than generating a new one.
-check_existing_signals <- function(indicator_id, first_run, overwrite_content) {
-  az_files <- cs$az_file_detect()
-  fn_ind_signals <- paste0("output/", indicator_id, "/signals.parquet")
-  if (fn_ind_signals %in% az_files) {
-    num_ind_signals <- nrow(cs$read_az_file(fn_ind_signals))
+#' @param fn_signals File name of the Signals data
+#' @param test Whether or not this is for testing signals development. If `TRUE`,
+#'     errors are not generated if data is in the overall `output/signals.parquet`
+#'     file, so we can test efficiently.
+#'
+#' @export
+check_existing_signals <- function(indicator_id, first_run, overwrite_content, fn_signals, test) {
+  if (fn_signals %in% az_files) {
+    num_ind_signals <- nrow(cs$read_az_file(fn_signals))
   } else {
     num_ind_signals <- 0
   }
@@ -37,7 +41,7 @@ check_existing_signals <- function(indicator_id, first_run, overwrite_content) {
           "The ",
           indicator_id,
           " signals data ",
-          fn_ind_signals,
+          fn_signals,
           " on Azure is non-empty. Please triage this data into `output/signals.parquet` ",
           "prior to generating new signals by running `triage_signals()`. ",
           "If you want to re-create content on this ",
@@ -57,7 +61,7 @@ check_existing_signals <- function(indicator_id, first_run, overwrite_content) {
           "The ",
           indicator_id,
           " signals data ",
-          fn_ind_signals,
+          fn_signals,
           " on Azure is empty. You specified `overwrite_content = TRUE` but there ",
           "is no existing alerts or content to overwrite. "
         )
@@ -66,19 +70,9 @@ check_existing_signals <- function(indicator_id, first_run, overwrite_content) {
     )
   }
 
-  if ("output/signals.parquet" %in% az_files) {
-    num_signals <- cs$read_az_file("output/signals.parquet") |>
-      dplyr$filter(
-        indicator_id == !!indicator_id
-      ) |>
-      nrow()
-  } else {
-    num_signals <- 0
-  }
-
   # if it's first run, check there are no existing signals for this indicator_id
   # that are in the final `output/signals.parquet` file
-  if (first_run && num_signals > 0) {
+  if (!test && first_run && num_signals > 0) {
     stop(
       stringr$str_wrap(
         paste0(
@@ -93,8 +87,8 @@ check_existing_signals <- function(indicator_id, first_run, overwrite_content) {
     )
   }
 
-  # if it's not the first run and no final signals exist yet, generate an error as well
-  if (!first_run && num_signals == 0) {
+  # if it's not the first run and no final signals exist yet, generate an error
+  if (!test && !first_run && num_signals == 0) {
     stop(
       stringr$str_wrap(
         paste0(
@@ -110,3 +104,16 @@ check_existing_signals <- function(indicator_id, first_run, overwrite_content) {
   }
 }
 
+az_files <- cs$az_file_detect()
+
+# check number of confirmed signals already, doesn't matter for testing
+# calculating at module level
+if (!test && "output/signals.parquet" %in% az_files) {
+  num_signals <- cs$read_az_file("output/signals.parquet") |>
+    dplyr$filter(
+      indicator_id == !!indicator_id
+    ) |>
+    nrow()
+} else {
+  num_signals <- 0
+}

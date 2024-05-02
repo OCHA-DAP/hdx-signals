@@ -190,4 +190,3 @@ blob_prod <- az$blob_container(
   endpoint = blob_endpoint_prod,
   name = "hdx-signals-mc"
 )
-
