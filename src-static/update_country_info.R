@@ -119,7 +119,26 @@ df_names <- df_ocha_names |>
   ) |>
   dplyr$filter(
     !is.na(region) # drops antarctica
+  ) |>
+  # adjust for ocha regions
+  dplyr$mutate(
+
+    # once confident -- just change name from region_ocha to region
+    region_ocha = dplyr$case_when(
+
+      # adjust North America & LAC
+      iso3 %in% c("USA","CAN","PRI") & region=="The Americas" ~ "North America",
+      region == "The Americas"~"Latin America and the Caribbean",
+
+      # adjust congo + DRC to west & central
+      iso3 %in% c("COD","COG")~ "West and Central Africa",
+
+      # merge Southern & Eastern Africa
+      region %in% c("Southern Africa","East and Horn of Africa")~"Southern and Eastern Africa",
+      .default = region
+    )
   )
+
 
 #######################
 #### HRP COUNTRIES ####
