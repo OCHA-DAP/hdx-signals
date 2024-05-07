@@ -66,38 +66,44 @@ df_ocha_names <- readr$read_csv("https://docs.google.com/spreadsheets/d/1NjSI2La
     country = c("Abyei Area", "Tri-national Border of Rio Lempa")
   )
 
-#' Matches for ISO3 codes lacking UNHCR regions in `countrycode`
+#' Adding OCHA regions for ISO3 codes with no UNHCR region defined in `countrycode`
+#' Because we extract OCHA regions from the UNHCR regions with only minimal
+#' conversion necessary.
 region_match_df <- dplyr$tribble(
   ~iso3, ~region_custom,
-  "ASM", "Asia and the Pacific",
-  "ANT", "The Americas",
+  "ASM", "Asia and the Pacific", # small countries lacking UNHCR regions
+  "ANT", "Latin America and the Caribbean",
   "AZO", "Europe",
   "CAI", "Middle East and North Africa",
   "CHI", "Europe",
-  "GLI", "The Americas",
+  "GLI", "Latin America and the Caribbean",
   "IOT", "Asia and the Pacific",
   "CXR", "Asia and the Pacific",
   "CCK", "Asia and the Pacific",
-  "FLK", "The Americas",
-  "ATF", "Southern Africa",
+  "FLK", "Latin America and the Caribbean",
+  "ATF", "Southern and Eastern Africa",
   "GGY", "Europe",
-  "HMD", "Southern Africa",
+  "HMD", "Southern and Eastern Africa",
   "IMN", "Europe",
   "JEY", "Europe",
-  "MYT", "Southern Africa",
+  "MYT", "Southern and Eastern Africa",
   "NFK", "Asia and the Pacific",
   "PCN", "Asia and the Pacific",
-  "BLM", "The Americas",
-  "SHN", "Southern Africa",
+  "BLM", "Latin America and the Caribbean",
+  "SHN", "Southern and Eastern Africa",
   "TWN", "Asia and the Pacific",
   "TKL", "Asia and the Pacific",
-  "VIR", "The Americas",
+  "VIR", "Latin America and the Caribbean",
   "UMI", "Asia and the Pacific",
   "WLF", "Asia and the Pacific",
   "ALA", "Europe",
   "XKX", "Europe",
-  "AB9", "East and Horn of Africa",
-  "LAC", "The Americas"
+  "AB9", "East and Horn of Africa", # custom ISO3 for IDMC
+  "LAC", "Latin America and the Caribbean", # custom ISO3 for IPC
+  "COD", "West and Central Africa", # UNHCR region doesn't match OCHA region
+  "COG", "West and Central Africa", # UNHCR region doesn't match OCHA region
+  "USA", "North America", # Creating custom North America region
+  "CAN", "North America" # Creating custom North America region
 )
 
 df_names <- df_ocha_names |>
@@ -108,36 +114,23 @@ df_names <- df_ocha_names |>
   dplyr$transmute(
     iso3,
     country,
-    region = ifelse(
-      is.na(region_custom),
-      countrycode$countrycode(
-        sourcevar = iso3,
-        origin = "iso3c",
-        destination = "unhcr.region"
-      ),
-      region_custom
+    unhcr_region = countrycode$countrycode(
+      sourcevar = iso3,
+      origin = "iso3c",
+      destination = "unhcr.region"
+    ),
+    region = dplyr$case_when(
+      !is.na(region_custom) ~ region_custom,
+      unhcr_region == "The Americas" ~ "Latin America and the Caribbean",
+      unhcr_region %in% c("Southern Africa", "East and Horn of Africa") ~ "Southern and Eastern Africa",
+      .default = unhcr_region
     )
   ) |>
   dplyr$filter(
-    !is.na(region) # drops antarctica
+    iso3 != "ATA" # drops antarctica
   ) |>
-  # adjust for ocha regions
-  dplyr$mutate(
-
-    # once confident -- just change name from region_ocha to region
-    region_ocha = dplyr$case_when(
-
-      # adjust North America & LAC
-      iso3 %in% c("USA","CAN","PRI") & region=="The Americas" ~ "North America",
-      region == "The Americas"~"Latin America and the Caribbean",
-
-      # adjust congo + DRC to west & central
-      iso3 %in% c("COD","COG")~ "West and Central Africa",
-
-      # merge Southern & Eastern Africa
-      region %in% c("Southern Africa","East and Horn of Africa")~"Southern and Eastern Africa",
-      .default = region
-    )
+  dplyr$select(
+    -unhcr_region
   )
 
 

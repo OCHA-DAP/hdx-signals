@@ -69,4 +69,14 @@ iso3_to_names <- function(iso3) {
   df_info$country[match(iso3, df_info$iso3)]
 }
 
+#' Get region from ISO3 code
+#'
+#' Get region from ISO3 codes. Uses the `country_info.parquet` file as the
+#' definitive region coding.
+#'
+#' @export
+iso3_to_regions <- function(iso3) {
+  df_info$region[match(iso3, df_info$iso3)]
+}
+
 df_info <- cs$read_az_file("input/country_info.parquet")

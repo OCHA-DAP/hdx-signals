@@ -118,6 +118,7 @@ mc_update_static_segment <- function(segment_id, segment_name, emails) {
         static_segment = emails
       )
     ) |>
+    httr2$req_method("PATCH") |>
     httr2$req_perform() |>
     httr2$resp_body_json()
 
@@ -133,6 +134,8 @@ mc_update_static_segment <- function(segment_id, segment_name, emails) {
 #'
 #' @param conditions List of conditions to pass to API
 #' @param match_option `any` or `all`.
+#'
+#' @export
 mc_add_segment <- function(conditions, match_option = c("all", "any")) {
   match_option <- rlang$arg_match(match_option)
 
@@ -162,6 +165,8 @@ mc_add_segment <- function(conditions, match_option = c("all", "any")) {
 #' @param segment_name Segment name to search for
 #'
 #' @returns Segment ID
+#'
+#' @export
 mc_find_segment <- function(segment_name) {
   base_api$mc_api() |>
     httr2$req_url_path_append(

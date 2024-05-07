@@ -3,11 +3,29 @@ box::use(purrr)
 box::use(dplyr)
 box::use(tidyr)
 box::use(rlang)
-box::use(countrycode)
 
 # local modules
 box::use(./base_api)
 box::use(cs = ../../utils/cloud_storage)
+box::use(../../utils/country_codes)
+
+#' Get members information
+#'
+#' Get full data on members from Mailchimp. Used to then manually filter
+#' Mailchimp members.
+#'
+#' @returns List of Mailchimp members information
+#'
+#' @export
+mc_members <- function() {
+  base_api$mc_api() |>
+    httr2$req_url_path_append(
+      "members"
+    ) |>
+    httr2$req_perform() |>
+    httr2$resp_body_json() |>
+    purrr$pluck("members")
+}
 
 #' Get interest ID list
 #'
@@ -60,10 +78,8 @@ mc_interests_ids <- function(interest_names, category_id = NULL) {
 #' @returns Interest names string separated by commas or list of interest IDs
 #'
 #' @export
-mc_interests_iso3 <- function(iso3,  use = c("segmentation", "conditional_blocks")) {
-  use <- rlang$arg_match(use)
+mc_interests_iso3 <- function(iso3) {
   regions <- countrycode$countrycode(iso3, origin = "iso3c", destination = "unhcr.region")
-  hrp_countries <- cs$read_az_file("input/hrp_country.parquet")
 
   if (any(iso3 %in% hrp_countries$iso3)) {
     regions <- c(regions, "HRP countries")
@@ -73,8 +89,6 @@ mc_interests_iso3 <- function(iso3,  use = c("segmentation", "conditional_blocks
 
   if (use == "segmentation") {
     mc_interests_ids(regions)
-  } else {
-    paste(regions, collapse = ",")
   }
 }
 

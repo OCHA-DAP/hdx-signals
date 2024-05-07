@@ -9,6 +9,7 @@ box::use(./line_block)
 box::use(./summary_block)
 box::use(./further_info_block)
 box::use(../mailchimp/audience)
+box::use(../../utils/country_codes)
 
 #' Create country block
 #'
@@ -78,15 +79,23 @@ add_country <- function(
 #' is viewed in the email! Thus, the archive page can show all content. If
 #' `use_conditions` is `FALSE`, then the text is just returned as is. This is
 #' because archive links don't work.
+#'
+#' The logic of the merge statement below is designed around users being able to
+#' sign up to an entire region or specific countries (for some countries).
 conditional_merge <- function(text, iso3, use_conditions) {
   if (use_conditions) {
-    regions <- audience$mc_interests_iso3(iso3, "conditional_blocks")
-    opening_tag <- glue$glue("*|INTERESTED:Regions of interest:{regions}|*")
-    closing_tag <- "*|END:INTERESTED|*"
-    paste0(
-      opening_tag,
-      text,
-      closing_tag
+    region <- country_codes$iso3_to_regions(iso3)
+    country <- country_codes$iso3_to_names(iso3)
+    glue$glue(
+      "*|INTERESTED:{region}:All countries in the region|*",
+      "*|INTERESTED:{region}:{country}|*",
+      "*|ELSE:|*",
+      "{text}",
+      "*|END:INTERESTED|*",
+      "*|END:INTERESTED|*",
+      "*|INTERESTED:{region}:{country}|*",
+      "{text}",
+      "*|END:INTERESTED|*"
     )
   } else {
     text

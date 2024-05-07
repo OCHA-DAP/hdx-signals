@@ -183,7 +183,7 @@ create_campaign <- function(
       {
         # create segmentation
         if (!archive) {
-          segments <- custom_segmentation$mc_segment_conditions(
+          segments <- custom_segmentation$mc_email_segment(
             indicator_id = indicator_id,
             iso3 = df_campaign_content$iso3
           )
