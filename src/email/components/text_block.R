@@ -74,7 +74,7 @@ conditional_header <- function(header, header_level, header_id) {
   if (missing_text(header)) {
     ""
   } else {
-    glue$glue('<a style="text-decoration:none" name="{header_id}"><h{header_level} id="{header_id}">{header}</h{header_level}></h></a>')
+    glue$glue('<a name="{header_id}"></a><h{header_level} id="{header_id}">{header}</h{header_level}></h>')
   }
 }
 

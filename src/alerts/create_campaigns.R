@@ -249,6 +249,7 @@ get_campaign_details <- function(indicator_id, campaign_date, test) {
     ),
     campaign_title = paste0(
       "hdx_signals_",
+      if (test) "test_" else "",
       indicator_id,
       format(campaign_date, "_%Y_%m_%d"),
       "{names_paste}" # for glue within create_campaign()
