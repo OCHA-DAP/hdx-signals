@@ -1,3 +1,7 @@
+box::use(glue)
+
+box::use(../../utils/country_codes)
+
 #' Wraps text in conditional merge text
 #'
 #' Wraps text in conditional merge text based on the ISO3 code passed in. This is

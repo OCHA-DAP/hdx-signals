@@ -1,6 +1,7 @@
 box::use(purrr)
 
 box::use(./country_block)
+box::use(./intro_block)
 box::use(./text_block)
 box::use(./line_block)
 
@@ -45,15 +46,13 @@ create_body <- function(
     use_conditions = FALSE
 ) {
   paste0(
-    text_block$add_text(
-      text = paste(
-        "<br>Jump to a specific signal:",
-        "*|MC:TOC|*",
-        sep = "<br>"
-      ),
-      header = title,
-      header_level = 1,
-      header_class = "null"
+    intro_block$add_intro(
+      title = title,
+      iso3 = iso3,
+      country = country,
+      alert_level = alert_level,
+      summary_short = summary_short,
+      use_conditions = use_conditions
     ),
     line_block$add_line(),
     paste(
@@ -70,7 +69,7 @@ create_body <- function(
           plot2_url = plot2_url,
           other_images_urls = other_images_urls,
           other_images_captions = other_images_captions,
-          summary = summary,
+          summary_long = summary_long,
           further_information = further_information,
           use_conditions = use_conditions
         ),
