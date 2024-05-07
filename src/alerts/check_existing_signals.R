@@ -70,6 +70,19 @@ check_existing_signals <- function(indicator_id, first_run, overwrite_content, f
     )
   }
 
+  # check number of confirmed signals already, doesn't matter for testing
+  # calculating at module level
+  if (!test && "output/signals.parquet" %in% az_files) {
+    num_signals <- df_signals |>
+      dplyr$filter(
+        indicator_id == !!indicator_id
+      ) |>
+      nrow()
+  } else {
+    num_signals <- 0
+  }
+
+
   # if it's first run, check there are no existing signals for this indicator_id
   # that are in the final `output/signals.parquet` file
   if (!test && first_run && num_signals > 0) {
@@ -105,15 +118,6 @@ check_existing_signals <- function(indicator_id, first_run, overwrite_content, f
 }
 
 az_files <- cs$az_file_detect()
-
-# check number of confirmed signals already, doesn't matter for testing
-# calculating at module level
-if (!test && "output/signals.parquet" %in% az_files) {
-  num_signals <- cs$read_az_file("output/signals.parquet") |>
-    dplyr$filter(
-      indicator_id == !!indicator_id
-    ) |>
-    nrow()
-} else {
-  num_signals <- 0
+if ("output/signals.parquet" %in% az_files) {
+  df_signals <- cs$read_az_file("output/signals.parquet")
 }

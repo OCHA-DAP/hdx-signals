@@ -44,13 +44,23 @@ box::use(../email/mailchimp/campaigns)
 #'      time. Defaults to `10`, which is fine for most runs, but if `first_run`
 #'      creates many at a time, you may need to be increase or decrease based
 #'      on your preference. If `0`, no signals are previewed.
+#' @param test Whether or not we are triaging test emails. Looks only for the
+#'      test emails file on Azure. You can still send test emails and delete
+#'      them in the same way as normal ones, but the signals file is not sent
+#'      to `output/signals.parquet`
 #'
 #' @export
-triage_signals <- function(indicator_id, n_campaigns = 10) {
-  fn_signals <- paste0("output/", indicator_id, "/signals.parquet")
+triage_signals <- function(indicator_id, n_campaigns = 10, test = FALSE) {
+  fn_signals <- paste0(
+    "output/",
+    indicator_id,
+    if (test) "/test" else "",
+    "/signals.parquet"
+  )
+
   df <- get_signals_df(fn_signals)
   preview_signals(df = df, n_campaigns = n_campaigns)
-  approve_signals(df = df, fn_signals = fn_signals)
+  approve_signals(df = df, fn_signals = fn_signals, test = test)
 }
 
 #' Check the signals data frame
@@ -121,31 +131,61 @@ preview_campaign_urls <- function(campaign_urls) {
 #'
 #' @param df Signals data frame
 #' @param fn_signals File name to the signals data
-approve_signals <- function(df, fn_signals) {
+#' @param test Whether or not the signals were for testing.
+approve_signals <- function(df, fn_signals, test) {
   user_command <- readline(
     paste0(
       "Tell us what you want to do with the following commands:\n\n",
-      "APPROVE: Send campaigns and add to `output/signals.parquet`\n",
+      "APPROVE: Send campaigns",
+      if (test) "\n" else "and add to `output/signals.parquet`\n",
       "DELETE: Delete the campaign content, so you can recreate later.\n",
       "Any other input: Do nothing, so you can decide later."
     )
   )
   if (user_command == "APPROVE") {
     send_signals(df)
-    df_core_signals <- dplyr$bind_rows(
-      read_core_signals(),
-      df
-    )
-    # adds the indicator signals data to the core file
-    # saves a reduced version as CSV to dev for pipelining to HDX
-    # and then empties the indicator one
-    cs$update_az_file(df_core_signals, "output/signals.parquet")
-    save_core_signals_hdx(df_core_signals)
-    cs$update_az_file(df[0,], fn_signals)
 
+    # if not testing, move everything to the core signals dataset
+    if (!test) {
+      df_core_signals <- dplyr$bind_rows(
+        read_core_signals(),
+        df
+      )
+      # adds the indicator signals data to the core file
+      # saves a reduced version as CSV to dev for pipelining to HDX
+      # and then empties the indicator one
+      cs$update_az_file(df_core_signals, "output/signals.parquet")
+      save_core_signals_hdx(df_core_signals)
+      cs$update_az_file(df[0,], fn_signals)
+    } else {
+      new_input <- readline(
+        paste0(
+          "You have sent your test campaigns. If you want to delete the\n",
+          "test campaigns file ",
+          fn_signals,
+          " and its content from Mailchimp, type DELETE."
+        )
+      )
+      if (new_input == "DELETE") {
+        delete_campaign_content(df)
+        cs$update_az_file(df[0,], fn_signals)
+      } else {
+        message(
+          "You have not deleted the content in ",
+          fn_signals,
+          " or removed the content from Mailchimp.\n Remember to do so in the",
+          "future.",
+          call. = FALSE
+        )
+      }
+    }
   } else if (user_command == "DELETE") {
     # replace the campaign content with the deleted stuff
     df_deleted <- delete_campaign_content(df)
+    if (test) {
+      df_deleted <- df_deleted[0,]
+    }
+
     cs$update_az_file(
       df = df_deleted,
       name = fn_signals

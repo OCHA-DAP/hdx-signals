@@ -31,7 +31,7 @@ add_intro <- function(
   # create table of contents manually using jumplinks and conditional text
   toc_items <- purrr$map2_chr(
     .x = glue$glue(
-      '<li><a href="#{iso3}">{country} - {alert_level}: {summary_short}</a></li>'
+      '<li><a href="#{iso3}">{country} - {alert_level}</a>: {summary_short}</li>'
     ),
     .y = iso3,
     .f = \(x, y) conditional_merge$conditional_merge(
@@ -43,9 +43,9 @@ add_intro <- function(
 
   # join together with overall text to create the full toc
   toc <- paste0(
-    '<div mc:edit="toc"><ul>',
+    '<ul>',
     paste(toc_items, collapse = ""),
-    '</ul></div>'
+    '</ul>'
   )
 
   # now just return the intro text block

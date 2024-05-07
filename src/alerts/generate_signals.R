@@ -99,7 +99,8 @@ generate_signals <- function(
       alert_fn() |>
       generate_alerts(
         indicator_id = indicator_id,
-        first_run = first_run
+        first_run = first_run,
+        test = test
       )
   } else {
     # use existing alerts, and just delete the campaign content from Mailchimp and re-create
@@ -137,7 +138,7 @@ generate_signals <- function(
           df_campaign_content = df,
           indicator_id = indicator_id,
           first_run = first_run,
-          preview = FALSE
+          test = FALSE
         )
       ) |>
       dplyr$bind_rows()
@@ -147,7 +148,7 @@ generate_signals <- function(
       df_campaign_content = df_campaign_content,
       indicator_id = indicator_id,
       first_run = first_run,
-      preview = test
+      test = test
     )
   }
 

@@ -1,11 +1,10 @@
 box::use(dplyr)
+box::use(purrr)
 box::use(rlang[`!!`])
 
 # local modules
-box::use(./base_api)
 box::use(./segments)
 box::use(./audience)
-box::use(./tags)
 box::use(cs = ../../utils/cloud_storage)
 box::use(../../utils/country_codes)
 
@@ -31,12 +30,41 @@ box::use(../../utils/country_codes)
 #'
 #' @param indicator_id Unique indicator ID
 #' @param iso3 Vector of ISO3 codes to generate conditions for
+#' @param test Whether or not this is a test email. If so, only sends to contacts
+#'     with the `hdx-signals-test` tag in Mailchimp.
 #'
 #' @returns Static segment ID from mailchimp.
 #'
 #' @export
-mc_email_segment <- function(indicator_id, iso3) {
+mc_email_segment <- function(indicator_id, iso3, test = FALSE) {
   df_ind <- dplyr$filter(df_ind, indicator_id == !!indicator_id)
+  emails <- mc_subscriber_emails(
+    df_ind = df_ind,
+    indicator_id = indicator_id,
+    iso3 = iso3,
+    test = test
+  )
+
+  segments$mc_update_static_segment(
+    segment_id = df_ind$static_segment,
+    segment_name = indicator_id,
+    emails = as.list(emails)
+  )
+
+  list(
+    list_id = "e908cb9d48",
+    segment_opts = list(
+      saved_segment_id = df_ind$static_segment
+    )
+  )
+}
+
+#' Filter member emails for segmentation
+#'
+#' Filters out members from the full Mailchimp registration, and gets their
+#' emails if they have subscribed to receive signals about a specific indicator
+#' or country.
+mc_subscriber_emails <- function(df_ind, indicator_id, iso3, test) {
   # first we get the list of interest ids based on the iso3 codes
   regions <- unique(country_codes$iso3_to_regions(iso3))
   countries <- country_codes$iso3_to_names(iso3)
@@ -62,7 +90,7 @@ mc_email_segment <- function(indicator_id, iso3) {
       .x = member_list,
       .f = \(member) {
         ind_interest <- member$interests[[interest_id]]
-        if (ind_interest) {
+        if (ind_interest && (!test || "hdx-signals-test" %in% purrr$map_chr(member$tags, \(tag) tag$name))) {
           # only check for countries if they were interested in the indicator
           # returns email if they were signed up to any of the geographies signalled
           # otherwise it returns an empty character vector
@@ -82,8 +110,9 @@ mc_email_segment <- function(indicator_id, iso3) {
     member_emails <- purrr$map_chr(
       .x = member_list,
       .f = \(member) {
-        tag_interest <- df_ind$mc_tag %in% purrr$map_chr(member$tags, \(tag) tag$name)
-        if (tag_interest) {
+        member_tags <- purrr$map_chr(member$tags, \(tag) tag$name)
+        tag_interest <- df_ind$mc_tag %in% member_tags
+        if (tag_interest && (!test || "hdx-signals-test" %in% member_tags)) {
           # only check for countries if they were interested in the indicator
           # returns email if they were signed up to any of the geographies signalled
           # otherwise it returns an empty character vector
@@ -99,20 +128,7 @@ mc_email_segment <- function(indicator_id, iso3) {
       }
     )
   }
-  emails <- member_emails[!is.na(member_emails)]
-
-  segments$mc_update_static_segment(
-    segment_id = df_ind$static_segment,
-    segment_name = indicator_id,
-    emails = as.list(emails)
-  )
-
-  list(
-    list_id = "e908cb9d48",
-    segment_opts = list(
-      saved_segment_id = df_ind$static_segment
-    )
-  )
+  member_emails[!is.na(member_emails)]
 }
 
 #' Returns the archive segment ID

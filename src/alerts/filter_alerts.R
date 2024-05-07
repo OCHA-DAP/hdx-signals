@@ -33,17 +33,22 @@ box::use(../utils/all_iso3_codes)
 #' @param indicator_id ID of the indicator, matching the first column
 #'      in `input/indicator_mapping.parquet`.
 #' @param first_run Whether or not this is the first run of the campaign.
+#' @param test Whether or not the alerts are being generated for testing. If so,
+#'      we simply take the latest alerts for any countries passed in, ignoring if
+#'      there were other recent alerts.
 #'
 #' @returns Data frame of new alerts matching the criteria above
 #'
 #' @export
-filter_alerts <- function(df_alerts, indicator_id, first_run = FALSE) {
+filter_alerts <- function(df_alerts, indicator_id, first_run = FALSE, test = FALSE) {
   # no need to do anything for empty data frame
   if (nrow(df_alerts) == 0) {
     return(df_alerts)
   }
 
-  if (!first_run) {
+  if (test) {
+    filter_alerts_test(df_alerts)
+  } else if (!first_run) {
     filter_alerts_ongoing(df_alerts, indicator_id)
   } else {
     filter_alerts_first_run(df_alerts)
@@ -153,4 +158,18 @@ recursive_subsequent_alerts <- function(df) {
     i <- i + 1
   }
   df
+}
+
+#' Filters out alerts for testing
+#'
+#' Simply returns the latest alert for all countries in the data.
+filter_alerts_test <- function(df) {
+  df |>
+    dplyr$group_by(
+      iso3
+    ) |>
+    dplyr$filter(
+      date == max(date)
+    ) |>
+    dplyr$ungroup()
 }

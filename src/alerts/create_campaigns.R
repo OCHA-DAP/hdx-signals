@@ -23,7 +23,9 @@ box::use(../email/mailchimp/delete)
 #'     is the standard format, such as `idmc_displacement`.
 #' @param first_run Whether or not this is the first run for an indicator. On the
 #'     first run, no alerts are sent, just archived campaigns are generated.
-#' @param preview Whether or not to preview the email campaigns for the archive.
+#' @param test Whether or not the campaigns are for testing. Campaigns only be
+#'     previewed if `test` is `TRUE`, and any segmentation done is limited to
+#'     internal emails tagged for testing.
 #'
 #' @returns URL of the campaign. If two campaigns sent, then returns the URL
 #' for `Medium concern` since it will contain all country alerts for that run.
@@ -33,7 +35,7 @@ create_campaigns <- function(
     df_campaign_content,
     indicator_id,
     first_run = FALSE,
-    preview = FALSE
+    test = FALSE
 ) {
   if (nrow(df_campaign_content) == 0) {
     # if the content data frame is empty, just return empty campaigns
@@ -59,7 +61,7 @@ create_campaigns <- function(
   }
 
   # get template folder, title, and subject header
-  campaign_details <- get_campaign_details(indicator_id, campaign_date)
+  campaign_details <- get_campaign_details(indicator_id = indicator_id, campaign_date = campaign_date, test = test)
 
   # generate email campaign with no conditional logic for the archive
   archive_df <- create_campaign(
@@ -69,7 +71,7 @@ create_campaigns <- function(
     archive = TRUE,
     archive_url = "*|ARCHIVE|*",
     names_paste = "_archive",
-    preview = preview
+    test = test
   )
 
   if (!first_run) {
@@ -78,9 +80,9 @@ create_campaigns <- function(
       campaign_details = campaign_details,
       df_campaign_content = df_campaign_content,
       archive = FALSE,
-      archive_url = archive_id_url$campaign_url_archive,
+      archive_url = unique(archive_df$campaign_url_archive),
       names_paste = "_email",
-      preview = FALSE # never preview the emails
+      test = FALSE # never use browser to preview the emails using conditional logic
     )
   } else {
     email_df <- dplyr$tibble(
@@ -123,7 +125,9 @@ create_campaigns <- function(
 #' @param archive_url URL for the archive.
 #' @param names_paste String to paste on the end of the names, either `_archive`,
 #'     `_hc`, or `_all`.
-#' @param preview Whether or not to preview the campaign.
+#' @param test Whether or not this is a test campaign. Passed on to segmentation
+#'     to ensure emails only sent internally if for testing. Previews generated
+#'     only if `TRUE`.
 #'
 #' @returns URL of the campaign
 create_campaign <- function(
@@ -133,7 +137,7 @@ create_campaign <- function(
     archive,
     archive_url,
     names_paste,
-    preview
+    test
 ) {
   template_id <- tryCatch(
     {
@@ -165,7 +169,7 @@ create_campaign <- function(
       templates$mc_add_template(
         html = template,
         folder = campaign_details$folder,
-        preview = archive && preview # only preview the archive template, not those with conditional logic
+        preview = archive && test # only preview the archive template, not those with conditional logic
       )
     },
     error = function(e) {
@@ -181,7 +185,8 @@ create_campaign <- function(
         if (!archive) {
           segments <- custom_segmentation$mc_email_segment(
             indicator_id = indicator_id,
-            iso3 = df_campaign_content$iso3
+            iso3 = df_campaign_content$iso3,
+            test = test
           )
         } else {
           # assign to archive segment for historic campaigns so URL created but
@@ -227,7 +232,7 @@ create_campaign <- function(
 #' `HDX Signals: INDICATOR, DATE`.
 #' The titles are for the file system, and so are similar, except also use
 #' `name_paste` to differentiate between
-get_campaign_details <- function(indicator_id, campaign_date) {
+get_campaign_details <- function(indicator_id, campaign_date, test) {
   df_ind <- cs$read_az_file("input/indicator_mapping.parquet") |>
     dplyr$filter(
       indicator_id == !!indicator_id
@@ -236,6 +241,7 @@ get_campaign_details <- function(indicator_id, campaign_date) {
   list(
     title = df_ind$indicator_subject,
     subject = paste0(
+      if (test) "TEST - " else "",
       "HDX Signals: ",
       df_ind$indicator_subject,
       ", ",

@@ -1,4 +1,5 @@
 box::use(glue)
+box::use(uuid)
 
 box::use(./missing[missing_text])
 
@@ -11,12 +12,16 @@ box::use(./missing[missing_text])
 #' @param header Header text. If missing, header block removed.
 #' @param header_level Level of the header, as a number. Corresponds to h1 to h6.
 #' @param header_id ID for the header, which can be used in `href` blocks to
-#'     place jump links in the email.
+#'     place jump links in the email. If `NULL`, then random UUID used since
+#'     HTML requires unique IDs.
 #'
 #' @returns Full text block HTML
 #'
 #' @export
-add_text <- function(text = "", header = "", header_level = 2, header_id = "header") {
+add_text <- function(text = "", header = "", header_level = 2, header_id = NULL) {
+  if (is.null(header_id)) {
+    header_id <- paste0("a", uuid$UUIDgenerate()) # must start with letter
+  }
   if (missing_text(text) && missing_text(header)) {
     ""
   } else {
@@ -38,7 +43,7 @@ add_text <- function(text = "", header = "", header_level = 2, header_id = "head
 
                         <td valign="top" class="mcnTextContent" style="padding: 0px 18px 9px; font-size: 16px; line-height: 150%;">
 
-                            {conditional_header(header, header_level, header_class)}
+                            {conditional_header(header, header_level, header_id)}
 
                             {conditional_text(text)}
 
@@ -62,11 +67,14 @@ add_text <- function(text = "", header = "", header_level = 2, header_id = "head
 }
 
 #' Drop header block if doesn't exist
+#'
+#' For the header block, uses <a> and <h> blocks separately so that anchor blocks
+#' work across a wider range of browsers.
 conditional_header <- function(header, header_level, header_id) {
   if (missing_text(header)) {
     ""
   } else {
-    glue$glue('<h{header_level} id="{header_id}">{header}</h{header_level}>')
+    glue$glue('<a style="text-decoration:none" name="{header_id}"><h{header_level} id="{header_id}">{header}</h{header_level}></h></a>')
   }
 }
 

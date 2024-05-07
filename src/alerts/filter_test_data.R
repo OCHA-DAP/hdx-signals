@@ -31,6 +31,6 @@ filter_test_data <- function(df_wrangled, test, test_filter) {
 
   dplyr$filter(
     df_wrangled,
-    iso3 == !!iso3
+    iso3 %in% !!iso3
   )
 }
