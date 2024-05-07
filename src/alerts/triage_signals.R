@@ -227,7 +227,6 @@ save_core_signals_hdx <- function(df) {
     source_url,
     other_urls,
     further_information,
-    campaign_summary,
     campaign_url = campaign_url_archive,
     campaign_date
   )

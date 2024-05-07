@@ -11,7 +11,6 @@ box::use(../email/mailchimp/campaigns)
 box::use(../email/mailchimp/custom_segmentation)
 box::use(../utils/format_date[format_date])
 box::use(../email/mailchimp/delete)
-box::use(./generate_campaign_summary)
 
 #' Create campaigns
 #'
@@ -48,8 +47,7 @@ create_campaigns <- function(
         campaign_id_email = character(),
         campaign_url_archive = character(),
         campaign_url_email = character(),
-        campaign_date = as.Date(integer(), origin = "1970-01-01"),
-        campaign_summary = character()
+        campaign_date = as.Date(integer(), origin = "1970-01-01")
       )
     )
   }
@@ -60,9 +58,8 @@ create_campaigns <- function(
     campaign_date <- Sys.Date()
   }
 
-  # get template folder, title, and subject header, as well as generate the summary
+  # get template folder, title, and subject header
   campaign_details <- get_campaign_details(indicator_id, campaign_date)
-  campaign_details$summary <- generate_campaign_summary$generate_campaign_summary(df_campaign_content)
 
   # generate email campaign with no conditional logic for the archive
   archive_df <- create_campaign(
@@ -101,9 +98,8 @@ create_campaigns <- function(
     email_df
   )
 
-  # add the date of the campaign and campaign summary to the top
+  # add the date of the campaign
   df_campaigns$campaign_date <- campaign_date
-  df_campaigns$campaign_summary <- campaign_details$summary
   df_campaigns
 }
 
@@ -144,7 +140,6 @@ create_campaign <- function(
       # create the email template and add to Mailchimp
       body <- email_body$create_body(
         title = campaign_details$title,
-        campaign_summary = campaign_details$summary,
         iso3 = df_campaign_content$iso3,
         alert_level = df_campaign_content$alert_level,
         country = df_campaign_content$country,
@@ -156,7 +151,8 @@ create_campaign <- function(
         plot2_url = df_campaign_content$plot2_url,
         other_images_urls = df_campaign_content$other_images_urls,
         other_images_captions = df_campaign_content$other_images_captions,
-        summary = df_campaign_content$summary_long,
+        summary_long = df_campaign_content$summary_long,
+        summary_short = df_campaign_content$summary_short,
         further_information = df_campaign_content$further_information,
         use_conditions = !archive
       )

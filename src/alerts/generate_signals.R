@@ -181,8 +181,7 @@ validate_campaigns <- function(df_campaigns, df_campaign_content) {
     campaign_id_email = NA_character_,
     campaign_url_archive = NA_character_,
     campaign_url_email = NA_character_,
-    campaign_date = as.Date(x = integer(0), origin = "1970-01-01"),
-    campaign_summary = NA_character_
+    campaign_date = as.Date(x = integer(0), origin = "1970-01-01")
   )
 
   if (any(dplyr$select(df_campaigns, -c(date, campaign_date)) == "ERROR", na.rm = TRUE) || !janitor$compare_df_cols_same(df_campaigns, df_check, bind_method = "rbind")) {
