@@ -151,6 +151,7 @@ src/email/figure/*
 
 # Don't commit any HTML files since .md files displayed directly
 *.html
+!*html_signals_template.html
 
 # auth
 global_monitoring_auth.json
