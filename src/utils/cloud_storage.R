@@ -7,6 +7,8 @@ box::use(utils)
 box::use(sf)
 box::use(tools)
 box::use(readr)
+box::use(jsonlite)
+box::use(dplyr)
 
 box::use(../utils/gmas_test_run[gmas_test_run])
 
@@ -49,6 +51,7 @@ read_az_file <- function(name, stage = c("prod", "dev")) {
     fileext,
     parquet = arrow$read_parquet(tf),
     geojson = sf$st_read(tf, quiet = TRUE),
+    json = dplyr$as_tibble(jsonlite$read_json(tf, simplifyVector = TRUE)),
     csv = readr$read_csv(tf, col_types = readr$cols())
   )
 }
@@ -85,6 +88,7 @@ update_az_file <- function(df, name, stage = c("prod", "dev")) {
     fileext,
     csv = readr$write_csv(x = df, file = tf),
     parquet = arrow$write_parquet(x = df, sink = tf),
+    json = jsonlite$write_json( x = df, path = tf),
     geojson = sf$st_write(obj = df, dsn = tf, quiet = TRUE)
   )
 

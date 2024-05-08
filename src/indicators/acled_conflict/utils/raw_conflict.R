@@ -62,8 +62,8 @@ raw <- function(first_run = FALSE) {
       httr2$resp_body_json() |>
       purrr$pluck("data") |>
       purrr$map(dplyr$as_tibble) |>
-      purrr$list_rbind()
-
+      purrr$list_rbind() |>
+      readr$type_convert()
 
       # since the ACLED API takes significant amount of time to call
       # store the date we've downloaded so we don't continually call it each time

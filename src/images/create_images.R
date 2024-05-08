@@ -22,14 +22,14 @@ box::use(./save_image)
 #'     the `map`, or `plot2` in the campaign.
 #' @param height Height of the image in inches.
 #' @param width Width of the image in inches.
-#' @param use_map_dims Whether or not to use the map dimensions when saving. If
-#'     `TRUE`, uses map dimensions in `input/iso3_width_height.parquet` instead
+#' @param use_map_settings Whether or not to use the map settings when saving. If
+#'     `TRUE`, uses map dimensions in `input/iso3_map_settings.json` instead
 #'     of the `width` and `height` arguments.
 #' @param crop Whether or not to run `knitr::plot_crop()` is run on the image
 #'     to crop white space around the image automatically.
 #'
 #' @export
-create_images <- function(df_alerts, df_wrangled, df_raw, image_fn, image_use = c("plot", "map", "plot2"), width = 6, height = 4, use_map_dims = FALSE, crop = FALSE) {
+create_images <- function(df_alerts, df_wrangled, df_raw, image_fn, image_use = c("plot", "map", "plot2"), width = 6, height = 4, use_map_settings = TRUE, crop = FALSE) {
   validate_images_alerts(df_alerts)
   validate_filter_df(df_wrangled)
   image_use <- rlang$arg_match(image_use)
@@ -46,7 +46,7 @@ create_images <- function(df_alerts, df_wrangled, df_raw, image_fn, image_use = 
         image_fn = image_fn,
         width = width,
         heigh = height,
-        use_map_dims = use_map_dims,
+        use_map_settings = use_map_settings,
         crop = crop
       )
     }
@@ -65,7 +65,7 @@ create_images <- function(df_alerts, df_wrangled, df_raw, image_fn, image_use = 
 #' Creates the plot and saves it to Mailchimp. Used within `create_images()` to
 #' safely create plot and catch errors so Mailchimp can be scrubbed of all content
 #' created even if errors happen in the environment.
-create_image <- function(iso3, date, title, indicator_id, df_wrangled, df_raw, image_fn, width, height, use_map_dims, crop) {
+create_image <- function(iso3, date, title, indicator_id, df_wrangled, df_raw, image_fn, width, height, use_map_settings, crop) {
   df_wrangled <- filter_plot_df(
     iso3 = iso3,
     date = date,
@@ -73,7 +73,7 @@ create_image <- function(iso3, date, title, indicator_id, df_wrangled, df_raw, i
   )
 
   p <- image_fn(df_wrangled, df_raw, title, date)
-  if (use_map_dims) {
+  if (use_map_settings) {
     save_image$save_map(
       p = p,
       iso3 = iso3,

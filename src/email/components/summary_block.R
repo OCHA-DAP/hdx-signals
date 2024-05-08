@@ -20,7 +20,7 @@ add_summary <- function(text) {
     )
 
     paste0(
-      text_block$add_text(header = "Situation summary", header_level = 4, header_class = "null"),
+      text_block$add_text(header = "Situation summary", header_level = 4),
       boxed_text_block$add_boxed_text(block_box_text),
       text_block$add_text(text = text)
     )

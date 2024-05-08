@@ -6,6 +6,7 @@ box::use(lubridate)
 box::use(../plots/theme_signals)
 box::use(./gg_map)
 box::use(./geom_cities)
+box::use(./map_theme)
 
 #' Map points data
 #'
@@ -15,15 +16,16 @@ box::use(./geom_cities)
 #' @param df Points sf to plot
 #' @param val_col Values column to use for size
 #' @param size Title for the size legend
-#' @param title Title for the plot
-#' @param subtitle Subtitle for the plot
+#' @param subtitle Subtitle for the plot, no title used
 #' @param caption Caption for the plot
+#' @param use_map_settings Whether or not to use map settings in `input/iso3_map_settings.json`
+#'     to position the legend.
 #'
 #' @returns Map plot
 #'
 #' @export
 map_points <- function(
-    iso3, df, val_col, size, title, subtitle = gg$waiver(), caption = gg$waiver()
+    iso3, df, val_col, size, subtitle, caption = gg$waiver(), use_map_settings = TRUE
 ) {
   gg_map$gg_map(iso3) +
     gg$geom_sf(
@@ -47,20 +49,9 @@ map_points <- function(
       x = "",
       y = "",
       size = size,
-      title = title,
       subtitle = subtitle,
       caption = caption
     ) +
-    gg$theme(
-      rect = gg$element_blank(),
-      axis.ticks = gg$element_blank(),
-      axis.text.x = gg$element_blank(),
-      axis.text.y = gg$element_blank(),
-      panel.grid.major = gg$element_blank(),
-      panel.grid.minor = gg$element_blank(),
-      axis.line.x = gg$element_blank(),
-      plot.caption = gg$element_text(hjust = 1),
-      legend.position = "left",
-      legend.direction = "vertical"
-    )
+    map_theme$map_theme(iso3 = iso3, use_map_settings = use_map_settings)
 }
+

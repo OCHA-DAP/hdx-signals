@@ -33,7 +33,9 @@ wrangle <- function(df_raw, first_run = FALSE) {
 
   df_raw |>
     dplyr$mutate(
-      iso3 = country_codes$ison_to_iso3(iso)
+      iso3 = country_codes$ison_to_iso3(as.numeric(iso)),
+      date = as.Date(event_date),
+      fatalities = as.numeric(fatalities)
     ) |>
     dplyr$group_by(
       iso3, date = event_date
