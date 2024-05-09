@@ -29,7 +29,7 @@ box::use(./save_image)
 #'     to crop white space around the image automatically.
 #'
 #' @export
-create_images <- function(df_alerts, df_wrangled, df_raw, image_fn, image_use = c("plot", "map", "plot2"), width = 6, height = 4, use_map_settings = TRUE, crop = FALSE) {
+create_images <- function(df_alerts, df_wrangled, df_raw, image_fn, image_use = c("plot", "map", "plot2"), width = 6, height = 4, use_map_settings = FALSE, crop = FALSE) {
   validate_images_alerts(df_alerts)
   validate_filter_df(df_wrangled)
   image_use <- rlang$arg_match(image_use)
