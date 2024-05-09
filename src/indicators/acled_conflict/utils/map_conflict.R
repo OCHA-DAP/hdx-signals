@@ -5,7 +5,7 @@ box::use(lubridate)
 box::use(sf)
 
 box::use(../../../utils/country_codes)
-box::use(../../../utils/format_date)
+box::use(../../../utils/formatters)
 box::use(../../../images/maps/map_points)
 box::use(../../../images/create_images)
 
@@ -24,7 +24,7 @@ map <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
     dplyr$mutate(
       title = paste0(
         "Conflict events since ",
-        format_date$format_date(date - lubridate$days(30))
+        formatters$format_date(date - lubridate$days(30))
       )
     )
 
@@ -52,7 +52,7 @@ conflict_map <- function(
     df_wrangled, df_raw, title, date
 ) {
   caption <- paste(
-    paste("Created", format_date$format_date(Sys.Date())),
+    paste("Created", formatters$format_date(Sys.Date())),
     country_codes$iso3_to_names(unique(df_wrangled$iso3)),
     sep = "\n"
   )

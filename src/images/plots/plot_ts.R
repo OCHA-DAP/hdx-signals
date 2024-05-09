@@ -4,6 +4,7 @@ box::use(gghdx)
 box::use(dplyr)
 
 box::use(./theme_signals)
+box::use(../../utils/formatters)
 
 #' Plot time series data
 #'
@@ -31,16 +32,16 @@ plot_ts <- function(
       )
     ) +
     gg$geom_line(
-      linewidth = 1,
-      color = gghdx$hdx_hex("tomato-hdx")
+      linewidth = 0.8,
+      color = gghdx$hdx_hex("sapphire-hdx")
     ) +
     gg$geom_point(
       data = dplyr$filter(df, date == max(date)),
       size = 3,
-      color = gghdx$hdx_hex("tomato-hdx")
+      color = gghdx$hdx_hex("sapphire-hdx")
     ) +
     gghdx$scale_y_continuous_hdx(
-      labels = scales$label_comma(),
+      labels = formatters$format_key_figures,
     ) +
     gg$scale_x_date(
       breaks = scales$pretty_breaks(),

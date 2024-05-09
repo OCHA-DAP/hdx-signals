@@ -9,7 +9,7 @@ box::use(../email/components/create_template)
 box::use(../email/mailchimp/templates)
 box::use(../email/mailchimp/campaigns)
 box::use(../email/mailchimp/custom_segmentation)
-box::use(../utils/format_date[format_date])
+box::use(../utils/formatters)
 box::use(../email/mailchimp/delete)
 
 #' Create campaigns
@@ -245,7 +245,7 @@ get_campaign_details <- function(indicator_id, campaign_date, test) {
       "HDX Signals: ",
       df_ind$indicator_subject,
       ", ",
-      format_date(Sys.Date())
+      formatters$format_date(Sys.Date())
     ),
     campaign_title = paste0(
       "hdx_signals_",

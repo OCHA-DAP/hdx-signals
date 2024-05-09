@@ -7,7 +7,7 @@ box::use(tidyr)
 box::use(sf)
 
 box::use(../../../utils/country_codes)
-box::use(../../../utils/format_date)
+box::use(../../../utils/formatters)
 box::use(../../../images/maps/map_points)
 box::use(../../../images/create_images)
 
@@ -28,7 +28,7 @@ map <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
     dplyr$mutate(
       title = paste0(
         "Displacement events since ",
-        format_date$format_date(date - lubridate$days(30))
+        formatters$format_date(date - lubridate$days(30))
       )
     )
 
@@ -58,7 +58,7 @@ displacement_map <- function(
 ) {
   caption <- paste(
     "Data from the IDMC, http://www.internal-displacement.org",
-    paste("Accessed", format_date$format_date(Sys.Date())),
+    paste("Accessed", formatters$format_date(Sys.Date())),
     country_codes$iso3_to_names(unique(df_wrangled$iso3)),
     sep = "\n"
   )

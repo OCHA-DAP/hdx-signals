@@ -5,7 +5,7 @@ box::use(scales)
 box::use(lubridate)
 
 box::use(../../../utils/country_codes)
-box::use(../../../utils/format_date)
+box::use(../../../utils/formatters)
 box::use(../../../images/plots/plot_ts)
 box::use(../../../images/create_images)
 
@@ -29,7 +29,7 @@ plot <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
         " people displaced due to ",
         displacement_cause,
         " since ",
-        format_date$format_date(date - lubridate$days(30))
+        formatters$format_date(date - lubridate$days(30))
       )
     )
 
@@ -58,7 +58,7 @@ displacement_ts <- function(
 ) {
   caption <- paste(
     "Data from the IDMC, http://www.internal-displacement.org",
-    paste("Accessed", format_date$format_date(Sys.Date())),
+    paste("Accessed", formatters$format_date(Sys.Date())),
     country_codes$iso3_to_names(unique(df_wrangled$iso3)),
     sep = "\n"
   )

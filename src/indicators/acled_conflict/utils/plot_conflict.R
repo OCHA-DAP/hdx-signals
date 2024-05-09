@@ -5,7 +5,7 @@ box::use(scales)
 box::use(lubridate)
 
 box::use(../../../utils/country_codes)
-box::use(../../../utils/format_date)
+box::use(../../../utils/formatters)
 box::use(../../../images/plots/plot_ts)
 box::use(../../../images/create_images)
 
@@ -24,7 +24,7 @@ plot <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
       title = paste0(
         scales$label_comma()(value),
         " conflict fatalities since ",
-        format_date$format_date(date - lubridate$days(30))
+        formatters$format_date(date - lubridate$days(30))
       )
     )
 
@@ -51,7 +51,7 @@ conflict_ts <- function(
 ) {
   caption <- paste(
     "Data from the Armed Conflict Location & Event Data Project",
-    paste0("Accessed ", format_date$format_date(Sys.Date()), ", www.acleddata.com"),
+    paste0("Accessed ", formatters$format_date(Sys.Date()), ", www.acleddata.com"),
     country_codes$iso3_to_names(unique(df_wrangled$iso3)),
     sep = "\n"
   )

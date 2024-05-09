@@ -3,7 +3,7 @@ box::use(purrr)
 box::use(rlang[`!!`])
 box::use(scales)
 
-box::use(../../../utils/format_date)
+box::use(../../../utils/formatters)
 box::use(../../../images/plots/plot_ts)
 box::use(../../../images/create_images)
 
@@ -26,7 +26,7 @@ plot <- function(df_alerts, df_wrangled, preview = FALSE) {
       title = paste0(
         scales$label_comma()(value),
         " cases of cholera reported since ",
-        format_date$format_date(start_date)
+        formatters$format_date(start_date)
       )
     )
 
