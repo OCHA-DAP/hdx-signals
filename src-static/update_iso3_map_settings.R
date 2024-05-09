@@ -302,8 +302,8 @@ df_legend <- dplyr$tribble(
 )
 
 # add legend location based on its placement
-df_map_settings$location <- ifelse(
-  df_map_settings$legend_position == "inside",
+df_legend$location <- ifelse(
+  df_legend$legend_position == "inside",
   "panel",
   "plot"
 )
