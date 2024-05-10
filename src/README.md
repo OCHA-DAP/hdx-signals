@@ -42,7 +42,7 @@ as an environment variable `DSCI_AZ_SAS`, with the endpoint provided as
 
 Legacy file saving to Google Drive and Sheets is still maintained, using a
 service account with an authorization file that needs to be saved to
-`GLOBAL_MONITORING_JSON` environment variable. Once this is done, the code,
+`HDX_SIGNALS_JSON` environment variable. Once this is done, the code,
 particularly that to save to and read from the bucket in `google_drive.R`
 works on personal machines for testing and in GitHub Actions.
 

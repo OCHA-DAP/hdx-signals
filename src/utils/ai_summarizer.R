@@ -1,5 +1,7 @@
 box::use(purrr)
 box::use(openai)
+box::use(stringr)
+
 box::use(../utils/gmas_test_run[gmas_test_run])
 
 #' AI summarizer
@@ -31,17 +33,17 @@ box::use(../utils/gmas_test_run[gmas_test_run])
 ai_summarizer <- function(prompt, info) {
   nchars <- nchar(info)
   total_nchar <- sum(nchars)
-  if (total_nchar > 15000) {
+  if (total_nchar > 120000) {
     # if a single block of text, split on new lines and sentences
     # so we can pass in separate chunks to the AI
     if (length(info) == 1) {
-      info <- paste0(str_split(info, '\\. |\n')[[1]], ". ")
+      info <- paste0(stringr$str_split(info, '\\. |\n')[[1]], ". ")
       nchars <- nchar(info)
     }
 
     # now we split down the middle and send back to the summarizer
     split_idx <- min(which(cumsum(nchars) >= total_nchar / 2))
-    ai_summarizer(
+    ai_summary <- ai_summarizer(
       prompt = prompt,
       info = paste(
         ai_summarizer(
@@ -60,10 +62,16 @@ ai_summarizer <- function(prompt, info) {
       info <- paste(info, collapse = "\n")
     }
 
-    insistent_ai(
+    ai_summary <- insistent_ai(
       prompt, info
     )
   }
+
+  trimws(
+    x = ai_summary,
+    which = "both",
+    whitespace = '[ \t\r\n"]'
+  )
 }
 
 #' Call to the OpenAI API
@@ -83,9 +91,8 @@ insistent_ai <- purrr$insistently(
 
       "Test output."
     } else {
-      box::use(openai)
       openai$create_chat_completion(
-        model = "gpt-3.5-turbo-16k",
+        model = "gpt-4-turbo",
         messages = list(
           list(
             "role" = "user",
