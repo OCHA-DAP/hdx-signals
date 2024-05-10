@@ -50,6 +50,9 @@ plot_ts <- function(
     gg$coord_cartesian(
       clip = "off"
     ) +
+    gg$expand_limits(
+      y = 0
+    ) +
     theme_signals$theme_signals() +
     gg$labs(
       x = "",
