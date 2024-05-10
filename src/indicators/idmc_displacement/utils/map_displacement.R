@@ -38,8 +38,7 @@ map <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
     df_raw = df_raw,
     image_fn = displacement_map,
     image_use = "map",
-    width = 6,
-    height = 3
+    use_map_settings = TRUE
   )
 }
 
@@ -89,8 +88,7 @@ displacement_map <- function(
     df = sf_raw,
     val_col = "figure",
     size = "Displacement",
-    title = title,
-    subtitle = "",
+    subtitle = title,
     caption = caption
   )
 }

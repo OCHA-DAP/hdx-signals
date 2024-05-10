@@ -39,10 +39,14 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
         "Only use the information below:\n\n"
       ),
       prompt_short = paste(
-        "Please condense this information into just 2 short sentences, capturing",
-        "only the key messages. Expect the reader to have no context, but this is",
+        "Please condense the following information into a single 10 word line,",
+        "similar to text you might see on a news ticker. Outputs could look like",
+        "the following 2 examples:",
+        "'Armed attacks in the capital force residents to flee to the countryside' or",
+        "'Instability due to gang activity drives displacement across the country'.",
+        "Expect the reader to have no context, but this is",
         "intended to capture their attention, so keep the messaging simple, clear",
-        "and punchy. Use only the information below:\n\n"
+        "and punchy. Use only the information below in your summary:\n\n"
       ),
       .groups = "drop"
     ) |>

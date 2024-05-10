@@ -65,13 +65,13 @@ displacement_ts <- function(
 
   # filter displacement data to the latest day of the week, since we are plotting the
   # weekly rolling sum
-  day_of_week <- lubridate$wday(max(df_wrangled$date))
-  df_plot <- dplyr$filter(df_wrangled, lubridate$wday(date) == day_of_week)
+  day_of_month <- lubridate$mday(max(df_wrangled$date))
+  df_plot <- dplyr$filter(df_wrangled, lubridate$mday(date) == day_of_month)
 
   plot_ts$plot_ts(
-    df = dplyr$filter(df_plot, !is.na(displacement_7d)),
-    val_col = "displacement_7d",
-    y_axis = "Displacement (weekly)",
+    df = dplyr$filter(df_plot, !is.na(displacement_30d)),
+    val_col = "displacement_30d",
+    y_axis = "Displacement (monthly)",
     title = title,
     subtitle = "",
     caption = caption
