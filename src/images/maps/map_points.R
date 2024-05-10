@@ -33,8 +33,16 @@ map_points <- function(
       mapping = gg$aes(
         size = .data[[val_col]]
       ),
-      color = gghdx$hdx_hex("tomato-hdx"),
-      alpha = 0.75
+      color = gghdx$hdx_hex("sapphire-hdx"),
+      alpha = 0.8
+    ) +
+    gg$geom_sf(
+      data = df,
+      mapping = gg$aes(
+        size = .data[[val_col]]
+      ),
+      color = gghdx$hdx_hex("sapphire-dark"),
+      shape = 1
     ) +
     geom_cities$geom_cities(iso3) +
     gg$scale_size_continuous(
