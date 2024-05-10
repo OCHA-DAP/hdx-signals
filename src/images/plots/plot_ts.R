@@ -25,6 +25,9 @@ plot_ts <- function(
     df, val_col, y_axis, title, subtitle = gg$waiver(), caption = gg$waiver()
 ) {
   df |>
+    dplyr$filter(
+      max(date) - date <= 365*5
+    ) |>
     gg$ggplot(
       mapping = gg$aes(
         x = date,
@@ -32,7 +35,7 @@ plot_ts <- function(
       )
     ) +
     gg$geom_line(
-      linewidth = 0.8,
+      linewidth = 0.7,
       color = gghdx$hdx_hex("sapphire-hdx")
     ) +
     gg$geom_point(

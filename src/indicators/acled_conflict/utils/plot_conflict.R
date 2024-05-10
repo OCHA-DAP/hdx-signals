@@ -51,7 +51,7 @@ conflict_ts <- function(
 ) {
   caption <- paste(
     "Data from the Armed Conflict Location & Event Data Project",
-    paste0("Accessed ", formatters$format_date(Sys.Date()), ", www.acleddata.com"),
+    paste("Created", formatters$format_date(Sys.Date())),
     country_codes$iso3_to_names(unique(df_wrangled$iso3)),
     sep = "\n"
   )

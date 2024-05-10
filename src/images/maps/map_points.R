@@ -42,7 +42,8 @@ map_points <- function(
         size = .data[[val_col]]
       ),
       color = gghdx$hdx_hex("sapphire-dark"),
-      shape = 1
+      shape = 1,
+      stroke = 0.1
     ) +
     geom_cities$geom_cities(iso3) +
     gg$scale_size_continuous(

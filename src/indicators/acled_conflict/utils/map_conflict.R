@@ -52,6 +52,7 @@ conflict_map <- function(
     df_wrangled, df_raw, title, date
 ) {
   caption <- paste(
+    "Data from the Armed Conflict Location & Event Data Project",
     paste("Created", formatters$format_date(Sys.Date())),
     country_codes$iso3_to_names(unique(df_wrangled$iso3)),
     sep = "\n"

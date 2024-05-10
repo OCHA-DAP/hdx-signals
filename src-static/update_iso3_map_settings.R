@@ -308,6 +308,21 @@ df_legend$location <- ifelse(
   "plot"
 )
 
+# change justification to be single numeric vector based on left/top
+# so that legen isn't so far in the corners
+df_legend$justification_numeric <- purrr$map(
+  .x = df_legend$justification,
+  .f = \(x) {
+    if (length(x) > 1) {
+      x
+    } else if (x == "top") {
+      0.9
+    } else if (x == "left") {
+      0.1
+    }
+  }
+)
+
 df_map_settings <- dplyr$left_join(
   df_legend,
   df_width_height,

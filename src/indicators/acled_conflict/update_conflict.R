@@ -23,7 +23,5 @@ generate_signals(
   plot_fn = plot_conflict$plot,
   info_fn = info_conflict$info,
   map_fn = map_conflict$map,
-  summary_fn = summary_conflict$summary,
-  test = TRUE,
-  test_filter = c("AFG", "SSD", "COL")
+  summary_fn = summary_conflict$summary
 )
