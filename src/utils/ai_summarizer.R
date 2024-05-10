@@ -43,7 +43,7 @@ ai_summarizer <- function(prompt, info) {
 
     # now we split down the middle and send back to the summarizer
     split_idx <- min(which(cumsum(nchars) >= total_nchar / 2))
-    ai_summarizer(
+    ai_summary <- ai_summarizer(
       prompt = prompt,
       info = paste(
         ai_summarizer(
@@ -62,10 +62,16 @@ ai_summarizer <- function(prompt, info) {
       info <- paste(info, collapse = "\n")
     }
 
-    insistent_ai(
+    ai_summary <- insistent_ai(
       prompt, info
     )
   }
+
+  trimws(
+    x = ai_summary,
+    which = "both",
+    whitespace = '[ \t\r\n"]'
+  )
 }
 
 #' Call to the OpenAI API
