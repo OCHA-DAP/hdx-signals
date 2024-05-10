@@ -40,7 +40,6 @@ mc_email_segment <- function(indicator_id, iso3, test = FALSE) {
   df_ind <- dplyr$filter(df_ind, indicator_id == !!indicator_id)
   emails <- mc_subscriber_emails(
     df_ind = df_ind,
-    indicator_id = indicator_id,
     iso3 = iso3,
     test = test
   )
@@ -63,8 +62,9 @@ mc_email_segment <- function(indicator_id, iso3, test = FALSE) {
 #'
 #' Filters out members from the full Mailchimp registration, and gets their
 #' emails if they have subscribed to receive signals about a specific indicator
-#' or country.
-mc_subscriber_emails <- function(df_ind, indicator_id, iso3, test) {
+#' or country. The `df_ind` passed in must already be filtered to a specific
+#' indicator ID.
+mc_subscriber_emails <- function(df_ind, iso3, test) {
   # first we get the list of interest ids based on the iso3 codes
   regions <- unique(country_codes$iso3_to_regions(iso3))
   countries <- country_codes$iso3_to_names(iso3)
