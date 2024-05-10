@@ -58,16 +58,16 @@ conflict_ts <- function(
 
   # filter conflict data to the latest day of the week, since we are plotting the
   # weekly rolling sum
-  day_of_week <- lubridate$wday(max(df_wrangled$date))
+  day_of_month <- lubridate$mday(max(df_wrangled$date))
   df_plot <- dplyr$filter(
     df_wrangled,
-    lubridate$wday(date) == day_of_week,
-    !is.na(fatalities_7d)
+    lubridate$mday(date) == day_of_month,
+    !is.na(fatalities_30d)
   )
 
   plot_ts$plot_ts(
     df = df_plot,
-    val_col = "fatalities_7d",
+    val_col = "fatalities_30d",
     y_axis = "Conflict fatalities (weekly)",
     title = title,
     subtitle = "",
