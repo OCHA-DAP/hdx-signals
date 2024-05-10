@@ -133,6 +133,15 @@ preview_campaign_urls <- function(campaign_urls) {
 #' @param fn_signals File name to the signals data
 #' @param test Whether or not the signals were for testing.
 approve_signals <- function(df, fn_signals, test) {
+  user_name <- Sys.getenv("HDX_SIGNALS_ADMIN_NAME")
+  if (user_name == "") {
+    stop(
+      "You need to set the `HDX_SIGNALS_ADMIN_NAME` env variable with your ",
+      "name prior to triaging, so approval can be recorded.",
+      call. = FALSE
+    )
+  }
+
   user_command <- readline(
     paste0(
       "Tell us what you want to do with the following commands:\n\n",
@@ -147,6 +156,10 @@ approve_signals <- function(df, fn_signals, test) {
 
     # if not testing, move everything to the core signals dataset
     if (!test) {
+      # add triage information to the data before joining to core
+      df$triage_approver <- user_name
+      df$triage_time <- Sys.time()
+
       df_core_signals <- dplyr$bind_rows(
         read_core_signals(),
         df
