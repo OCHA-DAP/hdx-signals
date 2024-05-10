@@ -1,3 +1,4 @@
+# indiciator utilities
 box::use(./utils/raw_conflict)
 box::use(./utils/wrangle_conflict)
 box::use(./utils/alert_conflict)
@@ -6,11 +7,10 @@ box::use(./utils/map_conflict)
 box::use(./utils/info_conflict)
 box::use(./utils/summary_conflict)
 
+# generate signals workhorse
 box::use(../../alerts/generate_signals[generate_signals])
-box::use(../../alerts/generate_alerts[generate_alerts])
-box::use(../../alerts/triage_signals)
-box::use(../../alerts/delete_campaign_content)
 
+# get data
 df_raw <- raw_conflict$raw()
 df_wrangled <- wrangle_conflict$wrangle(df_raw)
 
