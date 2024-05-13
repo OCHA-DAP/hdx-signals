@@ -71,44 +71,47 @@ map_test <- function(
 
 #' Generate pts for test map
 #'
-#' @param poly
+#' @param poly sf class polygon
 #' @param number_pt_range `integer` vector (default = 1:20) sampled to randomly decide how many
-#'  pts will be mapped
+#'    pts will be mapped
 #' @param value_range `integer` vector (defaults 1:20000) sampled to assign values to pts.
-#'  might be useful to have it sample a log distribution instead
+#'    might be useful to have it sample a log distribution instead
 #' @param use_bbox `logical` if TRUE (default) samples will be drawn from the bounding box
-#'  of the polygon, if FALSE sampled withing the polygon. It's mainly a feature to
-#'  ease development as sampling withing bbox is much faster
-#' @return
+#'    of the polygon, if FALSE sampled withing the polygon. It's mainly a feature to
+#'    ease development as sampling withing bbox is much faster
+#'
+#' @return sf class data.frame with point geometry
 #' @export
 #'
 #' @examples \dontrun{
 #' box::use(sf)
 #' box::use(../../utils/get_iso3_sf)
 #' gdf_adm0 <- get_iso3_sf$get_iso3_sf("AFG")
-#' pts_sampled_bbox <- gen_pts(poly = gdf_adm0,
-#'                             use_bbox=T,
-#'                              number_pt_range= 1:20,
-#'                              value_range= 1:20000)
+#' pts_sampled_bbox <- random_spatial_sample(
+#'                      poly = gdf_adm0,
+#'                      use_bbox = TRUE,
+#'                      number_pt_range = 1:20,
+#'                      value_range = 1:20000
+#'                      )
 #' }
 
 random_spatial_sample <- function(poly,
-                                  use_bbox =T,
-                                  number_pt_range= 1:20,
-                                  value_range= 1:20000
+                                  use_bbox = TRUE,
+                                  number_pt_range = 1:20,
+                                  value_range = 1:20000
 ){
-  num_pts <- sample(x= number_pt_range,size = 1,replace=T)
+  num_pts <- sample(x = number_pt_range,size = 1,replace = TRUE)
 
-  if(use_bbox){
-    gdf_region <- sf$st_bbox(poly) |>
+  if (use_bbox) {
+    sample_region <- sf$st_bbox(poly) |>
       sf$st_as_sfc()
-  } else{
-    gdf_region <- poly
+  } else {
+    sample_region <- poly
   }
 
-  pts_gdf <- sf$st_sample(x=gdf_region,size =num_pts) |>
+  pts_sample <- sf$st_sample(x = sample_region,size = num_pts) |>
     sf$st_as_sf()
 
-  pts_gdf$value <- sample(value_range, num_pts, replace = T)
-  return(pts_gdf)
+  pts_sample$value <- sample(value_range, num_pts, replace = TRUE)
+  pts_sample
 }
