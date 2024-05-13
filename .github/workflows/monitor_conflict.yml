@@ -1,0 +1,34 @@
+name: Monitor ACLED conflict
+
+on:
+    workflow_dispatch:
+    # TODO: Add cron schedule
+      inputs:
+        first_run:
+          required: true
+          type: choice
+          default: "FALSE"
+          options:
+            - "TRUE"
+            - "FALSE"
+        test:
+          required: true
+          type: choice
+          default: "FALSE"
+          options:
+            - "TRUE"
+            - "FALSE"
+
+jobs:
+    run:
+        runs-on: ubuntu-latest
+        steps:   
+            - name: Checkout repository
+              uses: actions/checkout@v3
+
+            - name: Set up environment
+              uses: ./
+
+            - name: Run R monitoring script
+              shell: bash
+              run: Rscript ./src/acled_conflict/update_conflict.R
