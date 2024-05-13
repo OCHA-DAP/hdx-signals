@@ -84,9 +84,9 @@ map_test <- function(
 #' @export
 #'
 #' @examples \dontrun{
-#' box::use(sf)
-#' box::use(../../utils/get_iso3_sf)
-#' gdf_adm0 <- get_iso3_sf$get_iso3_sf("AFG")
+#' library(sf)
+#' file_name <- system.file("shape/nc.shp", package="sf")
+#' gdf_adm0 <- st_read(file_name)
 #' pts_sampled_bbox <- random_spatial_sample(
 #'                      poly = gdf_adm0,
 #'                      use_bbox = TRUE,
