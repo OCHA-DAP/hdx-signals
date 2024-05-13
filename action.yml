@@ -1,0 +1,23 @@
+name: Set up
+description: Build R environment for monitoring
+runs:
+    using: "composite"
+    steps:
+        - name: Set up R
+          uses: r-lib/actions/setup-r@v2
+          with:
+            r-version: '4.3.3'
+        
+        - name: Cache packages
+          uses: actions/cache@v3
+          with:
+            path: ~/.cache/R/renv
+            key: ${{ runner.os }}-renv-${{ hashFiles('**/renv.lock') }}
+            restore-keys: |
+                ${{ runner.os }}-renv-
+
+        - name: Restore packages
+          shell: Rscript {0}
+          run: |
+            if (!requireNamespace("renv", quietly = TRUE)) install.packages("renv")
+            renv::restore()

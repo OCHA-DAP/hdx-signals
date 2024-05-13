@@ -1,0 +1,17 @@
+name: Update static assets
+
+on:
+    workflow_dispatch:
+
+jobs:
+    run:
+        runs-on: ubuntu-latest
+        steps:   
+            - name: Checkout repository
+              uses: actions/checkout@v3
+
+            - name: Set up environment
+              uses: ./
+
+            - name: Run R scripts to update files
+              run: find ./src-static/ -name "*.R" -exec Rscript {} \;
