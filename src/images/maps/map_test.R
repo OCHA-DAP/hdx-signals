@@ -85,10 +85,14 @@ map_test <- function(
 #'
 #' @examples \dontrun{
 #' library(sf)
+#' library(dplyr)
 #' file_name <- system.file("shape/nc.shp", package="sf")
-#' gdf_adm0 <- st_read(file_name)
+#' nc_counties <- st_read(file_name)
+#' alleghany_county <- nc_counties |>
+#'     filter(NAME == "Alleghany")
+#'
 #' pts_sampled_bbox <- random_spatial_sample(
-#'                      poly = gdf_adm0,
+#'                      poly = alleghany_county,
 #'                      use_bbox = TRUE,
 #'                      number_pt_range = 1:20,
 #'                      value_range = 1:20000
