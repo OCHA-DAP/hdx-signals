@@ -8,28 +8,26 @@ box::use(./geom_centroids)
 
 box::use(sf) # used to generate points
 
-# commenting out as it creates errors, but im not sure yet what
-# to replace it with
-# box::use(./iso3_ggsave)
-
-
 #' Test map for ISO3
 #'
 #' Generates a test map for ISO3 code. Adds country boundaries, centroid, and
 #' cities, then saves the plot out to
 #'
 #' @param iso3 ISO3 code used to get base plot and cities
-#' @param dir Directory to save the test plots to
+#' @param use_bbox `logical` choice to use bounding box of admin 0 for creating point sample
+#'     or to use precise boundaries. Bounding box is much faster for testing purposes (default)
 #'
-#' @returns Nothing
+#' @returns plot (ggplot)
 #'
 #' @export
 map_test <- function(
-    iso3, dir
+    iso3,
+    use_bbox =T
 ) {
   p <- gg_map$gg_map(iso3) +
     geom_centroids$geom_centroids(iso3) +
     geom_cities$geom_cities(iso3) +
+    geom_sample_pts(iso3 = iso3, use_bbox = use_bbox)+
     gg$coord_sf(
       clip = "off",
       crs = "OGC:CRS84"
@@ -54,18 +52,26 @@ map_test <- function(
       legend.direction = "vertical"
     )
   return(p)
-  #
-  #   iso3_ggsave$iso3_ggsave(
-  #     p = p,
-  #     iso3 = iso3,
-  #     fp = file.path(
-  #       dir,
-  #       paste0(iso3, ".png")
-  #     ),
-  #     crop = FALSE
-  #   )
-  #
-  #   invisible(NULL)
+}
+
+geom_sample_pts <- function(iso3,
+                            use_bbox=T
+){
+  gdf_adm0 <- get_iso3_sf$get_iso3_sf(iso3, "adm0")
+
+  pts_sampled_bbox <- random_spatial_sample(
+    poly = gdf_adm0,
+    use_bbox = use_bbox,
+    number_pt_range = 1:20,
+    value_range = 1:20000
+  )
+
+  gg$geom_sf(
+    data = pts_sampled_bbox,
+    fill = "blue",
+    color="blue",
+    gg$aes(size=value)
+  )
 }
 
 
@@ -98,7 +104,6 @@ map_test <- function(
 #'                      value_range = 1:20000
 #'                      )
 #' }
-
 random_spatial_sample <- function(poly,
                                   use_bbox = TRUE,
                                   number_pt_range = 1:20,
