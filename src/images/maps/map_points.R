@@ -35,7 +35,7 @@ map_points <- function(
         size = .data[[val_col]]
       ),
       color = gghdx$hdx_hex("sapphire-hdx"),
-      alpha = 0.8
+      alpha = 0.6
     ) +
     gg$geom_sf(
       data = df,

@@ -18,13 +18,28 @@ box::use(../../utils/country_codes)
 #'
 #' @export
 mc_members <- function() {
+  resp <- mc_member_req()
+  total_items <- resp$total_items
+  offset <- 1000
+  resp_members <- resp$members
+  while (total_items > offset) {
+    resp_members <- purrr$list_c(resp_members, mc_member_req(offset = offset)$members)
+    offset <- offset + 1000
+  }
+  resp_members
+}
+
+#' Offset member requests to the Mailchimp API
+mc_member_req <- function(offset = 0) {
   base_api$mc_api() |>
     httr2$req_url_path_append(
       "members"
     ) |>
+    httr2$req_url_query(
+      count = 1000
+    ) |>
     httr2$req_perform() |>
-    httr2$resp_body_json() |>
-    purrr$pluck("members")
+    httr2$resp_body_json()
 }
 
 #' Get interest ID list

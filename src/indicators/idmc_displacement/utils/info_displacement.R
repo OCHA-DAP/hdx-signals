@@ -70,7 +70,7 @@ info <- function(df_alerts, df_wrangled, df_raw) {
       by = "iso3"
     ) |>
     dplyr$mutate(
-      hdx_url = as.character(glue$glue("https://data.humdata.org/dataset/idmc-event-data-for-{iso3}")),
+      hdx_url = as.character(glue$glue("https://data.humdata.org/dataset/idmc-event-data-for-{tolower(iso3)}")),
       source_url = as.character(glue$glue("https://www.internal-displacement.org/countries/{country_link}")),
       n_text = dplyr$case_when(
         total_n == 1 ~ "report",
