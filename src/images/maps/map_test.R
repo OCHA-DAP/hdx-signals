@@ -1,13 +1,12 @@
 box::use(gg = ggplot2)
 box::use(scales)
 box::use(gghdx)
+
 box::use(../plots/theme_signals)
 box::use(./gg_map)
 box::use(./geom_cities)
 box::use(./geom_centroids)
-
-box::use(sf) # used to generate points
-box::use(./map_points)
+box::use(./iso3_ggsave)
 
 #' Test map for ISO3
 #'
@@ -15,66 +14,15 @@ box::use(./map_points)
 #' cities, then saves the plot out to
 #'
 #' @param iso3 ISO3 code used to get base plot and cities
-#' @param use_bbox `logical` choice to use bounding box of admin 0 for creating point sample
-#'     or to use precise boundaries. Bounding box is much faster for testing purposes (default)
+#' @param dir Directory to save the test plots to
 #'
-#' @returns plot (ggplot)
-#'
-#' @export \dontrun{
-#' map_test2(
-#'     iso3 = "BGD",
-#'     use_bbox = T,
-#'     val_col = "value",
-#'     size=1,
-#'     subtitle = "Map test"
-#'     )
-#'}
-
-
-map_test2 <- function(
-    iso3,
-    use_bbox =T,
-    val_col,
-    size,
-    subtitle
-) {
-  gdf_sample_pts <- sample_pts_iso3(iso3=iso3,use_bbox = use_bbox)
-  map_points$map_points(
-    iso3 = iso3,
-    df = gdf_sample_pts,
-    val_col = val_col,
-    size = size,
-    subtitle = subtitle,
-    caption = caption
-    )
-}
-
-
-
-  #' Test map for ISO3
-#'
-#' Generates a test map for ISO3 code. Adds country boundaries, centroid, and
-#' cities, then saves the plot out to
-#'
-#' @param iso3 ISO3 code used to get base plot and cities
-#' @param use_bbox `logical` choice to use bounding box of admin 0 for creating point sample
-#'     or to use precise boundaries. Bounding box is much faster for testing purposes (default)
-#'
-#' @returns plot (ggplot)
+#' @returns Nothing
 #'
 #' @export
-map_test <- function(
-    iso3,
-    use_bbox =T
-) {
-
-  gdf_sample_pts <- sample_pts_iso3(iso3=iso3,use_bbox = use_bbox)
-
+map_test <- function(iso3, dir) {
   p <- gg_map$gg_map(iso3) +
     geom_centroids$geom_centroids(iso3) +
-    map_points$map_points(iso3 = iso3,df = gdf_sample_pts,val_col =
-    # geom_cities$geom_cities(iso3) +
-    # geom_sample_pts(iso3 = iso3, use_bbox = use_bbox)+
+    geom_cities$geom_cities(iso3) +
     gg$coord_sf(
       clip = "off",
       crs = "OGC:CRS84"
@@ -98,68 +46,16 @@ map_test <- function(
       legend.position = "left",
       legend.direction = "vertical"
     )
-  return(p)
-}
 
-sample_pts_iso3 <- function(iso3,
-                            use_bbox=T
-){
-  gdf_adm0 <- get_iso3_sf$get_iso3_sf(iso3, "adm0")
-
-  random_spatial_sample(
-    poly = gdf_adm0,
-    use_bbox = use_bbox,
-    number_pt_range = 1:20,
-    value_range = 1:20000
+  iso3_ggsave$iso3_ggsave(
+    p = p,
+    iso3 = iso3,
+    fp = file.path(
+      dir,
+      paste0(iso3, ".png")
+    ),
+    crop = FALSE
   )
 
-}
-#' Generate pts for test map
-#'
-#' @param poly sf class polygon
-#' @param number_pt_range `integer` vector (default = 1:20) sampled to randomly decide how many
-#'    pts will be mapped
-#' @param value_range `integer` vector (defaults 1:20000) sampled to assign values to pts.
-#'    might be useful to have it sample a log distribution instead
-#' @param use_bbox `logical` if TRUE (default) samples will be drawn from the bounding box
-#'    of the polygon, if FALSE sampled withing the polygon. It's mainly a feature to
-#'    ease development as sampling withing bbox is much faster
-#'
-#' @return sf class data.frame with point geometry
-#' @export
-#'
-#' @examples \dontrun{
-#' library(sf)
-#' library(dplyr)
-#' file_name <- system.file("shape/nc.shp", package="sf")
-#' nc_counties <- st_read(file_name)
-#' alleghany_county <- nc_counties |>
-#'     filter(NAME == "Alleghany")
-#'
-#' pts_sampled_bbox <- random_spatial_sample(
-#'                      poly = alleghany_county,
-#'                      use_bbox = TRUE,
-#'                      number_pt_range = 1:20,
-#'                      value_range = 1:20000
-#'                      )
-#' }
-random_spatial_sample <- function(poly,
-                                  use_bbox = TRUE,
-                                  number_pt_range = 1:20,
-                                  value_range = 1:20000
-){
-  num_pts <- sample(x = number_pt_range,size = 1,replace = TRUE)
-
-  if (use_bbox) {
-    sample_region <- sf$st_bbox(poly) |>
-      sf$st_as_sfc()
-  } else {
-    sample_region <- poly
-  }
-
-  pts_sample <- sf$st_sample(x = sample_region,size = num_pts) |>
-    sf$st_as_sf()
-
-  pts_sample$value <- sample(value_range, num_pts, replace = TRUE)
-  pts_sample
+  invisible(NULL)
 }
