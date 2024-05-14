@@ -21,7 +21,7 @@ info <- function(df_alerts, df_wrangled, df_raw) {
       further_information = as.character(
         glue$glue(
           'Access ACLED conflict data for {country} directly <a href="{hdx_url}">on HDX</a>. ',
-          'For more granular data, analysis, and context, visit the ',
+          "For more granular data, analysis, and context, visit the ",
           '<a href="{source_url}">ACLED website</a>.'
         )
       )

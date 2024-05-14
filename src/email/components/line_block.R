@@ -9,6 +9,7 @@ box::use(glue)
 #'
 #' @export
 add_line <- function() {
+  # nolint start
   '<table border="0" cellpadding="0" cellspacing="0" width="100%" class="mcnDividerBlock" style="min-width:100%;">
     <tbody class="mcnDividerBlockOuter">
         <tr>
@@ -28,4 +29,5 @@ add_line <- function() {
         </tr>
     </tbody>
 </table>'
+  # nolint end
 }

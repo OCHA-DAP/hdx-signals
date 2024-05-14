@@ -26,6 +26,7 @@ add_text <- function(text = "", header = "", header_level = 2, header_id = NULL)
     ""
   } else {
     glue$glue(
+      # nolint start
       '<table border="0" cellpadding="0" cellspacing="0" width="100%" class="mcnTextBlock" style="min-width:100%;">
     <tbody class="mcnTextBlockOuter">
         <tr>
@@ -62,6 +63,7 @@ add_text <- function(text = "", header = "", header_level = 2, header_id = NULL)
         </tr>
     </tbody>
 </table>'
+      # nolint end
     )
   }
 }

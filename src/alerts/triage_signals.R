@@ -169,7 +169,7 @@ approve_signals <- function(df, fn_signals, test) {
       # and then empties the indicator one
       cs$update_az_file(df_core_signals, "output/signals.parquet")
       save_core_signals_hdx(df_core_signals)
-      cs$update_az_file(df[0,], fn_signals)
+      cs$update_az_file(df[0, ], fn_signals)
     } else {
       new_input <- readline(
         paste0(
@@ -181,7 +181,7 @@ approve_signals <- function(df, fn_signals, test) {
       )
       if (new_input == "DELETE") {
         delete_campaign_content(df)
-        cs$update_az_file(df[0,], fn_signals)
+        cs$update_az_file(df[0, ], fn_signals)
       } else {
         message(
           "You have not deleted the content in ",
@@ -196,7 +196,7 @@ approve_signals <- function(df, fn_signals, test) {
     # replace the campaign content with the deleted stuff
     df_deleted <- delete_campaign_content(df)
     if (test) {
-      df_deleted <- df_deleted[0,]
+      df_deleted <- df_deleted[0, ]
     }
 
     cs$update_az_file(

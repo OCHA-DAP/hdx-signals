@@ -22,11 +22,15 @@ box::use(../../utils/formatters)
 #'
 #' @export
 plot_ts <- function(
-    df, val_col, y_axis, title, subtitle = gg$waiver(), caption = gg$waiver()
-) {
+    df,
+    val_col,
+    y_axis,
+    title,
+    subtitle = gg$waiver(),
+    caption = gg$waiver()) {
   df |>
     dplyr$filter(
-      max(date) - date <= 365*5
+      max(date) - date <= 365 * 5
     ) |>
     gg$ggplot(
       mapping = gg$aes(

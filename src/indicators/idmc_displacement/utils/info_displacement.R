@@ -32,7 +32,8 @@ info <- function(df_alerts, df_wrangled, df_raw) {
     dplyr$group_by(iso3, date) |>
     dplyr$filter(
       displacement_end_date >= date - lubridate$days(30),
-      displacement_start_date <= date | (Sys.Date() - displacement_start_date <= 90 & Sys.Date() - date <= 90) # keep recent reports for monitoring
+      # keep recent reports for monitoring
+      displacement_start_date <= date | (Sys.Date() - displacement_start_date <= 90 & Sys.Date() - date <= 90)
     ) |>
     dplyr$arrange(
       dplyr$desc(displacement_start_date)
@@ -56,7 +57,7 @@ info <- function(df_alerts, df_wrangled, df_raw) {
       )
     ) |>
     dplyr$summarize( # only keep the first 3 unique URLs
-      other_urls = paste(unique(event_url)[1:min(3, length(unique(event_url)))], collapse = "; "),
+      other_urls = paste(unique(event_url)[seq_len(min(3, length(unique(event_url))))], collapse = "; "),
       other_urls_html = paste0(
         "<ol>\n",
         paste(unique(other_urls_html)[1:min(3, length(unique(event_url)))], collapse = "\n"),

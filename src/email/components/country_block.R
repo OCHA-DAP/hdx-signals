@@ -49,8 +49,7 @@ add_country <- function(
     other_images_captions = "",
     summary_long = "",
     further_information = "",
-    use_conditions = FALSE
-) {
+    use_conditions = FALSE) {
   paste0(
     text_block$add_text(header = paste(country, alert_level, sep = " - "), header_level = 2, header_id = iso3),
     image_block$add_image(src = plot_url, alt = plot_title),

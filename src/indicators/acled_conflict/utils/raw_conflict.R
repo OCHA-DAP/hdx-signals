@@ -34,9 +34,9 @@ raw <- function(first_run = FALSE) {
     cs$read_az_file("output/acled_conflict/raw.parquet")
   } else {
     if (first_run) {
-      start.date <- "2018-01-01"
+      start_date <- "2018-01-01"
     } else {
-      start.date <- as.character(Sys.Date() - lubridate$days(1500))
+      start_date <- as.character(Sys.Date() - lubridate$days(1500))
     }
 
     df_acled <- httr2$request(
@@ -45,7 +45,7 @@ raw <- function(first_run = FALSE) {
       httr2$req_url_query(
         key = Sys.getenv("ACLED_ACCESS_KEY"),
         email = Sys.getenv("ACLED_EMAIL_ADDRESS"),
-        timestamp = start.date,
+        timestamp = start_date,
         fields = paste(
           "iso",
           "event_date",
@@ -67,19 +67,19 @@ raw <- function(first_run = FALSE) {
         col_types = readr$cols()
       )
 
-      # since the ACLED API takes significant amount of time to call
-      # store the date we've downloaded so we don't continually call it each time
-      # on the same day
-      dplyr$tibble(
-        acled_download_date = Sys.Date(),
-        first_run = first_run
-      ) |>
+    # since the ACLED API takes significant amount of time to call
+    # store the date we've downloaded so we don't continually call it each time
+    # on the same day
+    dplyr$tibble(
+      acled_download_date = Sys.Date(),
+      first_run = first_run
+    ) |>
       cs$update_az_file("output/acled_conflict/download_date.parquet")
 
     cs$update_az_file(df_acled, "output/acled_conflict/raw.parquet")
     df_acled |>
       dplyr$filter(
-        event_date >= start.date
+        event_date >= start_date
       )
   }
 }

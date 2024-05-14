@@ -146,8 +146,8 @@ recursive_subsequent_alerts <- function(df) {
   df <- dplyr$arrange(df, date)
 
   i <- 1
-  while(i < nrow(df)) {
-    current_row <- df[i,]
+  while (i < nrow(df)) {
+    current_row <- df[i, ]
     current_date <- current_row$date
     current_level <- current_row$alert_level_numeric
 

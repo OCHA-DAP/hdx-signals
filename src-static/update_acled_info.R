@@ -36,7 +36,11 @@ df_acled_info <- df |>
       stringr$str_remove_all("\\.$") |>
       tolower() |>
       stringr$str_replace_all("\\s|\\.", "-"),
-    acled_hdx_url = as.character(glue$glue("https://data.humdata.org/dataset/{acled_hdx_country}-acled-conflict-data"))
+    acled_hdx_url = as.character(
+      glue$glue(
+        "https://data.humdata.org/dataset/{acled_hdx_country}-acled-conflict-data"
+      )
+    )
   )
 
 cs$update_az_file(

@@ -26,8 +26,13 @@ box::use(./map_theme)
 #'
 #' @export
 map_points <- function(
-    iso3, df, val_col, size, subtitle, caption = gg$waiver(), use_map_settings = TRUE
-) {
+    iso3,
+    df,
+    val_col,
+    size,
+    subtitle,
+    caption = gg$waiver(),
+    use_map_settings = TRUE) {
   gg_map$gg_map(iso3) +
     gg$geom_sf(
       data = df,
@@ -64,4 +69,3 @@ map_points <- function(
     ) +
     map_theme$map_theme(iso3 = iso3, use_map_settings = use_map_settings)
 }
-
