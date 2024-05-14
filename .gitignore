@@ -156,3 +156,7 @@ src/email/figure/*
 # auth
 global_monitoring_auth.json
 hdx_signals_auth.json
+
+# Other R files
+.Rhistory
+.Rbuildignore
