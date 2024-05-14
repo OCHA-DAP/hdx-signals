@@ -26,6 +26,27 @@ box::use(cs = ../utils/cloud_storage)
 #'
 #' @export
 check_existing_signals <- function(indicator_id, first_run, overwrite_content, fn_signals, test) {
+  check_ind_signals(
+    indicator_id = indicator_id,
+    overwrite_content = overwrite_content,
+    fn_signals = fn_signals
+  )
+
+  check_overall_signals(
+    indicator_id = indicator_id,
+    first_run = first_run,
+    fn_signals = fn_signals,
+    test = test
+  )
+}
+
+#' Check indicator signals file
+#'
+#' Checks the indicator signals file, `fn_signals`, and throws error if there
+#' are existing rows in `output/{indicator}/signals.parquet` file and
+#' `overwrite_content` is `FALSE`, or if there are no rows and `overwrite_content`
+#' is `TRUE`.
+check_ind_signals <- function(indicator_id, overwrite_content, fn_signals) {
   if (fn_signals %in% az_files) {
     num_ind_signals <- nrow(cs$read_az_file(fn_signals))
   } else {
@@ -69,10 +90,24 @@ check_existing_signals <- function(indicator_id, first_run, overwrite_content, f
       call. = FALSE
     )
   }
+}
+
+#' Check overall signals
+#'
+#' Check overall signals file, `output/signals.parquet`, and throws an error
+#' if there is no rows for `indicator_id` in the file but `first_run` is `FALSE`,
+#' or if there are existing signals for `indicator_id` and `first_run` is `TRUE`.
+#'
+#' These checks are not performed if `test` is `TRUE`.
+check_overall_signals <- function(indicator_id, first_run, fn_signals, test) {
+  # if testing, don't run these checks
+  if (test) {
+    return(invisible(NULL))
+  }
 
   # check number of confirmed signals already, doesn't matter for testing
   # calculating at module level
-  if (!test && "output/signals.parquet" %in% az_files) {
+  if ("output/signals.parquet" %in% az_files) {
     num_signals <- df_signals |>
       dplyr$filter(
         indicator_id == !!indicator_id
@@ -85,7 +120,7 @@ check_existing_signals <- function(indicator_id, first_run, overwrite_content, f
 
   # if it's first run, check there are no existing signals for this indicator_id
   # that are in the final `output/signals.parquet` file
-  if (!test && first_run && num_signals > 0) {
+  if (first_run && num_signals > 0) {
     stop(
       stringr$str_wrap(
         paste0(
@@ -101,7 +136,7 @@ check_existing_signals <- function(indicator_id, first_run, overwrite_content, f
   }
 
   # if it's not the first run and no final signals exist yet, generate an error
-  if (!test && !first_run && num_signals == 0) {
+  if (!first_run && num_signals == 0) {
     stop(
       stringr$str_wrap(
         paste0(
@@ -116,6 +151,7 @@ check_existing_signals <- function(indicator_id, first_run, overwrite_content, f
     )
   }
 }
+
 
 az_files <- cs$az_file_detect()
 if ("output/signals.parquet" %in% az_files) {

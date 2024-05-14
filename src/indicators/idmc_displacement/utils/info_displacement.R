@@ -32,7 +32,8 @@ info <- function(df_alerts, df_wrangled, df_raw) {
     dplyr$group_by(iso3, date) |>
     dplyr$filter(
       displacement_end_date >= date - lubridate$days(30),
-      displacement_start_date <= date | (Sys.Date() - displacement_start_date <= 90 & Sys.Date() - date <= 90) # keep recent reports for monitoring
+      # keep recent reports for monitoring
+      displacement_start_date <= date | (Sys.Date() - displacement_start_date <= 90 & Sys.Date() - date <= 90)
     ) |>
     dplyr$group_by(iso3, date, sources) |>
     dplyr$mutate(
@@ -47,14 +48,14 @@ info <- function(df_alerts, df_wrangled, df_raw) {
         event_url,
         '">',
         sources_num,
-        '</a></li>'
+        "</a></li>"
       )
     ) |>
     dplyr$summarize( # only keep the first 3 unique URLs
-      other_urls = paste(unique(event_url)[1:min(3, length(unique(event_url)))], collapse = "; "),
+      other_urls = paste(unique(event_url)[seq_len(min(3, length(unique(event_url))))], collapse = "; "),
       other_urls_html = paste0(
         "<ul>\n",
-        paste(unique(other_urls_html)[1:min(3, length(unique(event_url)))], collapse = "\n"),
+        paste(unique(other_urls_html)[seq_len(min(3, length(unique(event_url))))], collapse = "\n"),
         "</ul>"
       ),
       .groups = "drop"
@@ -70,8 +71,8 @@ info <- function(df_alerts, df_wrangled, df_raw) {
         glue$glue(
           'Access the data directly <a href="{hdx_url}">on HDX</a>, and see the ',
           '<a href="{source_url}">IDMC country page</a> for more information. ',
-          'Full context available in the original reports sourced by the IDMC:',
-          '\n\n{other_urls_html}'
+          "Full context available in the original reports sourced by the IDMC:",
+          "\n\n{other_urls_html}"
         )
       )
     )

@@ -70,8 +70,7 @@ generate_signals <- function(
     first_run = FALSE,
     overwrite_content = FALSE,
     test = FALSE,
-    test_filter = NULL
-) {
+    test_filter = NULL) {
   # file name differs if testing or not
   fn_signals <- paste0(
     "output/",
@@ -134,12 +133,14 @@ generate_signals <- function(
       ) |>
       dplyr$group_split() |>
       purrr$map(
-        .f = \(df) create_campaigns(
-          df_campaign_content = df,
-          indicator_id = indicator_id,
-          first_run = first_run,
-          test = FALSE
-        )
+        .f = \(df) {
+          create_campaigns(
+            df_campaign_content = df,
+            indicator_id = indicator_id,
+            first_run = first_run,
+            test = FALSE
+          )
+        }
       ) |>
       dplyr$bind_rows()
   } else {
@@ -185,7 +186,10 @@ validate_campaigns <- function(df_campaigns, df_campaign_content) {
     campaign_date = as.Date(x = integer(0), origin = "1970-01-01")
   )
 
-  if (any(dplyr$select(df_campaigns, -c(date, campaign_date)) == "ERROR", na.rm = TRUE) || !janitor$compare_df_cols_same(df_campaigns, df_check, bind_method = "rbind")) {
+  # if any errors in the data frame or incorrect columns, delete content
+  any_error <- any(dplyr$select(df_campaigns, -c(date, campaign_date)) == "ERROR", na.rm = TRUE)
+  df_incorrect <- !janitor$compare_df_cols_same(df_campaigns, df_check, bind_method = "rbind")
+  if (any_error || df_incorrect) {
     if (!gmas_test_run$gmas_test_run()) {
       delete_campaign_content(df_campaign_content)
       delete_campaign_content(df_campaigns)
@@ -216,5 +220,5 @@ validate_campaigns <- function(df_campaigns, df_campaign_content) {
     }
   }
 
-  df_campaigns[,names(df_check)]
+  df_campaigns[, names(df_check)]
 }

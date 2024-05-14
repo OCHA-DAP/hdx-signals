@@ -85,50 +85,64 @@ mc_subscriber_emails <- function(df_ind, iso3, test) {
   # filter members to the specific indicator, by interest if a public subscription
   # otherwise we filter by manual tagging for indicators that are privately added
   if (!is.na(df_ind$mc_interest)) {
-    interest_id <- df_interests$interest_id[match(df_ind$mc_interest, df_interests$name)]
-    member_emails <- purrr$map_chr(
-      .x = member_list,
-      .f = \(member) {
-        ind_interest <- member$interests[[interest_id]]
-        if (ind_interest && (!test || "hdx-signals-test" %in% purrr$map_chr(member$tags, \(tag) tag$name))) {
-          # only check for countries if they were interested in the indicator
-          # returns email if they were signed up to any of the geographies signalled
-          # otherwise it returns an empty character vector
-          if (any(as.logical(member$interests[geo_ids]))) {
-            return(
-              member$email_address
-            )
-          }
-        }
-        return(
-          NA_character_
-        )
-      }
-    )
+    member_emails <- interest_emails(interest = df_ind$mc_interest, geo_ids = geo_ids, test = test)
   } else {
     # keeps members tagged with this indicator
-    member_emails <- purrr$map_chr(
-      .x = member_list,
-      .f = \(member) {
-        member_tags <- purrr$map_chr(member$tags, \(tag) tag$name)
-        tag_interest <- df_ind$mc_tag %in% member_tags
-        if (tag_interest && (!test || "hdx-signals-test" %in% member_tags)) {
-          # only check for countries if they were interested in the indicator
-          # returns email if they were signed up to any of the geographies signalled
-          # otherwise it returns an empty character vector
-          if (any(as.logical(member$interests[geo_ids]))) {
-            return(
-              member$email_address
-            )
-          }
-        }
-        return(
-          NA_character_
-        )
-      }
-    )
+    member_emails <- tag_emails(interest_tag = df_ind$mc_tag, geo_ids = geo_ids, test = test)
   }
   member_emails[!is.na(member_emails)]
+}
+
+#' Returns emails for specific indicator interest
+#'
+#' Gets emails for interest and geo_ids.
+interest_emails <- function(interest, geo_ids, test) {
+  interest_id <- df_interests$interest_id[match(interest, df_interests$name)]
+  purrr$map_chr(
+    .x = member_list,
+    .f = \(member) {
+      ind_interest <- member$interests[[interest_id]]
+      if (ind_interest && (!test || "hdx-signals-test" %in% purrr$map_chr(member$tags, \(tag) tag$name))) {
+        # only check for countries if they were interested in the indicator
+        # returns email if they were signed up to any of the geographies signalled
+        # otherwise it returns an empty character vector
+        if (any(as.logical(member$interests[geo_ids]))) {
+          return(
+            member$email_address
+          )
+        }
+      }
+      return(
+        NA_character_
+      )
+    }
+  )
+}
+
+#' Returns emails for indicator tags
+#'
+#' Gets emails for indicator tags based on the tag, geo_ids, and test
+tag_emails <- function(interest_tag, geo_ids, test) {
+  purrr$map_chr(
+    .x = member_list,
+    .f = \(member) {
+      member_tags <- purrr$map_chr(member$tags, \(tag) tag$name)
+      tag_interest <- tag_interest %in% member_tags
+      if (tag_interest && (!test || "hdx-signals-test" %in% member_tags)) {
+        # only check for countries if they were interested in the indicator
+        # returns email if they were signed up to any of the geographies signalled
+        # otherwise it returns an empty character vector
+        if (any(as.logical(member$interests[geo_ids]))) {
+          return(
+            member$email_address
+          )
+        }
+      }
+      return(
+        NA_character_
+      )
+    }
+  )
 }
 
 #' Returns the archive segment ID

@@ -1,0 +1,5 @@
+linters: linters_with_defaults(
+  line_length_linter = lintr::line_length_linter(120),
+  object_name_linter(styles = c("snake_case", "symbols"), regexes = "^[{]"), # https://github.com/r-lib/lintr/issues/1926
+  object_usage_linter = NULL) # box support needed https://github.com/r-lib/lintr/issues/2060
+encoding: "UTF-8"

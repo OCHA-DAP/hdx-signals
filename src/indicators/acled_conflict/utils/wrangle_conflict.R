@@ -12,10 +12,8 @@ box::use(../../../../src/utils/country_codes)
 #' alerts.
 #'
 #' * Creates an `iso3` column.
-#' * Fills in all dates from the beginning of
-#'     coverage (derived from
-#'     https://acleddata.com/acleddatanew/wp-content/uploads/dlm_uploads/2019/01/ACLED_Country-and-Time-Period-coverage_updatedFeb2022.pdf)
-#'     and updated in `src-static/update_acled_start.R`. If not `first_run`,
+#' * Fills in all dates from the beginning of coverage
+#'     (updated in `src-static/update_acled_start.R`). If not `first_run`,
 #'     only fills in to the start date of when the data was downloaded.
 #' * Summarize all country-date dyads to get sum of fatalities and paste together
 #'     all notes information.

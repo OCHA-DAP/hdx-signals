@@ -53,9 +53,7 @@ plot <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
 #' @param date Date of the alert. Not used in the plot.
 #'
 #' @returns Plot of cholera for that wrangled data
-displacement_ts <- function(
-    df_wrangled, df_raw, title, date
-) {
+displacement_ts <- function(df_wrangled, df_raw, title, date) {
   caption <- paste(
     "Data from the IDMC, http://www.internal-displacement.org",
     paste("Accessed", formatters$format_date(Sys.Date())),

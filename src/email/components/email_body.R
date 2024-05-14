@@ -43,8 +43,7 @@ create_body <- function(
     summary_long = "",
     summary_short = "",
     further_information = "",
-    use_conditions = FALSE
-) {
+    use_conditions = FALSE) {
   paste0(
     intro_block$add_intro(
       title = title,
@@ -91,4 +90,3 @@ create_body <- function(
     )
   )
 }
-

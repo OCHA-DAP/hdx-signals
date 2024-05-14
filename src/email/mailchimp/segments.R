@@ -55,8 +55,7 @@ mc_static_conditions <- function(segment_id) {
 mc_merge_conditions <- function(
     field_id,
     value_string,
-    op = c("contains", "is")
-) {
+    op = c("contains", "is")) {
   op <- rlang$arg_match(op)
   list(
     condition_type = "SelectMerge",

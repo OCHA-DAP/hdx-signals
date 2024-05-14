@@ -53,9 +53,7 @@ map <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
 #' @param date Date of the alert.
 #'
 #' @returns Plot of cholera for that wrangled data
-displacement_map <- function(
-    df_wrangled, df_raw, title, date
-) {
+displacement_map <- function(df_wrangled, df_raw, title, date) {
   caption <- paste(
     "Data from the IDMC, http://www.internal-displacement.org",
     paste("Accessed", formatters$format_date(Sys.Date())),
