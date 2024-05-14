@@ -92,18 +92,18 @@ map_test <- function(iso3, dir) {
 
 ggsave_map_points_test <- function(
     iso3,
-    use_bbox =T,
+    use_bbox = TRUE,
     pt_value_name,
     pt_value_label,
-    sample_pt_number_range=1:20,
-    sample_pt_value_range=1:20000,
+    sample_pt_number_range = 1:20,
+    sample_pt_value_range = 1:20000,
     subtitle,
     map_settings = df_map_settings,
     out_dir
-    ){
+) {
 
   # make file path
-  base_fp <- paste0(iso3,"_map",".png")
+  base_fp <- paste0(iso3, "_map", ".png")
   fp <- file.path(out_dir, base_fp)
 
   # filter map settings for dimensions
@@ -112,12 +112,12 @@ ggsave_map_points_test <- function(
   # make plot
   p <- map_with_points_test(
     iso3,
-    use_bbox =use_bbox,
-    pt_value_name=pt_value_name,
-    pt_value_label=pt_value_label,
-    sample_pt_number_range=sample_pt_number_range,
-    sample_pt_value_range=sample_pt_value_range,
-    subtitle=subtitle
+    use_bbox = use_bbox,
+    pt_value_name = pt_value_name,
+    pt_value_label = pt_value_label,
+    sample_pt_number_range = sample_pt_number_range,
+    sample_pt_value_range = sample_pt_value_range,
+    subtitle = subtitle
   )
 
   gg$ggsave(
@@ -151,15 +151,15 @@ map_with_points_test  <- function(
     iso3,
     pt_value_name,
     pt_value_label,
-    sample_pt_number_range=1:20,
-    sample_pt_value_range=1:20000,
+    sample_pt_number_range = 1:20,
+    sample_pt_value_range = 1:20000,
     use_bbox = TRUE,
     subtitle
 ) {
   gdf_sample_pts <- sample_pts_iso3(
-    iso3=iso3,
+    iso3 = iso3,
     use_bbox = use_bbox,
-    number_pt_range= sample_pt_number_range,
+    number_pt_range = sample_pt_number_range,
     value_range = sample_pt_value_range
     )
 
@@ -186,11 +186,11 @@ map_with_points_test  <- function(
 #' @return sf class data.frame with point geometry
 #' @export
 
-sample_pts_iso3 <- function(iso3,
-                            use_bbox=T,
-                            number_pt_range=1:20,
-                            value_range= 1:20000
-){
+sample_pts_iso3 <- function(
+    iso3,
+    use_bbox = TRUE,
+    number_pt_range = 1:20,
+    value_range = 1:20000) {
   gdf_adm0 <- get_iso3_sf$get_iso3_sf(iso3, "adm0")
 
   random_spatial_sample(
@@ -230,12 +230,12 @@ sample_pts_iso3 <- function(iso3,
 #'                      value_range = 1:20000
 #'                      )
 #' }
-random_spatial_sample <- function(poly,
-                                  use_bbox = TRUE,
-                                  number_pt_range = 1:20,
-                                  value_range = 1:20000
-){
-  num_pts <- sample(x = number_pt_range,size = 1,replace = TRUE)
+random_spatial_sample <- function(
+    poly,
+    use_bbox = TRUE,
+    number_pt_range = 1:20,
+    value_range = 1:20000) {
+  num_pts <- sample(x = number_pt_range, size = 1, replace = TRUE)
 
   if (use_bbox) {
     sample_region <- sf$st_bbox(poly) |>
@@ -244,7 +244,7 @@ random_spatial_sample <- function(poly,
     sample_region <- poly
   }
 
-  pts_sample <- sf$st_sample(x = sample_region,size = num_pts) |>
+  pts_sample <- sf$st_sample(x = sample_region, size = num_pts) |>
     sf$st_as_sf()
 
   pts_sample$value <- sample(value_range, num_pts, replace = TRUE)
