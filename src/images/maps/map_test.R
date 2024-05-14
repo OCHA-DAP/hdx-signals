@@ -19,9 +19,7 @@ box::use(./iso3_ggsave)
 #' @returns Nothing
 #'
 #' @export
-map_test <- function(
-    iso3, dir
-) {
+map_test <- function(iso3, dir) {
   p <- gg_map$gg_map(iso3) +
     geom_centroids$geom_centroids(iso3) +
     geom_cities$geom_cities(iso3) +

@@ -66,7 +66,7 @@ validate_alerts <- function(df) {
     )
   }
 
-  df[,names(df_check)]
+  df[, names(df_check)]
 }
 
 #' Add alert level

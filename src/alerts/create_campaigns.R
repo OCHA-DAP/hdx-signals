@@ -35,8 +35,7 @@ create_campaigns <- function(
     df_campaign_content,
     indicator_id,
     first_run = FALSE,
-    test = FALSE
-) {
+    test = FALSE) {
   if (nrow(df_campaign_content) == 0) {
     # if the content data frame is empty, just return empty campaigns
     return(
@@ -137,8 +136,7 @@ create_campaign <- function(
     archive,
     archive_url,
     names_paste,
-    test
-) {
+    test) {
   template_id <- tryCatch(
     {
       # create the email template and add to Mailchimp

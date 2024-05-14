@@ -23,11 +23,19 @@ box::use(cs = ../src/utils/cloud_storage)
 #' @returns Shapefile of points for the country
 update_cities_sf <- function(iso3) {
   if (iso3 == "XKX") {
-    cities_sf <- create_point_sf(lat = 42.67272, lon = 21.16688, name = "Pristina")
+    cities_sf <- create_point_sf(
+      lat = 42.67272,
+      lon = 21.16688,
+      name = "Pristina"
+    )
   } else if (iso3 == "NRU") {
     cities_sf <- create_point_sf(lat = -0.5456, lon = 166.9157, name = "Yaren")
   } else {
-    cities_sf <- dplyr$filter(pop_sf, adm0_a3 == iso3, !(name %in% c("Laayoune", "Monaco", "Singapore", "Vatican City")))
+    cities_sf <- dplyr$filter(
+      pop_sf,
+      adm0_a3 == iso3,
+      !(name %in% c("Laayoune", "Monaco", "Singapore", "Vatican City"))
+    )
   }
 
   if (nrow(cities_sf) > 0) {

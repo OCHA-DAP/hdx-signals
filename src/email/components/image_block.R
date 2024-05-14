@@ -20,6 +20,7 @@ add_image <- function(src, alt = "", caption = "") {
     ""
   } else {
     glue$glue(
+      # nolint start
       '<table border="0" cellpadding="0" cellspacing="0" width="100%" class="mcnImageBlock" style="min-width:100%;">
     <tbody class="mcnImageBlockOuter">
             <tr>
@@ -38,6 +39,7 @@ add_image <- function(src, alt = "", caption = "") {
             </tr>
     </tbody>
 </table>'
+      # nolint end
     )
   }
 }

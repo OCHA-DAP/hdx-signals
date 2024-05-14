@@ -28,7 +28,8 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
     dplyr$group_by(iso3, date) |>
     dplyr$filter(
       displacement_end_date >= date - lubridate$days(30),
-      displacement_start_date <= date | (Sys.Date() - displacement_start_date <= 90 & Sys.Date() - date <= 90) # keep recent reports for monitoring
+      # keep recent reports for monitoring
+      displacement_start_date <= date | (Sys.Date() - displacement_start_date <= 90 & Sys.Date() - date <= 90)
     ) |>
     dplyr$summarize(
       event_info = paste(event_info, collapse = " "),
