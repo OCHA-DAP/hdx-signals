@@ -6,7 +6,7 @@ box::use(../plots/theme_signals)
 box::use(./gg_map)
 box::use(./geom_cities)
 box::use(./geom_centroids)
-# box::use(./iso3_ggsave)
+box::use(./iso3_ggsave) # prob can delete
 box::use(./map_points)
 box::use(../../utils/get_iso3_sf)
 box::use(sf)
@@ -15,6 +15,7 @@ box::use(dplyr)
 df_map_settings <- cs$read_az_file("input/iso3_map_settings.json")
 
 
+#' **Q** Should delete?
 #' Test map for ISO3
 #'
 #' Generates a test map for ISO3 code. Adds country boundaries, centroid, and
@@ -99,8 +100,7 @@ ggsave_map_points_test <- function(
     sample_pt_value_range = 1:20000,
     subtitle,
     map_settings = df_map_settings,
-    out_dir
-) {
+    out_dir) {
 
   # make file path
   base_fp <- paste0(iso3, "_map", ".png")
@@ -154,22 +154,18 @@ map_with_points_test  <- function(
     sample_pt_number_range = 1:20,
     sample_pt_value_range = 1:20000,
     use_bbox = TRUE,
-    subtitle
-) {
-  gdf_sample_pts <- sample_pts_iso3(
-    iso3 = iso3,
-    use_bbox = use_bbox,
-    number_pt_range = sample_pt_number_range,
-    value_range = sample_pt_value_range
-    )
+    subtitle) {
 
-  map_points$map_points(
-    iso3 = iso3,
-    df = gdf_sample_pts,
-    pt_value_name = pt_value_name,
-    pt_value_label = pt_value_label,
-    subtitle = subtitle
-  )
+  gdf_sample_pts <- sample_pts_iso3(iso3 = iso3,
+                                    use_bbox = use_bbox,
+                                    number_pt_range = sample_pt_number_range,
+                                    value_range = sample_pt_value_range)
+
+  map_points$map_points(iso3 = iso3,
+                        df = gdf_sample_pts,
+                        pt_value_name = pt_value_name,
+                        pt_value_label = pt_value_label,
+                        subtitle = subtitle)
 }
 
 #' Generate pts for test map from iso3 code
