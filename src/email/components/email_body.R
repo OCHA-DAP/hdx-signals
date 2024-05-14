@@ -14,7 +14,6 @@ box::use(./line_block)
 #' @param title Shock title text to go next to HDX Signals at the top of the email
 #' @param iso3 Vector of ISO3 codes
 #' @param country Vector of country names
-#' @param alert_level Vector of alert levels
 #' @param message Vector of messages
 #' @param plot Vector of URLs to plot to include
 #' @param map Vector of URLs to map to include
@@ -33,7 +32,6 @@ create_body <- function(
     title,
     iso3,
     country,
-    alert_level,
     plot_title = "",
     plot_url = "",
     map_title = "",
@@ -51,7 +49,6 @@ create_body <- function(
       title = title,
       iso3 = iso3,
       country = country,
-      alert_level = alert_level,
       summary_short = summary_short,
       use_conditions = use_conditions
     ),
@@ -61,7 +58,6 @@ create_body <- function(
         .l = list(
           iso3 = iso3,
           country = country,
-          alert_level = alert_level,
           plot_title = plot_title,
           plot_url = plot_url,
           map_title = map_title,

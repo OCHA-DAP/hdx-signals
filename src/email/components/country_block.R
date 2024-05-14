@@ -38,7 +38,6 @@ box::use(../../utils/country_codes)
 add_country <- function(
     iso3,
     country,
-    alert_level,
     plot_title = "",
     plot_url = "",
     map_title = "",
@@ -51,7 +50,7 @@ add_country <- function(
     further_information = "",
     use_conditions = FALSE) {
   paste0(
-    text_block$add_text(header = paste(country, alert_level, sep = " - "), header_level = 2, header_id = iso3),
+    text_block$add_text(header = country, header_level = 2, header_id = iso3),
     image_block$add_image(src = plot_url, alt = plot_title),
     image_block$add_image(src = map_url, alt = map_title),
     image_block$add_image(src = plot2_url, alt = plot2_title),

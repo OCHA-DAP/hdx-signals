@@ -143,7 +143,6 @@ create_campaign <- function(
       body <- email_body$create_body(
         title = campaign_details$title,
         iso3 = df_campaign_content$iso3,
-        alert_level = df_campaign_content$alert_level,
         country = df_campaign_content$country,
         plot_title = df_campaign_content$plot_title,
         plot_url = df_campaign_content$plot_url,
