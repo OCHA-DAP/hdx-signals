@@ -7,8 +7,51 @@ box::use(./geom_cities)
 box::use(./geom_centroids)
 
 box::use(sf) # used to generate points
+box::use(./map_points)
 
 #' Test map for ISO3
+#'
+#' Generates a test map for ISO3 code. Adds country boundaries, centroid, and
+#' cities, then saves the plot out to
+#'
+#' @param iso3 ISO3 code used to get base plot and cities
+#' @param use_bbox `logical` choice to use bounding box of admin 0 for creating point sample
+#'     or to use precise boundaries. Bounding box is much faster for testing purposes (default)
+#'
+#' @returns plot (ggplot)
+#'
+#' @export \dontrun{
+#' map_test2(
+#'     iso3 = "BGD",
+#'     use_bbox = T,
+#'     val_col = "value",
+#'     size=1,
+#'     subtitle = "Map test"
+#'     )
+#'}
+
+
+map_test2 <- function(
+    iso3,
+    use_bbox =T,
+    val_col,
+    size,
+    subtitle
+) {
+  gdf_sample_pts <- sample_pts_iso3(iso3=iso3,use_bbox = use_bbox)
+  map_points$map_points(
+    iso3 = iso3,
+    df = gdf_sample_pts,
+    val_col = val_col,
+    size = size,
+    subtitle = subtitle,
+    caption = caption
+    )
+}
+
+
+
+  #' Test map for ISO3
 #'
 #' Generates a test map for ISO3 code. Adds country boundaries, centroid, and
 #' cities, then saves the plot out to
@@ -24,10 +67,14 @@ map_test <- function(
     iso3,
     use_bbox =T
 ) {
+
+  gdf_sample_pts <- sample_pts_iso3(iso3=iso3,use_bbox = use_bbox)
+
   p <- gg_map$gg_map(iso3) +
     geom_centroids$geom_centroids(iso3) +
-    geom_cities$geom_cities(iso3) +
-    geom_sample_pts(iso3 = iso3, use_bbox = use_bbox)+
+    map_points$map_points(iso3 = iso3,df = gdf_sample_pts,val_col =
+    # geom_cities$geom_cities(iso3) +
+    # geom_sample_pts(iso3 = iso3, use_bbox = use_bbox)+
     gg$coord_sf(
       clip = "off",
       crs = "OGC:CRS84"
@@ -54,27 +101,19 @@ map_test <- function(
   return(p)
 }
 
-geom_sample_pts <- function(iso3,
+sample_pts_iso3 <- function(iso3,
                             use_bbox=T
 ){
   gdf_adm0 <- get_iso3_sf$get_iso3_sf(iso3, "adm0")
 
-  pts_sampled_bbox <- random_spatial_sample(
+  random_spatial_sample(
     poly = gdf_adm0,
     use_bbox = use_bbox,
     number_pt_range = 1:20,
     value_range = 1:20000
   )
 
-  gg$geom_sf(
-    data = pts_sampled_bbox,
-    fill = "blue",
-    color="blue",
-    gg$aes(size=value)
-  )
 }
-
-
 #' Generate pts for test map
 #'
 #' @param poly sf class polygon
