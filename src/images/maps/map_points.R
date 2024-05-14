@@ -3,6 +3,7 @@ box::use(scales)
 box::use(gghdx)
 box::use(lubridate)
 
+box::use(../../utils/formatters)
 box::use(../plots/theme_signals)
 box::use(./gg_map)
 box::use(./geom_cities)
@@ -52,8 +53,8 @@ map_points <- function(
     ) +
     geom_cities$geom_cities(iso3) +
     gg$scale_size_continuous(
-      breaks = scales$pretty_breaks(),
-      labels = scales$label_comma()
+      breaks = scales$breaks_pretty(n = 3),
+      labels = formatters$format_key_figures
     ) +
     gg$coord_sf(
       clip = "off",

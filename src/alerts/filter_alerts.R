@@ -118,7 +118,10 @@ filter_alerts_ongoing <- function(df_alerts, indicator_id) {
   dplyr$bind_rows(
     df_new_alerts_high,
     df_new_alerts_medium
-  )
+  ) |>
+    dplyr$arrange(
+      country
+    )
 }
 
 #' Filter alerts for the first run
