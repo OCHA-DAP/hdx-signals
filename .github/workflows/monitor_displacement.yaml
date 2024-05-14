@@ -2,7 +2,6 @@ name: Monitor IDMC displacement
 
 on:
     workflow_dispatch:
-    # TODO: Add cron schedule
       inputs:
         first_run:
           required: true
@@ -18,10 +17,19 @@ on:
           options:
             - "TRUE"
             - "FALSE"
+    schedule:
+      - cron: "0 11 * * 2"
 
 jobs:
     run:
         runs-on: ubuntu-latest
+        env:
+          IDMC_API: ${{ secrets.IDMC_API }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          DSCI_AZ_SAS: ${{ secrets.DSCI_AZ_SAS }}
+          DSCI_AZ_ENDPOINT: ${{ secrets.DSCI_AZ_ENDPOINT }}
+          MAILCHIMP_API_KEY: ${{ secrets.MAILCHIMP_API_KEY }}
+          GMAS_TEST_RUN: ${{ inputs.test || 'FALSE' }}
         steps:   
             - name: Checkout repository
               uses: actions/checkout@v3
@@ -31,4 +39,4 @@ jobs:
 
             - name: Run R monitoring script
               shell: bash
-              run: Rscript ./src/acled_conflict/update_displacement.R
+              run: Rscript ./src/idmc_displacement/update_displacement.R
