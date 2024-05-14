@@ -38,8 +38,7 @@ map <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
     df_raw = df_raw,
     image_fn = displacement_map,
     image_use = "map",
-    width = 6,
-    height = 3
+    use_map_settings = TRUE
   )
 }
 
@@ -53,9 +52,7 @@ map <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
 #' @param date Date of the alert.
 #'
 #' @returns Plot of cholera for that wrangled data
-displacement_map <- function(
-    df_wrangled, df_raw, title, date
-) {
+displacement_map <- function(df_wrangled, df_raw, title, date) {
   caption <- paste(
     "Data from the IDMC, http://www.internal-displacement.org",
     paste("Accessed", formatters$format_date(Sys.Date())),
@@ -89,8 +86,7 @@ displacement_map <- function(
     df = sf_raw,
     val_col = "figure",
     size = "Displacement",
-    title = title,
-    subtitle = "",
+    subtitle = title,
     caption = caption
   )
 }

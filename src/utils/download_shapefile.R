@@ -57,4 +57,3 @@ download_shapefile <- function(url, layer = NULL) {
     )
   }
 }
-

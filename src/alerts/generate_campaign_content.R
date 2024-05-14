@@ -35,8 +35,7 @@ generate_campaign_content <- function(
     other_images_fn = NULL,
     summary_fn = NULL,
     info_fn = NULL,
-    empty = FALSE
-) {
+    empty = FALSE) {
   df_campaigns <- df_alerts |>
     generate_images(df_wrangled, df_raw, plot_fn, "plot", empty) |>
     generate_images(df_wrangled, df_raw, map_fn, "map", empty) |>
@@ -64,7 +63,13 @@ generate_campaign_content <- function(
 #' @param empty Whether or not to return an empty data frame if `fn` is `NULL`.
 #'
 #' @returns Data frame of title, ID, and URLs for the generated images.
-generate_images <- function(df_alerts, df_wrangled, df_raw, fn = NULL, image_name = c("plot", "map", "plot2"), empty = FALSE) {
+generate_images <- function(
+    df_alerts,
+    df_wrangled,
+    df_raw,
+    fn = NULL,
+    image_name = c("plot", "map", "plot2"),
+    empty = FALSE) {
   image_name <- rlang$arg_match(image_name)
   generate_section(
     df_alerts = df_alerts,
@@ -93,7 +98,12 @@ generate_images <- function(df_alerts, df_wrangled, df_raw, fn = NULL, image_nam
 #' @param df_wrangled Wrangled data frame
 #' @param fn Function to generate the linkages to other images
 #' @param empty Whether or not to return an empty data frame if `fn` is `NULL`.
-generate_other_images <- function(df_alerts, df_wrangled, df_raw, fn = NULL, empty = FALSE) {
+generate_other_images <- function(
+    df_alerts,
+    df_wrangled,
+    df_raw,
+    fn = NULL,
+    empty = FALSE) {
   generate_section(
     df_alerts = df_alerts,
     df_wrangled = df_wrangled,
@@ -118,7 +128,12 @@ generate_other_images <- function(df_alerts, df_wrangled, df_raw, fn = NULL, emp
 #' @param df_wrangled Wrangled data frame
 #' @param fn Function to generate the linkages to other images
 #' @param empty Whether or not to return an empty data frame if `fn` is `NULL`.
-generate_summary <- function(df_alerts, df_wrangled, df_raw, fn = NULL, empty = FALSE) {
+generate_summary <- function(
+    df_alerts,
+    df_wrangled,
+    df_raw,
+    fn = NULL,
+    empty = FALSE) {
   generate_section(
     df_alerts = df_alerts,
     df_wrangled = df_wrangled,
@@ -143,7 +158,12 @@ generate_summary <- function(df_alerts, df_wrangled, df_raw, fn = NULL, empty = 
 #' @param df_wrangled Wrangled data frame
 #' @param fn Content generating function
 #' @param empty Whether or not to return an empty data frame
-generate_info <- function(df_alerts, df_wrangled, df_raw, fn = NULL, empty = FALSE) {
+generate_info <- function(
+    df_alerts,
+    df_wrangled,
+    df_raw,
+    fn = NULL,
+    empty = FALSE) {
   generate_section(
     df_alerts = df_alerts,
     df_wrangled = df_wrangled,
@@ -179,7 +199,14 @@ generate_info <- function(df_alerts, df_wrangled, df_raw, fn = NULL, empty = FAL
 #' @param fn_name Name of the function
 #' @param null_return Value to return if `fn` is `NULL`
 #' @param empty Whether or not to return an empty data frame
-generate_section <- function(df_alerts, df_wrangled, df_raw, fn, fn_name, null_return, empty) {
+generate_section <- function(
+    df_alerts,
+    df_wrangled,
+    df_raw,
+    fn,
+    fn_name,
+    null_return,
+    empty) {
   if (is.null(fn) || nrow(df_alerts) == 0) {
     if (empty) {
       section <- dplyr$tibble(.rows = nrow(df_alerts))
@@ -265,5 +292,5 @@ validate_campaign_content <- function(df_campaigns_content) {
   }
 
   # arrange data frame columns to match `df_check`
-  df_campaigns_content[,names(df_check)]
+  df_campaigns_content[, names(df_check)]
 }

@@ -7,12 +7,13 @@ box::use(./line_block)
 
 #' Create email body
 #'
-#' Create email body. Uses a set of vectors to create country blocks.
+#' Create email body. Uses a set of vectors to create country blocks. Requires
+#' the `HDX_SIGNALS_EMAIL` environment variable to specify the response email
+#' and `HDX_SIGNALS_SURVEY_LINK` to link to our feedback survey.
 #'
 #' @param title Shock title text to go next to HDX Signals at the top of the email
 #' @param iso3 Vector of ISO3 codes
 #' @param country Vector of country names
-#' @param alert_level Vector of alert levels
 #' @param message Vector of messages
 #' @param plot Vector of URLs to plot to include
 #' @param map Vector of URLs to map to include
@@ -31,7 +32,6 @@ create_body <- function(
     title,
     iso3,
     country,
-    alert_level,
     plot_title = "",
     plot_url = "",
     map_title = "",
@@ -43,14 +43,12 @@ create_body <- function(
     summary_long = "",
     summary_short = "",
     further_information = "",
-    use_conditions = FALSE
-) {
+    use_conditions = FALSE) {
   paste0(
     intro_block$add_intro(
       title = title,
       iso3 = iso3,
       country = country,
-      alert_level = alert_level,
       summary_short = summary_short,
       use_conditions = use_conditions
     ),
@@ -60,7 +58,6 @@ create_body <- function(
         .l = list(
           iso3 = iso3,
           country = country,
-          alert_level = alert_level,
           plot_title = plot_title,
           plot_url = plot_url,
           map_title = map_title,
@@ -80,8 +77,10 @@ create_body <- function(
     text_block$add_text(
       text = paste0(
         "Full documentation and source code for HDX Signals is available on ",
-        "<a href='https://github.com/OCHA-DAP/hdx-signals'>GitHub</a>. Reach ",
-        "out to <a href='mailto:",
+        "<a href='https://github.com/OCHA-DAP/hdx-signals'>GitHub</a>. Provide ",
+        "feedback through our <a href='",
+        Sys.getenv("HDX_SIGNALS_SURVEY_LINK"),
+        "'>user survey</a>, or reach out to <a href='mailto:",
         Sys.getenv("HDX_SIGNALS_EMAIL"),
         "'>",
         Sys.getenv("HDX_SIGNALS_EMAIL"),
@@ -91,4 +90,3 @@ create_body <- function(
     )
   )
 }
-

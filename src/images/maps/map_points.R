@@ -3,6 +3,7 @@ box::use(scales)
 box::use(gghdx)
 box::use(lubridate)
 
+box::use(../../utils/formatters)
 box::use(../plots/theme_signals)
 box::use(./gg_map)
 box::use(./geom_cities)
@@ -25,8 +26,13 @@ box::use(./map_theme)
 #'
 #' @export
 map_points <- function(
-    iso3, df, val_col, size, subtitle, caption = gg$waiver(), use_map_settings = TRUE
-) {
+    iso3,
+    df,
+    val_col,
+    size,
+    subtitle,
+    caption = gg$waiver(),
+    use_map_settings = TRUE) {
   gg_map$gg_map(iso3) +
     gg$geom_sf(
       data = df,
@@ -34,7 +40,7 @@ map_points <- function(
         size = .data[[val_col]]
       ),
       color = gghdx$hdx_hex("sapphire-hdx"),
-      alpha = 0.8
+      alpha = 0.6
     ) +
     gg$geom_sf(
       data = df,
@@ -47,8 +53,8 @@ map_points <- function(
     ) +
     geom_cities$geom_cities(iso3) +
     gg$scale_size_continuous(
-      breaks = scales$pretty_breaks(),
-      labels = scales$label_comma()
+      breaks = scales$breaks_pretty(n = 3),
+      labels = formatters$format_key_figures
     ) +
     gg$coord_sf(
       clip = "off",
@@ -63,4 +69,3 @@ map_points <- function(
     ) +
     map_theme$map_theme(iso3 = iso3, use_map_settings = use_map_settings)
 }
-

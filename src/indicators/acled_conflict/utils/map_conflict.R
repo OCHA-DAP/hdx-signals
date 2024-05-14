@@ -48,9 +48,7 @@ map <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
 #' @param date Date of the alert.
 #'
 #' @returns Plot of cholera for that wrangled data
-conflict_map <- function(
-    df_wrangled, df_raw, title, date
-) {
+conflict_map <- function(df_wrangled, df_raw, title, date) {
   caption <- paste(
     "Data from the Armed Conflict Location & Event Data Project",
     paste("Created", formatters$format_date(Sys.Date())),
