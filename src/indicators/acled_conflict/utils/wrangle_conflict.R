@@ -36,7 +36,8 @@ wrangle <- function(df_raw, first_run = FALSE) {
       fatalities = as.numeric(fatalities)
     ) |>
     dplyr$group_by(
-      iso3, date = event_date
+      iso3,
+      date = event_date
     ) |>
     dplyr$summarize(
       fatalities = sum(fatalities),
@@ -48,7 +49,8 @@ wrangle <- function(df_raw, first_run = FALSE) {
       by = "iso3"
     ) |>
     dplyr$group_by(
-      iso3, acled_hdx_url
+      iso3,
+      acled_hdx_url
     ) |>
     tidyr$complete( # completes data between start_date from ACLED report and max date
       date = seq.Date(min(min(date), max(start_date, start_date_min)), max(date), by = "day"),

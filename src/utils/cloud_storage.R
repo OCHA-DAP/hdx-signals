@@ -47,8 +47,7 @@ read_az_file <- function(name, stage = c("prod", "dev")) {
     )
   )
 
-  switch(
-    fileext,
+  switch(fileext,
     parquet = arrow$read_parquet(tf),
     geojson = sf$st_read(tf, quiet = TRUE),
     json = dplyr$as_tibble(jsonlite$read_json(tf, simplifyVector = TRUE)),
@@ -84,8 +83,7 @@ update_az_file <- function(df, name, stage = c("prod", "dev")) {
   fileext <- tools$file_ext(name)
   tf <- tempfile(fileext = paste0(".", fileext))
 
-  switch(
-    fileext,
+  switch(fileext,
     csv = readr$write_csv(x = df, file = tf),
     parquet = arrow$write_parquet(x = df, sink = tf),
     json = jsonlite$write_json(x = df, path = tf),

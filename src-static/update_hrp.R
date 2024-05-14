@@ -14,7 +14,7 @@ box::use(cs = ../src/utils/cloud_storage)
 tf <- tempfile(fileext = ".xlsx")
 
 download.file(
-  url = "https://data.humdata.org/dataset/6cb35657-975e-46a0-99a7-a558eddb924f/resource/28be64d3-adaf-4f61-887c-87a8b5d9c625/download/section3_plan_tables_2024-n.xlsx", #nolint
+  url = "https://data.humdata.org/dataset/6cb35657-975e-46a0-99a7-a558eddb924f/resource/28be64d3-adaf-4f61-887c-87a8b5d9c625/download/section3_plan_tables_2024-n.xlsx", # nolint
   destfile = tf
 )
 

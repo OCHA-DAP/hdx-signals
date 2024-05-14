@@ -154,7 +154,7 @@ download_adm0_sf <- function(iso3) {
     )
   } else if (iso3 == "AB9") {
     download_shapefile(
-      url = "https://open.africa/dataset/56d1d233-0298-4b6a-8397-d0233a1509aa/resource/76c698c9-e282-4d00-9202-42bcd908535b/download/ssd_admbnda_abyei_imwg_nbs_20180401.zip", #nolint
+      url = "https://open.africa/dataset/56d1d233-0298-4b6a-8397-d0233a1509aa/resource/76c698c9-e282-4d00-9202-42bcd908535b/download/ssd_admbnda_abyei_imwg_nbs_20180401.zip", # nolint
       layer = "ssd_admbnda_abyei_imwg_nbs_20180401"
     )
   } else if (iso3 == "XKX") {
@@ -163,14 +163,14 @@ download_adm0_sf <- function(iso3) {
       layer = "whosonfirst-data-admin-xk-country-polygon"
     )
   } else if (iso3 == "IOT") {
-    download_shapefile("https://public.opendatasoft.com/api/explore/v2.1/catalog/datasets/world-administrative-boundaries/exports/geojson?lang=en&timezone=Europe%2FLondon") |> #nolint
+    download_shapefile("https://public.opendatasoft.com/api/explore/v2.1/catalog/datasets/world-administrative-boundaries/exports/geojson?lang=en&timezone=Europe%2FLondon") |> # nolint
       dplyr$filter(
         iso3 == "IOT"
       )
   } else if (iso3 == "UMI") {
     download_shapefile("https://data.geocode.earth/wof/dist/shapefile/whosonfirst-data-admin-um-latest.zip")
   } else if (iso3 == "WLF") {
-    download_shapefile("https://pacificdata.org/data/dataset/0319bab7-4b09-4fcc-81d6-e2c2a8694078/resource/9f6d96d5-02e5-44d8-bb42-4244bde23aa5/download/wf_tsz_pol_april2022.zip") #nolint
+    download_shapefile("https://pacificdata.org/data/dataset/0319bab7-4b09-4fcc-81d6-e2c2a8694078/resource/9f6d96d5-02e5-44d8-bb42-4244bde23aa5/download/wf_tsz_pol_april2022.zip") # nolint
   } else if (iso3 == "FJI") {
     # make sure that we shift the coordinates so it plots correctly
     download_fieldmaps_sf("FJI") |>
