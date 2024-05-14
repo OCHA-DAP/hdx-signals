@@ -13,12 +13,12 @@ mc_api <- function(lists_api = TRUE) {
   base_request <- httr2$request(
     "https://us14.api.mailchimp.com/3.0"
   ) |>
-  httr2$req_retry(
-    max_tries = 5
-  ) |>
-  httr2$req_auth_bearer_token(
-    token = Sys.getenv("MAILCHIMP_API_KEY")
-  )
+    httr2$req_retry(
+      max_tries = 5
+    ) |>
+    httr2$req_auth_bearer_token(
+      token = Sys.getenv("MAILCHIMP_API_KEY")
+    )
 
   if (lists_api) {
     base_request <- httr2$req_url_path_append(

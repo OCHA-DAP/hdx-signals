@@ -26,7 +26,7 @@ alert_daily_ts <- function(df, val_col, min_val, rs_days = 30) {
     ) |>
     dplyr$mutate(
       `1` = .data[[val_col]] >= zoo$rollmaxr(.data[[val_col]], k = 366, fill = NA) & .data[[val_col]] >= min_val,
-      `2` = .data[[val_col]] >= zoo$rollmaxr(.data[[val_col]], k = 365*3 + 1, fill = NA) & .data[[val_col]] >= min_val
+      `2` = .data[[val_col]] >= zoo$rollmaxr(.data[[val_col]], k = 1096, fill = NA) & .data[[val_col]] >= min_val
     ) |>
     tidyr$pivot_longer(
       cols = dplyr$matches("^[1-2]$"),

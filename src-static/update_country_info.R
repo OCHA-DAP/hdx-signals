@@ -47,7 +47,9 @@ df_centroids <- purrr$map(
 #### COUNTRY NAMES ####
 #######################
 
-df_ocha_names <- readr$read_csv("https://docs.google.com/spreadsheets/d/1NjSI2LaS3SqbgYc0HdD8oIb7lofGtiHgoKKATCpwVdY/export?format=csv&gid=1088874596") |>
+df_ocha_names <- readr$read_csv(
+  "https://docs.google.com/spreadsheets/d/1NjSI2LaS3SqbgYc0HdD8oIb7lofGtiHgoKKATCpwVdY/export?format=csv&gid=1088874596"
+) |>
   dplyr$slice(-1) |>
   readr$type_convert() |>
   dplyr$transmute(

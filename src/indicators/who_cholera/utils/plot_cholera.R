@@ -49,9 +49,7 @@ plot <- function(df_alerts, df_wrangled, preview = FALSE) {
 #' @param title Plot title.
 #'
 #' @returns Plot of cholera for that wrangled data
-cholera_ts <- function(
-    df_wrangled, title
-) {
+cholera_ts <- function(df_wrangled, title) {
   plot_ts$plot_ts(
     df = df_wrangled,
     val_col = "cholera_cases",

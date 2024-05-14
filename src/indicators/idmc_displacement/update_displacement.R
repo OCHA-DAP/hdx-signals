@@ -1,5 +1,6 @@
 box::use(dplyr)
 
+# indicator utilities
 box::use(./utils/raw_displacement)
 box::use(./utils/wrangle_displacement)
 box::use(./utils/alert_displacement)
@@ -9,8 +10,6 @@ box::use(./utils/summary_displacement)
 box::use(./utils/map_displacement)
 
 box::use(../../alerts/generate_signals[generate_signals])
-box::use(../../alerts/triage_signals)
-box::use(../../alerts/delete_campaign_content)
 
 df_raw <- raw_displacement$raw()
 df_wrangled <- wrangle_displacement$wrangle(df_raw)
@@ -24,8 +23,7 @@ df_conflict <- generate_signals(
   plot_fn = plot_displacement$plot,
   info_fn = info_displacement$info,
   summary_fn = summary_displacement$summary,
-  map_fn = map_displacement$map,
-  first_run = TRUE
+  map_fn = map_displacement$map
 )
 
 df_disaster <- generate_signals(
@@ -36,6 +34,5 @@ df_disaster <- generate_signals(
   plot_fn = plot_displacement$plot,
   info_fn = info_displacement$info,
   summary_fn = summary_displacement$summary,
-  map_fn = map_displacement$map,
-  first_run = TRUE
+  map_fn = map_displacement$map
 )

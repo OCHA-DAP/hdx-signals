@@ -15,7 +15,9 @@ alert <- function(df_wrangled) {
       phase %in% c("p3plus", "p4plus", "phase5")
     ) |>
     dplyr$filter(
-      `percentage-current` > `percentage-current_lag` | `percentage-current` < `percentage-projected` | `percentage-current` < `percentage-second_projected`
+      `percentage-current` > `percentage-current_lag` |
+        `percentage-current` < `percentage-projected` |
+        `percentage-current` < `percentage-second_projected`
     ) |>
     dplyr$mutate(
       phase_level = readr$parse_number(phase)

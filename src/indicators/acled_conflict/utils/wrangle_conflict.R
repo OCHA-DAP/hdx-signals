@@ -12,10 +12,8 @@ box::use(../../../../src/utils/country_codes)
 #' alerts.
 #'
 #' * Creates an `iso3` column.
-#' * Fills in all dates from the beginning of
-#'     coverage (derived from
-#'     https://acleddata.com/acleddatanew/wp-content/uploads/dlm_uploads/2019/01/ACLED_Country-and-Time-Period-coverage_updatedFeb2022.pdf)
-#'     and updated in `src-static/update_acled_start.R`. If not `first_run`,
+#' * Fills in all dates from the beginning of coverage
+#'     (updated in `src-static/update_acled_start.R`). If not `first_run`,
 #'     only fills in to the start date of when the data was downloaded.
 #' * Summarize all country-date dyads to get sum of fatalities and paste together
 #'     all notes information.
@@ -38,7 +36,8 @@ wrangle <- function(df_raw, first_run = FALSE) {
       fatalities = as.numeric(fatalities)
     ) |>
     dplyr$group_by(
-      iso3, date = event_date
+      iso3,
+      date = event_date
     ) |>
     dplyr$summarize(
       fatalities = sum(fatalities),
@@ -50,7 +49,8 @@ wrangle <- function(df_raw, first_run = FALSE) {
       by = "iso3"
     ) |>
     dplyr$group_by(
-      iso3, acled_hdx_url
+      iso3,
+      acled_hdx_url
     ) |>
     tidyr$complete( # completes data between start_date from ACLED report and max date
       date = seq.Date(min(min(date), max(start_date, start_date_min)), max(date), by = "day"),
