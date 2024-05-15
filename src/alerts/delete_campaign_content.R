@@ -3,6 +3,7 @@ box::use(tidyr)
 box::use(stringr)
 
 box::use(../email/mailchimp/delete)
+box::use(./template_data)
 
 #' Deletes campaign content from data frame
 #'
@@ -56,9 +57,16 @@ delete_campaign_content <- function(df) {
   # now drop all the columns and return the data frame of alerts
   # only do this if available
   if (all(c("iso3", "value") %in% names(df))) {
+    df_delete <- dplyr$bind_cols(
+      template_data$campaign_content_template,
+      template_data$campaign_template |>
+        dplyr$select(-iso3, -date)
+    )
     df |>
       dplyr$select(
-        iso3:value
+        -dplyr$any_of(
+          names(df_delete)
+        )
       )
   }
 }
