@@ -41,7 +41,7 @@ box::use(sf)
 #' assert_bbox_overlap(pts_1, pts_3)
 #'}
 
-assert_bbox_overlap <- function(x = pts_1, y = pts_2) {
+assert_bbox_overlap <- function(x, y) {
   x_bbox <- sf$st_bbox(x)
   y_bbox <- sf$st_bbox(y)
 
