@@ -1,6 +1,8 @@
 box::use(dplyr)
 box::use(readr)
 
+box::use(./util_alert_filter)
+
 #' Creates food insecurity alerts dataset
 #'
 #' Alerts are generated whenever the current estimate is higher than the previous
@@ -11,24 +13,7 @@ box::use(readr)
 #' @returns Alerts dataset
 alert <- function(df_wrangled) {
   df_wrangled |>
-    dplyr$filter(
-      phase %in% c("p3plus", "p4plus", "phase5")
-    ) |>
-    dplyr$filter(
-      `percentage-current` > `percentage-current_lag` |
-        `percentage-current` < `percentage-projected` |
-        `percentage-current` < `percentage-second_projected`
-    ) |>
-    dplyr$mutate(
-      phase_level = readr$parse_number(phase)
-    ) |>
-    dplyr$group_by(
-      iso3, date
-    ) |>
-    dplyr$filter(
-      phase_level == max(phase_level)
-    ) |>
-    dplyr$ungroup() |>
+    util_alert_filter$ipc_alert_filter() |>
     dplyr$transmute(
       iso3,
       indicator_name = "food_insecurity",
