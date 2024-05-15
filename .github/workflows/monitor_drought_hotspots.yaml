@@ -13,23 +13,23 @@ on:
         test:
           required: true
           type: choice
-          default: "FALSE"
+          default: "TRUE"
           options:
             - "TRUE"
             - "FALSE"
-    schedule:
-      - cron: "0 11 * * 1-5"
+    # schedule:
+    #   - cron: "0 11 * * 1-5"
 
 jobs:
     run:
         runs-on: ubuntu-latest
         env:
-
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           DSCI_AZ_SAS: ${{ secrets.DSCI_AZ_SAS }}
           DSCI_AZ_ENDPOINT: ${{ secrets.DSCI_AZ_ENDPOINT }}
           MAILCHIMP_API_KEY: ${{ secrets.MAILCHIMP_API_KEY }}
           GMAS_TEST_RUN: ${{ inputs.test || 'FALSE' }}
+          FIRST_RUN: ${{ inputs.first_run || 'FALSE' }}
         steps:   
             - name: Checkout repository
               uses: actions/checkout@v3
@@ -39,4 +39,4 @@ jobs:
 
             - name: Run R monitoring script
               shell: bash
-              run: Rscript ./src/jrc_drought_hotspots/update_drought.R
+              run: Rscript ./src/indicators/jrc_drought_hotspots/update_drought.R

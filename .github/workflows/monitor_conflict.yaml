@@ -13,12 +13,12 @@ on:
         test:
           required: true
           type: choice
-          default: "FALSE"
+          default: "TRUE"
           options:
             - "TRUE"
             - "FALSE"
-    schedule:
-      - cron: "0 11 * * 2"
+    # schedule:
+    #   - cron: "0 11 * * 2"
 
 jobs:
     run:
@@ -31,6 +31,7 @@ jobs:
           DSCI_AZ_ENDPOINT: ${{ secrets.DSCI_AZ_ENDPOINT }}
           MAILCHIMP_API_KEY: ${{ secrets.MAILCHIMP_API_KEY }}
           GMAS_TEST_RUN: ${{ inputs.test || 'FALSE' }}
+          FIRST_RUN: ${{ inputs.first_run || 'FALSE' }}
         steps:   
             - name: Checkout repository
               uses: actions/checkout@v3
@@ -40,4 +41,4 @@ jobs:
 
             - name: Run R monitoring script
               shell: bash
-              run: Rscript ./src/acled_conflict/update_conflict.R
+              run: Rscript ./src/indicators/acled_conflict/update_conflict.R

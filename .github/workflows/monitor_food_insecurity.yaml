@@ -13,7 +13,7 @@ on:
         test:
           required: true
           type: choice
-          default: "FALSE"
+          default: "TRUE"
           options:
             - "TRUE"
             - "FALSE"
@@ -30,6 +30,7 @@ jobs:
           DSCI_AZ_ENDPOINT: ${{ secrets.DSCI_AZ_ENDPOINT }}
           MAILCHIMP_API_KEY: ${{ secrets.MAILCHIMP_API_KEY }}
           GMAS_TEST_RUN: ${{ inputs.test || 'FALSE' }}
+          FIRST_RUN: ${{ inputs.first_run || 'FALSE' }}
         steps:   
             - name: Checkout repository
               uses: actions/checkout@v3
@@ -39,4 +40,4 @@ jobs:
 
             - name: Run R monitoring script
               shell: bash
-              run: Rscript ./src/ipc_food_inseurity/update_food_insecurity.R
+              run: Rscript ./src/indicators/ipc_food_inseurity/update_food_insecurity.R
