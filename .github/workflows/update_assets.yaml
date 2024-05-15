@@ -2,10 +2,20 @@ name: Update static assets
 
 on:
     workflow_dispatch:
+      inputs:
+        test:
+          required: true
+          type: choice
+          default: "FALSE"
+          options:
+            - "TRUE"
+            - "FALSE"
 
 jobs:
     run:
         runs-on: ubuntu-latest
+        env:
+          GMAS_TEST_RUN: ${{ inputs.test || 'FALSE' }}
         steps:   
             - name: Checkout repository
               uses: actions/checkout@v3

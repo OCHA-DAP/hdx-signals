@@ -1,0 +1,42 @@
+name: Monitor IPC food insecurity
+
+on:
+    workflow_dispatch:
+      inputs:
+        first_run:
+          required: true
+          type: choice
+          default: "FALSE"
+          options:
+            - "TRUE"
+            - "FALSE"
+        test:
+          required: true
+          type: choice
+          default: "FALSE"
+          options:
+            - "TRUE"
+            - "FALSE"
+    schedule:
+      - cron: "0 11 * * 1-5"
+
+jobs:
+    run:
+        runs-on: ubuntu-latest
+        env:
+
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          DSCI_AZ_SAS: ${{ secrets.DSCI_AZ_SAS }}
+          DSCI_AZ_ENDPOINT: ${{ secrets.DSCI_AZ_ENDPOINT }}
+          MAILCHIMP_API_KEY: ${{ secrets.MAILCHIMP_API_KEY }}
+          GMAS_TEST_RUN: ${{ inputs.test || 'FALSE' }}
+        steps:   
+            - name: Checkout repository
+              uses: actions/checkout@v3
+
+            - name: Set up environment
+              uses: ./
+
+            - name: Run R monitoring script
+              shell: bash
+              run: Rscript ./src/ipc_food_inseurity/update_food_insecurity.R
