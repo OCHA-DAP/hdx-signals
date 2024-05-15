@@ -3,6 +3,12 @@ description: Build R environment for monitoring
 runs:
     using: "composite"
     steps:
+        - name: Install required dependencies
+        # Solution to unstable Azure server access is to update apt-get
+        # Found on: https://github.com/actions/runner-images/issues/675
+          run: |
+            sudo apt-get update
+            sudo apt-get install -y -f libcurl4-openssl-dev libharfbuzz-dev libfribidi-dev libudunits2-dev libgdal-dev
         - name: Set up R
           uses: r-lib/actions/setup-r@v2
           with:
