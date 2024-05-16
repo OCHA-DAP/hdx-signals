@@ -36,13 +36,13 @@ df_map_settings <- cs$read_az_file("input/iso3_map_settings.json")
 #' @export
 
 map_test <- function(
-    iso3,
-    out_dir=NULL,
-    sample_n = 1:20,
-    sample_values = 1:20000,
-    use_bbox = TRUE,
-    map_settings = df_map_settings
-    ) {
+  iso3,
+  out_dir = NULL,
+  sample_n = 1:20,
+  sample_values = 1:20000,
+  use_bbox = TRUE,
+  map_settings = df_map_settings
+) {
 
   # filter map settings for dimensions
   df_ms <- dplyr$filter(df_map_settings, iso3 == !!iso3)
@@ -55,7 +55,7 @@ map_test <- function(
     use_bbox = use_bbox
   )
 
-  if(!is.null(out_dir)){
+  if (!is.null(out_dir)) {
     # make file path
     base_fp <- paste0(iso3, "_map", ".png")
     fp <- file.path(out_dir, base_fp)
@@ -87,23 +87,26 @@ map_test <- function(
 #' @return plot ggplot
 
 map_with_points_test  <- function(
-    iso3,
-    sample_n = 1:20,
-    sample_values = 1:20000,
-    use_bbox = TRUE
-    ) {
+  iso3,
+  sample_n = 1:20,
+  sample_values = 1:20000,
+  use_bbox = TRUE
+) {
 
-  gdf_sample_pts <- sample_pts_iso3(iso3 = iso3,
-                                    sample_n = sample_n,
-                                    sample_values = sample_values,
-                                    use_bbox = use_bbox
-                                    )
+  gdf_sample_pts <- sample_pts_iso3(
+    iso3 = iso3,
+    sample_n = sample_n,
+    sample_values = sample_values,
+    use_bbox = use_bbox
+  )
 
-  map_points$map_points(iso3 = iso3,
-                        df = gdf_sample_pts,
-                        val_col = "value",
-                        size = "Test bubble",
-                        subtitle = iso3)
+  map_points$map_points(
+    iso3 = iso3,
+    df = gdf_sample_pts,
+    val_col = "value",
+    size = "Test bubble",
+    subtitle = iso3
+  )
 }
 
 #' Generate pts for test map from iso3 code
