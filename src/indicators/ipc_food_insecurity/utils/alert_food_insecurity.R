@@ -2,6 +2,7 @@ box::use(dplyr)
 box::use(readr)
 box::use(tidyr)
 box::use(stringr)
+box::use(ripc)
 
 #' Creates food insecurity alerts dataset
 #'
@@ -12,12 +13,16 @@ box::use(stringr)
 #'
 #' @returns Alerts dataset
 alert <- function(df_wrangled) {
-  df_wrangled |>
+  # get general alerts
+  df_alerts <- df_wrangled |>
     dplyr$filter(
       phase %in% c("p3plus", "p4plus", "phase5"),
       `percentage-current` > `percentage-current_lag` |
         `percentage-current` < `percentage-projected` |
-        `percentage-current` < `percentage-second_projected`
+        `percentage-current` < `percentage-second_projected` |
+        phase == "phase5" & `percentage-current` > 0 |
+        phase == "phase5" & `percentage-projected` > 0 |
+        phase == "phase5" & `percentage-second_projected` > 0
     ) |>
     dplyr$select(
       -starts_with("plot_date")
@@ -53,7 +58,21 @@ alert <- function(df_wrangled) {
         `map_date-projected`,
         `map_date-current`
       ),
-      phase_level = ifelse(phase_level == 5, 5, paste0(phase_level, "+")),
+      phase_level = ifelse(phase_level == 5, "5", paste0(phase_level, "+")),
       analysis_id
+    )
+
+  # add in link information for later usage
+  # get the links based on the analysis ID
+  df_links <- ripc$ipc_get_analyses() |>
+    dplyr$select(
+      analysis_id,
+      link
+    )
+
+  df_alerts |>
+    dplyr$left_join(
+      df_links,
+      by = "analysis_id"
     )
 }

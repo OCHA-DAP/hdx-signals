@@ -4,6 +4,7 @@ box::use(./utils/alert_food_insecurity)
 box::use(./utils/plot_food_insecurity)
 box::use(./utils/summary_food_insecurity)
 box::use(./utils/map_food_insecurity)
+box::use(./utils/info_food_insecurity)
 
 box::use(../../alerts/generate_signals[generate_signals])
 
@@ -18,5 +19,7 @@ df_ipc <- generate_signals(
   plot_fn = plot_food_insecurity$plot,
   summary_fn = summary_food_insecurity$summary,
   map_fn = map_food_insecurity$map,
-  test = TRUE
+  info_fn = info_food_insecurity$info,
+  test = TRUE,
+  test_filter = c("AFG", "COD", "SSD")
 )
