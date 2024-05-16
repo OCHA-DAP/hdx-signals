@@ -3,24 +3,21 @@
 #' of the admin 0 boundary and plotted.
 
 # Implement map creation
-box::use(../../src/images/maps/map_test)
-box::use(purrr[map])
+box::use(purrr)
+
+box::use(map_test = ../../src/images/maps/map_test[map_test])
 box::use(../../src/utils/all_iso3_codes[all_iso3_codes])
 
 all_iso3 <- all_iso3_codes()
 
 all_iso3 |>
-  map(
-    \(iso3_tmp) {
-      ggsave_map_points_test(
-        iso3 = iso3_tmp,
+  purrr$map(
+    \(iso3) {
+      map_test$map_test(
+        iso3 = iso3,
+        sample_n = 1:20,
+        sample_values = 1:20000,
         use_bbox = TRUE,
-        pt_value_name = "value",
-        pt_value_label = "Test Bubble Legend",
-        sample_pt_number_range = 1:20,
-        sample_pt_value_range = 1:20000,
-        subtitle = paste0(iso3_tmp, " Test Map"),
-        map_settings = df_map_settings,
         out_dir = "map_test"
       )
     }

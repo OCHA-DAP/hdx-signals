@@ -28,8 +28,8 @@ box::use(./map_theme)
 map_points <- function(
     iso3,
     df,
-    pt_value_name,
-    pt_value_label,
+    val_col,
+    size,
     subtitle,
     caption = gg$waiver(),
     use_map_settings = TRUE) {
@@ -37,7 +37,7 @@ map_points <- function(
     gg$geom_sf(
       data = df,
       mapping = gg$aes(
-        size = .data[[pt_value_name]]
+        size = .data[[val_col]]
       ),
       color = gghdx$hdx_hex("sapphire-hdx"),
       alpha = 0.6
@@ -45,7 +45,7 @@ map_points <- function(
     gg$geom_sf(
       data = df,
       mapping = gg$aes(
-        size = .data[[pt_value_name]]
+        size = .data[[val_col]]
       ),
       color = gghdx$hdx_hex("sapphire-dark"),
       shape = 1,
@@ -63,7 +63,7 @@ map_points <- function(
     gg$labs(
       x = "",
       y = "",
-      size = pt_value_label,
+      size = size,
       subtitle = subtitle,
       caption = caption
     ) +
