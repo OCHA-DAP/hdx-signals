@@ -166,6 +166,9 @@ azure_endpoint_url <- function(service = c("blob", "file"), stage = c("prod", "d
   service <- rlang$arg_match(service)
   stage <- rlang$arg_match(stage)
   # service and stage injected into endpoint string using `{glue}`
+  print("-----")
+  print(Sys.getenv("DSCI_AZ_ENDPOINT"))
+  print("-----")
   glue$glue(Sys.getenv("DSCI_AZ_ENDPOINT"))
 }
 
