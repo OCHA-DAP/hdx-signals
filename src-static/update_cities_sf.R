@@ -3,7 +3,7 @@ box::use(dplyr)
 box::use(glue)
 box::use(purrr)
 
-box::use(./utils/download_shapefile[download_shapefile])
+box::use(../src/utils/download_shapefile[download_shapefile])
 box::use(../src/utils/all_iso3_codes[all_iso3_codes])
 box::use(cs = ../src/utils/cloud_storage)
 
