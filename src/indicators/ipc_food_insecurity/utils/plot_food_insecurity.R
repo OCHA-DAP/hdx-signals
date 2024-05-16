@@ -1,8 +1,5 @@
 box::use(dplyr)
-box::use(purrr)
 box::use(tidyr)
-box::use(stringr)
-box::use(rlang[`!!`])
 box::use(scales)
 box::use(gg = ggplot2)
 box::use(gghdx)
@@ -14,8 +11,6 @@ box::use(../../../utils/country_codes)
 box::use(../../../utils/formatters)
 box::use(../../../images/plots/theme_signals)
 box::use(../../../images/create_images)
-
-box::use(./util_alert_filter)
 
 #' Plot IPC food insecurity
 #'
@@ -29,40 +24,16 @@ box::use(./util_alert_filter)
 #' @export
 plot <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
   # add title for use in the plot
-  df_title <- df_wrangled |>
-    dplyr$filter(
-      iso3 %in% unique(df_alerts$iso3)
-    ) |>
-    util_alert_filter$ipc_alert_filter() |>
-    dplyr$group_by(iso3) |>
-    dplyr$filter(
-      date == max(date, as.Date("1500-01-01"))
-    ) |>
-    dplyr$select(
-      iso3,
-      phase_level,
-      `percentage-current`,
-      `percentage-projected`,
-      `percentage-second_projected`
-    ) |>
-    tidyr$pivot_longer(
-      dplyr$starts_with("percentage")
-    ) |>
-    dplyr$filter(
-      value == max(value, -Inf, na.rm = TRUE)
-    ) |>
-    dplyr$slice(1) |>
-    dplyr$transmute(
+  df_plot <- df_alerts |>
+    dplyr$mutate(
       title = paste0(
         scales$label_percent(accuracy = 1)(value),
         " of the population ",
-        if (stringr$str_detect(name, "projected")) "projected" else "estimated",
-        " in P",
-        if (phase_level == 5) phase_level else paste0(phase_level, "+")
+        type,
+        " to be in P",
+        phase_level
       )
     )
-
-  df_plot <- dplyr$left_join(df_alerts, df_title, by = "iso3")
 
   create_images$create_images(
     df_alerts = df_plot,
