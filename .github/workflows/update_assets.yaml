@@ -21,7 +21,7 @@ jobs:
               uses: actions/checkout@v3
 
             - name: Set up environment
-              uses: ocha-dap/hdx-signals-actions@v1
+              uses: ocha-dap/hdx-signals-actions
 
             - name: Run R scripts to update files
               shell: bash
