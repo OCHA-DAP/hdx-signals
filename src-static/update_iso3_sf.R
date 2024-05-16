@@ -6,12 +6,14 @@ box::use(dplyr)
 box::use(purrr)
 box::use(stringr)
 box::use(lwgeom)
+box::use(logger[log_info])
 
 box::use(cs = ../src/utils/cloud_storage)
 box::use(../src/utils/download_shapefile[download_shapefile])
 box::use(../src/utils/all_iso3_codes[all_iso3_codes])
-box::use(../src/images/maps/map_test)
 box::use(../src/utils/get_iso3_sf)
+
+log_info("Updating additional map data...")
 
 # prevent errors when unioning
 suppressMessages(
@@ -294,11 +296,15 @@ update_region_bboxes <- function() {
 #### UPDATE ####
 ################
 
+log_info("...Updating ADM0 files...")
+
 # first update adm0 files
 purrr$walk(
   .x = all_iso3_codes(),
   .f = update_adm0_sf
 )
+
+log_info("...Updating centroids...")
 
 # then update centroids
 purrr$walk(
@@ -306,11 +312,13 @@ purrr$walk(
   .f = update_centroids_sf
 )
 
-# then update bboxes
-update_region_bboxes()
+log_info("...Updating bboxes...")
 
-# if you want, you can test out the maps now
-purrr$walk(
-  .x = all_iso3_codes(),
-  .f = \(iso3) map_test$map_test(iso3, "/Users/caldwellst/Desktop/map_test")
-)
+# TODO: What is this file used for? 
+# The outputs don't seem to be correct and I can't find anywhere that 
+# it's used in the code...
+
+# then update bboxes
+# update_region_bboxes()
+
+log_info("Successfully updated map data")
