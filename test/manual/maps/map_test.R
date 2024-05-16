@@ -65,7 +65,8 @@ map_test <- function(
       plot = p,
       width = df_ms$width,
       height = df_ms$height,
-      units = "in"
+      units = "in",
+      bg = "white"
     )
   }
   return(p)
