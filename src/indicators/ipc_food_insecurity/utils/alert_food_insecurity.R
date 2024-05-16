@@ -48,6 +48,7 @@ alert <- function(df_wrangled) {
       alert_level_numeric = as.integer(pmin(phase_level - 2, 2)),
       value,
       type = ifelse(stringr$str_detect(name, "projected"), "projected", "estimated"),
-      phase_level = ifelse(phase_level == 5, 5, paste0(phase_level, "+"))
+      phase_level = ifelse(phase_level == 5, 5, paste0(phase_level, "+")),
+      analysis_id
     )
 }
