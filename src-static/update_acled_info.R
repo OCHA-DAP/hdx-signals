@@ -4,14 +4,18 @@ box::use(dplyr)
 box::use(readxl)
 box::use(stringr)
 box::use(glue)
+box::use(logger[log_info])
 
 box::use(../src/utils/country_codes)
 box::use(cs = ../src/utils/cloud_storage)
 
+log_info('Updating ACLED info...')
+
 # read excel file of acled country codes from their website
 download.file(
   url = "https://acleddata.com/download/3987/",
-  destfile = tf <- tempfile(fileext = ".xlsx")
+  destfile = tf <- tempfile(fileext = ".xlsx"),
+  quiet=TRUE
 )
 
 df <- readxl$read_excel(tf)
@@ -43,7 +47,10 @@ df_acled_info <- df |>
     )
   )
 
+fname = "input/acled_info.parquet"
 cs$update_az_file(
   df = df_acled_info,
-  name = "input/acled_info.parquet"
+  name = fname
 )
+
+log_info(paste0("Successfully downloaded ACLED info and saved to ", fname))
