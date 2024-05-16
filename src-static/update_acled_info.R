@@ -9,13 +9,13 @@ box::use(logger[log_info])
 box::use(../src/utils/country_codes)
 box::use(cs = ../src/utils/cloud_storage)
 
-log_info('Updating ACLED info...')
+log_info("Updating ACLED info...")
 
 # read excel file of acled country codes from their website
 download.file(
   url = "https://acleddata.com/download/3987/",
   destfile = tf <- tempfile(fileext = ".xlsx"),
-  quiet=TRUE
+  quiet = TRUE
 )
 
 df <- readxl$read_excel(tf)
@@ -47,7 +47,7 @@ df_acled_info <- df |>
     )
   )
 
-fname = "input/acled_info.parquet"
+fname <- "input/acled_info.parquet"
 cs$update_az_file(
   df = df_acled_info,
   name = fname

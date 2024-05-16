@@ -157,7 +157,7 @@ df_country_info <- purrr$reduce(
   .f = \(x, y) dplyr$left_join(x, y, by = "iso3")
 )
 
-fname = "input/country_info.parquet"
+fname <- "input/country_info.parquet"
 cs$update_az_file(
   df = df_country_info,
   name = fname

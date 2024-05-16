@@ -314,8 +314,8 @@ purrr$walk(
 
 log_info("...Updating bboxes...")
 
-# TODO: What is this file used for? 
-# The outputs don't seem to be correct and I can't find anywhere that 
+# TODO: What is this file used for?
+# The outputs don't seem to be correct and I can't find anywhere that
 # it's used in the code...
 
 # then update bboxes
