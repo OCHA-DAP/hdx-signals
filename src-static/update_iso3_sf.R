@@ -250,48 +250,6 @@ update_centroids_sf <- function(iso3) {
     )
 }
 
-#' Update bounding boxes for regions
-#'
-#' Once we have updated country files, we can update again our regional bounding
-#' boxes. These are likely not going to be updated on the webmap, but doing just
-#' in case they are needed so they are always up to date.
-#'
-#' For speed, just uses the UN Geodata for calculation.
-update_region_bboxes <- function() {
-  country_info <- cs$read_az_file("input/country_info.parquet")
-  sf_region_bbox <- country_info |>
-    dplyr$group_by(region) |>
-    dplyr$group_modify(
-      .f = \(df, x) {
-        # create bbox for the region by creating country bbox and unioning
-        sfc <- purrr$map(
-          .x = df$iso3,
-          .f = \(iso3) {
-            # read file and get bbox
-            cs$read_az_file(glue$glue("input/adm0/{iso3}.geojson")) |>
-              sf$st_bbox() |>
-              sf$st_as_sfc()
-          }
-        ) |>
-          purrr$reduce(
-            .f = sf$st_union
-          ) |>
-          sf$st_shift_longitude() |>
-          sf$st_bbox() |>
-          sf$st_as_sfc()
-
-        sf$st_sf(bbox = sfc)
-      }
-    ) |>
-    sf$st_as_sf()
-
-  # now just fix the geometries to wrap back to -180 to 180
-  # pulled from here https://github.com/r-spatial/sf/issues/2058
-  sf_wrapped <- lwgeom$st_wrap_x(sf_region_bbox, 180, 360)
-  sf$st_geometry(sf_wrapped) <- sf$st_geometry(sf_wrapped) - c(360, 0)
-  cs$update_az_file(sf_wrapped, "input/region_bbox.geojson")
-}
-
 ################
 #### UPDATE ####
 ################
@@ -311,14 +269,5 @@ purrr$walk(
   .x = all_iso3_codes(),
   .f = update_centroids_sf
 )
-
-log_info("...Updating bboxes...")
-
-# TODO: What is this file used for?
-# The outputs don't seem to be correct and I can't find anywhere that
-# it's used in the code...
-
-# then update bboxes
-# update_region_bboxes()
 
 log_info("Successfully updated map data")
