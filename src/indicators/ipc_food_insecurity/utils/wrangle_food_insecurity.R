@@ -1,6 +1,7 @@
 box::use(dplyr)
 box::use(tidyr)
 box::use(stringr)
+box::use(readr)
 
 #' Wrangle food insecurity data
 #'
@@ -16,11 +17,20 @@ wrangle <- function(df_raw) {
     dplyr$group_by(
       iso3
     ) |>
+    dplyr$mutate(
+      from = ifelse(
+        readr$parse_number(from) == readr$parse_number(to), # identifying same year
+        stringr$str_remove(from, " [\\d]+"),
+        from
+      ),
+      map_date = paste(from, to, sep = " to ")
+    ) |>
     dplyr$select(
       iso3,
       date,
       analysis_id,
       plot_date = analysis_period_start,
+      map_date,
       period,
       dplyr$matches("(phase[3-5]|plus)_percentage")
     ) |>
@@ -36,7 +46,7 @@ wrangle <- function(df_raw) {
     ) |>
     tidyr$pivot_wider(
       names_from = period,
-      values_from = c(percentage, plot_date),
+      values_from = c(percentage, plot_date, map_date),
       names_sep = "-"
     ) |>
     dplyr$group_by(

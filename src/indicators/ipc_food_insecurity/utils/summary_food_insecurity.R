@@ -1,6 +1,8 @@
 box::use(dplyr)
 box::use(purrr)
 box::use(ripc)
+box::use(rvest)
+box::use(stringr)
 
 box::use(../../../../src/utils/ai_summarizer)
 
@@ -20,10 +22,10 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
   df_alerts |>
     dplyr$left_join(
       df_links,
-      by = "iso3"
+      by = "analysis_id"
     ) |>
     dplyr$mutate(
-      summary_long = purrr$pmap_chr(
+      summary_long = purrr$map_chr(
         .x = link,
         .f = ipc_scraper
       ),
@@ -37,10 +39,15 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
         "intended to capture their attention, so keep the messaging simple, clear",
         "and punchy. Use only the information below in your summary:\n\n"
       ),
-      purrr$map2_chr(
+      summary_short = purrr$map2_chr(
         .x = prompt_short,
         .y = summary_long,
-        .f = ai_summarizer$ai_summarizer
+        .f = \(prompt, info) {
+          if (is.na(info)) {
+            return(NA_character_)
+          }
+          ai_summarizer$ai_summarizer(prompt = prompt, info = info)
+        }
       )
     ) |>
     dplyr$select(
@@ -66,7 +73,7 @@ ipc_scraper <- function(url) {
     txt <- stringr$str_replace_all(txt, "[\r\n\t]+", " ")
 
     # feed these to the AI to get a summarization
-    sit_rep <- ai_summarizer(
+    sit_rep <- ai_summarizer$ai_summarizer(
       prompt = paste(
         "Please shortly summarize the current food insecurity situation in 2 to 3",
         "sentences. Expect the reader to be familiar with the terminology and general",
@@ -75,7 +82,7 @@ ipc_scraper <- function(url) {
       ),
       info = txt[1]
     )
-    recs <- ai_summarizer(
+    recs <- ai_summarizer$ai_summarizer(
       prompt =  paste(
         "Please shortly summarize the key recommendations in 2 to 3",
         "sentences. Expect the reader to be familiar with the terminology and general",
@@ -88,26 +95,26 @@ ipc_scraper <- function(url) {
     # ensure that we are only using those that are not blank
     # so make sure to check when parts of it are not available
     if (is.na(sit_rep) & is.na(recs)) {
-      NA
+      NA_character_
     } else if (is.na(sit_rep)) {
       paste0(
-        "<b>Recommendations summary:</b><br><br>",
+        "<b>Recommendations:</b><br><br>",
         recs
       )
     } else if (is.na(recs)) {
       paste0(
-        "<b>Situation summary: </b><br><br>",
+        "<b>Overview: </b><br><br>",
         sit_rep
       )
     } else {
       paste(
-        "<b>Situation summary:</b><br><br>",
+        "<b>Overview:</b><br><br>",
         sit_rep,
-        "<br><br><b>Recommendations summary:</b><br><br>",
+        "<br><br><b>Recommendations:</b><br><br>",
         recs
       )
     }
   } else {
-    NA
+    NA_character_
   }
 }
