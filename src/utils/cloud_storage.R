@@ -166,7 +166,7 @@ azure_endpoint_url <- function(service = c("blob", "file"), stage = c("prod", "d
   service <- rlang$arg_match(service)
   stage <- rlang$arg_match(stage)
   # service and stage injected into endpoint string using `{glue}`
-  dsci_az_endpoint = "https://imb0chd0{stage}.{service}.core.windows.net/"
+  dsci_az_endpoint <- "https://imb0chd0{stage}.{service}.core.windows.net/"
   glue$glue(dsci_az_endpoint)
 }
 
