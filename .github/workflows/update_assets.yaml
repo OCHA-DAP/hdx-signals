@@ -27,7 +27,4 @@ jobs:
 
             - name: Run R scripts to update files
               shell: bash
-              run: |
-                shopt -s globstar
-                set -e
-                for x in src-static/update_*.R; do Rscript "$x"; done
+              run: find ./src-static/ -name "*.R" -exec Rscript {} \;
