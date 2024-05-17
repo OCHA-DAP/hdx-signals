@@ -2,6 +2,7 @@ box::use(dplyr)
 box::use(stringr)
 box::use(gg = ggplot2)
 box::use(ripc)
+box::use(sf)
 
 box::use(../../../utils/country_codes)
 box::use(../../../utils/formatters)
@@ -26,9 +27,9 @@ map <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
   df_map <- df_alerts |>
     dplyr$mutate(
       title = paste0(
-        "Area classified phase 3 and above, ",
+        "Phase classifications, ",
         type,
-        ", ",
+        "\n",
         map_date
       )
     )
@@ -69,7 +70,7 @@ food_insecurity_map <- function(df_wrangled, df_raw, title, date) {
     ) |>
     dplyr$summarize(
       id = unique(analysis_id),
-      period = if (stringr$str_detect(title,"projected")) "P" else "C"
+      period = if (stringr$str_detect(unique(title)[1], "projected")) "P" else "C"
     )
 
   # load in areas to map from the IPC/CH API
@@ -78,24 +79,38 @@ food_insecurity_map <- function(df_wrangled, df_raw, title, date) {
     period = df_analysis_info$period,
     return_format = "geojson"
   ) |>
-    dplyr$filter(
-      overall_phase >= 3 # only plotting 3 and above
-    ) |>
     dplyr$mutate(
       overall_phase = as.character(overall_phase)
     )
 
+  # if points available, separate those out
+  geom_type <- sf$st_geometry_type(sf_ipc)
+  sf_points <- dplyr$filter(sf_ipc, geom_type == "POINT")
+  sf_areas <- dplyr$filter(sf_ipc, geom_type != "POINT")
+
   gg_map$gg_map(iso3) +
     gg$geom_sf(
-      data = sf_ipc,
+      data = sf_areas,
       mapping = gg$aes(
         fill = overall_phase
       ),
-      color = "white"
+      color = "white",
+      linewidth = 0.1
     ) +
     geom_cities$geom_cities(iso3) +
+    gg$geom_sf(
+      data = sf_points,
+      mapping = gg$aes(
+        fill = overall_phase
+      ),
+      color = "white",
+      shape = 21
+    ) +
     gg$scale_fill_manual(
       values = c(
+        "0" = "#FFFFFF",
+        "1" = "#CDFACD",
+        "2" = "#FAE61E",
         "3" = "#E67800",
         "4" = "#C80000",
         "5" = "#640000"

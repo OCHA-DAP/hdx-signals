@@ -7,6 +7,7 @@ box::use(./utils/map_food_insecurity)
 box::use(./utils/info_food_insecurity)
 
 box::use(../../alerts/generate_signals[generate_signals])
+box::use(../../alerts/triage_signals[triage_signals])
 
 df_raw <- raw_food_insecurity$raw()
 df_wrangled <- wrangle_food_insecurity$wrangle(df_raw)
@@ -19,7 +20,5 @@ df_ipc <- generate_signals(
   plot_fn = plot_food_insecurity$plot,
   summary_fn = summary_food_insecurity$summary,
   map_fn = map_food_insecurity$map,
-  info_fn = info_food_insecurity$info,
-  test = TRUE,
-  test_filter = c("AFG", "COD", "SSD")
+  info_fn = info_food_insecurity$info
 )

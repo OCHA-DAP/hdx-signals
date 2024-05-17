@@ -88,8 +88,8 @@ food_insecurity_ts <- function(df_wrangled, df_raw, title, date) {
       date == max(date)
     )
 
-  # get the text for the dataset
-  df_labels <- df_projected |>
+  # get the phase text for the dataset
+  df_phase_labels <- df_projected |>
     dplyr$filter(
       plot_date == max(plot_date)
     ) |>
@@ -97,6 +97,18 @@ food_insecurity_ts <- function(df_wrangled, df_raw, title, date) {
       label = paste0("P", readr$parse_number(phase)),
       plot_date = plot_date + lubridate$month(6)
     )
+
+  # also plot the analysis area/suffix
+  df_area_labels <- df_current |>
+    dplyr$filter(
+      !is.na(analysis_area)
+    )
+
+  if (nrow(df_area_labels) > 0) {
+    subtitle <- "Subnational analyses indicated by hollow points"
+  } else {
+    subtitle <- ""
+  }
 
   gg$ggplot(
     mapping = gg$aes(
@@ -122,10 +134,22 @@ food_insecurity_ts <- function(df_wrangled, df_raw, title, date) {
       data = dplyr$filter(df_projected, plot_date == max(plot_date)),
       size = 3
     ) +
+    gg$geom_point(
+      data = df_area_labels,
+      size = 3,
+      shape = 21,
+      fill = "white"
+    ) +
     ggrepel$geom_text_repel(
-      data = df_labels,
+      data = df_phase_labels,
       mapping = gg$aes(
         label = label
+      )
+    ) +
+    ggrepel$geom_text_repel(
+      data = dplyr$filter(df_area_labels, phase == "phase3"),
+      mapping = gg$aes(
+        label = analysis_area
       )
     ) +
     gghdx$scale_y_continuous_hdx(
@@ -156,7 +180,7 @@ food_insecurity_ts <- function(df_wrangled, df_raw, title, date) {
       x = "",
       y = "% of population",
       title = title,
-      subtitle = "",
+      subtitle = subtitle,
       caption = caption
     )
 }
