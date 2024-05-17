@@ -80,6 +80,7 @@ read_az_file <- function(name, stage = c("prod", "dev")) {
 #' @export
 update_az_file <- function(df, name, stage = c("prod", "dev")) {
   blob <- stage_to_blob(stage)
+  print(blob)
   fileext <- tools$file_ext(name)
   tf <- tempfile(fileext = paste0(".", fileext))
 
