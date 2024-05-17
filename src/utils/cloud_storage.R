@@ -167,6 +167,9 @@ azure_endpoint_url <- function(service = c("blob", "file"), stage = c("prod", "d
   stage <- rlang$arg_match(stage)
   # service and stage injected into endpoint string using `{glue}`
   glue$glue(Sys.getenv("DSCI_AZ_ENDPOINT"))
+
+  print("-----")
+  print(glue$glue(Sys.getenv("DSCI_AZ_ENDPOINT")))
 }
 
 # gets the Dsci blob endpoints using the HDX Signals SAS
