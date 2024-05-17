@@ -133,7 +133,7 @@ ipc_summarizer <- function(txt) {
 
   # ensure that we are only using those that are not blank
   # so make sure to check when parts of it are not available
-  if (is.na(sit_rep) & is.na(recs)) {
+  if (is.na(sit_rep) && is.na(recs)) {
     NA_character_
   } else if (is.na(sit_rep)) {
     paste0(

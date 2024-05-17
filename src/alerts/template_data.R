@@ -34,15 +34,15 @@ alerts_template_full <- dplyr$bind_cols(
     lon = NA_real_,
     alert_level = NA_character_
   )
-)|>
-    dplyr$relocate(
-      country:lon,
-      .after = iso3
-    ) |>
-    dplyr$relocate(
-      alert_level,
-      .after = alert_level_numeric
-    )
+) |>
+  dplyr$relocate(
+    country:lon,
+    .after = iso3
+  ) |>
+  dplyr$relocate(
+    alert_level,
+    .after = alert_level_numeric
+  )
 
 #' Campaign content template
 #'

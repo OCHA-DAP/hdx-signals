@@ -36,7 +36,9 @@ info <- function(df_alerts, df_wrangled, df_raw) {
       other_urls = NA_character_,
       further_information = as.character(
         glue$glue(
-          '{partial_coverage_text}Access the data directly <a href="{hdx_url}">on HDX</a>, and see the {source_url_text}.'
+          "{partial_coverage_text}",
+          'Access the data directly <a href="{hdx_url}">on HDX</a>',
+          ", and see the {source_url_text}."
         )
       )
     ) |>
