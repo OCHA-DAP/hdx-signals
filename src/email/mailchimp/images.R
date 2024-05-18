@@ -10,6 +10,7 @@ box::use(magick) # silent requirement for cropping file
 # local module
 box::use(./base_api)
 box::use(../../utils/gmas_test_run)
+box::use(../../utils/temp_file)
 box::use(./folders)
 
 #' Upload image to Mailchimp
@@ -50,7 +51,10 @@ mc_upload_image <- function(fp, name, folder, preview = FALSE) {
     # print out the image and return the dry run
     data.frame(
       id = "test-image-id",
-      url = mc_test_image_view(fp, preview)
+      url = mc_test_image_view(
+        fp = fp,
+        preview = preview
+      )
     )
   } else {
     # upload the image and extract URL
@@ -91,9 +95,10 @@ mc_upload_image <- function(fp, name, folder, preview = FALSE) {
 #'
 #' @export
 mc_upload_plot <- function(plot, name, folder, height, width, crop = FALSE, preview = FALSE, ...) {
-  tf <- tempfile(fileext = ".png")
+  fp <- temp_file$temp_file(fileext = ".png")
+
   ggplot2$ggsave(
-    filename = tf,
+    filename = fp,
     plot = plot,
     height = height,
     width = width,
@@ -103,11 +108,11 @@ mc_upload_plot <- function(plot, name, folder, height, width, crop = FALSE, prev
   )
 
   if (crop) {
-    knitr$plot_crop(tf)
+    knitr$plot_crop(fp)
   }
 
   mc_upload_image(
-    fp = tf,
+    fp = fp,
     name = name,
     folder = folder,
     preview = preview
@@ -138,6 +143,8 @@ encode_image <- function(fp) {
 #'
 #' Used if `gmas_test_run()`, will read a saved out image and view directly the
 #' png on the active graphics device for interactive testing.
+#'
+#' @returns `fp` directly
 mc_test_image_view <- function(fp, preview = FALSE) {
   # read and view new plot
   if (preview) {

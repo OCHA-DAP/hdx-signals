@@ -160,3 +160,6 @@ hdx_signals_auth.json
 # Other R files
 .Rhistory
 .Rbuildignore
+
+# Temporary file folders
+.temp_dir
