@@ -15,14 +15,15 @@ box::use(../utils/gmas_test_run[gmas_test_run])
 #' Read a Parquet file stored on Microsoft Azure Data Storage blob
 #'
 #' Reads a file from the `hdx-signals` bucket.
-#' Th"e file is read based on its prefix. Currently, the only support is for
-#' Apache Parquet and GeoJSON files, but other support can be added if necessary.
+#' Th"e file is read based on its prefix. Currently supports
+#' Apache Parquet, CSV, GeoJSON, and JSON files.
 #'
 #' Function parsing is done based on file type:
 #'
 #' * Apache Parquet: [arrow::write_parquet()].
-#' * GeoJSON: [sf::st_read()]
 #' * CSV: [readr::read_csv()]
+#' * GeoJSON: [sf::st_read()]
+#' * JSON: [jsonlite::read_json()]
 #'
 #' @param name Name of the file to read, including directory prefixes (`input/` or `output/`)
 #'     and file extension, such as `.parquet`.
@@ -60,13 +61,14 @@ read_az_file <- function(name, stage = c("prod", "dev")) {
 #' A convenient file saver that saves the data frame to the specified
 #' parquet file. Simply writes out the data frame based on the file extension and
 #' uploads that to the MADS container using [AzureStor::upload_blob()].
-#' Currently supports Apache Parquet, GeoJSON, and CSV files.
+#' Currently supports Apache Parquet, CSV, GeoJSON, and JSON files.
 #'
 #' Files written out based on file type:
 #'
 #' * Apache Parquet: [arrow::write_parquet()]
-#' * GeoJSON: [sf::st_write()]
 #' * CSV: [readr::write_csv()]
+#' * GeoJSON: [sf::st_write()]
+#' * JSON: [jsonlite::write_json()]
 #'
 #' If `gmas_test_run()`, the file is not uploaded to the container
 #'
