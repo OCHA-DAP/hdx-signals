@@ -23,5 +23,6 @@ alert <- function(df_wrangled) {
     dplyr$group_by(iso3) |>
     dplyr$filter(
       alert_level_numeric > dplyr$lag(alert_level_numeric)
-    )
+    ) |>
+    dplyr$ungroup()
 }
