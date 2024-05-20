@@ -17,6 +17,13 @@ on:
           options:
             - "TRUE"
             - "FALSE"
+        GMAS_TEST_RUN:
+          required: true
+          type: choice
+          default: "TRUE"
+          options:
+            - "TRUE"
+            - "FALSE"
     # schedule:
     #   - cron: "0 11 * * 2"
 
@@ -26,11 +33,12 @@ jobs:
         env:
           IDMC_API: ${{ secrets.IDMC_API }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          DSCI_AZ_SAS: ${{ secrets.DSCI_AZ_SAS }}
-          DSCI_AZ_ENDPOINT: ${{ secrets.DSCI_AZ_ENDPOINT }}
+          DSCI_AZ_SAS_DEV: ${{ secrets.DSCI_AZ_SAS_DEV }}
+          DSCI_AZ_SAS_PROD: ${{ secrets.DSCI_AZ_SAS_PROD }}
           MAILCHIMP_API_KEY: ${{ secrets.MAILCHIMP_API_KEY }}
-          GMAS_TEST_RUN: ${{ inputs.test || 'FALSE' }}
+          GMAS_TEST_RUN: ${{ inputs.GMAS_TEST_RUN || 'FALSE' }}
           FIRST_RUN: ${{ inputs.first_run || 'FALSE' }}
+          TEST: ${{ inputs.test || 'FALSE' }}
         steps:   
             - name: Checkout repository
               uses: actions/checkout@v3
