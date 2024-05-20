@@ -44,6 +44,14 @@ mc_email_segment <- function(indicator_id, iso3, test = FALSE) {
     test = test
   )
 
+  # first we empty the segment before updating it
+  segments$mc_update_static_segment(
+    segment_id = df_ind$static_segment,
+    segment_name = indicator_id,
+    emails = list()
+  )
+
+  # then add back to it
   segments$mc_update_static_segment(
     segment_id = df_ind$static_segment,
     segment_name = indicator_id,
