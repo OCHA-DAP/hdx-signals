@@ -14,7 +14,8 @@ mc_api <- function(lists_api = TRUE) {
     "https://us14.api.mailchimp.com/3.0"
   ) |>
     httr2$req_retry(
-      max_tries = 5
+      max_tries = 5,
+      backoff = \(x) 1
     ) |>
     httr2$req_auth_bearer_token(
       token = Sys.getenv("MAILCHIMP_API_KEY")
