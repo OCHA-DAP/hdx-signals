@@ -11,8 +11,15 @@ box::use(./utils/map_displacement)
 
 box::use(../../alerts/generate_signals[generate_signals])
 
+box::use(logger[log_info])
+
 df_raw <- raw_displacement$raw()
 df_wrangled <- wrangle_displacement$wrangle(df_raw)
+
+log_info("Checking displacement indicator... Running with:")
+log_info(paste0("GMAS_TEST_RUN = ", Sys.getenv("GMAS_TEST_RUN")))
+log_info(paste0("TEST = ", Sys.getenv("TEST")))
+log_info(paste0("FIRST_RUN = ", Sys.getenv("FIRST_RUN")))
 
 # now generate signals individually for each displacement type
 df_conflict <- generate_signals(
@@ -23,7 +30,8 @@ df_conflict <- generate_signals(
   plot_fn = plot_displacement$plot,
   info_fn = info_displacement$info,
   summary_fn = summary_displacement$summary,
-  map_fn = map_displacement$map
+  map_fn = map_displacement$map,
+  test = TRUE
 )
 
 df_disaster <- generate_signals(
@@ -36,3 +44,5 @@ df_disaster <- generate_signals(
   summary_fn = summary_displacement$summary,
   map_fn = map_displacement$map
 )
+
+log_info("Successfully checked displacement indicator")
