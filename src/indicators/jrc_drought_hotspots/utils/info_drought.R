@@ -62,7 +62,7 @@ info <- function(df_alerts, df_wrangled, df_raw) {
     pattern = '"(.*?)"'
   ) |>
     purrr$map_chr(
-      .f = \(x) paste(x[,2], collapse = "; ")
+      .f = \(x) paste(x[, 2], collapse = "; ")
     )
 
   df_alerts |>
