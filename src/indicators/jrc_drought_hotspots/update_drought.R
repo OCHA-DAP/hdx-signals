@@ -18,5 +18,7 @@ generate_signals(
   alert_fn = alert_drought$alert,
   summary_fn = summary_drought$summary,
   info_fn = info_drought$info,
-  plot_fn = plot_drought$plot
+  plot_fn = plot_drought$plot,
+  test = TRUE,
+  test_filter = c("AFG")
 )

@@ -40,7 +40,8 @@ plot <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
     df_raw = df_raw,
     image_fn = drought_ts,
     image_use = "plot",
-    crop = TRUE
+    height = 3,
+    width = 6
   )
 }
 
@@ -105,7 +106,6 @@ drought_ts <- function(df_wrangled, df_raw, title, date) {
       y = "",
       fill = "",
       title = title,
-      subtitle = "",
       caption = caption
     ) +
     gg$coord_equal() +
