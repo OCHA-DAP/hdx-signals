@@ -71,6 +71,11 @@ food_basket_ts <- function(df_wrangled, df_raw, title, date) {
         y = basket_change
       )
     ) +
+    gg$geom_hline(
+      yintercept = 0,
+      color = gghdx$hdx_hex("grey-dark"),
+      linewidth = 0.5
+    ) +
     gg$geom_bar(
       stat = "identity",
       fill = gghdx$hdx_hex("sapphire-hdx"),
@@ -90,6 +95,9 @@ food_basket_ts <- function(df_wrangled, df_raw, title, date) {
       clip = "off"
     ) +
     theme_signals$theme_signals() +
+    gg$theme(
+      axis.line = gg$element_blank()
+    ) +
     gg$labs(
       x = "",
       y = "% change (monthly)",
