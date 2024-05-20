@@ -66,7 +66,7 @@ conflict_ts <- function(df_wrangled, df_raw, title, date) {
   plot_ts$plot_ts(
     df = df_plot,
     val_col = "fatalities_30d",
-    y_axis = "Conflict fatalities (weekly)",
+    y_axis = "Conflict fatalities (monthly)",
     title = title,
     subtitle = "",
     caption = caption
