@@ -38,7 +38,7 @@ plot <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
     df_alerts = df_plot,
     df_wrangled = df_wrangled,
     df_raw = df_raw,
-    image_fn = drought_ts,
+    image_fn = hotspots_ts,
     image_use = "plot",
     height = 3,
     width = 6
@@ -56,7 +56,7 @@ plot <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
 #' @param date Date of the alert. Not used in the plot.
 #'
 #' @returns Plot of cholera for that wrangled data
-drought_ts <- function(df_wrangled, df_raw, title, date) {
+hotspots_ts <- function(df_wrangled, df_raw, title, date) {
   caption <- paste(
     "Data from JRC ASAP, https://agricultural-production-hotspots.ec.europa.eu",
     paste("Created", formatters$format_date(Sys.Date())),
