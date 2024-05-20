@@ -4,6 +4,7 @@ box::use(rlang)
 
 box::use(cs = ../utils/cloud_storage)
 box::use(./delete_campaign_content[delete_campaign_content])
+box::use(./template_data)
 
 #' Generate campaigns content data frame
 #'
@@ -241,48 +242,23 @@ generate_section <- function(
 
 #' Validate and arrange campaigns data frame
 #'
-#' Validates that all columns are present and of the correct type. Also re-arranges
-#' column orders in case the dataset is being updated.
+#' Validates that all columns are present and of the correct type. Re-arranges
+#' column orders in case the dataset is being updated. Also returns a data frame
+#' of only required columns since all content is generated. This differs from
+#' `validate_alerts()` which returns the input data frame, because this means
+#' that additional columns can be passed to the alerts data frame for content
+#' generation.
 #'
 #' @param df_campaigns_content Campaigns content data frame
 #'
 #' @returns Arranged campaigns data frame
 validate_campaign_content <- function(df_campaigns_content) {
-  df_check <- dplyr$tibble(
-    iso3 = NA_character_,
-    country = NA_character_,
-    region = NA_character_,
-    hrp_country = NA,
-    lat = NA_real_,
-    lon = NA_real_,
-    indicator_name = NA_character_,
-    indicator_source = NA_character_,
-    indicator_id = NA_character_,
-    date = as.Date(x = integer(0), origin = "1970-01-01"),
-    alert_level_numeric = NA_integer_,
-    alert_level = NA_character_,
-    value = NA_real_,
-    plot_title = NA_character_,
-    plot_id = NA_character_,
-    plot_url = NA_character_,
-    map_title = NA_character_,
-    map_id = NA_character_,
-    map_url = NA_character_,
-    plot2_title = NA_character_,
-    plot2_id = NA_character_,
-    plot2_url = NA_character_,
-    other_images_ids = NA_character_,
-    other_images_urls = NA_character_,
-    other_images_captions = NA_character_,
-    summary_long = NA_character_,
-    summary_short = NA_character_,
-    hdx_url = NA_character_,
-    source_url = NA_character_,
-    other_urls = NA_character_,
-    further_information = NA_character_
+  df_check <- dplyr$bind_cols(
+    template_data$alerts_template_full,
+    template_data$campaign_content_template
   )
 
-  if (!janitor$compare_df_cols_same(df_campaigns_content, df_check, bind_method = "rbind")) {
+  if (!janitor$compare_df_cols_same(df_campaigns_content[, names(df_check)], df_check, bind_method = "rbind")) {
     delete_campaign_content(df_campaigns_content)
     stop(
       "Campaign data frame does not have the required columns and column types, ",
