@@ -1,6 +1,7 @@
 box::use(dplyr)
 box::use(stringr)
 box::use(purrr)
+box::use(glue)
 
 box::use(../../../../src/utils/ai_summarizer)
 
@@ -70,7 +71,7 @@ info <- function(df_alerts, df_wrangled, df_raw) {
       hdx_url = "https://data.humdata.org/dataset/asap-hotspots-monthly",
       source_url = "https://agricultural-production-hotspots.ec.europa.eu",
       other_urls,
-      further_information = paste0(
+      further_information = glue$glue(
         'Access the data directly <a href="{hdx_url}">on HDX</a>. Visit ',
         'the <a href="{source_url}">ASAP homepage</a> to access additional ',
         "data and use the ASAP Warning Explorer to contextualize the situation.",
