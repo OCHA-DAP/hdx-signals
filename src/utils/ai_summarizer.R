@@ -35,6 +35,7 @@ ai_summarizer_without_country <- function(prompt, info, country) {
       info = ai_summary
     )
   }
+  ai_summary
 }
 
 #' AI summarizer
