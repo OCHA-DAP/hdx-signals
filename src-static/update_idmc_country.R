@@ -5,6 +5,7 @@ box::use(cs = ../src/utils/cloud_storage)
 log_info("Updating hard-coded IDMC info...")
 
 # TODO: Reference source
+# nolint start
 idmc_country_links <- structure(list(iso3 = c("AB9", "AFG", "AGO", "ALB", "ARG", "ARM", 
 "ATG", "AUS", "AUT", "AZE", "BDI", "BEN", "BFA", "BGD", "BGR", 
 "BHS", "BIH", "BLR", "BLZ", "BOL", "BRA", "BRN", "BTN", "BWA", 
@@ -59,7 +60,7 @@ idmc_country_links <- structure(list(iso3 = c("AB9", "AFG", "AGO", "ALB", "ARG",
 "viet-nam", "vanuatu", "samoa", "yemen", "south-africa", "zambia", 
 "zimbabwe")), class = c("tbl_df", "tbl", "data.frame"), row.names = c(NA, 
 -175L))
-
+# nolint end
 
 fname <- "input/idmc_country_links.parquet"
 cs$update_az_file(
