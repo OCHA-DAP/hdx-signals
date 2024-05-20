@@ -19,13 +19,16 @@ box::use(here)
 #'
 #' @export
 temp_file <- function(fileext = "") {
+  if (!dir.exists(temp_dir)) {
+    dir.create(temp_dir, showWarnings = FALSE)
+  }
+
   tempfile(
     tmpdir = temp_dir,
     fileext = fileext
   )
 }
 
-# ensure directory is created and empty when this module is loaded
+# ensure directory is empty when this module is loaded
 temp_dir <- here$here(".temp_dir")
-dir.create(temp_dir, showWarnings = FALSE)
 unlink(paste0(temp_dir, "/*"), recursive = TRUE)
