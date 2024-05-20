@@ -4,6 +4,39 @@ box::use(stringr)
 
 box::use(../utils/gmas_test_run[gmas_test_run])
 
+#' AI summarizer without country name
+#'
+#' Takes a prompt and contextual information and passes on to the summarizer
+#' using `ai_summarizer()`. However, if `country` is detected in the output, the
+#' output is returned to the AI to rewrite the output without the country name
+#' included.
+#'
+#' This is most useful for the short, headline summaries where we want to ensure
+#' country names are excluded.
+#'
+#' @param prompt `character` string that provides a prompt to the AI.
+#' @param info `character` vector of contextual information, either a single string
+#'     (vector of length 1) or a vector of strings.
+#' @param country Name of the country to exclude from the output
+#'
+#' @returns Summary of AI
+#'
+#' @export
+ai_summarizer_without_country <- function(prompt, info, country) {
+  ai_summary <- ai_summarizer(prompt = prompt, info = info)
+  if (stringr$str_detect(ai_summary, country)) {
+    ai_summary <- ai_summarizer(
+      prompt = paste0(
+        "Please rewrite this short text to exclude the country name ",
+        country,
+        ". Keep the output the same length or shorter than the original ",
+        "input. Here is the text to rewrite --> "
+      ),
+      info = ai_summary
+    )
+  }
+}
+
 #' AI summarizer
 #'
 #' Takes a prompt and contextual information and passes this on to an AI summarizer.

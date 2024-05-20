@@ -13,6 +13,7 @@ box::use(./create_campaigns[create_campaigns])
 box::use(./delete_campaign_content[delete_campaign_content])
 box::use(./generate_alerts[generate_alerts])
 box::use(./check_existing_signals[check_existing_signals])
+box::use(./template_data)
 
 #' Generate campaigns for any indicator
 #'
@@ -174,17 +175,7 @@ generate_signals <- function(
 #' Validates campaigns data to ensure template and campaign columns exist,
 #' that no errors are present, and orders them correctly.
 validate_campaigns <- function(df_campaigns, df_campaign_content) {
-  df_check <- dplyr$tibble(
-    iso3 = NA_character_,
-    date = as.Date(x = integer(0), origin = "1970-01-01"),
-    template_id_archive = NA_character_,
-    template_id_email = NA_character_,
-    campaign_id_archive = NA_character_,
-    campaign_id_email = NA_character_,
-    campaign_url_archive = NA_character_,
-    campaign_url_email = NA_character_,
-    campaign_date = as.Date(x = integer(0), origin = "1970-01-01")
-  )
+  df_check <- template_data$campaign_template
 
   # if any errors in the data frame or incorrect columns, delete content
   any_error <- any(dplyr$select(df_campaigns, -c(date, campaign_date)) == "ERROR", na.rm = TRUE)

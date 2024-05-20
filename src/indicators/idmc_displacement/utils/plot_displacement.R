@@ -9,9 +9,9 @@ box::use(../../../utils/formatters)
 box::use(../../../images/plots/plot_ts)
 box::use(../../../images/create_images)
 
-#' Plot WHO cholera cases
+#' Plot IDMC displacement
 #'
-#' Creates time series of cholera cases for each alerts
+#' Creates time series of IDMC displacement for each alerts
 #'
 #' @param df_alerts Data frame of alerts
 #' @param df_wrangled Wrangled data frame

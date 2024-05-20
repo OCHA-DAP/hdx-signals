@@ -81,7 +81,7 @@ create_campaigns <- function(
       archive = FALSE,
       archive_url = unique(archive_df$campaign_url_archive),
       names_paste = "_email",
-      test = FALSE # never use browser to preview the emails using conditional logic
+      test = test
     )
   } else {
     email_df <- dplyr$tibble(

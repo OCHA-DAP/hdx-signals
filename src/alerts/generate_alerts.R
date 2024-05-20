@@ -4,6 +4,7 @@ box::use(dplyr)
 box::use(janitor)
 
 box::use(./filter_alerts)
+box::use(./template_data)
 box::use(cs = ../utils/cloud_storage)
 box::use(../utils/add_country_info[add_country_info])
 
@@ -49,24 +50,17 @@ generate_alerts <- function(df, indicator_id, first_run = FALSE, test = FALSE) {
 #'
 #' @param df Data frame of alerts to validate
 validate_alerts <- function(df) {
-  df_check <- dplyr$tibble(
-    iso3 = NA_character_,
-    indicator_name = NA_character_,
-    indicator_source = NA_character_,
-    indicator_id = NA_character_,
-    date = as.Date(integer(0), origin = "1970-01-01"),
-    alert_level_numeric = NA_integer_,
-    value = NA_real_
-  )
+  df_check <- template_data$alerts_template_base
 
-  if (!janitor$compare_df_cols_same(df, df_check, bind_method = "rbind")) {
+  # only check that required columns are there, don't filter them out
+  if (!janitor$compare_df_cols_same(df[, names(df_check)], df_check, bind_method = "rbind")) {
     stop(
       "Alerts data frame does not have the correct columns and typing.",
       call. = FALSE
     )
   }
 
-  df[, names(df_check)]
+  df
 }
 
 #' Add alert level
