@@ -22,6 +22,7 @@ wrangle <- function(df_raw) {
         asap0_name == "Equat. Guinea" ~ "GNQ"
       ),
       date,
+      date_label = format(date, "%B %Y"),
       comment,
       hs_code,
       hs_name
