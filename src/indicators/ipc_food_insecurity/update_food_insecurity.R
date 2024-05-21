@@ -7,7 +7,6 @@ box::use(./utils/map_food_insecurity)
 box::use(./utils/info_food_insecurity)
 
 box::use(../../alerts/generate_signals[generate_signals])
-box::use(../../alerts/triage_signals[triage_signals])
 
 box::use(logger[log_info])
 

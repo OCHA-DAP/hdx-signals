@@ -111,7 +111,7 @@ ai_summarizer <- function(prompt, info) {
 #' Call to the OpenAI API
 #'
 #' Function that insistently calls the OpenAI API in case of failure
-#' utilizing the GPT3.5 16k token model which allows for loads of context. If
+#' utilizing the GPT-4o 128,000 token model which allows for loads of context. If
 #' `gmas_test_run()` returns `TRUE`, the API is not called and `"Test output"`
 #' is returned, otherwise it returns the summarization from the API.
 insistent_ai <- purrr$insistently(
@@ -126,7 +126,7 @@ insistent_ai <- purrr$insistently(
       "Test output."
     } else {
       openai$create_chat_completion(
-        model = "gpt-4-turbo",
+        model = "gpt-4o",
         messages = list(
           list(
             "role" = "user",

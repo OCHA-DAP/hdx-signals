@@ -91,3 +91,16 @@ campaign_template <- dplyr$tibble(
   campaign_url_email = NA_character_,
   campaign_date = as.Date(x = integer(0), origin = "1970-01-01")
 )
+
+#' Overall signals template
+#'
+#' Required columns and types for the full signals dataset generated for an
+#' indicator. Used to create empty return value in `generate_signals()` if
+#' alerts is empty.
+#'
+#' @export
+signals_template <- dplyr$bind_cols(
+  alerts_template_full,
+  campaign_content_template,
+  dplyr$select(campaign_template, -iso3, -date)
+)

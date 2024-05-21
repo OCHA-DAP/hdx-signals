@@ -78,7 +78,7 @@ alert <- function(df_wrangled) {
     dplyr$group_by(iso3, date) |>
     dplyr$mutate(pub_date_diff = abs(pub_date - date)) |> # find nearest pubs to alert date
     dplyr$filter(
-      pub_date_diff == min(pub_date_diff),
+      pub_date_diff == min(pub_date_diff, as.difftime(Inf, units = "days")),
       !stringr$str_detect(ch_url, "Tchad") | analysis_id == 68596035, # specific displaced pop pub for Chad
       analysis_id != 68596035 | stringr$str_detect(ch_url, "Tchad")
     ) |>

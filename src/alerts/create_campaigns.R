@@ -239,7 +239,7 @@ get_campaign_details <- function(indicator_id, campaign_date, test) {
     title = df_ind$indicator_subject,
     subject = paste0(
       if (test) "TEST - " else "",
-      "HDX Signals: ",
+      "Signal: ",
       df_ind$indicator_subject,
       ", ",
       formatters$format_date(Sys.Date())

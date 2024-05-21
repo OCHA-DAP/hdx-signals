@@ -6,7 +6,6 @@ box::use(./utils/info_agricultural_hotspots)
 box::use(./utils/plot_agricultural_hotspots)
 
 box::use(../../alerts/generate_signals[generate_signals])
-box::use(../../alerts/triage_signals[triage_signals])
 
 box::use(logger[log_info])
 

@@ -30,7 +30,7 @@ plot_ts <- function(
     caption = gg$waiver()) {
   df |>
     dplyr$filter(
-      max(date) - date <= 365 * 5
+      max(date, as.Date("1500-01-01")) - date <= 365 * 5
     ) |>
     gg$ggplot(
       mapping = gg$aes(
@@ -43,7 +43,7 @@ plot_ts <- function(
       color = gghdx$hdx_hex("sapphire-hdx")
     ) +
     gg$geom_point(
-      data = dplyr$filter(df, date == max(date)),
+      data = dplyr$filter(df, date == max(date, as.Date("1500-01-01"))),
       size = 3,
       color = gghdx$hdx_hex("sapphire-hdx")
     ) +
