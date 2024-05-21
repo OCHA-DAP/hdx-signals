@@ -64,7 +64,7 @@ idmc_country_links <- structure(list(iso3 = c("AB9", "AFG", "AGO", "ALB", "ARG",
 
 fname <- "input/idmc_country_links.parquet"
 cs$update_az_file(
-  df = indicator_mapping,
+  df = idmc_country_links,
   name = fname
 )
 
