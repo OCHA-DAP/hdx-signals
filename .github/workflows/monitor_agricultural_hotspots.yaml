@@ -1,4 +1,4 @@
-name: Monitor JRC drought hotspots
+name: Monitor JRC agricultural hotspots
 
 on:
     workflow_dispatch:
@@ -47,4 +47,4 @@ jobs:
 
             - name: Run R monitoring script
               shell: bash
-              run: Rscript ./src/indicators/jrc_drought_hotspots/update_drought.R
+              run: Rscript ./src/indicators/jrc_agricultural_hotspots/update_agricultural_hotspots.R
