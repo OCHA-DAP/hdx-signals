@@ -70,7 +70,7 @@ hotspots_ts <- function(df_wrangled, df_raw, title, date) {
       month = lubridate$month(date, label = TRUE)
     ) |>
     dplyr$filter(
-      max(year) - year < 5
+      max(year, -Inf) - year < 5
     )
 
   df_plot |>

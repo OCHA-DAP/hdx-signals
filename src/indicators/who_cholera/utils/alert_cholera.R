@@ -34,7 +34,7 @@ alert <- function(df_wrangled) {
       start_date
     ) |>
     dplyr$summarize(
-      date = max(date),
+      date = max(date, as.Date("1500-01-01")),
       alert_level_numeric = utils$tail(alert_level_numeric, n = 1),
       value = utils$tail(cholera_cases, n = 1),
       .groups = "drop"

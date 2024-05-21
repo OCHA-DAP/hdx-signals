@@ -44,7 +44,7 @@ alert_daily_ts <- function(df, val_col, min_val, rs_days = 30) {
       iso3, date
     ) |>
     dplyr$filter( # ensure we take the highest alert level each time we would generate one
-      alert_level_numeric == max(alert_level_numeric)
+      alert_level_numeric == max(alert_level_numeric, -Inf)
     ) |>
     dplyr$ungroup()
 }

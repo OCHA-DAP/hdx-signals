@@ -53,7 +53,11 @@ wrangle <- function(df_raw, first_run = FALSE) {
       acled_hdx_url
     ) |>
     tidyr$complete( # completes data between start_date from ACLED report and max date
-      date = seq.Date(min(min(date), max(start_date, start_date_min)), max(date), by = "day"),
+      date = seq.Date(
+        from = min(min(date, as.Date("3000-01-01")), max(start_date, start_date_min, as.Date("1500-01-01"))),
+        to = max(date, as.Date("1500-01-01")),
+        by = "day"
+      ),
       fill = list(fatalities = 0)
     ) |>
     dplyr$mutate(
