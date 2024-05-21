@@ -31,7 +31,7 @@ jobs:
     run:
         runs-on: ubuntu-latest
         env:
-
+          IPC_API_KEY: ${{ secrets.IPC_API_KEY }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           DSCI_AZ_SAS_DEV: ${{ secrets.DSCI_AZ_SAS_DEV }}
           DSCI_AZ_SAS_PROD: ${{ secrets.DSCI_AZ_SAS_PROD }}
