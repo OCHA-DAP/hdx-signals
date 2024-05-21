@@ -29,4 +29,4 @@ cs$update_az_file(
   name = fname
 )
 
-log_info(paste0("Successfully downloaded indicator mapping and saved to ", fname))
+log_info(paste0("Successfully created indicator mapping and saved to ", fname))
