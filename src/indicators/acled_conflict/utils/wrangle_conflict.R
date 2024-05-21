@@ -54,8 +54,8 @@ wrangle <- function(df_raw, first_run = FALSE) {
     ) |>
     tidyr$complete( # completes data between start_date from ACLED report and max date
       date = seq.Date(
-        from = min(min(date, as.Date("3000-01-01")), max(start_date, start_date_min, as.Date("1500-01-01"))),
-        to = max(date, as.Date("1500-01-01")),
+        from = min(min(date), max(start_date, start_date_min)),
+        to = max(date),
         by = "day"
       ),
       fill = list(fatalities = 0)

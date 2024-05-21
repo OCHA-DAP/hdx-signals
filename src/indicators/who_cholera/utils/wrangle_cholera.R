@@ -50,7 +50,7 @@ wrangle <- function(df_raw) {
     ) |>
     dplyr$summarize(
       event = paste(unique(event), collapse = "; "),
-      start_date = min(start_date, as.Date("3000-01-01")),
+      start_date = min(start_date),
       cholera_cases = sum(cholera_cases),
       .groups = "drop"
     ) |>
