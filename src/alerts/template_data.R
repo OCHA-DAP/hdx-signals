@@ -104,4 +104,3 @@ signals_template <- dplyr$bind_cols(
   campaign_content_template,
   dplyr$select(campaign_template, -iso3, -date)
 )
-
