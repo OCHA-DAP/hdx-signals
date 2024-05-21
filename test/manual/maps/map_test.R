@@ -27,21 +27,19 @@ df_map_settings <- cs$read_az_file("input/iso3_map_settings.json")
 #' @param use_bbox `logical` if TRUE (default) samples will be drawn from the bounding box
 #'    of the polygon, if FALSE sampled withing the polygon. It's mainly a feature to
 #'    ease development as sampling withing bbox is much faster
-#' @param subtitle `character` subtitle to label plot
 #' @param map_settings json file containing map specifications (default = "input/iso3_map_settings.json")
 #' @param out_dir `character` directory to output sample maps. If NULL (default) no image written.
 #'    and no image written
 #'
 #' @return ggplot image
 #' @export
-
 map_test <- function(
   iso3,
-  out_dir = NULL,
   sample_n = 1:20,
   sample_values = 1:20000,
   use_bbox = TRUE,
-  map_settings = df_map_settings
+  map_settings = df_map_settings,
+  out_dir = NULL
 ) {
 
   # filter map settings for dimensions
@@ -72,8 +70,10 @@ map_test <- function(
   return(p)
 }
 
-
 #' Plot randomly generated points over basemap created from in map_points.R
+#' User provides iso3 code and sampling specs and function returns country-level
+#' plot with spatially random points containing random values used to size the
+#' point geoms.
 #'
 #' @param iso3 ISO3 code
 #' @param sample_n `integer` vector (default = 1:20) sampled to randomly decide how many
@@ -83,10 +83,8 @@ map_test <- function(
 #' @param use_bbox `logical` if TRUE (default) samples will be drawn from the bounding box
 #'    of the polygon, if FALSE sampled withing the polygon. It's mainly a feature to
 #'    ease development as sampling withing bbox is much faster
-#' @param subtitle `character` subtitle to label plot
 #'
 #' @return plot ggplot
-
 map_with_points_test  <- function(
   iso3,
   sample_n = 1:20,
@@ -109,7 +107,6 @@ map_with_points_test  <- function(
     subtitle = iso3
   )
 }
-
 #' Generate pts for test map from iso3 code
 #'
 #' @param iso3 ISO3 code
@@ -122,7 +119,6 @@ map_with_points_test  <- function(
 #'    ease development as sampling withing bbox is much faster
 #'
 #' @return sf class data.frame with point geometry
-
 sample_pts_iso3 <- function(
     iso3,
     sample_n = 1:20,
@@ -154,7 +150,7 @@ sample_pts_iso3 <- function(
 #'
 #' @return sf class data.frame with point geometry
 #'
-#' @examples \dontrun{
+#' @examples
 #' library(sf)
 #' library(dplyr)
 #' file_name <- system.file("shape/nc.shp", package="sf")
@@ -168,8 +164,6 @@ sample_pts_iso3 <- function(
 #'                      sample_n = 1:20,
 #'                      sample_values = 1:20000
 #'                      )
-#' }
-
 random_spatial_sample <- function(
     poly,
     use_bbox = TRUE,
