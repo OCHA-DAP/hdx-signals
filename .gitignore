@@ -161,3 +161,6 @@ hdx_signals_auth.json
 .Rhistory
 .Rbuildignore
 .DS_Store
+
+# Temporary file folders
+.temp_dir
