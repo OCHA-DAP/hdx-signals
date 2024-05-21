@@ -6,6 +6,8 @@ box::use(cs = ../utils/cloud_storage)
 box::use(./delete_campaign_content[delete_campaign_content])
 box::use(./template_data)
 
+box::use(logger[log_info])
+
 #' Generate campaigns content data frame
 #'
 #' Used when generating and updating campaigns. Creates all of the content used
@@ -231,7 +233,7 @@ generate_section <- function(
     )
   }
 
-  message(
+  log_info(
     "Campaign content generation completed with ",
     fn_name,
     "()."
