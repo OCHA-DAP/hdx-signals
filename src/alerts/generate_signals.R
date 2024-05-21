@@ -110,6 +110,13 @@ generate_signals <- function(
       delete_campaign_content()
   }
 
+  # return empty data frame if alerts is empty
+  if (nrow(df_alerts) == 0) {
+    return(
+      template_data$signals_template
+    )
+  }
+
 
   # get content for the campaign
   df_campaign_content <- generate_campaign_content(

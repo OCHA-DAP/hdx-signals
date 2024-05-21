@@ -172,7 +172,7 @@ filter_alerts_test <- function(df) {
       iso3
     ) |>
     dplyr$filter(
-      date == max(date)
+      date == max(date, as.Date("1500-01-01"))
     ) |>
     dplyr$ungroup()
 }
