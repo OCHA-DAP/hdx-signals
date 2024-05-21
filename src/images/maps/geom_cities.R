@@ -1,5 +1,6 @@
 box::use(gg = ggplot2)
 box::use(ggrepel)
+box::use(sf)
 
 box::use(../../utils/get_iso3_sf)
 
@@ -33,6 +34,7 @@ geom_cities <- function(iso3) {
           geometry = geometry
         ),
         stat = "sf_coordinates",
+        fun.geometry = \(x) sf$st_centroid(x, of_largest_polygon = FALSE),
         min.segment.length = Inf,
         family = "Source Sans 3",
         color = "black"
