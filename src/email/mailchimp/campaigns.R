@@ -2,6 +2,7 @@ box::use(httr2)
 
 box::use(./base_api)
 box::use(../../utils/gmas_test_run)
+box::use(../../utils/get_env[get_env])
 box::use(./folders)
 
 #' Adds a campaign to Mailchimp
@@ -38,7 +39,7 @@ mc_add_campaign <- function(subject_line, preview_text, title, recipients, templ
             subject_line = subject_line,
             preview_text = preview_text,
             from_name = "HDX Signals",
-            reply_to = Sys.getenv("HDX_SIGNALS_EMAIL"),
+            reply_to = get_env("HDX_SIGNALS_EMAIL"),
             template_id = as.numeric(template_id),
             folder_id = folders$mc_campaign_folder_id(folder)
           )

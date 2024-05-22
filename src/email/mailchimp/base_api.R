@@ -1,4 +1,5 @@
 box::use(httr2)
+box::use(../../utils/get_env[get_env])
 
 #' Base API call for Mailchimp
 #'
@@ -18,7 +19,7 @@ mc_api <- function(lists_api = TRUE) {
       is_transient = \(resp) httr2$resp_status(resp) == 500
     ) |>
     httr2$req_auth_bearer_token(
-      token = Sys.getenv("MAILCHIMP_API_KEY")
+      token = get_env("MAILCHIMP_API_KEY")
     )
 
   if (lists_api) {
