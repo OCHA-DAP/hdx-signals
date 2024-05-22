@@ -31,6 +31,8 @@ jobs:
     run:
         runs-on: ubuntu-latest
         env:
+          HDX_SIGNALS_EMAIL: ${{ secrets.HDX_SIGNALS_EMAIL}}
+          HDX_SIGNALS_SURVEY_LINK: ${{ secrets.HDX_SIGNALS_SURVEY_LINK}}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           DSCI_AZ_SAS_DEV: ${{ secrets.DSCI_AZ_SAS_DEV }}
           DSCI_AZ_SAS_PROD: ${{ secrets.DSCI_AZ_SAS_PROD }}

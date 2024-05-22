@@ -12,17 +12,17 @@ box::use(../../alerts/generate_signals[generate_signals])
 
 box::use(logger[log_info])
 
-# get data
-df_raw <- raw_conflict$raw()
-df_wrangled <- wrangle_conflict$wrangle(df_raw)
-
 test <- as.logical(Sys.getenv("TEST", unset = FALSE))
-test_filter <- ifelse(test, c("AFG", "SSD"), NULL)
+test_filter <- if (test) c("AFG", "SSD") else NULL
 
 log_info("Checking acled conflict indicator... Running with:")
 log_info(paste0("GMAS_TEST_RUN = ", Sys.getenv("GMAS_TEST_RUN")))
 log_info(paste0("TEST = ", Sys.getenv("TEST")))
 log_info(paste0("FIRST_RUN = ", Sys.getenv("FIRST_RUN")))
+
+# get data
+df_raw <- raw_conflict$raw()
+df_wrangled <- wrangle_conflict$wrangle(df_raw)
 
 # now generate signals
 generate_signals(
