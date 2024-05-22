@@ -31,6 +31,8 @@ jobs:
     run:
         runs-on: ubuntu-latest
         env:
+          HDX_SIGNALS_EMAIL: ${{ secrets.HDX_SIGNALS_EMAIL}}
+          HDX_SIGNALS_SURVEY_LINK: ${{ secrets.HDX_SIGNALS_SURVEY_LINK}}
           ACLED_ACCESS_KEY: ${{ secrets.ACLED_ACCESS_KEY }}
           ACLED_EMAIL_ADDRESS: ${{ secrets.ACLED_EMAIL_ADDRESS }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
