@@ -32,10 +32,10 @@ logger$configure_logger()
 #'
 #' @export
 raw <- function(first_run = FALSE) {
-  # first we check that we havne't already downloaded ACLED data today, and if we
+  # first we check that we haven't already downloaded ACLED data today, and if we
   # have, just use that raw data. Also checks that `first_run` values match
   date_check <- cs$read_az_file("output/acled_conflict/download_date.parquet")
-  if (FALSE) {
+  if (date_check$acled_download_date == Sys.Date() && first_run == date_check$first_run) {
     log_debug("ACLED data already downloaded today. Using existing raw.parquet file on Azure")
     cs$read_az_file("output/acled_conflict/raw.parquet")
   } else {
