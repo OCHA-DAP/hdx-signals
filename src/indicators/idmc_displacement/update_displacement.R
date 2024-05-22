@@ -47,7 +47,7 @@ df_disaster <- generate_signals(
   info_fn = info_displacement$info,
   summary_fn = summary_displacement$summary,
   map_fn = map_displacement$map,
-  test = test, 
+  test = test,
   test_filter = test_filter
 )
 

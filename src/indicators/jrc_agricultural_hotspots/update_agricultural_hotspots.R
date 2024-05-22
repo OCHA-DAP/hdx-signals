@@ -28,7 +28,7 @@ generate_signals(
   summary_fn = summary_agricultural_hotspots$summary,
   info_fn = info_agricultural_hotspots$info,
   plot_fn = plot_agricultural_hotspots$plot,
-  test = test, 
+  test = test,
   test_filter = test_filter
 )
 
