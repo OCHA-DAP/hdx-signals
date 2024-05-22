@@ -2,6 +2,7 @@ box::use(dplyr)
 box::use(rlang[`!!`])
 box::use(purrr)
 box::use(glue)
+box::use(logger[log_error])
 
 box::use(cs = ../utils/cloud_storage)
 box::use(../email/components/email_body)
@@ -11,6 +12,10 @@ box::use(../email/mailchimp/campaigns)
 box::use(../email/mailchimp/custom_segmentation)
 box::use(../utils/formatters)
 box::use(../email/mailchimp/delete)
+
+box::use(../utils/logger)
+
+logger$configure_logger()
 
 #' Create campaigns
 #'
@@ -170,6 +175,7 @@ create_campaign <- function(
       )
     },
     error = function(e) {
+      log_error(e$message)
       "ERROR"
     }
   )
@@ -202,6 +208,7 @@ create_campaign <- function(
         )
       },
       error = function(e) {
+        log_error(e$message)
         # template_id will be deleted in later cleanup
         list(id = "ERROR", url = "ERROR")
       }

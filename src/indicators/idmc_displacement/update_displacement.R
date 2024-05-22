@@ -1,4 +1,5 @@
 box::use(dplyr)
+box::use(logger[log_info, log_debug])
 
 # indicator utilities
 box::use(./utils/raw_displacement)
@@ -10,16 +11,17 @@ box::use(./utils/summary_displacement)
 box::use(./utils/map_displacement)
 
 box::use(../../alerts/generate_signals[generate_signals])
+box::use(../../utils/logger)
 
-box::use(logger[log_info])
+logger$configure_logger()
 
 test <- as.logical(Sys.getenv("TEST", unset = FALSE))
 test_filter <- if (test) c("AFG", "SSD") else NULL
 
-log_info("Checking displacement indicator... Running with:")
-log_info(paste0("GMAS_TEST_RUN = ", Sys.getenv("GMAS_TEST_RUN")))
-log_info(paste0("TEST = ", Sys.getenv("TEST")))
-log_info(paste0("FIRST_RUN = ", Sys.getenv("FIRST_RUN")))
+log_info("Checking displacement indicator...")
+log_debug(paste0("GMAS_TEST_RUN = ", Sys.getenv("GMAS_TEST_RUN")))
+log_debug(paste0("TEST = ", Sys.getenv("TEST")))
+log_debug(paste0("FIRST_RUN = ", Sys.getenv("FIRST_RUN")))
 
 df_raw <- raw_displacement$raw()
 df_wrangled <- wrangle_displacement$wrangle(df_raw)

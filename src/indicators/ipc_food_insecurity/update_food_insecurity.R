@@ -1,3 +1,5 @@
+box::use(logger[log_info, log_debug])
+
 box::use(./utils/raw_food_insecurity)
 box::use(./utils/wrangle_food_insecurity)
 box::use(./utils/alert_food_insecurity)
@@ -7,16 +9,17 @@ box::use(./utils/map_food_insecurity)
 box::use(./utils/info_food_insecurity)
 
 box::use(../../alerts/generate_signals[generate_signals])
+box::use(../../utils/logger)
 
-box::use(logger[log_info])
+logger$configure_logger()
 
 test <- as.logical(Sys.getenv("TEST", unset = FALSE))
 test_filter <- if (test) c("AFG", "SSD") else NULL
 
-log_info("Checking food insecurity indicator... Running with:")
-log_info(paste0("GMAS_TEST_RUN = ", Sys.getenv("GMAS_TEST_RUN")))
-log_info(paste0("TEST = ", Sys.getenv("TEST")))
-log_info(paste0("FIRST_RUN = ", Sys.getenv("FIRST_RUN")))
+log_info("Checking food insecurity indicator...")
+log_debug(paste0("GMAS_TEST_RUN = ", Sys.getenv("GMAS_TEST_RUN")))
+log_debug(paste0("TEST = ", Sys.getenv("TEST")))
+log_debug(paste0("FIRST_RUN = ", Sys.getenv("FIRST_RUN")))
 
 df_raw <- raw_food_insecurity$raw()
 df_wrangled <- wrangle_food_insecurity$wrangle(df_raw)

@@ -8,6 +8,9 @@ box::use(logger[log_info])
 
 box::use(../src/utils/country_codes)
 box::use(cs = ../src/utils/cloud_storage)
+box::use(../src/utils/logger)
+
+logger$configure_logger()
 
 # TODO: Remove once this passes from GH runner
 if (interactive()) {
