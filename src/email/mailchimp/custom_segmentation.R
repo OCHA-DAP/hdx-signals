@@ -169,7 +169,7 @@ mc_archive_segment <- function() {
     segments$mc_update_static_segment(
       segment_id = 25085,
       segment_name = "hdx-signals-archive",
-      emails = list(get_env("HDX_SIGNALS_EMAIL"))
+      emails = list(get_env("HS_EMAIL"))
     )
   }
 

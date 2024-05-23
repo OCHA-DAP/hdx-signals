@@ -3,14 +3,14 @@ name: Monitor IPC food insecurity
 on:
     workflow_dispatch:
       inputs:
-        first_run:
+        FIRST_RUN:
           required: true
           type: choice
           default: "FALSE"
           options:
             - "TRUE"
             - "FALSE"
-        test:
+        HS_TEST:
           required: true
           type: choice
           default: "TRUE"
@@ -40,16 +40,16 @@ jobs:
     run:
         runs-on: ubuntu-latest
         env:
-          HDX_SIGNALS_EMAIL: ${{ secrets.HDX_SIGNALS_EMAIL}}
-          HDX_SIGNALS_SURVEY_LINK: ${{ secrets.HDX_SIGNALS_SURVEY_LINK}}
+          HS_EMAIL: ${{ secrets.HS_EMAIL}}
+          HS_SURVEY_LINK: ${{ secrets.HS_SURVEY_LINK}}
           IPC_API_KEY: ${{ secrets.IPC_API_KEY }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           DSCI_AZ_SAS_DEV: ${{ secrets.DSCI_AZ_SAS_DEV }}
           DSCI_AZ_SAS_PROD: ${{ secrets.DSCI_AZ_SAS_PROD }}
           MAILCHIMP_API_KEY: ${{ secrets.MAILCHIMP_API_KEY }}
           GMAS_TEST_RUN: ${{ inputs.GMAS_TEST_RUN || 'TRUE' }}
-          FIRST_RUN: ${{ inputs.first_run || 'FALSE' }}
-          TEST: ${{ inputs.test || 'FALSE' }}
+          FIRST_RUN: ${{ inputs.FIRST_RUN || 'FALSE' }}
+          HS_TEST: ${{ inputs.HS_TEST || 'FALSE' }}
           LOG_LEVEL: ${{ inputs.LOG_LEVEL || 'DEBUG' }}
         steps:   
             - name: Checkout repository

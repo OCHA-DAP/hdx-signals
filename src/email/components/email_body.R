@@ -8,8 +8,8 @@ box::use(./line_block)
 #' Create email body
 #'
 #' Create email body. Uses a set of vectors to create country blocks. Requires
-#' the `HDX_SIGNALS_EMAIL` environment variable to specify the response email
-#' and `HDX_SIGNALS_SURVEY_LINK` to link to our feedback survey.
+#' the `HS_EMAIL` environment variable to specify the response email
+#' and `HS_SURVEY_LINK` to link to our feedback survey.
 #'
 #' @param title Shock title text to go next to HDX Signals at the top of the email
 #' @param iso3 Vector of ISO3 codes
@@ -79,11 +79,11 @@ create_body <- function(
         "Full documentation and source code for HDX Signals is available on ",
         "<a href='https://github.com/OCHA-DAP/hdx-signals'>GitHub</a>. Provide ",
         "feedback through our <a href='",
-        Sys.getenv("HDX_SIGNALS_SURVEY_LINK"),
+        Sys.getenv("HS_SURVEY_LINK"),
         "'>user survey</a>, or reach out to <a href='mailto:",
-        Sys.getenv("HDX_SIGNALS_EMAIL"),
+        Sys.getenv("HS_EMAIL"),
         "'>",
-        Sys.getenv("HDX_SIGNALS_EMAIL"),
+        Sys.getenv("HS_EMAIL"),
         "</a> ",
         "with any questions, comments, or other feedback."
       )

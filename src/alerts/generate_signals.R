@@ -178,7 +178,7 @@ generate_signals <- function(
     df_campaigns,
     fn_signals
   )
-  log_info(paste0(nrow(df_campaigns), " signals generated"))
+  log_info(paste0("Monitoring completed. ", nrow(df_campaigns), " signals generated for ", indicator_id))
 }
 
 #' Validate campaigns data
