@@ -1,0 +1,41 @@
+name: Check monitoring scripts
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    env:
+      ACLED_ACCESS_KEY: ${{ secrets.ACLED_ACCESS_KEY }}
+      ACLED_EMAIL_ADDRESS: ${{ secrets.ACLED_EMAIL_ADDRESS }}
+      IDMC_API: ${{ secrets.IDMC_API }}
+      IPC_API_KEY: ${{ secrets.IPC_API_KEY }}
+      GMAS_TEST_RUN: ${{ 'TRUE' }}
+      TEST: ${{ 'TRUE' }}
+      LOG_LEVEL: ${{ 'DEBUG' }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up environment
+        uses: ocha-dap/hdx-signals-actions@07b3181e914ef100bd9c8134f3c7a13383870b9d
+
+      - name: Check ACLED conflict
+        shell: bash
+        run: Rscript ./src/indicators/acled_conflict/update_conflict.R
+
+      - name: Check JRC agricultural hotspots
+        shell: bash
+        run: Rscript ./src/indicators/jrc_agricultural_hotspots/update_agricultural_hotspots.R
+
+      - name: Check IDMC displacement
+        shell: bash
+        run: Rscript ./src/indicators/idmc_displacement/update_displacement.R
+      
+      - name: Check IPC food insecurity
+        shell: bash
+        run: Rscript ./src/indicators/ipc_food_insecurity/update_food_insecurity.R
