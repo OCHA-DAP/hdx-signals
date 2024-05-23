@@ -52,5 +52,3 @@ df_disaster <- generate_signals(
   test = test,
   test_filter = test_filter
 )
-
-log_info("Successfully checked displacement indicator")
