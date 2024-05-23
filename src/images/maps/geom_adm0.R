@@ -2,6 +2,7 @@ box::use(gg = ggplot2)
 
 box::use(../../utils/get_iso3_sf)
 box::use(../../utils/iso3_shift_longitude)
+box::use(../../utils/assertions[assert_within_distance])
 
 #' Geom for country boundaries
 #'
@@ -10,12 +11,17 @@ box::use(../../utils/iso3_shift_longitude)
 #' an error if the returned data is `NULL` or a 0 row data frame.
 #'
 #' @param iso3 ISO3 code
+#' @param additional_geom sf class object with geometry (default = NULL)
 #'
 #' @returns Geom for the country boundaries
 #'
 #' @export
-geom_adm0 <- function(iso3) {
+geom_adm0 <- function(iso3, additional_geom = NULL) {
   sf_adm0 <- get_iso3_sf$get_iso3_sf(iso3, "adm0")
+
+  if (!null(other_geom)) {
+    assert_within_distance(additional_geom, sf_adm)
+  }
 
   if (is.null(sf_adm0) || nrow(sf_adm0) == 0) {
     stop(
