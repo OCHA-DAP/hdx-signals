@@ -43,9 +43,14 @@ update_adm0_sf <- function(iso3) {
     filter_adm0_sf(iso3)
 
   sf_union <- suppressMessages(
-    sf$st_union(sf_adm0) |>
-      sf$st_as_sf() # so we can check number of rows
-  )
+      sf_adm0 |>
+        # keepig it tidy allows us to retain cols
+        # i might even suggest mutating iso3 and grouping
+        # that in so it's also included in the file
+        dplyr$group_by(data_source) |>
+        dplyr$summarise(do_union=TRUE)
+    )
+  # i did some speed benchmarking this against sf$st_union() and they are equivalent in speed.
 
   # have to extract geometries from collections
   if (sf$st_geometry_type(sf_union) == "GEOMETRYCOLLECTION") {
@@ -157,7 +162,8 @@ download_adm0_sf <- function(iso3) {
   } else if (iso3 == "AB9") {
     download_shapefile(
       url = "https://open.africa/dataset/56d1d233-0298-4b6a-8397-d0233a1509aa/resource/76c698c9-e282-4d00-9202-42bcd908535b/download/ssd_admbnda_abyei_imwg_nbs_20180401.zip", # nolint
-      layer = "ssd_admbnda_abyei_imwg_nbs_20180401"
+      layer = "ssd_admbnda_abyei_imwg_nbs_20180401",
+      data_source_label = "Open Africa"
     )
   } else if (iso3 == "XKX") {
     download_shapefile(
@@ -195,7 +201,8 @@ download_adm0_sf <- function(iso3) {
 download_fieldmaps_sf <- function(iso3) {
   iso3 <- tolower(iso3)
   download_shapefile(
-    url = glue$glue("https://data.fieldmaps.io/cod/originals/{iso3}.gpkg.zip")
+    url = glue$glue("https://data.fieldmaps.io/cod/originals/{iso3}.gpkg.zip"),
+    data_source_label = "FieldMaps, geoBoundaries, U.S. Department of State, U.S. Geological Survey"
   )
 }
 

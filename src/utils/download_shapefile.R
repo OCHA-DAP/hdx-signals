@@ -2,6 +2,7 @@ box::use(stringr)
 box::use(utils)
 box::use(tools)
 box::use(sf)
+box::use(dplyr)
 
 #' Download shapefile and read
 #'
@@ -15,7 +16,10 @@ box::use(sf)
 #' @returns sf object
 #'
 #' @export
-download_shapefile <- function(url, layer = NULL) {
+download_shapefile <- function(url,
+                               layer = NULL,
+                               data_source_label = NULL
+                               ) {
   if (stringr$str_ends(url, ".zip")) {
     utils$download.file(
       url = url,
@@ -45,15 +49,22 @@ download_shapefile <- function(url, layer = NULL) {
   }
 
   if (!is.null(layer)) {
-    sf$st_read(
+    ret <- sf$st_read(
       fn,
       layer = layer,
       quiet = TRUE
     )
   } else {
-    sf$st_read(
+    ret <- sf$st_read(
       fn,
       quiet = TRUE
     )
   }
+  if(!is.null(data_source_label)){
+    ret <- ret |>
+      dplyr$mutate(
+        data_source = data_source_label
+      )
+  }
+  return(ret)
 }
