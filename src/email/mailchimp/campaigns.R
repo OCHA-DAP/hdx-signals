@@ -1,9 +1,13 @@
 box::use(httr2)
+box::use(logger[log_info, log_debug])
 
 box::use(./base_api)
 box::use(../../utils/gmas_test_run)
 box::use(../../utils/get_env[get_env])
 box::use(./folders)
+box::use(../../utils/logger)
+
+logger$configure_logger()
 
 #' Adds a campaign to Mailchimp
 #'
@@ -21,7 +25,7 @@ box::use(./folders)
 #' @export
 mc_add_campaign <- function(subject_line, preview_text, title, recipients, template_id, folder) {
   if (gmas_test_run$gmas_test_run()) {
-    message(
+    log_debug(
       "Since `gmas_test_run()`, no campaign added to Mailchimp."
     )
     list(id = "test-id", url = "test-url")
@@ -72,7 +76,7 @@ mc_send_campaign <- function(campaign_id) {
     httr2$req_method("POST")
 
   if (gmas_test_run$gmas_test_run()) {
-    message(
+    log_debug(
       "Since `gmas_test_run()`, no campaign sent, dry run returned."
     )
     httr2$req_dry_run(req)

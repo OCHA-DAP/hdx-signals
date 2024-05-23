@@ -1,7 +1,7 @@
 box::use(purrr)
 box::use(openai)
 box::use(stringr)
-box::use(logger[log_info])
+box::use(logger[log_info, log_debug])
 
 box::use(../utils/gmas_test_run[gmas_test_run])
 box::use(../utils/get_env[get_env])
@@ -122,7 +122,7 @@ ai_summarizer <- function(prompt, info) {
 insistent_ai <- purrr$insistently(
   \(prompt, info) {
     if (gmas_test_run()) {
-      log_info(
+      log_debug(
         "`ai_summarizer()` returning static output as `gmas_test_run()` is `TRUE`. ",
         "Set `GMAS_TEST_RUN` env variable to `FALSE` if you want `ai_summarizer()` ",
         "to ping the OpenAI API, but be wary of saving data and emailing."

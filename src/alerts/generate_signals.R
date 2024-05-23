@@ -4,6 +4,7 @@ box::use(purrr)
 box::use(stringr)
 box::use(rlang)
 box::use(rlang[`!!`])
+box::use(logger[log_info])
 
 box::use(cs = ../utils/cloud_storage)
 box::use(../utils/gmas_test_run)
@@ -14,6 +15,9 @@ box::use(./delete_campaign_content[delete_campaign_content])
 box::use(./generate_alerts[generate_alerts])
 box::use(./check_existing_signals[check_existing_signals])
 box::use(./template_data)
+box::use(../utils/logger)
+
+logger$configure_logger()
 
 #' Generate campaigns for any indicator
 #'
@@ -174,7 +178,7 @@ generate_signals <- function(
     df_campaigns,
     fn_signals
   )
-  df_campaigns
+  log_info(paste0(nrow(df_campaigns), " signals generated"))
 }
 
 #' Validate campaigns data

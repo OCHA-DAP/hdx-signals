@@ -9,7 +9,7 @@ box::use(tools)
 box::use(readr)
 box::use(jsonlite)
 box::use(dplyr)
-box::use(logger[log_info])
+box::use(logger[log_info, log_debug])
 
 box::use(../utils/gmas_test_run[gmas_test_run])
 box::use(../utils/get_env[get_env])
@@ -96,7 +96,7 @@ update_az_file <- function(df, name, stage = c("prod", "dev")) {
   )
 
   if (gmas_test_run()) {
-    log_info(
+    log_debug(
       "`update_az_file()` not saving data as `gmas_test_run()` is `TRUE`. ",
       "Set `GMAS_TEST_RUN` env variable to `FALSE` if you want the data to be ",
       "saved, but be careful of sending emails or calling the OpenAI API."
