@@ -12,6 +12,8 @@ jobs:
     env:
       ACLED_ACCESS_KEY: ${{ secrets.ACLED_ACCESS_KEY }}
       ACLED_EMAIL_ADDRESS: ${{ secrets.ACLED_EMAIL_ADDRESS }}
+      DSCI_AZ_SAS_DEV: ${{ secrets.DSCI_AZ_SAS_DEV }}
+      DSCI_AZ_SAS_PROD: ${{ secrets.DSCI_AZ_SAS_PROD }}
       IDMC_API: ${{ secrets.IDMC_API }}
       IPC_API_KEY: ${{ secrets.IPC_API_KEY }}
       GMAS_TEST_RUN: ${{ 'TRUE' }}
