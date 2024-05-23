@@ -13,6 +13,7 @@ box::use(../../alerts/generate_signals[generate_signals])
 box::use(../../utils/logger)
 
 logger$configure_logger()
+options(warn=2)
 
 test <- as.logical(Sys.getenv("TEST", unset = FALSE))
 test_filter <- if (test) c("AFG", "SSD") else NULL

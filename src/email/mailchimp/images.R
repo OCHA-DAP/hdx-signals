@@ -49,6 +49,7 @@ mc_upload_image <- function(fp, name, folder, preview = FALSE) {
 
   if (gmas_test_run$gmas_test_run()) {
     # print out the image and return the dry run
+    print("here!")
     data.frame(
       id = "test-image-id",
       url = mc_test_image_view(
