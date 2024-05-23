@@ -15,7 +15,7 @@ box::use(../email/mailchimp/delete)
 
 box::use(../utils/hs_logger)
 
-logger$configure_logger()
+hs_logger$configure_logger()
 
 #' Create campaigns
 #'

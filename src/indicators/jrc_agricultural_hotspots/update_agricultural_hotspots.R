@@ -10,23 +10,19 @@ box::use(./utils/plot_agricultural_hotspots)
 box::use(../../alerts/generate_signals[generate_signals])
 box::use(../../utils/hs_logger)
 
-logger$configure_logger()
-
 test <- as.logical(Sys.getenv("TEST", unset = FALSE))
 test_filter <- if (test) c("AFG", "SSD") else NULL
+indicator_id <- "jrc_agricultural_hotspots"
 
-log_info("Checking agricultural hotspots indicator...")
-log_debug(paste0("GMAS_TEST_RUN = ", Sys.getenv("GMAS_TEST_RUN")))
-log_debug(paste0("TEST = ", Sys.getenv("TEST")))
-log_debug(paste0("FIRST_RUN = ", Sys.getenv("FIRST_RUN")))
-
+hs_hs_logger$configure_logger()
+hs_logger$monitoring_log_setup(indicator_id)
 df_raw <- raw_agricultural_hotspots$raw()
 df_wrangled <- wrangle_agricultural_hotspots$wrangle(df_raw)
 
 # now generate signals
 generate_signals(
   df_wrangled = df_wrangled,
-  indicator_id = "jrc_agricultural_hotspots",
+  indicator_id = indicator_id,
   alert_fn = alert_agricultural_hotspots$alert,
   summary_fn = summary_agricultural_hotspots$summary,
   info_fn = info_agricultural_hotspots$info,

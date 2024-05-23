@@ -1,7 +1,7 @@
 box::use(logger[log_error])
 box::use(./hs_logger)
 
-logger$configure_logger()
+hs_logger$configure_logger()
 
 #' Gets an environment variable value, returning an error if it is not set
 #'

@@ -9,7 +9,7 @@ box::use(../../../utils/hs_logger)
 box::use(cs = ../../../../src/utils/cloud_storage)
 box::use(../../../utils/get_env[get_env])
 
-logger$configure_logger()
+hs_logger$configure_logger()
 
 #' Download raw conflict data
 #'

@@ -17,7 +17,7 @@ box::use(./check_existing_signals[check_existing_signals])
 box::use(./template_data)
 box::use(../utils/hs_logger)
 
-logger$configure_logger()
+hs_logger$configure_logger()
 
 #' Generate campaigns for any indicator
 #'

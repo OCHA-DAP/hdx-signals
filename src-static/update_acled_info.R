@@ -10,7 +10,7 @@ box::use(../src/utils/country_codes)
 box::use(cs = ../src/utils/cloud_storage)
 box::use(../src/utils/hs_logger)
 
-logger$configure_logger()
+hs_logger$configure_logger()
 
 # TODO: Remove once this passes from GH runner
 if (interactive()) {

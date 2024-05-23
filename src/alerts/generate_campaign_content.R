@@ -9,7 +9,7 @@ box::use(./template_data)
 
 box::use(../utils/hs_logger)
 
-logger$configure_logger()
+hs_logger$configure_logger()
 
 #' Generate campaigns content data frame
 #'

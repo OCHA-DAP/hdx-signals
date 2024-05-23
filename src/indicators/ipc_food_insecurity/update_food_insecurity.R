@@ -11,15 +11,12 @@ box::use(./utils/info_food_insecurity)
 box::use(../../alerts/generate_signals[generate_signals])
 box::use(../../utils/hs_logger)
 
-logger$configure_logger()
-
 test <- as.logical(Sys.getenv("TEST", unset = FALSE))
 test_filter <- if (test) c("AFG", "SSD") else NULL
+indicator_id <- "ipc_food_insecurity"
 
-log_info("Checking food insecurity indicator...")
-log_debug(paste0("GMAS_TEST_RUN = ", Sys.getenv("GMAS_TEST_RUN")))
-log_debug(paste0("TEST = ", Sys.getenv("TEST")))
-log_debug(paste0("FIRST_RUN = ", Sys.getenv("FIRST_RUN")))
+hs_hs_logger$configure_logger()
+hs_logger$monitoring_log_setup(indicator_id)
 
 df_raw <- raw_food_insecurity$raw()
 df_wrangled <- wrangle_food_insecurity$wrangle(df_raw)
@@ -27,7 +24,7 @@ df_wrangled <- wrangle_food_insecurity$wrangle(df_raw)
 # now generate signals
 df_ipc <- generate_signals(
   df_wrangled = df_wrangled,
-  indicator_id = "ipc_food_insecurity",
+  indicator_id = indicator_id,
   alert_fn = alert_food_insecurity$alert,
   plot_fn = plot_food_insecurity$plot,
   summary_fn = summary_food_insecurity$summary,
