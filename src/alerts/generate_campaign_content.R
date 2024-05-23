@@ -7,7 +7,7 @@ box::use(cs = ../utils/cloud_storage)
 box::use(./delete_campaign_content[delete_campaign_content])
 box::use(./template_data)
 
-box::use(../utils/logger)
+box::use(../utils/hs_logger)
 
 logger$configure_logger()
 

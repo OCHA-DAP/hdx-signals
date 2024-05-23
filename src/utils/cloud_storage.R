@@ -13,7 +13,7 @@ box::use(logger[log_info, log_debug])
 
 box::use(../utils/gmas_test_run[gmas_test_run])
 box::use(../utils/get_env[get_env])
-box::use(../utils/logger)
+box::use(../utils/hs_logger)
 
 logger$configure_logger()
 

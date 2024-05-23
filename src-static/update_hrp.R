@@ -5,7 +5,7 @@ box::use(stringr)
 box::use(logger[log_info])
 
 box::use(cs = ../src/utils/cloud_storage)
-box::use(../src/utils/logger)
+box::use(../src/utils/hs_logger)
 
 logger$configure_logger()
 

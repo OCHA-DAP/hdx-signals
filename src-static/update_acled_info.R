@@ -8,7 +8,7 @@ box::use(logger[log_info])
 
 box::use(../src/utils/country_codes)
 box::use(cs = ../src/utils/cloud_storage)
-box::use(../src/utils/logger)
+box::use(../src/utils/hs_logger)
 
 logger$configure_logger()
 

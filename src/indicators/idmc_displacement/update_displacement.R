@@ -11,7 +11,7 @@ box::use(./utils/summary_displacement)
 box::use(./utils/map_displacement)
 
 box::use(../../alerts/generate_signals[generate_signals])
-box::use(../../utils/logger)
+box::use(../../utils/hs_logger)
 
 logger$configure_logger()
 

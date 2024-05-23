@@ -9,7 +9,7 @@ box::use(./utils/map_food_insecurity)
 box::use(./utils/info_food_insecurity)
 
 box::use(../../alerts/generate_signals[generate_signals])
-box::use(../../utils/logger)
+box::use(../../utils/hs_logger)
 
 logger$configure_logger()
 

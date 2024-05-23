@@ -8,7 +8,7 @@ box::use(./utils/info_agricultural_hotspots)
 box::use(./utils/plot_agricultural_hotspots)
 
 box::use(../../alerts/generate_signals[generate_signals])
-box::use(../../utils/logger)
+box::use(../../utils/hs_logger)
 
 logger$configure_logger()
 

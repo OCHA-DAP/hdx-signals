@@ -10,7 +10,7 @@ box::use(./utils/info_conflict)
 box::use(./utils/summary_conflict)
 
 box::use(../../alerts/generate_signals[generate_signals])
-box::use(../../utils/logger)
+box::use(../../utils/hs_logger)
 
 logger$configure_logger()
 
