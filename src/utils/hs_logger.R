@@ -14,6 +14,6 @@ configure_logger <- function() {
 monitoring_log_setup <- function(indicator_id) {
   log_info(paste0("Checking ", indicator_id, "..."))
   log_debug(paste0("GMAS_TEST_RUN = ", Sys.getenv("GMAS_TEST_RUN")))
-  log_debug(paste0("TEST = ", Sys.getenv("TEST")))
+  log_debug(paste0("HS_TEST = ", Sys.getenv("HS_TEST")))
   log_debug(paste0("FIRST_RUN = ", Sys.getenv("FIRST_RUN")))
 }
