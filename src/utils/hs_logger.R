@@ -1,4 +1,4 @@
-box::use(logger[log_threshold])
+box::use(logger[log_threshold, log_info, log_debug])
 
 #' Sets up the logging environment
 #'
