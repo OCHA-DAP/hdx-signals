@@ -3,40 +3,60 @@ name: Monitor IDMC displacement
 on:
     workflow_dispatch:
       inputs:
-        first_run:
+        FIRST_RUN:
           required: true
           type: choice
           default: "FALSE"
           options:
             - "TRUE"
             - "FALSE"
-        test:
+        HS_TEST:
           required: true
           type: choice
           default: "TRUE"
           options:
             - "TRUE"
             - "FALSE"
-    # schedule:
-    #   - cron: "0 11 * * 2"
+        GMAS_TEST_RUN:
+          required: true
+          type: choice
+          default: "TRUE"
+          options:
+            - "TRUE"
+            - "FALSE"
+        LOG_LEVEL:
+          required: true
+          type: choice
+          default: "DEBUG"
+          options:
+            - "DEBUG"
+            - "INFO"
+            - "WARNING"
+            - "ERROR"
+    schedule:
+      - cron: "0 11 * * 2"
 
 jobs:
     run:
         runs-on: ubuntu-latest
         env:
+          HS_EMAIL: ${{ secrets.HS_EMAIL}}
+          HS_SURVEY_LINK: ${{ secrets.HS_SURVEY_LINK}}
           IDMC_API: ${{ secrets.IDMC_API }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          DSCI_AZ_SAS: ${{ secrets.DSCI_AZ_SAS }}
-          DSCI_AZ_ENDPOINT: ${{ secrets.DSCI_AZ_ENDPOINT }}
+          DSCI_AZ_SAS_DEV: ${{ secrets.DSCI_AZ_SAS_DEV }}
+          DSCI_AZ_SAS_PROD: ${{ secrets.DSCI_AZ_SAS_PROD }}
           MAILCHIMP_API_KEY: ${{ secrets.MAILCHIMP_API_KEY }}
-          GMAS_TEST_RUN: ${{ inputs.test || 'FALSE' }}
-          FIRST_RUN: ${{ inputs.first_run || 'FALSE' }}
+          GMAS_TEST_RUN: ${{ inputs.GMAS_TEST_RUN || 'FALSE' }}
+          FIRST_RUN: ${{ inputs.FIRST_RUN || 'FALSE' }}
+          HS_TEST: ${{ inputs.HS_TEST || 'FALSE' }}
+          LOG_LEVEL: ${{ inputs.LOG_LEVEL || 'INFO' }}
         steps:   
             - name: Checkout repository
               uses: actions/checkout@v3
 
             - name: Set up environment
-              uses: ocha-dap/hdx-signals-actions@v1
+              uses: ocha-dap/hdx-signals-actions@07b3181e914ef100bd9c8134f3c7a13383870b9d
 
             - name: Run R monitoring script
               shell: bash

@@ -9,8 +9,13 @@ box::use(tools)
 box::use(readr)
 box::use(jsonlite)
 box::use(dplyr)
+box::use(logger[log_debug])
 
 box::use(../utils/gmas_test_run[gmas_test_run])
+box::use(../utils/get_env[get_env])
+box::use(../utils/hs_logger)
+
+hs_logger$configure_logger()
 
 #' Read a Parquet file stored on Microsoft Azure Data Storage blob
 #'
@@ -91,7 +96,7 @@ update_az_file <- function(df, name, stage = c("prod", "dev")) {
   )
 
   if (gmas_test_run()) {
-    message(
+    log_debug(
       "`update_az_file()` not saving data as `gmas_test_run()` is `TRUE`. ",
       "Set `GMAS_TEST_RUN` env variable to `FALSE` if you want the data to be ",
       "saved, but be careful of sending emails or calling the OpenAI API."
@@ -173,12 +178,12 @@ azure_endpoint_url <- function(service = c("blob", "file"), stage = c("prod", "d
 # gets the Dsci blob endpoints using the HDX Signals SAS
 blob_endpoint_dev <- az$blob_endpoint(
   endpoint = azure_endpoint_url("blob", "dev"),
-  sas = Sys.getenv("DSCI_AZ_SAS_DEV")
+  sas = get_env("DSCI_AZ_SAS_DEV")
 )
 
 blob_endpoint_prod <- az$blob_endpoint(
   endpoint = azure_endpoint_url("blob", "prod"),
-  sas = Sys.getenv("DSCI_AZ_SAS_PROD")
+  sas = get_env("DSCI_AZ_SAS_PROD")
 )
 
 

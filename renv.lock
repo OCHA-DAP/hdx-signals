@@ -1119,7 +1119,7 @@
         "R"
       ],
       "Hash": "4c8415e0ec1e29f3f4f6fc108bef0144"
-     },
+    },
     "rvest": {
       "Package": "rvest",
       "Version": "1.0.4",

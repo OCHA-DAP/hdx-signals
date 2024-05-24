@@ -1,5 +1,6 @@
 box::use(gghdx)
 box::use(gg = ggplot2)
+box::use(showtext)
 
 gghdx$gghdx()
 
@@ -10,6 +11,8 @@ gghdx$gghdx()
 #'
 #' @export
 theme_signals <- function() {
+  showtext$showtext_opts(dpi = 300)
+
   gghdx$theme_hdx() +
     gg$theme(
       axis.text.x = gg$element_text(vjust = 1),

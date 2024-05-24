@@ -11,6 +11,9 @@ box::use(logger[log_info])
 box::use(../src/utils/get_iso3_sf)
 box::use(../src/utils/all_iso3_codes)
 box::use(cs = ../src/utils/cloud_storage)
+box::use(../src/utils/hs_logger)
+
+hs_logger$configure_logger()
 
 log_info("Updating country info...")
 

@@ -4,6 +4,7 @@ box::use(purrr)
 box::use(stringr)
 box::use(rlang)
 box::use(rlang[`!!`])
+box::use(logger[log_info])
 
 box::use(cs = ../utils/cloud_storage)
 box::use(../utils/gmas_test_run)
@@ -14,6 +15,9 @@ box::use(./delete_campaign_content[delete_campaign_content])
 box::use(./generate_alerts[generate_alerts])
 box::use(./check_existing_signals[check_existing_signals])
 box::use(./template_data)
+box::use(../utils/hs_logger)
+
+hs_logger$configure_logger()
 
 #' Generate campaigns for any indicator
 #'
@@ -112,6 +116,7 @@ generate_signals <- function(
 
   # return empty data frame if alerts is empty
   if (nrow(df_alerts) == 0) {
+    log_info(paste0("No signals created for ", indicator_id))
     return(
       template_data$signals_template
     )
@@ -174,7 +179,7 @@ generate_signals <- function(
     df_campaigns,
     fn_signals
   )
-  df_campaigns
+  log_info(paste0("Monitoring completed. ", nrow(df_campaigns), " signals generated for ", indicator_id))
 }
 
 #' Validate campaigns data

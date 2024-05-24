@@ -1,10 +1,15 @@
 box::use(dplyr)
 box::use(janitor)
 box::use(rlang)
+box::use(logger[log_debug])
 
 box::use(cs = ../utils/cloud_storage)
 box::use(./delete_campaign_content[delete_campaign_content])
 box::use(./template_data)
+
+box::use(../utils/hs_logger)
+
+hs_logger$configure_logger()
 
 #' Generate campaigns content data frame
 #'
@@ -231,7 +236,7 @@ generate_section <- function(
     )
   }
 
-  message(
+  log_debug(
     "Campaign content generation completed with ",
     fn_name,
     "()."

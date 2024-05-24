@@ -7,6 +7,7 @@ box::use(./segments)
 box::use(./audience)
 box::use(cs = ../../utils/cloud_storage)
 box::use(../../utils/country_codes)
+box::use(../../utils/get_env[get_env])
 
 #' Generate email segmentation
 #'
@@ -168,7 +169,7 @@ mc_archive_segment <- function() {
     segments$mc_update_static_segment(
       segment_id = 25085,
       segment_name = "hdx-signals-archive",
-      emails = list(Sys.getenv("HDX_SIGNALS_EMAIL"))
+      emails = list(get_env("HS_EMAIL"))
     )
   }
 
