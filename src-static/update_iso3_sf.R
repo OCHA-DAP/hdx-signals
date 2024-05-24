@@ -43,13 +43,13 @@ update_adm0_sf <- function(iso3) {
     filter_adm0_sf(iso3)
 
   sf_union <- suppressMessages(
-      sf_adm0 |>
-        # keepig it tidy allows us to retain cols
-        # i might even suggest mutating iso3 and grouping
-        # that in so it's also included in the file
-        dplyr$group_by(data_source) |>
-        dplyr$summarise(do_union=TRUE)
-    )
+    sf_adm0 |>
+      # keepig it tidy allows us to retain cols
+      # i might even suggest mutating iso3 and grouping
+      # that in so it's also included in the file
+      dplyr$group_by(data_source) |>
+      dplyr$summarise(do_union = TRUE)
+  )
   # i did some speed benchmarking this against sf$st_union() and they are equivalent in speed.
 
   # have to extract geometries from collections

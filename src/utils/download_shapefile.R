@@ -16,10 +16,11 @@ box::use(dplyr)
 #' @returns sf object
 #'
 #' @export
-download_shapefile <- function(url,
-                               layer = NULL,
-                               data_source_label = NULL
-                               ) {
+download_shapefile <- function(
+  url,
+  layer = NULL,
+  data_source_label = NULL
+) {
   if (stringr$str_ends(url, ".zip")) {
     utils$download.file(
       url = url,
@@ -60,7 +61,7 @@ download_shapefile <- function(url,
       quiet = TRUE
     )
   }
-  if(!is.null(data_source_label)){
+  if (!is.null(data_source_label)) {
     ret <- ret |>
       dplyr$mutate(
         data_source = data_source_label
