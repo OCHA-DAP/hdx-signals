@@ -15,16 +15,21 @@ box::use(../../utils/iso3_shift_longitude)
 #' an error if the returned data is `NULL` or a 0 row data frame.
 #'
 #' @param iso3 ISO3 code
-#' @param additional_geom sf class object with geometry (default = NULL)
+#' @param ... Additional sf class objects with geometry
 #'
 #' @returns Geom for the country boundaries
 #'
 #' @export
-geom_adm0 <- function(iso3, additional_geom = NULL) {
+geom_adm0 <- function(iso3, ...) {
   sf_adm0 <- get_iso3_sf$get_iso3_sf(iso3, "adm0")
 
-  if (!null(other_geom)) {
-    assert_within_distance(additional_geom, sf_adm)
+
+  additional_geoms <- list(...)
+  if (length(additional_geoms) > 0) {
+    purrr$map(
+      .x = additional_geoms,
+      .f = \(x) assert_within_distance(x, sf_adm0)
+    )
   }
 
   if (is.null(sf_adm0) || nrow(sf_adm0) == 0) {
@@ -35,12 +40,8 @@ geom_adm0 <- function(iso3, additional_geom = NULL) {
       call. = FALSE
     )
   }
-
   gg$geom_sf(data = sf_adm0)
 }
-
-
-
 
 #' assert_within_distance
 #' Assert that `x` is within `dist` distance from `y`.
@@ -88,7 +89,7 @@ geom_adm0 <- function(iso3, additional_geom = NULL) {
 assert_within_distance <- function(x, y, dist = 10000) {
 
   # cast to points so a polygon w/ vertices outside `y` will create error
-  x <- sf$st_cast(x,"POINT")
+  x <- sf$st_cast(x, "POINT")
 
   m_within_dist <- sf$st_is_within_distance(
     x = x,
@@ -105,7 +106,8 @@ assert_within_distance <- function(x, y, dist = 10000) {
     stop(
       "Error: elements in x not contained within ", dist, "m of y:\n",
       paste(idx_not_within, sep = "=", collapse = ", "),
-      ".")
+      "."
+    )
   } else {
     return(TRUE)
   }
