@@ -17,7 +17,7 @@ test <- as.logical(Sys.getenv("TEST", unset = FALSE))
 test_filter <- if (test) c("AFG", "SSD") else NULL
 indicator_id <- "idmc_displacement_conflict"
 
-hs_hs_logger$configure_logger()
+hs_logger$configure_logger()
 hs_logger$monitoring_log_setup(indicator_id)
 
 df_raw <- raw_displacement$raw()

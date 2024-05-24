@@ -15,7 +15,7 @@ test <- as.logical(Sys.getenv("TEST", unset = FALSE))
 test_filter <- if (test) c("AFG", "SSD") else NULL
 indicator_id <- "ipc_food_insecurity"
 
-hs_hs_logger$configure_logger()
+hs_logger$configure_logger()
 hs_logger$monitoring_log_setup(indicator_id)
 
 df_raw <- raw_food_insecurity$raw()
