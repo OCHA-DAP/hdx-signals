@@ -67,6 +67,7 @@ triage_signals <- function(indicator_id, n_campaigns = 10, test = FALSE) {
 #' Check the signals data frame
 #'
 #' Checks the signals data frame, and if it is non-empty, returns it.
+#' @export
 get_signals_df <- function(fn_signals) {
   # check that there signals to triage
   if (fn_signals %in% cs$az_file_detect()) {
