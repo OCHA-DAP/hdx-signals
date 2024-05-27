@@ -1,2 +1,5 @@
 source("renv/activate.R")
-options(warn = 2)
+
+if (!interactive()) {
+  options(warn = 2)
+}
