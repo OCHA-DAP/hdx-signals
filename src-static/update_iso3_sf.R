@@ -72,7 +72,8 @@ simplify_adm0 <- function(iso3){
   # have to extract geometries from collections
   if (sf$st_geometry_type(sf_union) == "GEOMETRYCOLLECTION") {
     sf_union <- sf$st_collection_extract(sf_union) |>
-      sf$st_union()
+      dplyr$group_by(data_source) |>
+      dplyr$summarise(do_union = TRUE)
   }
 
   # simply in projected coordinates
@@ -99,11 +100,8 @@ simplify_adm0 <- function(iso3){
 #'
 #' @returns Filtered `sf_adm0`
 filter_adm0_sf <- function(sf_adm0, iso3) {
-  if (iso3 == "CHL") {
-    sf_adm0 <- dplyr$filter(
-      sf_adm0,
-      !(ADM3_PCODE %in% c("CL05201", "CL05104")) # dropping Isla de Pascua and Juan Fernández
-    )
+  if (iso3 == "CHL"){
+    sf_adm0 <- st_crop_adj_bbox(sf_adm0, xmin = 33.73339)
   } else if (iso3 == "BMU") {
     sf_adm0 <- st_crop_adj_bbox(sf_adm0, ymax = -0.05)
   } else if (iso3 == "CRI") {
@@ -136,7 +134,7 @@ filter_adm0_sf <- function(sf_adm0, iso3) {
 #' Gets the bbox for an `sf` object, and then adjusts it based on the parameters
 #' based in, then crops the `sf`.
 #'
-#' @param sf_obj Simple featuer object
+#' @param sf_obj Simple feature object
 #' @param xmin Amount to adjust xmin
 #' @param xmax Amount to adjust xmax
 #' @param ymin Amount to adjust ymin
