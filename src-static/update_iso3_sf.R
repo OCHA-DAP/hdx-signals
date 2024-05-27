@@ -24,7 +24,7 @@ suppressMessages(
 #### FUNCTIONS ####
 ###################
 
-#' Get the ADM0 shapefile for a country
+#' Update the ADM0 geojson for a country on Azure blob storage
 #'
 #' Takes in an `iso3` code, and downloads and loads the country data.
 #'
@@ -35,22 +35,39 @@ suppressMessages(
 #'
 #' @param iso3 ISO3 code
 #'
-#' @returns Shapefile of the country boundaries
+#' @returns Nothing
 #'
 #' @export
 update_adm0_sf <- function(iso3) {
+  sf_simplified <- simplify_adm0(iso3)
+  cs$update_az_file(
+    df = sf_simplified,
+    name = glue$glue("input/adm0/{iso3}.geojson")
+  )
+}
+
+#' Download, load, and simplify geojson admin 0 county boundary from iso3 code
+#'
+#' Takes in an `iso3` code, and downloads and loads the country data.
+#'
+#' Once downloaded and loaded, the file is simplified to ensure that only the
+#' country boundaries are available as a single row, using `sf::st_union()`.
+#' This makes it simple for plotting and for calculating centroids.
+#'
+#' @param iso3 ISO3 code
+#'
+#' @returns sf class object contain admin 0 country boundary
+#'
+#' @export
+simplify_adm0 <- function(iso3){
   sf_adm0 <- download_adm0_sf(iso3) |>
     filter_adm0_sf(iso3)
 
   sf_union <- suppressMessages(
     sf_adm0 |>
-      # keepig it tidy allows us to retain cols
-      # i might even suggest mutating iso3 and grouping
-      # that in so it's also included in the file
       dplyr$group_by(data_source) |>
       dplyr$summarise(do_union = TRUE)
   )
-  # i did some speed benchmarking this against sf$st_union() and they are equivalent in speed.
 
   # have to extract geometries from collections
   if (sf$st_geometry_type(sf_union) == "GEOMETRYCOLLECTION") {
@@ -67,10 +84,7 @@ update_adm0_sf <- function(iso3) {
     ) |>
     sf$st_transform(crs = "OGC:CRS84")
 
-  cs$update_az_file(
-    df = sf_simplified,
-    name = glue$glue("input/adm0/{iso3}.geojson")
-  )
+  sf_simplified
 }
 
 #' Filter ADM0 shapefile
@@ -153,7 +167,9 @@ st_crop_adj_bbox <- function(sf_obj, xmin = 0, xmax = 0, ymin = 0, ymax = 0) {
 #' https://geoportal.un.org/arcgis/home/item.html?id=d7caaff3ef4b4f7c82689b7c4694ad92
 #'
 #' @param iso3 ISO3
-download_adm0_sf <- function(iso3) {
+#' @param update_azure `logical` if TRUE (default) update json file in azure
+#'     if FALSE
+download_adm0_sf <- function(iso3,update_azure = TRUE) {
   if (iso3 == "LAC") {
     # for LAC we get all 3 of El Salvador, Guatemala, and Honduras
     sf$st_union(
@@ -163,7 +179,7 @@ download_adm0_sf <- function(iso3) {
     download_shapefile(
       url = "https://open.africa/dataset/56d1d233-0298-4b6a-8397-d0233a1509aa/resource/76c698c9-e282-4d00-9202-42bcd908535b/download/ssd_admbnda_abyei_imwg_nbs_20180401.zip", # nolint
       layer = "ssd_admbnda_abyei_imwg_nbs_20180401",
-      data_source_label = "Open Africa"
+      data_source_abbr  = "Open Africa"
     )
   } else if (iso3 == "XKX") {
     download_shapefile(
@@ -186,7 +202,7 @@ download_adm0_sf <- function(iso3) {
   } else {
     # first try getting cod, and fallback to the UN geodata
     tryCatch(
-      suppressWarnings(download_fieldmaps_sf(iso3)),
+      suppressWarnings(download_fieldmaps_sf(iso3,layer = glue$glue("{tolower(iso3)}_adm0"))),
       error = \(e) get_un_geodata(iso3)
     )
   }
@@ -198,11 +214,12 @@ download_adm0_sf <- function(iso3) {
 #' but standardizes column names. Then it loads the file in using `sf::st_read()`.
 #'
 #' @param iso3 ISO3 code
-download_fieldmaps_sf <- function(iso3) {
+download_fieldmaps_sf <- function(iso3, layer=NULL) {
   iso3 <- tolower(iso3)
   download_shapefile(
     url = glue$glue("https://data.fieldmaps.io/cod/originals/{iso3}.gpkg.zip"),
-    data_source_label = "FieldMaps, geoBoundaries, U.S. Department of State, U.S. Geological Survey"
+    data_source = "FieldMaps",
+    layer = layer
   )
 }
 
