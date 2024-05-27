@@ -180,7 +180,7 @@ approve_signals <- function(df, fn_signals, test) {
         message(
           "You have not deleted the content in ",
           fn_signals,
-          " or removed the content from Mailchimp.\n Remember to do so in the",
+          " or removed the content from Mailchimp.\n Remember to do so in the ",
           "future.",
           call. = FALSE
         )
