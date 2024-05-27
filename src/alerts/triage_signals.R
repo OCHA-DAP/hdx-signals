@@ -134,7 +134,7 @@ preview_campaign_urls <- function(campaign_urls) {
 #' @param fn_signals File name to the signals data
 #' @param test Whether or not the signals were for testing.
 approve_signals <- function(df, fn_signals, test) {
-  user_name <- get_env("HDX_SIGNALS_ADMIN_NAME")
+  user_name <- get_env("HS_ADMIN_NAME")
 
   user_command <- readline(
     paste0(
