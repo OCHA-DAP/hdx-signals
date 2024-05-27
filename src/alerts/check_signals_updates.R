@@ -1,20 +1,21 @@
-library(httr)
-library(jsonlite)
+box::use(jsonlite)
+box::use(httr)
 box::use(src/utils/get_env[get_env])
 box::use(logger[log_error])
 box::use(src/utils/hs_logger)
-box::use(src/alerts/triage_signals[get_signals_df])
+box::use(cs = src/utils/cloud_storage)
 
 hs_logger$configure_logger()
 
 org_name <- "ocha-dap"
 repo_name <- "hdx-signals"
-base_logs_url <- "https://github.com/OCHA-DAP/hdx-signals/actions/runs/"
 indicators_path <- "src/indicators"
 indicators <- list.files(indicators_path)[file.info(file.path(indicators_path, list.files(indicators_path)))$isdir]
 test <- Sys.getenv("TEST", unset = "FALSE")
 
-process_run_status <- function(response, ind, base_logs_url) {
+process_run_status <- function(response, ind) {
+  base_logs_url <- paste0("https://github.com/", org_name, "/", repo_name, "/actions/runs/")
+
   if (status_code(response) == 200) {
     content <- content(response, as = "text", encoding = "UTF-8")
     json_data <- fromJSON(content, flatten = TRUE)
@@ -85,7 +86,7 @@ post_slack_message <- function(status_text) {
       list(type = "divider")
     )
   )
-  json_body <- toJSON(msg, pretty = TRUE, auto_unbox = TRUE)
+  json_body <- jsonlite$toJSON(msg, pretty = TRUE, auto_unbox = TRUE)
   response <- POST(get_env("SLACK_URL"), body = json_body, encode = "json")
   if (response$status != 200) {
     log_error("Error posting Slack message")
@@ -95,21 +96,30 @@ post_slack_message <- function(status_text) {
 
 full_status <- ""
 for (ind in indicators) {
-  print(ind)
   gh_response <- gh_status(ind, org_name, repo_name)
-  workflow_status <- process_run_status(gh_response, ind, base_logs_url)
+  workflow_status <- process_run_status(gh_response, ind)
   full_status <- paste0(full_status, workflow_status)
 }
 
 post_slack_message(full_status)
 
-for (ind in indicators) {
-    fn_signals <- paste0(
-        "output/",
-        ind,
-        if (test) "/test" else "",
-        "/signals.parquet"
-    )
+n_signals <- 0
 
-    df <- get_signals_df(fn_signals)
+# TODO: Hard coding this because the IDMC names don't totally match the indicator_ids
+indicators_azure <- c("acled_conflict", "idmc_displacement_conflict", "idmc_displacement_disaster", "ipc_food_insecurity", "jrc_agricultural_hotspots")
+for (ind in indicators_azure) {
+  print(ind)
+  fn_signals <- paste0(
+    "output/",
+    ind,
+    if (test) "/test" else "",
+    "/signals.parquet"
+  )
+
+  print(fn_signals)
+
+  df <- cs$read_az_file(fn_signals)
+  print(nrow(df))
+  n_signals <- n_signals + nrow(df)
 }
+print(n_signals)
