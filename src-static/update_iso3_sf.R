@@ -197,7 +197,7 @@ download_adm0_sf <- function(iso3,update_azure = TRUE) {
   } else if (iso3 == "UMI") {
     download_shapefile(
       url = "https://data.geocode.earth/wof/dist/shapefile/whosonfirst-data-admin-um-latest.zip",
-      data_soure ="Who's On First"
+      data_source ="Who's On First"
       )
   } else if (iso3 == "WLF") {
     download_shapefile(
