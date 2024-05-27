@@ -15,7 +15,6 @@ box::use(../../utils/hs_logger)
 
 test <- as.logical(Sys.getenv("HS_TEST", unset = FALSE))
 test_filter <- if (test) c("AFG", "SSD") else NULL
-indicator_id <- "idmc_displacement_conflict"
 
 hs_logger$configure_logger()
 hs_logger$monitoring_log_setup(indicator_id)
@@ -27,7 +26,7 @@ df_wrangled <- wrangle_displacement$wrangle(df_raw)
 df_conflict <- generate_signals(
   df_wrangled = dplyr$filter(df_wrangled, displacement_type == "Conflict"),
   df_raw = dplyr$filter(df_raw, displacement_type == "Conflict"),
-  indicator_id = indicator_id,
+  indicator_id = "idmc_displacement_conflict",
   alert_fn = alert_displacement$alert,
   plot_fn = plot_displacement$plot,
   info_fn = info_displacement$info,
@@ -40,7 +39,7 @@ df_conflict <- generate_signals(
 df_disaster <- generate_signals(
   df_wrangled = dplyr$filter(df_wrangled, displacement_type == "Disaster"),
   df_raw = dplyr$filter(df_raw, displacement_type == "Disaster"),
-  indicator_id = indicator_id,
+  indicator_id = "idmc_displacement_disaster",
   alert_fn = alert_displacement$alert,
   plot_fn = plot_displacement$plot,
   info_fn = info_displacement$info,
