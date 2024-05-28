@@ -21,7 +21,7 @@ df_raw <- raw_agricultural_hotspots$raw()
 df_wrangled <- wrangle_agricultural_hotspots$wrangle(df_raw)
 
 # now generate signals
-generate_signals(
+df_jrc <- generate_signals(
   df_wrangled = df_wrangled,
   indicator_id = indicator_id,
   alert_fn = alert_agricultural_hotspots$alert,

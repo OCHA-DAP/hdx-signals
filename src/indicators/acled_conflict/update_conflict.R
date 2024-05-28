@@ -24,7 +24,7 @@ df_raw <- raw_conflict$raw()
 df_wrangled <- wrangle_conflict$wrangle(df_raw)
 
 # now generate signals
-generate_signals(
+df_conflict <- generate_signals(
   df_wrangled = df_wrangled,
   df_raw = df_raw,
   indicator_id = indicator_id,
