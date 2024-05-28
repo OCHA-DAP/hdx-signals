@@ -21,6 +21,8 @@ theme_signals <- function() {
       axis.text = gg$element_text(size = 11),
       plot.caption = gg$element_text(size = 11, hjust = 1),
       legend.text = gg$element_text(size = 9),
-      legend.title = gg$element_text(size = 11)
+      legend.title = gg$element_text(size = 11),
+      panel.background = gg$element_rect(fill = "white"),
+      plot.background = gg$element_rect(fill = "white")
     )
 }
