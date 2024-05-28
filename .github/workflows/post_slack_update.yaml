@@ -1,0 +1,23 @@
+name: Post Slack update
+
+on:
+  schedule:
+    - cron: "0 13 * * 1-5"
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GH_TOKEN}}
+      HS_SLACK_URL: ${{ secrets.HS_SLACK_URL}}
+      HS_TEST: ${{ 'FALSE' }}
+    steps: 
+        - name: Checkout repository
+          uses: actions/checkout@v3
+
+        - name: Set up environment
+          uses: ocha-dap/hdx-signals-actions@07b3181e914ef100bd9c8134f3c7a13383870b9d
+
+        - name: Run R monitoring script
+          shell: bash
+          run: Rscript ./src/alerts/check_signals_updates.R
