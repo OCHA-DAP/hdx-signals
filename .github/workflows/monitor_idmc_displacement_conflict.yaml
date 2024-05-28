@@ -60,4 +60,4 @@ jobs:
 
             - name: Run R monitoring script
               shell: bash
-              run: Rscript ./src/indicators/idmc_displacement/update_displacement.R
+              run: Rscript ./src/indicators/idmc_displacement/update_displacement_conflict.R
