@@ -140,7 +140,7 @@ approve_signals <- function(df, fn_signals, test) {
     paste0(
       "Tell us what you want to do with the following commands:\n\n",
       "APPROVE: Send campaigns",
-      if (test) "\n" else "and add to `output/signals.parquet`\n",
+      if (test) "\n" else " and add to `output/signals.parquet`\n",
       "DELETE: Delete the campaign content, so you can recreate later.\n",
       "Any other input: Do nothing, so you can decide later."
     )
