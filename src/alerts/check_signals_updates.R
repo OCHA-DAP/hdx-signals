@@ -1,7 +1,8 @@
-box::use(jsonlite[fromJSON, toJSON])
+box::use(jsonlite)
 box::use(httr[GET, POST, add_headers, status_code, content])
+box::use(httr2)
 box::use(purrr)
-box::use(logger[log_error, log_info])
+box::use(logger)
 
 box::use(../utils/get_env[get_env])
 box::use(../utils/hs_logger)
@@ -23,10 +24,17 @@ gh_status <- function(indicator_id) {
   # TODO Temp cleaning before workflows are renamed to match indicator ids
   ind <- sub("^[^_]*_", "", indicator_id)
   workflow_id <- paste0("monitor_", ind, ".yaml")
-  token <- get_env("GH_TOKEN")
-  url <- paste0("https://api.github.com/repos/ocha-dap/hdx-signals/actions/workflows/", workflow_id, "/runs")
-  response <- GET(url, add_headers(Authorization = paste("token", token)))
-  return(response)
+  httr2$request(
+    "https://api.github.com/repos/ocha-dap/hdx-signals/actions/workflows"
+  ) |>
+  httr2$req_url_path_append(
+    workflow_id,
+    "runs"
+  ) |>
+  httr2$req_auth_bearer_token(
+    token = get_env("GH_TOKEN")
+  ) |>
+  httr2$req_perform() # can use httr2$req_method("GET") if not defaulting to GET, although I think it should
 }
 
 #' Builds and posts a message to Slack, using incoming webhooks
@@ -69,10 +77,10 @@ slack_post_message <- function(header_text, status_text, signals_text) {
       list(type = "divider")
     )
   )
-  json_body <- toJSON(msg, pretty = TRUE, auto_unbox = TRUE)
+  json_body <- jsonlite$toJSON(msg, pretty = TRUE, auto_unbox = TRUE)
   response <- POST(get_env("SLACK_URL"), body = json_body, encode = "json")
   if (response$status != 200) {
-    log_error("Error posting Slack message")
+    logger$log_error("Error posting Slack message")
     stop()
   }
 }
@@ -109,46 +117,66 @@ slack_build_alert <- function(iso3, indicator_id, campaign_url) {
 #' @param indicator_id ID of the indicator
 #'
 #' @returns String status message to be posted to Slack
-slack_build_workflow_status <- function(response, indicator_id) {
+slack_build_workflow_status <- function(indicator_id) {
+
+  # TODO Temp cleaning before workflows are renamed to match indicator ids
+  ind <- sub("^[^_]*_", "", indicator_id)
+  workflow_id <- paste0("monitor_", ind, ".yaml")
   base_logs_url <- paste0("https://github.com/ocha-dap/hdx-signals/actions/runs/")
 
-  if (status_code(response) == 200) {
-    content <- content(response, as = "text", encoding = "UTF-8")
-    json_data <- fromJSON(content, flatten = TRUE)
-    df_runs <- as.data.frame(json_data)
-    df_runs$date <- as.Date(df_runs$workflow_runs.created_at)
-
-    # Get today's scheduled runs from the main branch
-    df_sel <- subset(
-      df_runs,
-      workflow_runs.event == "schedule" &
-        workflow_runs.head_branch == "main" &
-        date == Sys.Date()
-    )
-
-    if (nrow(df_sel) == 1) {
-      status <- df_sel[1, ]$workflow_runs.conclusion
-      run_id <- df_sel[1, ]$workflow_runs.id
-      if (status == "failure") {
-        run_link <- paste0(base_logs_url, run_id)
-        status_update <- paste0(":red_circle: ", indicator_id, ": Failed update - <", run_link, "|Check logs> \n")
-      } else if (status == "success") {
-        status_update <- paste0(":large_green_circle: ", indicator_id, ": Successful update \n")
-      }
-      # If no scheduled runs happened off of main today
-    } else if (nrow(df_sel) == 0) {
-      status_update <- paste0(":heavy_minus_sign: ", indicator_id, ": No scheduled update \n")
-    } else {
-      status_update <- paste0(":red_circle: ", indicator_id, ": More than one scheduled run today \n")
-    }
-  } else {
-    status_update <- paste0(
+  tryCatch({
+    df_runs <- httr2$request(
+      "https://api.github.com/repos/ocha-dap/hdx-signals/actions/workflows"
+    ) |>
+    httr2$req_url_path_append(
+      workflow_id,
+      "runs"
+    ) |>
+    httr2$req_auth_bearer_token(
+      token = get_env("GH_TOKEN")
+    ) |>
+    httr2$req_perform() |>
+    httr2$resp_body_string() |>
+    jsonlite$fromJSON(flatten = TRUE) |>
+    as.data.frame()
+  },
+  error = function(e) {
+    print("here!")
+    log_error(e$message)
+    return()
+    return(paste0(
       ":red_circle: ",
       ind,
       ": Failed request for workflow status - ",
-      status_code(response),
+      e$message,
       "\n"
-    )
+    ))
+  })
+
+  print("here!")
+  # Get today's scheduled runs from the main branch
+  df_runs$date <- as.Date(df_runs$workflow_runs.created_at)
+  df_sel <- subset(
+    df_runs,
+    workflow_runs.event == "schedule" &
+      workflow_runs.head_branch == "main" &
+      date == Sys.Date()
+  )
+
+  if (nrow(df_sel) == 1) {
+    status <- df_sel[1, ]$workflow_runs.conclusion
+    run_id <- df_sel[1, ]$workflow_runs.id
+    if (status == "failure") {
+      run_link <- paste0(base_logs_url, run_id)
+      status_update <- paste0(":red_circle: ", indicator_id, ": Failed update - <", run_link, "|Check logs> \n")
+    } else if (status == "success") {
+      status_update <- paste0(":large_green_circle: ", indicator_id, ": Successful update \n")
+    }
+    # If no scheduled runs happened off of main today
+  } else if (nrow(df_sel) == 0) {
+    status_update <- paste0(":heavy_minus_sign: ", indicator_id, ": No scheduled update \n")
+  } else {
+    status_update <- paste0(":red_circle: ", indicator_id, ": More than one scheduled run today \n")
   }
 
   return(status_update)
@@ -169,15 +197,16 @@ indicators_azure <- c(
   "jrc_agricultural_hotspots"
 )
 
-log_info("Checking GitHub Actions status...")
+logger$log_info("Checking GitHub Actions status...")
 for (ind in indicators) {
-  gh_response <- gh_status(ind)
-  workflow_status <- slack_build_workflow_status(gh_response, ind)
+  print(ind)
+  workflow_status <- slack_build_workflow_status(ind)
+  print(workflow_status)
   full_status <- paste0(full_status, workflow_status)
 }
-log_info("Successfully checked")
+logger$log_info("Successfully checked")
 
-log_info("Checking for signals across all indicators...")
+logger$log_info("Checking for signals across all indicators...")
 for (ind in indicators_azure) {
   test <- Sys.getenv("TEST", unset = TRUE)
   fn_signals <- paste0(
@@ -200,8 +229,8 @@ for (ind in indicators_azure) {
     n_signals <- n_signals + nrow(df)
   }
 }
-log_info(paste0("Found ", n_signals, " signals"))
+logger$log_info(paste0("Found ", n_signals, " signals"))
 
 header <- slack_build_header(n_signals)
 slack_post_message(header, full_status, signals)
-log_info("Successfully posted message to Slack")
+logger$log_info("Successfully posted message to Slack")
