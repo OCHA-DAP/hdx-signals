@@ -83,12 +83,12 @@ slack_post_message <- function(header_text, status_text, signals_text) {
 #'
 #' @returns String header text
 slack_build_header <- function(n_signals) {
-    if (n_signals == 0) {
-        title <- paste0(Sys.Date(), ": No signals identified")
-    } else {
-        title <- paste0(":rotating_light: <!channel> ", Sys.Date(), ": ", n_signals, " alerts identified")
-    }
-    return(title)
+  if (n_signals == 0) {
+    title <- paste0(Sys.Date(), ": No signals identified")
+  } else {
+    title <- paste0(":rotating_light: <!channel> ", Sys.Date(), ": ", n_signals, " alerts identified")
+  }
+  return(title)
 }
 
 #' Builds the signal alert text
@@ -187,13 +187,13 @@ for (ind in indicators_azure) {
     "/signals.parquet"
   )
   df <- cs$read_az_file(fn_signals)
-  if(nrow(df) > 0) {
-      for (i in 1:nrow(df)) {
+  if (nrow(df) > 0) {
+    for (i in seq_len(nrow(df))) {
       row <- df[i, ]
       alert <- slack_build_alert(
-          row["iso3"],
-          row["indicator_name"],
-          row["campaign_url_email"]
+        row["iso3"],
+        row["indicator_name"],
+        row["campaign_url_email"]
       )
       signals <- paste0(signals, alert)
     }
