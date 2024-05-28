@@ -1,5 +1,6 @@
 box::use(jsonlite)
 box::use(httr)
+box::use(purrr)
 box::use(src/utils/get_env[get_env])
 box::use(logger[log_error])
 box::use(src/utils/hs_logger)
@@ -12,6 +13,7 @@ repo_name <- "hdx-signals"
 indicators_path <- "src/indicators"
 indicators <- list.files(indicators_path)[file.info(file.path(indicators_path, list.files(indicators_path)))$isdir]
 test <- Sys.getenv("TEST", unset = "FALSE")
+test <- FALSE
 
 process_run_status <- function(response, ind) {
   base_logs_url <- paste0("https://github.com/", org_name, "/", repo_name, "/actions/runs/")
@@ -46,7 +48,13 @@ process_run_status <- function(response, ind) {
       status_update <- paste0(":red_circle: ", ind, ": More than one scheduled run today \n")
     }
   } else {
-    status_update <- paste0(":red_circle: ", ind, ": Failed request for workflow status - ", status_code(response), "\n")
+    status_update <- paste0(
+      ":red_circle: ",
+      ind,
+      ": Failed request for workflow status - ",
+      status_code(response),
+      "\n"
+    )
   }
 
   return(status_update)
@@ -62,15 +70,22 @@ gh_status <- function(ind, org_name, repo_name) {
   return(response)
 }
 
-post_slack_message <- function(status_text) {
+slack_post_message <- function(header, status_text, signals) {
   msg <- list(
     blocks = list(
       list(
         type = "section",
         text = list(
           type = "plain_text",
-          text = paste0(Sys.Date(), ": No signals identified"),
+          text = header,
           emoji = TRUE
+        )
+      ),
+      list(
+        type = "section",
+        text = list(
+          type = "mrkdwn",
+          text = signals
         )
       ),
       list(type = "divider"),
@@ -86,27 +101,43 @@ post_slack_message <- function(status_text) {
       list(type = "divider")
     )
   )
+
   json_body <- jsonlite$toJSON(msg, pretty = TRUE, auto_unbox = TRUE)
+
   response <- POST(get_env("SLACK_URL"), body = json_body, encode = "json")
   if (response$status != 200) {
+    print(response)
     log_error("Error posting Slack message")
     stop()
   }
 }
 
-full_status <- ""
-for (ind in indicators) {
-  gh_response <- gh_status(ind, org_name, repo_name)
-  workflow_status <- process_run_status(gh_response, ind)
-  full_status <- paste0(full_status, workflow_status)
+slack_build_header <- function(n_alerts) {
+    if (n_alerts == 0) {
+        title <- paste0(Sys.Date(), ": No signals identified")
+    } else {
+        title <- paste0(":rotating_light: <!channel> ", Sys.Date(), ": ", n_alerts, " alerts identified")
+    }
+    return(title)
 }
 
-post_slack_message(full_status)
+slack_build_alert <- function(iso3, ind, campaign_url) {
+  return(paste0(iso3, ": ", ind, " <", campaign_url, " | See draft campaign>\n"))
+}
 
+
+full_status <- ""
 n_signals <- 0
-
+signals <- ""
 # TODO: Hard coding this because the IDMC names don't totally match the indicator_ids
-indicators_azure <- c("acled_conflict", "idmc_displacement_conflict", "idmc_displacement_disaster", "ipc_food_insecurity", "jrc_agricultural_hotspots")
+indicators_azure <- c(
+  "acled_conflict",
+  "idmc_displacement_conflict",
+  "idmc_displacement_disaster",
+  "ipc_food_insecurity",
+  "jrc_agricultural_hotspots"
+)
+
 for (ind in indicators_azure) {
   print(ind)
   fn_signals <- paste0(
@@ -115,11 +146,35 @@ for (ind in indicators_azure) {
     if (test) "/test" else "",
     "/signals.parquet"
   )
-
-  print(fn_signals)
-
   df <- cs$read_az_file(fn_signals)
-  print(nrow(df))
-  n_signals <- n_signals + nrow(df)
+  if(nrow(df) > 0) {
+      for (i in 1:nrow(df)) {
+      row <- df[i, ]
+      alert <- slack_build_alert(
+          row["iso3"],
+          row["indicator_name"],
+          row["campaign_url_email"]
+      )
+      signals <- paste0(signals, alert)
+    }
+
+    n_signals <- n_signals + nrow(df)
+
+  }
+
 }
+
+
+for (ind in indicators) {
+  gh_response <- gh_status(ind, org_name, repo_name)
+  workflow_status <- process_run_status(gh_response, ind)
+  full_status <- paste0(full_status, workflow_status)
+}
+
+header <- slack_build_header(n_signals)
+
 print(n_signals)
+
+
+
+slack_post_message(header, full_status, signals)
