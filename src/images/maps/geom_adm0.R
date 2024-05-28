@@ -23,15 +23,6 @@ box::use(../../utils/iso3_shift_longitude)
 geom_adm0 <- function(iso3, ...) {
   sf_adm0 <- get_iso3_sf$get_iso3_sf(iso3, "adm0")
 
-
-  additional_geoms <- list(...)
-  if (length(additional_geoms) > 0) {
-    purrr$map(
-      .x = additional_geoms,
-      .f = \(x) assert_within_distance(x, sf_adm0)
-    )
-  }
-
   if (is.null(sf_adm0) || nrow(sf_adm0) == 0) {
     stop(
       "No country boundaries data for ",
@@ -40,11 +31,20 @@ geom_adm0 <- function(iso3, ...) {
       call. = FALSE
     )
   }
+
+  additional_geoms <- list(...)
+  if (length(additional_geoms) > 0) {
+    purrr$walk(
+      .x = additional_geoms,
+      .f = \(x) assert_covered_by(x, sf_adm0)
+    )
+  }
+
   gg$geom_sf(data = sf_adm0)
 }
 
-#' assert_within_distance
-#' Assert that `x` is within `dist` distance from `y`.
+#' assert_covered_by
+#' Assert that `x` is contained within `y`.
 #' @param x sf class with geometry
 #' @param y sf class with geometry
 #' @param dist distance in meters (default = 10000)
@@ -76,35 +76,37 @@ geom_adm0 <- function(iso3, ...) {
 #'    size = 500
 #'    )
 #'
-#'  assert_within_distance(
+#'  assert_covered_by(
 #'    x = pts_sampled,
 #'    y =alleghany_county,
 #'    dist = 1000
 #'    )
-#'  assert_within_distance(
-#'    pts_sampled_bbox,
+#'  assert_covered_by(
+#'    x= pts_sampled_bbox,
 #'    y = alleghany_county,
 #'    dist = 1000
 #'    )
-assert_within_distance <- function(x, y, dist = 10000) {
+#'  clay <- filter(nc_counties, NAME == "Clay")
+#'  macon <- filter(nc_counties, NAME == "Macon")
+#'  assert_covered_by(clay, macon,dist=1000)
 
-  # cast to points so a polygon w/ vertices outside `y` will create error
-  x <- sf$st_cast(x, "POINT")
-
-  m_within_dist <- sf$st_is_within_distance(
-    x = x,
-    y = y,
-    dist = units$set_units(dist, meters),
-    sparse = FALSE
+assert_covered_by <- function(x,y, dist){
+  y_buff <- sf$st_buffer(
+    y,
+    dist = units::set_units(dist,metres)
   )
-
-  not_within <- any(!m_within_dist)
+  lgl_covers <- sf$st_covered_by(
+    x = x,
+    y = y_buff,
+    sparse = F
+  )
+  not_within <- any(!lgl_covers)
 
   if (not_within) {
-    idx_not_within <- which(!m_within_dist)
+    idx_not_within <- which(!lgl_covers)
 
     stop(
-      "Error: elements in x not contained within ", dist, "m of y:\n",
+      "Error: elements in x not contained within ", dist, "m of base map boundary:\n",
       paste(idx_not_within, sep = "=", collapse = ", "),
       "."
     )
@@ -112,3 +114,4 @@ assert_within_distance <- function(x, y, dist = 10000) {
     return(TRUE)
   }
 }
+
