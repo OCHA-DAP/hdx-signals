@@ -45,8 +45,8 @@ geom_adm0 <- function(iso3, ...) {
 
 #' Assert that `x` is contained within `y`.
 #'
-#' Applies a buffer of `dist` meters to to polygon `x` and check if all
-#' elements of `x` are within buffered `y`. If not, and error is returned.
+#' Applies a buffer of `dist` meters to polygon `y` and checks if all
+#' elements of `x` are within buffered polygon `y`. If not, an error is returned.
 #'
 #' @param x sf class with geometry feature that is being validated against y polygon
 #' @param y sf class POLYGON/MULTIPOLYGON to use to check if all x falls within
