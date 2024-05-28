@@ -43,15 +43,17 @@ geom_adm0 <- function(iso3, ...) {
   gg$geom_sf(data = sf_adm0)
 }
 
-#' assert_covered_by
 #' Assert that `x` is contained within `y`.
-#' @param x sf class with geometry
-#' @param y sf class with geometry
+#'
+#' Applies a buffer of `dist` meters to to polygon `x` and check if all
+#' elements of `x` are within buffered `y`. If not, and error is returned.
+#'
+#' @param x sf class with geometry feature that is being validated against y polygon
+#' @param y sf class POLYGON/MULTIPOLYGON to use to check if all x falls within
 #' @param dist distance in meters (default = 10000)
 #'
 #' @return TRUE if all elements of x fall within `dist` distance of y.
 #'     Return error if any elements fall outside of distance
-#' @export
 #'
 #' @examples
 #' library(sf)
@@ -90,15 +92,15 @@ geom_adm0 <- function(iso3, ...) {
 #'  macon <- filter(nc_counties, NAME == "Macon")
 #'  assert_covered_by(clay, macon,dist=1000)
 
-assert_covered_by <- function(x,y, dist){
+assert_covered_by <- function(x, y, dist = 10000) {
   y_buff <- sf$st_buffer(
     y,
-    dist = units::set_units(dist,metres)
+    dist = units::set_units(dist, metres)
   )
   lgl_covers <- sf$st_covered_by(
     x = x,
     y = y_buff,
-    sparse = F
+    sparse = FALSE
   )
   not_within <- any(!lgl_covers)
 
@@ -114,4 +116,3 @@ assert_covered_by <- function(x,y, dist){
     return(TRUE)
   }
 }
-
