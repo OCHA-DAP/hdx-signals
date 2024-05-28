@@ -12,7 +12,7 @@ box::use(./utils/summary_conflict)
 box::use(../../alerts/generate_signals[generate_signals])
 box::use(../../utils/hs_logger)
 
-test <- as.logical(Sys.getenv("HS_TEST", unset = FALSE))
+test <- as.logical(Sys.getenv("HS_TEST", unset = TRUE))
 test_filter <- if (test) c("AFG", "SSD") else NULL
 indicator_id <- "acled_conflict"
 
@@ -24,7 +24,7 @@ df_raw <- raw_conflict$raw()
 df_wrangled <- wrangle_conflict$wrangle(df_raw)
 
 # now generate signals
-generate_signals(
+df_conflict <- generate_signals(
   df_wrangled = df_wrangled,
   df_raw = df_raw,
   indicator_id = indicator_id,

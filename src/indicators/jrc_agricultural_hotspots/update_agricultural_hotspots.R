@@ -10,7 +10,7 @@ box::use(./utils/plot_agricultural_hotspots)
 box::use(../../alerts/generate_signals[generate_signals])
 box::use(../../utils/hs_logger)
 
-test <- as.logical(Sys.getenv("HS_TEST", unset = FALSE))
+test <- as.logical(Sys.getenv("HS_TEST", unset = TRUE))
 test_filter <- if (test) c("AFG", "SSD") else NULL
 indicator_id <- "jrc_agricultural_hotspots"
 
@@ -21,7 +21,7 @@ df_raw <- raw_agricultural_hotspots$raw()
 df_wrangled <- wrangle_agricultural_hotspots$wrangle(df_raw)
 
 # now generate signals
-generate_signals(
+df_jrc <- generate_signals(
   df_wrangled = df_wrangled,
   indicator_id = indicator_id,
   alert_fn = alert_agricultural_hotspots$alert,
