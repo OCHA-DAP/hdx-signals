@@ -11,33 +11,6 @@ box::use(cs = ../utils/cloud_storage)
 
 hs_logger$configure_logger()
 
-
-#' Queries the GitHub API to get all runs from a given monitoring workflow
-#' Requires workflows to be named following this convention: `monitor_<indicator_id>.yaml`
-#'
-#' NOTE: More data will be returned as each workflow is run more times. Perhaps won't scale well,
-#' depending on how many runs a workflow will have
-#'
-#' @param indicator_id ID of the indicator
-#'
-#' @returns JSON API response
-gh_status <- function(indicator_id) {
-  # TODO Temp cleaning before workflows are renamed to match indicator ids
-  ind <- sub("^[^_]*_", "", indicator_id)
-  workflow_id <- paste0("monitor_", ind, ".yaml")
-  httr2$request(
-    "https://api.github.com/repos/ocha-dap/hdx-signals/actions/workflows"
-  ) |>
-  httr2$req_url_path_append(
-    workflow_id,
-    "runs"
-  ) |>
-  httr2$req_auth_bearer_token(
-    token = get_env("GH_TOKEN")
-  ) |>
-  httr2$req_perform() # can use httr2$req_method("GET") if not defaulting to GET, although I think it should
-}
-
 #' Builds and posts a message to Slack, using incoming webhooks
 #' See API docs: https://api.slack.com/messaging/webhooks
 #'
@@ -113,7 +86,6 @@ slack_build_alert <- function(indicator_id, df) {
 #' Takes the response from a GitHub Actions run of a single indicator
 #' and outputs a status message to be posted to Slack
 #'
-#' @param response JSON payload returned from `gh_status`
 #' @param indicator_id ID of the indicator
 #'
 #' @returns String status message to be posted to Slack
