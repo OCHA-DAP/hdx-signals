@@ -1,7 +1,7 @@
 box::use(purrr)
 box::use(openai)
 box::use(stringr)
-box::use(logger[log_info, log_debug])
+box::use(logger[log_debug])
 
 box::use(../utils/gmas_test_run[gmas_test_run])
 box::use(../utils/get_env[get_env])

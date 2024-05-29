@@ -14,10 +14,8 @@ get_env <- function(env_var_name, output = TRUE) {
   if (!nzchar(val)) {
     error_message <- sprintf("Environment variable '%s' is empty or not set.", env_var_name)
     log_error(error_message)
-    stop()
-  } else {
-    if (output) {
-      return(val)
-    }
+    stop(call. = FALSE)
+  } else if (output) {
+    val
   }
 }

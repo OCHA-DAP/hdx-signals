@@ -1,4 +1,4 @@
-name: Monitor ACLED conflict
+name: Monitor IDMC displacement disaster
 
 on:
     workflow_dispatch:
@@ -34,7 +34,7 @@ on:
             - "WARNING"
             - "ERROR"
     schedule:
-      - cron: "0 11 * * 2"
+      - cron: "0 8 * * 2"
 
 jobs:
     run:
@@ -42,8 +42,7 @@ jobs:
         env:
           HS_EMAIL: ${{ secrets.HS_EMAIL}}
           HS_SURVEY_LINK: ${{ secrets.HS_SURVEY_LINK}}
-          ACLED_ACCESS_KEY: ${{ secrets.ACLED_ACCESS_KEY }}
-          ACLED_EMAIL_ADDRESS: ${{ secrets.ACLED_EMAIL_ADDRESS }}
+          IDMC_API: ${{ secrets.IDMC_API }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           DSCI_AZ_SAS_DEV: ${{ secrets.DSCI_AZ_SAS_DEV }}
           DSCI_AZ_SAS_PROD: ${{ secrets.DSCI_AZ_SAS_PROD }}
@@ -61,4 +60,4 @@ jobs:
 
             - name: Run R monitoring script
               shell: bash
-              run: Rscript ./src/indicators/acled_conflict/update_conflict.R
+              run: Rscript ./src/indicators/idmc_displacement/update_displacement_disaster.R

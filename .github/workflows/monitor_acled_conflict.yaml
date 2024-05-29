@@ -1,4 +1,4 @@
-name: Monitor IPC food insecurity
+name: Monitor ACLED conflict
 
 on:
     workflow_dispatch:
@@ -20,7 +20,7 @@ on:
         GMAS_TEST_RUN:
           required: true
           type: choice
-          default: "FALSE"
+          default: "TRUE"
           options:
             - "TRUE"
             - "FALSE"
@@ -34,7 +34,7 @@ on:
             - "WARNING"
             - "ERROR"
     schedule:
-      - cron: "0 11 * * 1-5"
+      - cron: "0 8 * * 2"
 
 jobs:
     run:
@@ -42,7 +42,8 @@ jobs:
         env:
           HS_EMAIL: ${{ secrets.HS_EMAIL}}
           HS_SURVEY_LINK: ${{ secrets.HS_SURVEY_LINK}}
-          IPC_API_KEY: ${{ secrets.IPC_API_KEY }}
+          ACLED_ACCESS_KEY: ${{ secrets.ACLED_ACCESS_KEY }}
+          ACLED_EMAIL_ADDRESS: ${{ secrets.ACLED_EMAIL_ADDRESS }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           DSCI_AZ_SAS_DEV: ${{ secrets.DSCI_AZ_SAS_DEV }}
           DSCI_AZ_SAS_PROD: ${{ secrets.DSCI_AZ_SAS_PROD }}
@@ -50,8 +51,8 @@ jobs:
           GMAS_TEST_RUN: ${{ inputs.GMAS_TEST_RUN || 'FALSE' }}
           FIRST_RUN: ${{ inputs.FIRST_RUN || 'FALSE' }}
           HS_TEST: ${{ inputs.HS_TEST || 'FALSE' }}
-          LOG_LEVEL: ${{ inputs.LOG_LEVEL || 'DEBUG' }}
-        steps:   
+          LOG_LEVEL: ${{ inputs.LOG_LEVEL || 'INFO' }}
+        steps:
             - name: Checkout repository
               uses: actions/checkout@v3
 
@@ -60,4 +61,4 @@ jobs:
 
             - name: Run R monitoring script
               shell: bash
-              run: Rscript ./src/indicators/ipc_food_insecurity/update_food_insecurity.R
+              run: Rscript ./src/indicators/acled_conflict/update_conflict.R

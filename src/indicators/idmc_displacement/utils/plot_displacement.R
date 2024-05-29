@@ -26,7 +26,7 @@ plot <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
     dplyr$mutate(
       title = paste0(
         scales$label_comma()(round(value)),
-        " people displaced due to ",
+        " internal displacements due to ",
         displacement_cause,
         " since ",
         formatters$format_date(date - lubridate$days(30))
