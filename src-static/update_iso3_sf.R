@@ -59,7 +59,7 @@ update_adm0_sf <- function(iso3) {
 #' @returns sf class object contain admin 0 country boundary
 #'
 #' @export
-simplify_adm0 <- function(iso3){
+simplify_adm0 <- function(iso3) {
   sf_adm0 <- download_adm0_sf(iso3) |>
     filter_adm0_sf(iso3)
 
@@ -100,7 +100,7 @@ simplify_adm0 <- function(iso3){
 #'
 #' @returns Filtered `sf_adm0`
 filter_adm0_sf <- function(sf_adm0, iso3) {
-  if (iso3 == "CHL"){
+  if (iso3 == "CHL") {
     sf_adm0 <- st_crop_adj_bbox(sf_adm0, xmin = 33.73339)
   } else if (iso3 == "BMU") {
     sf_adm0 <- st_crop_adj_bbox(sf_adm0, ymax = -0.05)
@@ -167,12 +167,16 @@ st_crop_adj_bbox <- function(sf_obj, xmin = 0, xmax = 0, ymin = 0, ymax = 0) {
 #' @param iso3 ISO3
 #' @param update_azure `logical` if TRUE (default) update json file in azure
 #'     if FALSE
-download_adm0_sf <- function(iso3,update_azure = TRUE) {
+download_adm0_sf <- function(iso3, update_azure = TRUE) {
   if (iso3 == "LAC") {
     # for LAC we get all 3 of El Salvador, Guatemala, and Honduras
-    sf$st_union(
-      dplyr$filter(sf_world, iso3cd %in% c("SLV", "GTM", "HND"))
-    )
+    dplyr$filter(sf_world, iso3cd %in% c("SLV", "GTM", "HND")) |>
+      dplyr$group_by(iso3cd) |>
+      # pull together polygons by iso3cd
+      dplyr$summarise(do_union = TRUE, .groups = "drop") |>
+      # then merge all iso3cds into 1 multipolygon retaining boundaries
+      dplyr$summarise(do_union = FALSE)
+
   } else if (iso3 == "AB9") {
     download_shapefile(
       url = "https://open.africa/dataset/56d1d233-0298-4b6a-8397-d0233a1509aa/resource/76c698c9-e282-4d00-9202-42bcd908535b/download/ssd_admbnda_abyei_imwg_nbs_20180401.zip", # nolint
@@ -183,13 +187,13 @@ download_adm0_sf <- function(iso3,update_azure = TRUE) {
     download_shapefile(
       url = "https://data.geocode.earth/wof/dist/shapefile/whosonfirst-data-admin-xk-latest.zip",
       layer = "whosonfirst-data-admin-xk-country-polygon",
-      data_soure ="Who's On First"
+      data_soure = "Who's On First"
     )
   } else if (iso3 == "IOT") {
     download_shapefile(
-      url = "https://public.opendatasoft.com/api/explore/v2.1/catalog/datasets/world-administrative-boundaries/exports/geojson?lang=en&timezone=Europe%2FLondon",
+      url = "https://public.opendatasoft.com/api/explore/v2.1/catalog/datasets/world-administrative-boundaries/exports/geojson?lang=en&timezone=Europe%2FLondon",#nolint
       data_source = "Opendatasoft"
-      ) |> # nolint
+    ) |> # nolint
       dplyr$filter(
         iso3 == "IOT"
       )
@@ -197,13 +201,13 @@ download_adm0_sf <- function(iso3,update_azure = TRUE) {
   } else if (iso3 == "UMI") {
     download_shapefile(
       url = "https://data.geocode.earth/wof/dist/shapefile/whosonfirst-data-admin-um-latest.zip",
-      data_source ="Who's On First"
-      )
+      data_source  = "Who's On First"
+    )
   } else if (iso3 == "WLF") {
     download_shapefile(
-      url = "https://pacificdata.org/data/dataset/0319bab7-4b09-4fcc-81d6-e2c2a8694078/resource/9f6d96d5-02e5-44d8-bb42-4244bde23aa5/download/wf_tsz_pol_april2022.zip",
+      url = "https://pacificdata.org/data/dataset/0319bab7-4b09-4fcc-81d6-e2c2a8694078/resource/9f6d96d5-02e5-44d8-bb42-4244bde23aa5/download/wf_tsz_pol_april2022.zip",#nolint
       data_source = "Pacific Data Hub"
-      ) # nolint
+    ) # nolint
   } else if (iso3 == "FJI") {
     # make sure that we shift the coordinates so it plots correctly
     download_fieldmaps_sf("FJI") |>
@@ -211,7 +215,7 @@ download_adm0_sf <- function(iso3,update_azure = TRUE) {
   } else {
     # first try getting cod, and fallback to the UN geodata
     tryCatch(
-      suppressWarnings(download_fieldmaps_sf(iso3,layer = glue$glue("{tolower(iso3)}_adm0"))),
+      suppressWarnings(download_fieldmaps_sf(iso3, layer = glue$glue("{tolower(iso3)}_adm0"))),
       error = \(e) get_un_geodata(iso3)
     )
   }
@@ -223,7 +227,7 @@ download_adm0_sf <- function(iso3,update_azure = TRUE) {
 #' but standardizes column names. Then it loads the file in using `sf::st_read()`.
 #'
 #' @param iso3 ISO3 code
-download_fieldmaps_sf <- function(iso3, layer=NULL) {
+download_fieldmaps_sf <- function(iso3, layer = NULL) {
   iso3 <- tolower(iso3)
   download_shapefile(
     url = glue$glue("https://data.fieldmaps.io/cod/originals/{iso3}.gpkg.zip"),
