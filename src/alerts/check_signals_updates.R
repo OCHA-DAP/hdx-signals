@@ -3,6 +3,7 @@ box::use(httr[GET, POST, add_headers, status_code, content])
 box::use(httr2)
 box::use(purrr)
 box::use(logger)
+box::use(stringr)
 
 box::use(../utils/get_env[get_env])
 box::use(../utils/hs_logger)
@@ -118,9 +119,6 @@ slack_build_alert <- function(iso3, indicator_id, campaign_url) {
 #'
 #' @returns String status message to be posted to Slack
 slack_build_workflow_status <- function(indicator_id) {
-
-  # TODO Temp cleaning before workflows are renamed to match indicator ids
-  ind <- sub("^[^_]*_", "", indicator_id)
   workflow_id <- paste0("monitor_", ind, ".yaml")
   base_logs_url <- paste0("https://github.com/ocha-dap/hdx-signals/actions/runs/")
 
@@ -141,9 +139,7 @@ slack_build_workflow_status <- function(indicator_id) {
     as.data.frame()
   },
   error = function(e) {
-    print("here!")
-    log_error(e$message)
-    return()
+    logger$log_error(e$message)
     return(paste0(
       ":red_circle: ",
       ind,
@@ -153,7 +149,6 @@ slack_build_workflow_status <- function(indicator_id) {
     ))
   })
 
-  print("here!")
   # Get today's scheduled runs from the main branch
   df_runs$date <- as.Date(df_runs$workflow_runs.created_at)
   df_sel <- subset(
@@ -182,33 +177,24 @@ slack_build_workflow_status <- function(indicator_id) {
   return(status_update)
 }
 
-indicators_path <- "src/indicators"
-indicators <- list.files(indicators_path)[file.info(file.path(indicators_path, list.files(indicators_path)))$isdir]
+# Get the indicator ids of all workflows
+indicators_path <- ".github/workflows"
+indicators_files <- list.files(indicators_path)
+indicators_files <- indicators_files[stringr$str_starts(indicators_files, "monitor_")]
+indicators <- stringr$str_extract(indicators_files, "(?<=monitor_)[^\\.]+(?=\\.yaml)")
+
 full_status <- ""
 n_signals <- 0
 signals <- ""
+test <- Sys.getenv("TEST", unset = TRUE)
 
-# TODO: Hard coding this because the monitoring scripts don't totally match the indictor ids
-indicators_azure <- c(
-  "acled_conflict",
-  "idmc_displacement_conflict",
-  "idmc_displacement_disaster",
-  "ipc_food_insecurity",
-  "jrc_agricultural_hotspots"
-)
-
-logger$log_info("Checking GitHub Actions status...")
 for (ind in indicators) {
-  print(ind)
+  logger$log_info(paste0("Checking GitHub Actions status for ", ind, "..."))
   workflow_status <- slack_build_workflow_status(ind)
-  print(workflow_status)
   full_status <- paste0(full_status, workflow_status)
-}
-logger$log_info("Successfully checked")
+  logger$log_info("Successfully checked")
 
-logger$log_info("Checking for signals across all indicators...")
-for (ind in indicators_azure) {
-  test <- Sys.getenv("TEST", unset = TRUE)
+  logger$log_info(paste0("Checking for signals: ", ind, "..."))
   fn_signals <- paste0(
     "output/",
     ind,
