@@ -119,11 +119,11 @@ slack_build_alert <- function(iso3, indicator_id, campaign_url) {
 #'
 #' @returns String status message to be posted to Slack
 slack_build_workflow_status <- function(indicator_id) {
-  workflow_id <- paste0("monitor_", ind, ".yaml")
+  workflow_id <- paste0("monitor_", indicator_id, ".yaml")
   base_logs_url <- paste0("https://github.com/ocha-dap/hdx-signals/actions/runs/")
 
-  tryCatch({
-    df_runs <- httr2$request(
+  df_runs <- tryCatch({
+    httr2$request(
       "https://api.github.com/repos/ocha-dap/hdx-signals/actions/workflows"
     ) |>
     httr2$req_url_path_append(
@@ -140,15 +140,18 @@ slack_build_workflow_status <- function(indicator_id) {
   },
   error = function(e) {
     logger$log_error(e$message)
+    e$message
+  })
+
+  if (is.character(df_runs)) {
     return(paste0(
       ":red_circle: ",
       ind,
-      ": Failed request for workflow status - ",
-      e$message,
+      ": Failed request for workflow status -",
+      df_runs,
       "\n"
     ))
-  })
-
+  }
   # Get today's scheduled runs from the main branch
   df_runs$date <- as.Date(df_runs$workflow_runs.created_at)
   df_sel <- subset(
