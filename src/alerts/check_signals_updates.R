@@ -102,13 +102,12 @@ slack_build_header <- function(n_signals) {
 
 #' Builds the signal alert text
 #'
-#' @param iso3 Country iso3 code
 #' @param indicator_id Indicator ID
-#' @param campaign_url URL of Mailchimp campaign to review
+#' @param df DataFrame with all the signals for the given indicator
 #'
 #' @returns String signal alert text
-slack_build_alert <- function(iso3, indicator_id, campaign_url) {
-  return(paste0(iso3, ": ", indicator_id, " <", campaign_url, " | See draft campaign>\n"))
+slack_build_alert <- function(indicator_id, df) {
+  paste0("*", indicator_id, "* - ", nrow(df), " countries impacted- <", df$campaign_url_archive[1], " | See draft campaign>\n")
 }
 
 #' Takes the response from a GitHub Actions run of a single indicator
@@ -206,16 +205,10 @@ for (ind in indicators) {
   )
   df <- cs$read_az_file(fn_signals)
   if (nrow(df) > 0) {
-    for (i in seq_len(nrow(df))) {
-      row <- df[i, ]
-      alert <- slack_build_alert(
-        row["iso3"],
-        row["indicator_name"],
-        row["campaign_url_email"]
-      )
-      signals <- paste0(signals, alert)
-    }
-    n_signals <- n_signals + nrow(df)
+    logger$log_info(paste0("Found signal for ", ind))
+    alert <- slack_build_alert(ind, df)
+    signals <- paste0(signals, alert)
+    n_signals <- n_signals + 1
   }
 }
 logger$log_info(paste0("Found ", n_signals, " signals"))
