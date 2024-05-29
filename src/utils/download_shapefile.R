@@ -2,8 +2,7 @@ box::use(stringr)
 box::use(utils)
 box::use(tools)
 box::use(sf)
-box::use(dplyr)
-options(timeout = 1000)
+
 #' Download shapefile and read
 #'
 #' Download shapefile to temp file, unzipping zip files if necessary. Deals with zipped
@@ -12,6 +11,9 @@ options(timeout = 1000)
 #'
 #' @param url URL to download
 #' @param layer Layer to read
+#' @param data_source `character` name of data_source. If supplied a column named "data_source"
+#'     will added to sf object with the specified data_source input. If NULL (default)
+#'     no column added.
 #'
 #' @returns sf object
 #'
@@ -62,10 +64,7 @@ download_shapefile <- function(
     )
   }
   if (!is.null(data_source)) {
-    ret <- ret |>
-      dplyr$mutate(
-        data_source = data_source
-      )
+    ret$data_source <- data_source
   }
   ret
 }
