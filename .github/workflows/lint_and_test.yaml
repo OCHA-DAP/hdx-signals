@@ -29,3 +29,12 @@ jobs:
             shell: Rscript {0}
             env:
               LINTR_ERROR_ON_LINT: true
+
+          - name: Test monitoring
+            shell: bash
+            run: |
+              shopt -s globstar
+              set -e
+              for x in test/automated/test_*.R; do Rscript "$x"; done
+            env:
+              GMAS_TEST_RUN: "TRUE"
