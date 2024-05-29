@@ -51,7 +51,7 @@ jobs:
           FIRST_RUN: ${{ inputs.FIRST_RUN || 'FALSE' }}
           HS_TEST: ${{ inputs.HS_TEST || 'FALSE' }}
           LOG_LEVEL: ${{ inputs.LOG_LEVEL || 'INFO' }}
-        steps:
+        steps:   
             - name: Checkout repository
               uses: actions/checkout@v3
 
@@ -60,4 +60,4 @@ jobs:
 
             - name: Run R monitoring script
               shell: bash
-              run: Rscript ./src/indicators/idmc_displacement/update_displacement.R
+              run: Rscript ./src/indicators/idmc_displacement/update_displacement_disaster.R
