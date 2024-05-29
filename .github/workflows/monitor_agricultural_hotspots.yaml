@@ -34,7 +34,7 @@ on:
             - "WARNING"
             - "ERROR"
     schedule:
-      - cron: "0 11 * * 1-5"
+      - cron: "0 8 * * 1-5"
 
 jobs:
     run:
@@ -50,7 +50,7 @@ jobs:
           GMAS_TEST_RUN: ${{ inputs.GMAS_TEST_RUN || 'FALSE' }}
           FIRST_RUN: ${{ inputs.FIRST_RUN || 'FALSE' }}
           LOG_LEVEL: ${{ inputs.LOG_LEVEL || 'INFO'}}
-        steps:   
+        steps:
             - name: Checkout repository
               uses: actions/checkout@v3
 
