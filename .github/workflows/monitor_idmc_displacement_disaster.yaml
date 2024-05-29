@@ -1,4 +1,4 @@
-name: Monitor IDMC displacement
+name: Monitor IDMC displacement disaster
 
 on:
     workflow_dispatch:

@@ -1,4 +1,4 @@
-name: Monitor IDMC displacement
+name: Monitor IDMC displacement conflict
 
 on:
     workflow_dispatch:
