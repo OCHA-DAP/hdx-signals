@@ -26,9 +26,8 @@ slack_post_message <- function(header_text, status_text, signals_text) {
       list(
         type = "section",
         text = list(
-          type = "plain_text",
-          text = header_text,
-          emoji = TRUE
+          type = "mrkdwn",
+          text = header_text
         )
       ),
       list(
