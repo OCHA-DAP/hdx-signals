@@ -51,9 +51,13 @@ slack_post_message <- function(header_text, status_text, signals_text) {
       list(type = "divider")
     )
   )
-  json_body <- jsonlite$toJSON(msg, pretty = TRUE, auto_unbox = TRUE)
-  response <- POST(get_env("SLACK_URL"), body = json_body, encode = "json")
-  if (response$status != 200) {
+
+  # Create and perform the POST request using httr2
+  response <- httr2$request(get_env("SLACK_URL")) |>
+    httr2$req_body_json(msg) |>
+    httr2$req_perform()
+
+  if (response$status_code != 200) {
     logger$log_error("Error posting Slack message")
     stop()
   }
