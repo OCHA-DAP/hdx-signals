@@ -22,7 +22,7 @@ theme_signals <- function() {
       plot.caption = gg$element_text(size = 11, hjust = 1),
       legend.text = gg$element_text(size = 9),
       legend.title = gg$element_text(size = 11),
-      panel.background = gg$element_rect(fill = "white"),
-      plot.background = gg$element_rect(fill = "white")
+      panel.background = gg$element_rect(fill = "white", linewidth = 0),
+      plot.background = gg$element_rect(fill = "white", linewidth = 0)
     )
 }
