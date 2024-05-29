@@ -3,7 +3,7 @@ box::use(utils)
 box::use(tools)
 box::use(sf)
 box::use(dplyr)
-options(timeout=1000)
+options(timeout = 1000)
 #' Download shapefile and read
 #'
 #' Download shapefile to temp file, unzipping zip files if necessary. Deals with zipped
@@ -17,9 +17,9 @@ options(timeout=1000)
 #'
 #' @export
 download_shapefile <- function(
-    url,
-    layer = NULL,
-    data_source = NULL
+  url,
+  layer = NULL,
+  data_source = NULL
 ) {
   if (stringr$str_ends(url, ".zip")) {
     utils$download.file(
