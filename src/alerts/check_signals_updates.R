@@ -178,12 +178,7 @@ for (ind in indicators) {
   logger$log_info("Successfully checked")
 
   logger$log_info(paste0("Checking for signals: ", ind, "..."))
-  fn_signals <- paste0(
-    "output/",
-    ind,
-    if (test) "/test" else "",
-    "/signals.parquet"
-  )
+  fn_signals <- cs$signals_path(ind, test)
   df <- cs$read_az_file(fn_signals)
   if (nrow(df) > 0) {
     logger$log_info(paste0("Found signal for ", ind))

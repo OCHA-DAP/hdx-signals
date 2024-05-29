@@ -52,13 +52,7 @@ box::use(../utils/get_env[get_env])
 #'
 #' @export
 triage_signals <- function(indicator_id, n_campaigns = 10, test = FALSE) {
-  fn_signals <- paste0(
-    "output/",
-    indicator_id,
-    if (test) "/test" else "",
-    "/signals.parquet"
-  )
-
+  fn_signals <- cs$signals_path(indicator_id, test)
   df <- get_signals_df(fn_signals)
   preview_signals(df = df, n_campaigns = n_campaigns)
   approve_signals(df = df, fn_signals = fn_signals, test = test)
