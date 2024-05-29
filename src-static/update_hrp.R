@@ -2,8 +2,14 @@ box::use(dplyr)
 box::use(countrycode)
 box::use(readxl)
 box::use(stringr)
+box::use(logger[log_info])
 
 box::use(cs = ../src/utils/cloud_storage)
+box::use(../src/utils/hs_logger)
+
+hs_logger$configure_logger()
+
+log_info("Updating HRP info...")
 
 # Download 2024 file from HDX
 # Needs manual munging since no programmatically readable list of HRP countries
@@ -12,15 +18,13 @@ box::use(cs = ../src/utils/cloud_storage)
 # Read file
 
 tf <- tempfile(fileext = ".xlsx")
+fname <- "input/hrp_countries.parquet"
 
 download.file(
   url = "https://data.humdata.org/dataset/6cb35657-975e-46a0-99a7-a558eddb924f/resource/28be64d3-adaf-4f61-887c-87a8b5d9c625/download/section3_plan_tables_2024-n.xlsx", # nolint
-  destfile = tf
+  destfile = tf,
+  quiet = TRUE
 )
-
-# Temporarily remove as test run if set
-orig <- Sys.getenv("GMAS_TEST_RUN")
-Sys.setenv(GMAS_TEST_RUN = FALSE)
 
 # Read in specific range, get ISO3, and save out
 readxl$read_excel(
@@ -39,12 +43,7 @@ readxl$read_excel(
     )
   ) |>
   cs$update_az_file(
-    name = "input/hrp_countries.parquet"
+    name = fname
   )
 
-# Reset env var
-if (orig == "") {
-  Sys.unsetenv("GMAS_TEST_RUN")
-} else {
-  Sys.setenv(GMAS_TEST_RUN = orig)
-}
+log_info(paste0("Successfully downloaded HRP info and saved to ", fname))

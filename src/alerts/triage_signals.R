@@ -6,6 +6,7 @@ box::use(dplyr)
 box::use(cs = ../utils/cloud_storage)
 box::use(./delete_campaign_content[delete_campaign_content])
 box::use(../email/mailchimp/campaigns)
+box::use(../utils/get_env[get_env])
 
 #' Triage signals generated automatically
 #'
@@ -133,20 +134,13 @@ preview_campaign_urls <- function(campaign_urls) {
 #' @param fn_signals File name to the signals data
 #' @param test Whether or not the signals were for testing.
 approve_signals <- function(df, fn_signals, test) {
-  user_name <- Sys.getenv("HDX_SIGNALS_ADMIN_NAME")
-  if (user_name == "") {
-    stop(
-      "You need to set the `HDX_SIGNALS_ADMIN_NAME` env variable with your ",
-      "name prior to triaging, so approval can be recorded.",
-      call. = FALSE
-    )
-  }
+  user_name <- get_env("HS_ADMIN_NAME")
 
   user_command <- readline(
     paste0(
       "Tell us what you want to do with the following commands:\n\n",
       "APPROVE: Send campaigns",
-      if (test) "\n" else "and add to `output/signals.parquet`\n",
+      if (test) "\n" else " and add to `output/signals.parquet`\n",
       "DELETE: Delete the campaign content, so you can recreate later.\n",
       "Any other input: Do nothing, so you can decide later."
     )
@@ -186,7 +180,7 @@ approve_signals <- function(df, fn_signals, test) {
         message(
           "You have not deleted the content in ",
           fn_signals,
-          " or removed the content from Mailchimp.\n Remember to do so in the",
+          " or removed the content from Mailchimp.\n Remember to do so in the ",
           "future.",
           call. = FALSE
         )

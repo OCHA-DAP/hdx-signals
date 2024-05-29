@@ -8,10 +8,16 @@ box::use(dplyr)
 box::use(purrr)
 box::use(tidyr)
 box::use(sf)
+box::use(logger[log_info])
 
 box::use(../src/utils/get_iso3_sf)
 box::use(../src/utils/all_iso3_codes)
 box::use(cs = ../src/utils/cloud_storage)
+box::use(../src/utils/hs_logger)
+
+hs_logger$configure_logger()
+
+log_info("Updating map settings...")
 
 #' Gets width to height ratio for base adm0 of iso3
 iso3_map_ratio <- function(iso3) {
@@ -329,7 +335,10 @@ df_map_settings <- dplyr$left_join(
   by = "iso3"
 )
 
+fname <- "input/iso3_map_settings.json"
 cs$update_az_file(
   df = df_map_settings,
-  name = "input/iso3_map_settings.json"
+  name = fname
 )
+
+log_info(paste0("Successfully downloaded map settings and saved to ", fname))

@@ -2,10 +2,14 @@ box::use(sf)
 box::use(dplyr)
 box::use(glue)
 box::use(purrr)
+box::use(logger[log_info])
 
 box::use(../src/utils/download_shapefile[download_shapefile])
 box::use(../src/utils/all_iso3_codes[all_iso3_codes])
 box::use(cs = ../src/utils/cloud_storage)
+box::use(../src/utils/hs_logger)
+
+hs_logger$configure_logger()
 
 ###################
 #### FUNCTIONS ####
@@ -62,6 +66,8 @@ create_point_sf <- function(lat, lon, name) {
   )
 }
 
+log_info("Updating cities data...")
+
 #' Downloading outside the function so just done once
 #' Not using {rnaturalearth} because it doesn't allow passing `quiet = TRUE`
 #' to `download.file()`
@@ -79,3 +85,5 @@ purrr$walk(
   .x = all_iso3_codes(),
   .f = update_cities_sf
 )
+
+log_info("Successfully updated cities data to input/cities/*")

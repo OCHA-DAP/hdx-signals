@@ -55,7 +55,7 @@ map <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
 displacement_map <- function(df_wrangled, df_raw, title, date) {
   caption <- paste(
     "Data from the IDMC, http://www.internal-displacement.org",
-    paste("Accessed", formatters$format_date(Sys.Date())),
+    paste("Created", formatters$format_date(Sys.Date())),
     country_codes$iso3_to_names(unique(df_wrangled$iso3)),
     sep = "\n"
   )

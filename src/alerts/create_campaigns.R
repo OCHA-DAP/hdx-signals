@@ -2,6 +2,7 @@ box::use(dplyr)
 box::use(rlang[`!!`])
 box::use(purrr)
 box::use(glue)
+box::use(logger[log_error])
 
 box::use(cs = ../utils/cloud_storage)
 box::use(../email/components/email_body)
@@ -11,6 +12,10 @@ box::use(../email/mailchimp/campaigns)
 box::use(../email/mailchimp/custom_segmentation)
 box::use(../utils/formatters)
 box::use(../email/mailchimp/delete)
+
+box::use(../utils/hs_logger)
+
+hs_logger$configure_logger()
 
 #' Create campaigns
 #'
@@ -163,13 +168,19 @@ create_campaign <- function(
         archive_url = archive_url
       )
 
+      # Check against automatically set variable
+      is_gh_actions <- Sys.getenv("GITHUB_ACTIONS") == "true"
+
       templates$mc_add_template(
         html = template,
         folder = campaign_details$folder,
-        preview = archive && test # only preview the archive template, not those with conditional logic
+        # only preview the archive template, not those with conditional logic
+        # don't preview if running from within GitHub Actions
+        preview = archive && test && !is_gh_actions
       )
     },
     error = function(e) {
+      log_error(e$message)
       "ERROR"
     }
   )
@@ -202,6 +213,7 @@ create_campaign <- function(
         )
       },
       error = function(e) {
+        log_error(e$message)
         # template_id will be deleted in later cleanup
         list(id = "ERROR", url = "ERROR")
       }
@@ -239,7 +251,7 @@ get_campaign_details <- function(indicator_id, campaign_date, test) {
     title = df_ind$indicator_subject,
     subject = paste0(
       if (test) "TEST - " else "",
-      "HDX Signals: ",
+      "Signal: ",
       df_ind$indicator_subject,
       ", ",
       formatters$format_date(Sys.Date())

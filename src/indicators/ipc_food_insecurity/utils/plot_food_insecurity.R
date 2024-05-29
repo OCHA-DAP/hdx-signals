@@ -85,13 +85,13 @@ food_insecurity_ts <- function(df_wrangled, df_raw, title, date) {
   # plot the projected values in dotted lines
   df_projected <- df_plot |>
     dplyr$filter(
-      date == max(date)
+      date == max(date, as.Date("1500-01-01"))
     )
 
   # get the phase text for the dataset
   df_phase_labels <- df_projected |>
     dplyr$filter(
-      plot_date == max(plot_date)
+      plot_date == max(plot_date, as.Date("1500-01-01"))
     ) |>
     dplyr$mutate(
       label = paste0("P", readr$parse_number(phase)),
@@ -122,7 +122,7 @@ food_insecurity_ts <- function(df_wrangled, df_raw, title, date) {
       linewidth = 0.7
     ) +
     gg$geom_point(
-      data = dplyr$filter(df_current, plot_date == max(plot_date)),
+      data = dplyr$filter(df_current, plot_date == max(plot_date, as.Date("1500-01-01"))),
       size = 3
     ) +
     gg$geom_line(
@@ -131,7 +131,7 @@ food_insecurity_ts <- function(df_wrangled, df_raw, title, date) {
       linewidth = 0.7
     ) +
     gg$geom_point(
-      data = dplyr$filter(df_projected, plot_date == max(plot_date)),
+      data = dplyr$filter(df_projected, plot_date == max(plot_date, as.Date("1500-01-01"))),
       size = 3
     ) +
     gg$geom_point(

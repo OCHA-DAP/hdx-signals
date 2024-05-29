@@ -1,8 +1,13 @@
 box::use(purrr)
 box::use(openai)
 box::use(stringr)
+box::use(logger[log_debug])
 
 box::use(../utils/gmas_test_run[gmas_test_run])
+box::use(../utils/get_env[get_env])
+box::use(../utils/hs_logger)
+
+hs_logger$configure_logger()
 
 #' AI summarizer without country name
 #'
@@ -35,6 +40,7 @@ ai_summarizer_without_country <- function(prompt, info, country) {
       info = ai_summary
     )
   }
+  ai_summary
 }
 
 #' AI summarizer
@@ -110,13 +116,13 @@ ai_summarizer <- function(prompt, info) {
 #' Call to the OpenAI API
 #'
 #' Function that insistently calls the OpenAI API in case of failure
-#' utilizing the GPT3.5 16k token model which allows for loads of context. If
+#' utilizing the GPT-4o 128,000 token model which allows for loads of context. If
 #' `gmas_test_run()` returns `TRUE`, the API is not called and `"Test output"`
 #' is returned, otherwise it returns the summarization from the API.
 insistent_ai <- purrr$insistently(
   \(prompt, info) {
     if (gmas_test_run()) {
-      message(
+      log_debug(
         "`ai_summarizer()` returning static output as `gmas_test_run()` is `TRUE`. ",
         "Set `GMAS_TEST_RUN` env variable to `FALSE` if you want `ai_summarizer()` ",
         "to ping the OpenAI API, but be wary of saving data and emailing."
@@ -124,8 +130,9 @@ insistent_ai <- purrr$insistently(
 
       "Test output."
     } else {
+      get_env("OPENAI_API_KEY", output = FALSE)
       openai$create_chat_completion(
-        model = "gpt-4-turbo",
+        model = "gpt-4o",
         messages = list(
           list(
             "role" = "user",

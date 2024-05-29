@@ -2,6 +2,7 @@ box::use(dplyr)
 box::use(stringr)
 
 box::use(cs = ../utils/cloud_storage)
+box::use(../utils/gmas_test_run)
 
 #' Check existing signals
 #'
@@ -26,6 +27,10 @@ box::use(cs = ../utils/cloud_storage)
 #'
 #' @export
 check_existing_signals <- function(indicator_id, first_run, overwrite_content, fn_signals, test) {
+  if (gmas_test_run$gmas_test_run()) {
+    return(invisible(NULL))
+  }
+
   check_ind_signals(
     indicator_id = indicator_id,
     overwrite_content = overwrite_content,

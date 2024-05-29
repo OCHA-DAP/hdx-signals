@@ -6,10 +6,16 @@ box::use(sf)
 box::use(ripc)
 box::use(tidyr)
 box::use(readr)
+box::use(logger[log_info])
 
 box::use(../src/utils/get_iso3_sf)
 box::use(../src/utils/all_iso3_codes)
 box::use(cs = ../src/utils/cloud_storage)
+box::use(../src/utils/hs_logger)
+
+hs_logger$configure_logger()
+
+log_info("Updating country info...")
 
 # prevent geometry errors
 sf$sf_use_s2(FALSE)
@@ -154,7 +160,10 @@ df_country_info <- purrr$reduce(
   .f = \(x, y) dplyr$left_join(x, y, by = "iso3")
 )
 
+fname <- "input/country_info.parquet"
 cs$update_az_file(
   df = df_country_info,
-  name = "input/country_info.parquet"
+  name = fname
 )
+
+log_info(paste0("Successfully downloaded countries info and saved to ", fname))
