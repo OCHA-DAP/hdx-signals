@@ -15,10 +15,10 @@ wrangle <- function(df_raw) {
     dplyr$transmute(
       iso3 = country_codes$names_to_iso3(CountryName),
       date = MMFPSNDate,
-      basket_change = MMFPSNTotImpactQuarterlyChange,
-      basket_change_class = MMFPSNTotImpactQuarterlyCode,
+      basket_change = MMFPSNTotImpactMonthlyChange,
+      basket_change_class = MMFPSNTotImpactMonthlyCode,
       staple_food = MMFPSNMainStapleFood,
-      staple_food_change = MMFPSNQuarterlyChangeSA
+      staple_food_change = MMFPSNMonthlyChangeSA
     ) |>
     dplyr$arrange(
       iso3,
