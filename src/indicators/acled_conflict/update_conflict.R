@@ -12,8 +12,8 @@ box::use(./utils/summary_conflict)
 box::use(../../alerts/generate_signals[generate_signals])
 box::use(../../utils/hs_logger)
 
-test <- as.logical(Sys.getenv("HS_TEST", unset = TRUE))
-test_filter <- if (test) c("AFG", "SSD") else NULL
+dry_run <- as.logical(Sys.getenv("HS_DRY_RUN", unset = TRUE))
+dry_run_filter <- if (dry_run) c("AFG", "SSD") else NULL
 indicator_id <- "acled_conflict"
 
 hs_logger$configure_logger()
@@ -33,6 +33,6 @@ df_conflict <- generate_signals(
   info_fn = info_conflict$info,
   map_fn = map_conflict$map,
   summary_fn = summary_conflict$summary,
-  test = test,
-  test_filter = test_filter
+  dry_run = dry_run,
+  dry_run_filter = dry_run_filter
 )

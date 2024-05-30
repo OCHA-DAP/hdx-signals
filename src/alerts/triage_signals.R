@@ -45,23 +45,23 @@ box::use(../utils/get_env[get_env])
 #'      time. Defaults to `10`, which is fine for most runs, but if `first_run`
 #'      creates many at a time, you may need to be increase or decrease based
 #'      on your preference. If `0`, no signals are previewed.
-#' @param test Whether or not we are triaging test emails. Looks only for the
-#'      test emails file on Azure. You can still send test emails and delete
+#' @param dry_run Whether or not we are triaging dry run emails. Looks only for the
+#'      dry run emails file on Azure. You can still send dry run emails and delete
 #'      them in the same way as normal ones, but the signals file is not sent
 #'      to `output/signals.parquet`
 #'
 #' @export
-triage_signals <- function(indicator_id, n_campaigns = 10, test = FALSE) {
+triage_signals <- function(indicator_id, n_campaigns = 10, dry_run = FALSE) {
   fn_signals <- paste0(
     "output/",
     indicator_id,
-    if (test) "/test" else "",
+    if (dry_run) "/test" else "",
     "/signals.parquet"
   )
 
   df <- get_signals_df(fn_signals)
   preview_signals(df = df, n_campaigns = n_campaigns)
-  approve_signals(df = df, fn_signals = fn_signals, test = test)
+  approve_signals(df = df, fn_signals = fn_signals, dry_run = dry_run)
 }
 
 #' Check the signals data frame
@@ -132,15 +132,15 @@ preview_campaign_urls <- function(campaign_urls) {
 #'
 #' @param df Signals data frame
 #' @param fn_signals File name to the signals data
-#' @param test Whether or not the signals were for testing.
-approve_signals <- function(df, fn_signals, test) {
+#' @param dry_run Whether or not the signals were for testing.
+approve_signals <- function(df, fn_signals, dry_run) {
   user_name <- get_env("HS_ADMIN_NAME")
 
   user_command <- readline(
     paste0(
       "Tell us what you want to do with the following commands:\n\n",
       "APPROVE: Send campaigns",
-      if (test) "\n" else " and add to `output/signals.parquet`\n",
+      if (dry_run) "\n" else " and add to `output/signals.parquet`\n",
       "DELETE: Delete the campaign content, so you can recreate later.\n",
       "Any other input: Do nothing, so you can decide later."
     )
@@ -149,7 +149,7 @@ approve_signals <- function(df, fn_signals, test) {
     send_signals(df)
 
     # if not testing, move everything to the core signals dataset
-    if (!test) {
+    if (!dry_run) {
       # add triage information to the data before joining to core
       df$triage_approver <- user_name
       df$triage_time <- Sys.time()
@@ -189,7 +189,7 @@ approve_signals <- function(df, fn_signals, test) {
   } else if (user_command == "DELETE") {
     # replace the campaign content with the deleted stuff
     df_deleted <- delete_campaign_content(df)
-    if (test) {
+    if (dry_run) {
       df_deleted <- df_deleted[0, ]
     }
 

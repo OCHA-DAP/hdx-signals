@@ -21,12 +21,12 @@ box::use(../utils/hs_local)
 #' @param overwrite_content Whether or not to overwrite the content of existing rows
 #'     in a `signals.parquet` file, rather than generating a new one.
 #' @param fn_signals File name of the Signals data
-#' @param test Whether or not this is for testing signals development. If `TRUE`,
+#' @param dry_run Whether or not this is for testing signals development. If `TRUE`,
 #'     errors are not generated if data is in the overall `output/signals.parquet`
 #'     file, so we can test efficiently.
 #'
 #' @export
-check_existing_signals <- function(indicator_id, first_run, overwrite_content, fn_signals, test) {
+check_existing_signals <- function(indicator_id, first_run, overwrite_content, fn_signals, dry_run) {
   if (hs_local$hs_local()) {
     return(invisible(NULL))
   }
@@ -41,7 +41,7 @@ check_existing_signals <- function(indicator_id, first_run, overwrite_content, f
     indicator_id = indicator_id,
     first_run = first_run,
     fn_signals = fn_signals,
-    test = test
+    dry_run = dry_run
   )
 }
 
@@ -103,10 +103,10 @@ check_ind_signals <- function(indicator_id, overwrite_content, fn_signals) {
 #' if there is no rows for `indicator_id` in the file but `first_run` is `FALSE`,
 #' or if there are existing signals for `indicator_id` and `first_run` is `TRUE`.
 #'
-#' These checks are not performed if `test` is `TRUE`.
-check_overall_signals <- function(indicator_id, first_run, fn_signals, test) {
+#' These checks are not performed if `dry_run` is `TRUE`.
+check_overall_signals <- function(indicator_id, first_run, fn_signals, dry_run) {
   # if testing, don't run these checks
-  if (test) {
+  if (dry_run) {
     return(invisible(NULL))
   }
 
