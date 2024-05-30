@@ -7,6 +7,7 @@ box::use(ripc)
 box::use(idmc)
 box::use(tidyr)
 box::use(readr)
+box::use(stringr)
 box::use(logger[log_info])
 
 box::use(../src/utils/get_iso3_sf)
@@ -166,6 +167,24 @@ df_hrp <- dplyr$tibble(
 ############################
 #### INDICATOR COVERAGE ####
 ############################
+
+# automatically read in coverage from any coverage files in Azure
+coverage_files <- cs$az_file_detect(".*/coverage.parquet")
+
+df_coverage <- purrr$map(
+  .x = coverage_files,
+  .f = \(fp) {
+    indicator_id <- stringr$str_extract(fp, "(?<=output/)(.*)(?=/coverage.parquet)")
+    dplyr$tibble(
+      "{indicator_id}" := iso3_codes %in% cs$read_az_file(fp)$iso3
+    )
+  }
+) |>
+  purrr$list_cbind() |>
+  dplyr$mutate(
+    iso3 = iso3_codes,
+    .before = 1
+  )
 
 #######################
 #### FINAL DATASET ####
