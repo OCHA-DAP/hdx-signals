@@ -77,12 +77,7 @@ generate_signals <- function(
     test = FALSE,
     test_filter = NULL) {
   # file name differs if testing or not
-  fn_signals <- paste0(
-    "output/",
-    indicator_id,
-    if (test) "/test" else "",
-    "/signals.parquet"
-  )
+  fn_signals <- cs$signals_path(indicator_id, test)
 
   check_existing_signals(
     indicator_id = indicator_id,
