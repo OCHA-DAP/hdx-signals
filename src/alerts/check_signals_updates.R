@@ -101,6 +101,31 @@ slack_build_alert <- function(indicator_id, df) {
   )
 }
 
+#' Returns a DataFrame of all workflow runs on GitHub actions
+#' for monitoring a given indicator
+#'
+#' @param indicator_id ID of the indicator
+#'
+#' @returns DataFrame with metadata for all runs
+query_github <- function(indicator_id) {
+  workflow_id <- paste0("monitor_", indicator_id, ".yaml")
+  base_logs_url <- "https://github.com/ocha-dap/hdx-signals/actions/runs/"
+  httr2$request(
+    "https://api.github.com/repos/ocha-dap/hdx-signals/actions/workflows"
+  ) |>
+    httr2$req_url_path_append(
+      workflow_id,
+      "runs"
+    ) |>
+    httr2$req_auth_bearer_token(
+      token = get_env("GH_TOKEN")
+    ) |>
+    httr2$req_perform() |>
+    httr2$resp_body_string() |>
+    jsonlite$fromJSON(flatten = TRUE) |>
+    as.data.frame()
+}
+
 #' Takes the response from a GitHub Actions run of a single indicator
 #' and outputs a status message to be posted to Slack
 #'
@@ -108,24 +133,8 @@ slack_build_alert <- function(indicator_id, df) {
 #'
 #' @returns String status message to be posted to Slack
 slack_build_workflow_status <- function(indicator_id) {
-  workflow_id <- paste0("monitor_", indicator_id, ".yaml")
-  base_logs_url <- "https://github.com/ocha-dap/hdx-signals/actions/runs/"
-
   df_runs <- tryCatch({
-    httr2$request(
-      "https://api.github.com/repos/ocha-dap/hdx-signals/actions/workflows"
-    ) |>
-      httr2$req_url_path_append(
-        workflow_id,
-        "runs"
-      ) |>
-      httr2$req_auth_bearer_token(
-        token = get_env("GH_TOKEN")
-      ) |>
-      httr2$req_perform() |>
-      httr2$resp_body_string() |>
-      jsonlite$fromJSON(flatten = TRUE) |>
-      as.data.frame()
+    query_github(indicator_id)
   },
   error = function(e) {
     logger$log_error(e$message)
