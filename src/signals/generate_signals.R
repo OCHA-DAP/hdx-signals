@@ -7,7 +7,7 @@ box::use(rlang[`!!`])
 box::use(logger[log_info])
 
 box::use(cs = ../utils/cloud_storage)
-box::use(../utils/gmas_test_run)
+box::use(../utils/hs_local)
 box::use(./filter_test_data[filter_test_data])
 box::use(./generate_campaign_content[generate_campaign_content])
 box::use(./create_campaigns[create_campaigns])
@@ -46,9 +46,9 @@ hs_logger$configure_logger()
 #'     entire alerts data frame is converted into a single campaign during monitoring.
 #' @param test Whether or not to generate the signals for testing (defaults to
 #'     `FALSE`. If `TRUE`, only a limited number of alerts are generated, based
-#'     on the `test_filter` argument. If `GMAS_TEST_RUN` is `TRUE`, previews are
+#'     on the `test_filter` argument. If `HS_LOCAL` is `TRUE`, previews are
 #'     generated using local HTML. Certain browsers cannot display local files
-#'     correctly, so you may need to test on Mailchimp. If `GMAS_TEST_RUN` is
+#'     correctly, so you may need to test on Mailchimp. If `HS_LOCAL` is
 #'     `FALSE`, the campaigns are saved to Azure in
 #'     `output/{indicator_id}/test/signals.parquet`. The campaign is uploaded
 #'     to Mailchimp and then used for test visualization.
@@ -178,7 +178,7 @@ validate_campaigns <- function(df_campaigns, df_campaign_content) {
   any_error <- any(dplyr$select(df_campaigns, -c(date, campaign_date)) == "ERROR", na.rm = TRUE)
   df_incorrect <- !janitor$compare_df_cols_same(df_campaigns, df_check, bind_method = "rbind")
   if (any_error || df_incorrect) {
-    if (!gmas_test_run$gmas_test_run()) {
+    if (!hs_local$hs_local()) {
       delete_campaign_content(df_campaign_content)
       delete_campaign_content(df_campaigns)
       rlang$abort(

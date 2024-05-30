@@ -11,7 +11,7 @@ box::use(jsonlite)
 box::use(dplyr)
 box::use(logger[log_debug])
 
-box::use(../utils/gmas_test_run[gmas_test_run])
+box::use(../utils/hs_local[hs_local])
 box::use(../utils/get_env[get_env])
 box::use(../utils/hs_logger)
 
@@ -74,7 +74,7 @@ read_az_file <- function(name, blob = c("prod", "dev", "wfp")) {
 #' * GeoJSON: [sf::st_write()]
 #' * CSV: [readr::write_csv()]
 #'
-#' If `gmas_test_run()`, the file is not uploaded to the container
+#' If `hs_local()`, the file is not uploaded to the container
 #'
 #' @param df Data frame or simple features to save out.
 #' @param name Name of the file to write, including prefix (`input/` or `output/`)
@@ -96,10 +96,10 @@ update_az_file <- function(df, name, blob = c("prod", "dev", "wfp")) {
     geojson = sf$st_write(obj = df, dsn = tf, quiet = TRUE)
   )
 
-  if (gmas_test_run()) {
+  if (hs_local()) {
     log_debug(
-      "`update_az_file()` not saving data as `gmas_test_run()` is `TRUE`. ",
-      "Set `GMAS_TEST_RUN` env variable to `FALSE` if you want the data to be ",
+      "`update_az_file()` not saving data as `hs_local()` is `TRUE`. ",
+      "Set `HS_LOCAL` env variable to `FALSE` if you want the data to be ",
       "saved, but be careful of sending emails or calling the OpenAI API."
     )
     return(invisible(NULL))

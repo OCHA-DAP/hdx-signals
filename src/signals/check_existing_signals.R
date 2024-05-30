@@ -2,7 +2,7 @@ box::use(dplyr)
 box::use(stringr)
 
 box::use(cs = ../utils/cloud_storage)
-box::use(../utils/gmas_test_run)
+box::use(../utils/hs_local)
 
 #' Check existing signals
 #'
@@ -25,7 +25,7 @@ box::use(../utils/gmas_test_run)
 #'
 #' @export
 check_existing_signals <- function(indicator_id, first_run, fn_signals, test) {
-  if (gmas_test_run$gmas_test_run()) {
+  if (hs_local$hs_local()) {
     return(invisible(NULL))
   }
 
