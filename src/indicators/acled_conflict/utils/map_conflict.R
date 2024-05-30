@@ -4,7 +4,7 @@ box::use(rlang[`!!`])
 box::use(lubridate)
 box::use(sf)
 
-box::use(../../../utils/country_codes)
+box::use(../../../utils/location_codes)
 box::use(../../../utils/formatters)
 box::use(../../../images/maps/map_points)
 box::use(../../../images/create_images)
@@ -40,7 +40,7 @@ map <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
 
 #' Map ACLED conflict data
 #'
-#' Plots conflict data for a specific country, defined by an ISO3 code.
+#' Plots conflict data for a specific location, defined by an ISO3 code.
 #'
 #' @param df_wrangled Wrangled data frame for plotting.
 #' @param df_raw Raw data frame for plotting.
@@ -52,12 +52,12 @@ conflict_map <- function(df_wrangled, df_raw, title, date) {
   caption <- paste(
     "Data from the Armed Conflict Location & Event Data Project",
     paste("Created", formatters$format_date(Sys.Date())),
-    country_codes$iso3_to_names(unique(df_wrangled$iso3)),
+    location_codes$iso3_to_names(unique(df_wrangled$iso3)),
     sep = "\n"
   )
 
   iso3 <- unique(df_wrangled$iso3)
-  ison <- country_codes$iso3_to_ison(iso3)
+  ison <- location_codes$iso3_to_ison(iso3)
 
 
   # need to filter raw data and create sf

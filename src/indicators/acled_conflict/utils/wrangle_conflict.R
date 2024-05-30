@@ -4,7 +4,7 @@ box::use(lubridate)
 box::use(zoo)
 
 box::use(cs = ../../../../src/utils/cloud_storage)
-box::use(../../../../src/utils/country_codes)
+box::use(../../../../src/utils/location_codes)
 
 #' Wrangle conflict data
 #'
@@ -15,7 +15,7 @@ box::use(../../../../src/utils/country_codes)
 #' * Fills in all dates from the beginning of coverage
 #'     (updated in `src-static/update_acled_start.R`). If not `first_run`,
 #'     only fills in to the start date of when the data was downloaded.
-#' * Summarize all country-date dyads to get sum of fatalities and paste together
+#' * Summarize all location-date dyads to get sum of fatalities and paste together
 #'     all notes information.
 #'
 #' @param df_raw Raw conflict data frame
@@ -31,7 +31,7 @@ wrangle <- function(df_raw, first_run = FALSE) {
 
   df_raw |>
     dplyr$mutate(
-      iso3 = country_codes$ison_to_iso3(as.numeric(iso)),
+      iso3 = location_codes$ison_to_iso3(as.numeric(iso)),
       date = as.Date(event_date),
       fatalities = as.numeric(fatalities)
     ) |>

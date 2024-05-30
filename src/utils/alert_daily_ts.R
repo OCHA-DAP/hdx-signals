@@ -87,7 +87,7 @@ validate_ts_df <- function(df, val_col) {
     )
   }
 
-  # throw an error if any of the dates not consecutive within a country
+  # throw an error if any of the dates not consecutive within a location
   date_check <- df |>
     dplyr$group_by(
       iso3

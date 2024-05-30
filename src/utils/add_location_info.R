@@ -7,7 +7,7 @@ box::use(cs = ./cloud_storage)
 #'
 #' Generates columns of location information from a static file stored on Azure
 #' by simply performing a left join by iso3 code. Adds location name, region,
-#' whether or not it's an HRP country, and lat/lon coordinates.
+#' whether or not it's an HRP location, and lat/lon coordinates.
 #'
 #' @param df Data frame with an iso3 column
 #'

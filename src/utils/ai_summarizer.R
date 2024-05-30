@@ -9,31 +9,31 @@ box::use(../utils/hs_logger)
 
 hs_logger$configure_logger()
 
-#' AI summarizer without country name
+#' AI summarizer without location name
 #'
 #' Takes a prompt and contextual information and passes on to the summarizer
-#' using `ai_summarizer()`. However, if `country` is detected in the output, the
-#' output is returned to the AI to rewrite the output without the country name
+#' using `ai_summarizer()`. However, if `location` is detected in the output, the
+#' output is returned to the AI to rewrite the output without the location name
 #' included.
 #'
 #' This is most useful for the short, headline summaries where we want to ensure
-#' country names are excluded.
+#' location names are excluded.
 #'
 #' @param prompt `character` string that provides a prompt to the AI.
 #' @param info `character` vector of contextual information, either a single string
 #'     (vector of length 1) or a vector of strings.
-#' @param country Name of the country to exclude from the output
+#' @param location Name of the location to exclude from the output
 #'
 #' @returns Summary of AI
 #'
 #' @export
-ai_summarizer_without_country <- function(prompt, info, country) {
+ai_summarizer_without_location <- function(prompt, info, location) {
   ai_summary <- ai_summarizer(prompt = prompt, info = info)
-  if (stringr$str_detect(ai_summary, country)) {
+  if (stringr$str_detect(ai_summary, location)) {
     ai_summary <- ai_summarizer(
       prompt = paste0(
-        "Please rewrite this short text to exclude the country name ",
-        country,
+        "Please rewrite this short text to exclude the location name ",
+        location,
         ". Keep the output the same length or shorter than the original ",
         "input. Here is the text to rewrite --> "
       ),

@@ -16,7 +16,7 @@ box::use(../src/utils/hs_logger)
 
 hs_logger$configure_logger()
 
-log_info("Updating country info...")
+log_info("Updating location info...")
 
 # prevent geometry errors
 sf$sf_use_s2(FALSE)
@@ -160,29 +160,12 @@ df_names <- df_ocha_names |>
 
 df_hrp <- dplyr$tibble(
   iso3 = iso3_codes,
-  hrp_country = iso3 %in% cs$read_az_file("input/hrp_countries.parquet")$iso3
+  hrp_location = iso3 %in% cs$read_az_file("input/hrp_countries.parquet")$iso3
 )
 
 ############################
 #### INDICATOR COVERAGE ####
 ############################
-
-acled_iso3 <- cs$read_az_file("input/acled_info.parquet") |> dplyr$pull(iso3)
-
-idmc_iso3 <- idmc$idmc_get_data() |>
-  dplyr$pull(iso3) |>
-  unique() |>
-  sort()
-
-jrc_iso3 <- readr$read_csv(
-  file = "https://data.humdata.org/dataset/43b7c86b-8f74-4422-840d-17f30ef3fd2f/resource/b495dbc5-abf4-4efd-9501-3cde16bf23c9/download/asap-hotspots-monthly.csv", # nolint
-  col_types = readr$cols()
-) |>
-  dplyr$pull(ISO3) |>
-  unique() |>
-  sort()
-
-ripc$ipc_get_country() |> dplyr$pull(country) |> unique() |> length()
 
 #######################
 #### FINAL DATASET ####

@@ -92,7 +92,7 @@ filter_alerts_ongoing <- function(df_alerts, indicator_id) {
     dplyr$ungroup() |>
     dplyr$arrange(
       alert_level,
-      country
+      location
     )
 
   # drop new high alerts only if another high alert in the past 6 months
@@ -120,7 +120,7 @@ filter_alerts_ongoing <- function(df_alerts, indicator_id) {
     df_new_alerts_medium
   ) |>
     dplyr$arrange(
-      country
+      location
     )
 }
 
@@ -130,7 +130,7 @@ filter_alerts_ongoing <- function(df_alerts, indicator_id) {
 #' recursive filtering to remove alerts within 180 days of each other. Generates
 #' an error if a campaign file exists.
 filter_alerts_first_run <- function(df_alerts) {
-  # recursively filter all of our alerts for each country
+  # recursively filter all of our alerts for each location
   df_alerts |>
     dplyr$group_by(
       iso3
@@ -141,7 +141,7 @@ filter_alerts_first_run <- function(df_alerts) {
     dplyr$ungroup()
 }
 
-#' Filters out country alerts
+#' Filters out location alerts
 #'
 #' Starting with the oldest alerts, filter out alerts that are within
 #' 180 days of it, moving on to the next remaining alert.

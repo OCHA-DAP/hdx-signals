@@ -8,7 +8,7 @@ box::use(./email_body)
 #' the overall template file, which has glue string literals inside `{{body}}!`
 #' to place in the `body` of the text.
 #'
-#' `archive_url` is passed because campaigns with conditional logic to hide country
+#' `archive_url` is passed because campaigns with conditional logic to hide location
 #' blocks are empty in the archive. So, a campaign with no conditional logic is
 #' created, and that URL is used for all alerts.
 #'

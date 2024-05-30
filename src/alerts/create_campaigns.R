@@ -33,7 +33,7 @@ hs_logger$configure_logger()
 #'     internal emails tagged for testing.
 #'
 #' @returns URL of the campaign. If two campaigns sent, then returns the URL
-#' for `Medium concern` since it will contain all country alerts for that run.
+#' for `Medium concern` since it will contain all alerts for that run.
 #'
 #' @export
 create_campaigns <- function(
@@ -148,7 +148,7 @@ create_campaign <- function(
       body <- email_body$create_body(
         title = campaign_details$title,
         iso3 = df_campaign_content$iso3,
-        country = df_campaign_content$country,
+        location = df_campaign_content$location,
         plot_title = df_campaign_content$plot_title,
         plot_url = df_campaign_content$plot_url,
         map_title = df_campaign_content$map_title,
@@ -205,7 +205,7 @@ create_campaign <- function(
 
         campaigns$mc_add_campaign(
           subject_line = campaign_details$subject,
-          preview_text = paste(df_campaign_content$country, collapse = ", "),
+          preview_text = paste(df_campaign_content$location, collapse = ", "),
           title = glue$glue(campaign_details$campaign_title),
           recipients = segments,
           template_id = as.numeric(template_id),

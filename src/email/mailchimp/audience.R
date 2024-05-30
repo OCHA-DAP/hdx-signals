@@ -7,7 +7,7 @@ box::use(rlang)
 # local modules
 box::use(./base_api)
 box::use(cs = ../../utils/cloud_storage)
-box::use(../../utils/country_codes)
+box::use(../../utils/location_codes)
 
 #' Get members information
 #'
@@ -75,7 +75,7 @@ mc_interests_ids <- function(interest_names, category_id = NULL) {
 #' Get Mailchimp interests for ISO3 codes
 #'
 #' Return all relevant Mailchimp interests for the ISO3 codes. The interests are UNHCR
-#' regions and whether or not they are an HRP country.
+#' regions and whether or not they are an HRP location.
 #'
 #' For the list of ISO3 codes, all relevant interests are returned that cover the
 #' ISO3 codes. So if AFG and GBR are passed in, the European and Asian and the
@@ -94,7 +94,7 @@ mc_interests_ids <- function(interest_names, category_id = NULL) {
 #'
 #' @export
 mc_interests_iso3 <- function(iso3) {
-  regions <- countrycode$countrycode(iso3, origin = "iso3c", destination = "unhcr.region")
+  regions <- location_codes$iso3_to_regions(iso3)
 
   if (any(iso3 %in% hrp_countries$iso3)) {
     regions <- c(regions, "HRP countries")

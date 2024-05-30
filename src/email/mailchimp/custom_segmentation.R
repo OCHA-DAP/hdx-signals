@@ -6,7 +6,7 @@ box::use(rlang[`!!`])
 box::use(./segments)
 box::use(./audience)
 box::use(cs = ../../utils/cloud_storage)
-box::use(../../utils/country_codes)
+box::use(../../utils/location_codes)
 box::use(../../utils/get_env[get_env])
 
 #' Generate email segmentation
@@ -71,25 +71,25 @@ mc_email_segment <- function(indicator_id, iso3, test = FALSE) {
 #'
 #' Filters out members from the full Mailchimp registration, and gets their
 #' emails if they have subscribed to receive signals about a specific indicator
-#' or country. The `df_ind` passed in must already be filtered to a specific
+#' or location The `df_ind` passed in must already be filtered to a specific
 #' indicator ID.
 mc_subscriber_emails <- function(df_ind, iso3, test) {
   # first we get the list of interest ids based on the iso3 codes
-  regions <- unique(country_codes$iso3_to_regions(iso3))
-  countries <- country_codes$iso3_to_names(iso3)
+  regions <- unique(location_codes$iso3_to_regions(iso3))
+  locations <- location_codes$iso3_to_names(iso3)
   # get the regional subscription IDs
   region_ids <- df_interests |>
     dplyr$filter(
       title %in% regions,
-      name == "All countries in the region"
+      name == "All locations in the region"
     ) |>
     dplyr$pull(
       interest_id
     )
 
-  # find any IDs for subscribing to the specific country
-  country_ids <- df_interests$interest_id[match(countries, df_interests$name, nomatch = 0)]
-  geo_ids <- c(region_ids, country_ids)
+  # find any IDs for subscribing to the specific location
+  location_ids <- df_interests$interest_id[match(locations, df_interests$name, nomatch = 0)]
+  geo_ids <- c(region_ids, location_ids)
 
   # filter members to the specific indicator, by interest if a public subscription
   # otherwise we filter by manual tagging for indicators that are privately added

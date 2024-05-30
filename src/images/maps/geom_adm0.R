@@ -1,23 +1,20 @@
 box::use(gg = ggplot2)
-box::use(dplyr)
 box::use(purrr)
 box::use(sf)
 box::use(units)
 
 box::use(../../utils/get_iso3_sf)
-box::use(../../utils/iso3_shift_longitude)
 
-
-#' Geom for country boundaries
+#' Geom for location boundaries
 #'
-#' Adds country boundaries for ISO3 code. Since `get_adm0_sf()` looks for custom
+#' Adds location boundaries for ISO3 code. Since `get_adm0_sf()` looks for custom
 #' basemaps, then OCHA CODs, then UN Geodata services by filtering, we throw
 #' an error if the returned data is `NULL` or a 0 row data frame.
 #'
 #' @param iso3 ISO3 code
 #' @param ... Additional sf class objects with geometry
 #'
-#' @returns Geom for the country boundaries
+#' @returns Geom for the location boundaries
 #'
 #' @export
 geom_adm0 <- function(iso3, ...) {
@@ -25,9 +22,9 @@ geom_adm0 <- function(iso3, ...) {
 
   if (is.null(sf_adm0) || nrow(sf_adm0) == 0) {
     stop(
-      "No country boundaries data for ",
+      "No location boundaries data for ",
       iso3,
-      ". Ensure that the country is handled in `get_adm0_sf()`.",
+      ". Ensure that the location is handled in `get_adm0_sf()`.",
       call. = FALSE
     )
   }
@@ -95,7 +92,7 @@ geom_adm0 <- function(iso3, ...) {
 assert_covered_by <- function(x, y, dist = 10000) {
   y_buff <- sf$st_buffer(
     y,
-    dist = units::set_units(dist, metres)
+    dist = units$set_units(dist, metres)
   )
   lgl_covers <- sf$st_covered_by(
     x = x,

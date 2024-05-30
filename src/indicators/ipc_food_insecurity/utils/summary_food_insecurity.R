@@ -17,7 +17,7 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
       summary_long = purrr$pmap_chr(
         .l = list(
           url = link,
-          country = country,
+          location = location,
           ch = ch
         ),
         .f = ipc_ch_summarizer
@@ -39,9 +39,9 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
         .l = list(
           prompt = prompt_short,
           info = summary_long,
-          country = country
+          location = location
         ),
-        .f = ai_summarizer$ai_summarizer_without_country
+        .f = ai_summarizer$ai_summarizer_without_location
       ),
       summary_short = ifelse(
         phase_level == "5",
@@ -62,19 +62,19 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
 #'
 #' Based on the URL from the dataset provided, summarizes data using Ai on scraped
 #' web pages and documents. If an IPC dataset, scrapes the webmap and situation
-#' summary from the URL provided. If a CH dataset, where no country specific page
-#' is available, then CH PDFs are scraped to find the most relevant one and country
+#' summary from the URL provided. If a CH dataset, where no location specific page
+#' is available, then CH PDFs are scraped to find the most relevant one and location
 #' information extracted.
 #'
 #' @param url URL for the analysis
 #' @param ch If `TRUE` it's a CH analysis, otherwise it's IPC
 #'
 #' @returns Summarized text data
-ipc_ch_summarizer <- function(url, ch, country) {
+ipc_ch_summarizer <- function(url, ch, location) {
   if (is.na(url)) {
     return(NA_character_)
   } else if (ch) {
-    ch_summarizer(url = url, country = country)
+    ch_summarizer(url = url, location = location)
   } else {
     txt <- ipc_scraper(url)
     ipc_summarizer(txt)
@@ -102,7 +102,7 @@ ipc_scraper <- function(url) {
 
 #' Summarize IPC text data
 #'
-#' Scrapes the IPC webmaps for country reports.
+#' Scrapes the IPC webmaps for location reports.
 #'
 #' @param txt Text scraped from IPC website using `ipc_scraper()`
 #'
@@ -157,13 +157,13 @@ ipc_summarizer <- function(txt) {
 
 #' Parses CH publications for information
 #'
-#' Since there are (typically) no country publications with specific links for the CH,
+#' Since there are (typically) no location publications with specific links for the CH,
 #' each one is a URL of a PDF. We parse this and pass for summarization.
 #'
 #' @param url URL to the PDF publications
 #'
 #' @returns Summary of text from the publication
-ch_summarizer <- function(url, country) {
+ch_summarizer <- function(url, location) {
   # get text from the PDFs for info for AI prompt
   info <- pdftools$pdf_text(url) |>
     paste(
@@ -173,10 +173,10 @@ ch_summarizer <- function(url, country) {
 
   prompt <- paste(
     "I need a summary of the food security situation in",
-    country,
+    location,
     "based on the following document. The document is written in French, and about",
     "multiple countries, but I only want information about",
-    country,
+    location,
     "in the summarization. There are a lot of random numbers in the text because",
     "the text was scraped from a PDF with tables, so please just focus on the",
     "explanatory text, not numeric figures. Assume the reader is familiar with",
@@ -185,7 +185,7 @@ ch_summarizer <- function(url, country) {
     "interested in what actions are recommended. Please produce a text summary",
     "with two sections, Overview:, which provides a general situation summary",
     "and recommendations, which is the recommendation actions, both for",
-    country,
+    location,
     ". The final format should look like:",
     "'<b>Overview</b>:<br><br> {overview text}<br><br><b>Recommendations</b>:<br><br> {recommendations text}',",
     "usingHTML <br> tags to add lines to the output and bold tags on the headings.",

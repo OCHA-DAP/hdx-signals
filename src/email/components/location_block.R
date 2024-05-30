@@ -8,17 +8,16 @@ box::use(./image_block)
 box::use(./line_block)
 box::use(./summary_block)
 box::use(./further_info_block)
-box::use(../../utils/country_codes)
 
-#' Create country block
+#' Create location block
 #'
-#' Create a country block with information passed in. The only required fields
-#' are `iso3` and `country`, although typically all will be passed (even if missing)
+#' Create a location block with information passed in. The only required fields
+#' are `iso3` and `location`, although typically all will be passed (even if missing)
 #' direct from alerts datasets. The `iso3` code is used to generate the conditional
-#' merge for MailChimp so the country only appears to interested users.
+#' merge for MailChimp so the location only appears to interested users.
 #'
 #' @param iso3 ISO3 code
-#' @param country Country name, used for header of section
+#' @param location Location name, used for header of section
 #' @param plot_title Plot title, used as alt text for plot
 #' @param plot_url URL to plot to include
 #' @param map_title Map title, used as alt text for plot
@@ -32,12 +31,12 @@ box::use(../../utils/country_codes)
 #' @param use_conditions Whether or not to use conditional merge to
 #'      wrap text in Mailchimp conditions for those countries.
 #'
-#' @returns HTML for country block
+#' @returns HTML for location block
 #'
 #' @export
-add_country <- function(
+add_location <- function(
     iso3,
-    country,
+    location,
     plot_title = "",
     plot_url = "",
     map_title = "",
@@ -50,7 +49,7 @@ add_country <- function(
     further_information = "",
     use_conditions = FALSE) {
   paste0(
-    text_block$add_text(header = country, header_level = 2, header_id = iso3),
+    text_block$add_text(header = location, header_level = 2, header_id = iso3),
     image_block$add_image(src = plot_url, alt = plot_title),
     image_block$add_image(src = map_url, alt = map_title),
     image_block$add_image(src = plot2_url, alt = plot2_title),

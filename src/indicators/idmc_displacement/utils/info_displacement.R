@@ -11,7 +11,7 @@ box::use(cs = ../../../../src/utils/cloud_storage)
 #' @export
 info <- function(df_alerts, df_wrangled, df_raw) {
   # get links to point towards the IDMC website
-  df_country_links <- cs$read_az_file("input/idmc_country_links.parquet")
+  df_links <- cs$read_az_file("input/idmc_country_links.parquet")
 
   # get links for all the source urls to provide to the user
   df_source_links <- df_raw |>
@@ -67,7 +67,7 @@ info <- function(df_alerts, df_wrangled, df_raw) {
       .groups = "drop"
     ) |>
     dplyr$left_join(
-      df_country_links,
+      df_links,
       by = "iso3"
     ) |>
     dplyr$mutate(
@@ -82,7 +82,7 @@ info <- function(df_alerts, df_wrangled, df_raw) {
       further_information = as.character(
         glue$glue(
           'Access the data directly <a href="{hdx_url}">on HDX</a>, and see the ',
-          '<a href="{source_url}">IDMC country page</a> for more information. ',
+          '<a href="{source_url}">IDMC page</a> for more information. ',
           "Get context from the {n_text} sourced by the IDMC:",
           "\n\n{other_urls_html}"
         )

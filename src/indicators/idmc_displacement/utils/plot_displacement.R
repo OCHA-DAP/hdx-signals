@@ -4,7 +4,7 @@ box::use(rlang[`!!`])
 box::use(scales)
 box::use(lubridate)
 
-box::use(../../../utils/country_codes)
+box::use(../../../utils/location_codes)
 box::use(../../../utils/formatters)
 box::use(../../../images/plots/plot_ts)
 box::use(../../../images/create_images)
@@ -44,7 +44,7 @@ plot <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
 
 #' Plot IDMC displacement data
 #'
-#' Plots displacement data for a specific country, defined by an ISO3 code.
+#' Plots displacement data for a specific location, defined by an ISO3 code.
 #'
 #' @param df_wrangled Wrangled data frame for plotting.
 #' @param df_raw Raw data frame for plotting, not used to plot displacement time
@@ -57,7 +57,7 @@ displacement_ts <- function(df_wrangled, df_raw, title, date) {
   caption <- paste(
     "Data from the IDMC, http://www.internal-displacement.org",
     paste("Accessed", formatters$format_date(Sys.Date())),
-    country_codes$iso3_to_names(unique(df_wrangled$iso3)),
+    location_codes$iso3_to_names(unique(df_wrangled$iso3)),
     sep = "\n"
   )
 
