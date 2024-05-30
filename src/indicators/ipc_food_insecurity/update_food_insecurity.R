@@ -21,6 +21,12 @@ hs_logger$monitoring_log_setup(indicator_id)
 df_raw <- raw_food_insecurity$raw()
 df_wrangled <- wrangle_food_insecurity$wrangle(df_raw)
 
+# update coverage for ipc
+update_coverage$update_coverage(
+  indicator_id = indicator_id,
+  iso3 = country_codes$ison_to_iso3(df_wrangled$iso3)
+)
+
 # now generate signals
 df_ipc <- generate_signals(
   df_wrangled = df_wrangled,

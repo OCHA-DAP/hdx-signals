@@ -1,12 +1,9 @@
-box::use(purrr)
-box::use(countrycode)
 box::use(dplyr)
 box::use(janitor)
 
 box::use(./filter_alerts)
 box::use(./template_data)
-box::use(cs = ../utils/cloud_storage)
-box::use(../utils/add_country_info[add_country_info])
+box::use(../utils/add_location_info)
 
 #' Generate and upload alerts data frame
 #'
@@ -17,7 +14,7 @@ box::use(../utils/add_country_info[add_country_info])
 #'     into campaigns prior to generating any new alerts.
 #' - Validates necessary columns are present, of the correct type, and in correct order.
 #' - Adds `alert_level` to data, converting from `alert_level_numeric`.
-#' - Creates `country` and `region` name columns from ISO3.
+#' - Creates `location` and `region` name columns from ISO3.
 #' - Filters alerts.
 #' - Uploads the alerts to Azure.
 #'
@@ -35,7 +32,7 @@ generate_alerts <- function(df, indicator_id, first_run = FALSE, test = FALSE) {
   df |>
     validate_alerts() |>
     add_alert_level() |>
-    add_country_info() |>
+    add_location_info$add_location_info() |>
     filter_alerts$filter_alerts(
       indicator_id = indicator_id,
       first_run = first_run,
@@ -45,7 +42,7 @@ generate_alerts <- function(df, indicator_id, first_run = FALSE, test = FALSE) {
 
 #' Validates that alerts have the correct names and typing when passed in.
 #'
-#' Checks that columns are present and have correct typing. Country column is
+#' Checks that columns are present and have correct typing. Location column is
 #' not checked for because it is created in `generate_alerts()` above.
 #'
 #' @param df Data frame of alerts to validate

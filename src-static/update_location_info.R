@@ -4,6 +4,7 @@ box::use(httr2)
 box::use(purrr)
 box::use(sf)
 box::use(ripc)
+box::use(idmc)
 box::use(tidyr)
 box::use(readr)
 box::use(logger[log_info])
@@ -49,29 +50,38 @@ df_centroids <- purrr$map(
     lon = X
   )
 
-#######################
-#### COUNTRY NAMES ####
-#######################
+########################
+#### LOCATION NAMES ####
+########################
 
 df_ocha_names <- readr$read_csv(
-  "https://docs.google.com/spreadsheets/d/1NjSI2LaS3SqbgYc0HdD8oIb7lofGtiHgoKKATCpwVdY/export?format=csv&gid=1088874596"
+  "https://docs.google.com/spreadsheets/d/1NjSI2LaS3SqbgYc0HdD8oIb7lofGtiHgoKKATCpwVdY/export?format=csv&gid=1088874596",
+  col_types = readr$cols()
 ) |>
   dplyr$slice(-1) |>
-  readr$type_convert() |>
+  readr$type_convert(
+    col_types = readr$cols()
+  ) |>
   dplyr$transmute(
     iso3 = ifelse(
       is.na(`ISO 3166-1 Alpha 3-Codes`),
       `x Alpha3 codes`,
       `ISO 3166-1 Alpha 3-Codes`
     ),
-    country = `Preferred Term`
+    location = `Preferred Term`,
+    location_note = ifelse(
+      is.na(`ISO 3166-1 Alpha 3-Codes`),
+      "Custom Alpha 3 code",
+      NA_character_
+    )
   ) |>
   dplyr$filter(
     !is.na(iso3) # drops Sark
   ) |>
   dplyr$add_row(
     iso3 = c("AB9", "LAC"),
-    country = c("Abyei Area", "Tri-national Border of Rio Lempa")
+    location = c("Abyei Area", "Tri-national Border of Rio Lempa"),
+    location_note = c("Abyei Area reported on in IDMC using AB9 code", "Custom code used by IPC for 3 country analysis")
   )
 
 #' Adding OCHA regions for ISO3 codes with no UNHCR region defined in `countrycode`
@@ -121,11 +131,14 @@ df_names <- df_ocha_names |>
   ) |>
   dplyr$transmute(
     iso3,
-    country,
-    unhcr_region = countrycode$countrycode(
-      sourcevar = iso3,
-      origin = "iso3c",
-      destination = "unhcr.region"
+    location,
+    location_note,
+    unhcr_region = suppressWarnings(
+      countrycode$countrycode(
+        sourcevar = iso3,
+        origin = "iso3c",
+        destination = "unhcr.region"
+      )
     ),
     region = dplyr$case_when(
       !is.na(region_custom) ~ region_custom,
@@ -141,7 +154,6 @@ df_names <- df_ocha_names |>
     -unhcr_region
   )
 
-
 #######################
 #### HRP COUNTRIES ####
 #######################
@@ -151,18 +163,39 @@ df_hrp <- dplyr$tibble(
   hrp_country = iso3 %in% cs$read_az_file("input/hrp_countries.parquet")$iso3
 )
 
+############################
+#### INDICATOR COVERAGE ####
+############################
+
+acled_iso3 <- cs$read_az_file("input/acled_info.parquet") |> dplyr$pull(iso3)
+
+idmc_iso3 <- idmc$idmc_get_data() |>
+  dplyr$pull(iso3) |>
+  unique() |>
+  sort()
+
+jrc_iso3 <- readr$read_csv(
+  file = "https://data.humdata.org/dataset/43b7c86b-8f74-4422-840d-17f30ef3fd2f/resource/b495dbc5-abf4-4efd-9501-3cde16bf23c9/download/asap-hotspots-monthly.csv", # nolint
+  col_types = readr$cols()
+) |>
+  dplyr$pull(ISO3) |>
+  unique() |>
+  sort()
+
+ripc$ipc_get_country() |> dplyr$pull(country) |> unique() |> length()
+
 #######################
 #### FINAL DATASET ####
 #######################
 
-df_country_info <- purrr$reduce(
+df_location_info <- purrr$reduce(
   .x = list(df_names, df_hrp, df_centroids),
   .f = \(x, y) dplyr$left_join(x, y, by = "iso3")
 )
 
-fname <- "input/country_info.parquet"
+fname <- "input/location_info.parquet"
 cs$update_az_file(
-  df = df_country_info,
+  df = df_location_info,
   name = fname
 )
 

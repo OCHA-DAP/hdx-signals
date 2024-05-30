@@ -1,4 +1,5 @@
 box::use(logger[log_info, log_debug])
+box::use(readxl)
 
 # indicator utilities
 box::use(./utils/raw_conflict)
@@ -11,6 +12,7 @@ box::use(./utils/summary_conflict)
 
 box::use(../../alerts/generate_signals[generate_signals])
 box::use(../../utils/hs_logger)
+box::use(../../utils/country_codes)
 
 test <- as.logical(Sys.getenv("HS_TEST", unset = TRUE))
 test_filter <- if (test) c("AFG", "SSD") else NULL
@@ -22,6 +24,21 @@ hs_logger$monitoring_log_setup(indicator_id)
 # get data
 df_raw <- raw_conflict$raw()
 df_wrangled <- wrangle_conflict$wrangle(df_raw)
+
+# update coverage data to ensure location_info up to date
+# for ACLED, use their reported coverage, not observed
+download.file(
+  url = "https://acleddata.com/download/3987/",
+  destfile = tf <- tempfile(fileext = ".xlsx"),
+  quiet = TRUE
+)
+
+df_acled_cover <- readxl$read_excel(tf)
+
+update_coverage$update_coverage(
+  indicator_id = indicator_id,
+  iso3 = country_codes$ison_to_iso3(df_acled_cover$`ISO Codes`)
+)
 
 # now generate signals
 df_conflict <- generate_signals(
