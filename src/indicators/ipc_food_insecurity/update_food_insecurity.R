@@ -10,6 +10,7 @@ box::use(./utils/info_food_insecurity)
 
 box::use(../../alerts/generate_signals[generate_signals])
 box::use(../../utils/hs_logger)
+box::use(../../utils/update_coverage)
 
 test <- as.logical(Sys.getenv("HS_TEST", unset = TRUE))
 test_filter <- if (test) c("AFG", "SSD") else NULL
@@ -24,7 +25,7 @@ df_wrangled <- wrangle_food_insecurity$wrangle(df_raw)
 # update coverage for ipc
 update_coverage$update_coverage(
   indicator_id = indicator_id,
-  iso3 = country_codes$ison_to_iso3(df_wrangled$iso3)
+  iso3 = df_wrangled$iso3
 )
 
 # now generate signals
