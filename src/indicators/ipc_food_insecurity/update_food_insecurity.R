@@ -1,5 +1,3 @@
-box::use(logger[log_info, log_debug])
-
 box::use(./utils/raw_food_insecurity)
 box::use(./utils/wrangle_food_insecurity)
 box::use(./utils/alert_food_insecurity)

@@ -23,7 +23,7 @@ hs_logger$configure_logger()
 hs_logger$monitoring_log_setup(indicator_id)
 
 df_raw <- raw_displacement$raw() |>
-  dplyr$filter(df_raw, displacement_type == "Disaster")
+  dplyr$filter(displacement_type == "Disaster")
 
 df_wrangled <- wrangle_displacement$wrangle(df_raw)
 
