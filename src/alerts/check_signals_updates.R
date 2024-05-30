@@ -17,9 +17,11 @@ hs_logger$configure_logger()
 #' @param header_text Text for the message header
 #' @param status_text Text for the GitHub actions status report
 #' @param signals_text Text for the signals status report
+#' @param test Whether to run in test mode or not. Will post to different slack channels
 #'
 #' @returns Nothing. Message is posted to slack and will log an error if not successful
-slack_post_message <- function(header_text, status_text, signals_text) {
+slack_post_message <- function(header_text, status_text, signals_text, test) {
+  slack_url <- ifelse(test, get_env("HS_SLACK_URL_TEST"), get_env("HS_SLACK_URL"))
   # See https://app.slack.com/block-kit-builder for prototyping layouts in JSON
   msg <- list(
     blocks = list(
@@ -52,7 +54,7 @@ slack_post_message <- function(header_text, status_text, signals_text) {
   )
 
   # Create and perform the POST request using httr2
-  response <- httr2$request(get_env("HS_SLACK_URL")) |>
+  response <- httr2$request(slack_url) |>
     httr2$req_body_json(msg) |>
     httr2$req_perform()
 
@@ -70,7 +72,13 @@ slack_build_header <- function(n_signals) {
   if (n_signals == 0) {
     paste0(formatters$format_date(Sys.Date()), ": No signals identified")
   } else {
-    paste0(":rotating_light: <!channel> ", formatters$format_date(Sys.Date()), ": ", n_signals, " alerts identified")
+    paste0(
+      ":rotating_light: <!channel> ",
+      formatters$format_date(Sys.Date()),
+      ": ",
+      n_signals,
+      " signals(s) identified"
+    )
   }
 }
 
@@ -86,7 +94,7 @@ slack_build_alert <- function(indicator_id, df) {
     indicator_id,
     "* - ",
     nrow(df),
-    " countries impacted - <",
+    " location(s) impacted - <",
     df$campaign_url_archive[1],
     " | See draft campaign>\n"
   )
@@ -191,5 +199,5 @@ for (ind in indicators) {
 logger$log_info(paste0("Found ", n_signals, " signals"))
 
 header <- slack_build_header(n_signals)
-slack_post_message(header, full_status, signals)
+slack_post_message(header, full_status, signals, test)
 logger$log_info("Successfully posted message to Slack")
