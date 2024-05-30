@@ -1,6 +1,6 @@
 box::use(glue)
 
-box::use(../../utils/country_codes)
+box::use(../../utils/location_codes)
 
 #' Wraps text in conditional merge text
 #'
@@ -23,8 +23,8 @@ box::use(../../utils/country_codes)
 #' @export
 conditional_merge <- function(text, iso3, use_conditions) {
   if (use_conditions) {
-    region <- country_codes$iso3_to_regions(iso3)
-    location <- country_codes$iso3_to_names(iso3)
+    region <- location_codes$iso3_to_regions(iso3)
+    location <- location_codes$iso3_to_names(iso3)
     glue$glue(
       "*|INTERESTED:{region}:All countries in the region|*",
       "*|INTERESTED:{region}:{location}|*",

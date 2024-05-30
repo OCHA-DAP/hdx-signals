@@ -1,4 +1,4 @@
-#' Script to update country boundaries and then their centroids
+#' Script to update location boundaries and then their centroids
 
 box::use(glue)
 box::use(sf)
@@ -27,18 +27,18 @@ suppressMessages(
 #### FUNCTIONS ####
 ###################
 
-#' Get the ADM0 shapefile for a country
+#' Get the ADM0 shapefile for a location
 #'
-#' Takes in an `iso3` code, and downloads and loads the country data.
+#' Takes in an `iso3` code, and downloads and loads the location data.
 #'
 #' Once downloaded and loaded, the file is simplified to ensure that only the
-#' country boundaries are available as a single row, using `sf::st_union()`.
+#' location boundaries are available as a single row, using `sf::st_union()`.
 #' This makes it simple for plotting and for calculating centroids. The file
 #' is then upload to Azure in `input/adm0/{iso3}.geojson`.
 #'
 #' @param iso3 ISO3 code
 #'
-#' @returns Shapefile of the country boundaries
+#' @returns Shapefile of the location boundaries
 #'
 #' @export
 update_adm0_sf <- function(iso3) {
@@ -74,11 +74,11 @@ update_adm0_sf <- function(iso3) {
 #' Filter ADM0 shapefile
 #'
 #' Filters the shapefile for a given `iso3` code. Used when countries have
-#' small territories far from the main country area in the shapefile, which
+#' small territories far from the main location area in the shapefile, which
 #' makes plotting extremely difficult. Filtering only setup for these
 #' specific `iso3` codes.
 #'
-#' @param sf_adm0 ADM0 shapefile for the country
+#' @param sf_adm0 ADM0 shapefile for the location
 #' @param iso3 ISO3 code
 #'
 #' @returns Filtered `sf_adm0`
@@ -140,12 +140,12 @@ st_crop_adj_bbox <- function(sf_obj, xmin = 0, xmax = 0, ymin = 0, ymax = 0) {
 
 #' Download ADM0 shapefile
 #'
-#' Takes in an `iso3` code, and returns the country shapefile for that country.
+#' Takes in an `iso3` code, and returns the location shapefile for that location
 #'
 #' For some `iso3` codes, custom files are required, and these are handled directly
 #' within this function. However, for the rest, the default is to try and pull
 #' the COD shapefile from Fieldmaps (because it has standardized columns and files
-#' for easy access). If CODs are unavailable, then the country shape is pulled
+#' for easy access). If CODs are unavailable, then the location shape is pulled
 #' from the UN Geodata downloaded from the geodata portal.
 #'
 #' https://geoportal.un.org/arcgis/home/item.html?id=d7caaff3ef4b4f7c82689b7c4694ad92
@@ -202,7 +202,7 @@ download_fieldmaps_sf <- function(iso3) {
   )
 }
 
-#' Get UN geodata for that country
+#' Get UN geodata for that location
 #'
 #' UN Geodata stored on Azure is used if no COD shapefile is available and no
 #' other alternate data source is specified.
@@ -228,7 +228,7 @@ sf_world <- cs$read_az_file("input/un_geodata.geojson")
 #' Update the centroids for ISO3
 #'
 #' Done using this method to ensure that if errors are generated, progress is not
-#' lost. So incrementally load the adm0 boundaries for a country, calculate the centroid,
+#' lost. So incrementally load the adm0 boundaries for a location, calculate the centroid,
 #' then store on Azure.
 #'
 #' If a centroid is incorrect or needs adjusting due to strange geometries for the

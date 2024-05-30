@@ -5,7 +5,7 @@ box::use(../plots/theme_signals)
 
 #' Create base map for location
 #'
-#' Creates the base map for a country. Initializes `ggplot2::ggplot()`, adds the
+#' Creates the base map for a location. Initializes `ggplot2::ggplot()`, adds the
 #' location boundaries base layer, and uses `theme_signals()`.
 #'
 #' @param iso3 ISO3 code

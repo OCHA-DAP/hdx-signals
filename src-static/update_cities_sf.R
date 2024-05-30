@@ -17,14 +17,14 @@ hs_logger$configure_logger()
 
 #' Download and wrangle cities data
 #'
-#' Downloads cities data from Natural Earth. For a few country codes, we manually
+#' Downloads cities data from Natural Earth. For a few location codes, we manually
 #' create city points that are missing from the file. For AB9 (Abyei), we don't
 #' use any cities because of its small size, and for LAC, they are rural regions
 #' so we don't add them either.
 #'
-#' @param iso3 ISO3 country code
+#' @param iso3 ISO3 location code
 #'
-#' @returns Shapefile of points for the country
+#' @returns Shapefile of points for the location
 update_cities_sf <- function(iso3) {
   if (iso3 == "XKX") {
     cities_sf <- create_point_sf(
