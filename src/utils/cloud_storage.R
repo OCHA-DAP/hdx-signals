@@ -175,6 +175,23 @@ azure_endpoint_url <- function(service = c("blob", "file"), stage = c("prod", "d
   glue$glue(dsci_az_endpoint)
 }
 
+#' Builds the path of the signals.parquet files
+#'
+#' @param indicator_id ID of the indicator
+#' @param test Whether looking for the test file or not
+#'
+#' @returns String path
+#'
+#' @export
+signals_path <- function(indicator_id, test) {
+  paste0(
+    "output/",
+    indicator_id,
+    if (test) "/test" else "",
+    "/signals.parquet"
+  )
+}
+
 # gets the Dsci blob endpoints using the HDX Signals SAS
 blob_endpoint_dev <- az$blob_endpoint(
   endpoint = azure_endpoint_url("blob", "dev"),
