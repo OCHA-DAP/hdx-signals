@@ -22,7 +22,7 @@ df_wrangled <- wrangle_conflict$wrangle(df_raw)
 
 # test should be false since we want to mimic "production"
 # behaviour as much as possible. But should be run with
-# GMAS_TEST_RUN = FALSE so that we don't connect to any external systems
+# HS_LOCAL = FALSE so that we don't connect to any external systems
 df_conflict <- generate_signals(
   df_wrangled = df_wrangled,
   df_raw = df_raw,

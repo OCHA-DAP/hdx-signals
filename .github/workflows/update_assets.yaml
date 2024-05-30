@@ -3,7 +3,7 @@ name: Update static assets
 on:
     workflow_dispatch:
       inputs:
-        test:
+        HS_LOCAL:
           required: true
           type: choice
           default: "FALSE"
@@ -15,7 +15,7 @@ jobs:
     run:
         runs-on: ubuntu-latest
         env:
-          GMAS_TEST_RUN: ${{ inputs.test || 'FALSE' }}
+          HS_LOCAL: ${{ inputs.HS_LOCAL || 'FALSE' }}
           DSCI_AZ_SAS_DEV: ${{ secrets.DSCI_AZ_SAS_DEV }}
           DSCI_AZ_SAS_PROD: ${{ secrets.DSCI_AZ_SAS_PROD }}
         steps:   
