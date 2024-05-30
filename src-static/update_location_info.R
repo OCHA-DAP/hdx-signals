@@ -55,7 +55,7 @@ df_centroids <- purrr$map(
 ########################
 
 df_ocha_names <- readr$read_csv(
-  "https://docs.google.com/spreadsheets/d/1NjSI2LaS3SqbgYc0HdD8oIb7lofGtiHgoKKATCpwVdY/export?format=csv&gid=1088874596",
+  file = "https://docs.google.com/spreadsheets/d/1NjSI2LaS3SqbgYc0HdD8oIb7lofGtiHgoKKATCpwVdY/export?format=csv&gid=1088874596", #nolint
   col_types = readr$cols()
 ) |>
   dplyr$slice(-1) |>
