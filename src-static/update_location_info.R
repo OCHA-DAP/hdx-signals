@@ -1,11 +1,9 @@
 box::use(dplyr)
 box::use(countrycode)
-box::use(httr2)
 box::use(purrr)
 box::use(sf)
 box::use(ripc)
 box::use(idmc)
-box::use(tidyr)
 box::use(readr)
 box::use(stringr)
 box::use(logger[log_info])
@@ -191,7 +189,7 @@ df_coverage <- purrr$map(
 #######################
 
 df_location_info <- purrr$reduce(
-  .x = list(df_names, df_hrp, df_centroids),
+  .x = list(df_names, df_hrp, df_centroids, df_coverage),
   .f = \(x, y) dplyr$left_join(x, y, by = "iso3")
 )
 
