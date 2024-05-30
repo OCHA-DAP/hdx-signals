@@ -3,6 +3,7 @@ box::use(httr2)
 box::use(purrr)
 box::use(logger)
 box::use(stringr)
+box::use(dplyr)
 
 box::use(../utils/get_env[get_env])
 box::use(../utils/hs_logger)
@@ -142,11 +143,11 @@ slack_build_workflow_status <- function(indicator_id) {
   }
   # Get today's scheduled runs from the main branch
   df_runs$date <- as.Date(df_runs$workflow_runs.created_at)
-  df_sel <- subset(
+  df_sel <- dplyr$filter(
     df_runs,
-    workflow_runs.event == "schedule" &
-      workflow_runs.head_branch == "main" &
-      date == Sys.Date()
+    workflow_runs.event == "schedule",
+    workflow_runs.head_branch == "main",
+    date == Sys.Date()
   )
 
   if (nrow(df_sel) == 1) {
