@@ -1,5 +1,4 @@
 box::use(jsonlite)
-box::use(httr[GET, POST, add_headers, status_code, content])
 box::use(httr2)
 box::use(purrr)
 box::use(logger)
@@ -7,6 +6,7 @@ box::use(stringr)
 
 box::use(../utils/get_env[get_env])
 box::use(../utils/hs_logger)
+box::use(../utils/formatters)
 box::use(cs = ../utils/cloud_storage)
 
 hs_logger$configure_logger()
@@ -57,8 +57,7 @@ slack_post_message <- function(header_text, status_text, signals_text) {
     httr2$req_perform()
 
   if (response$status_code != 200) {
-    logger$log_error("Error posting Slack message")
-    stop()
+    stop("Error posting Slack message")
   }
 }
 
@@ -69,9 +68,9 @@ slack_post_message <- function(header_text, status_text, signals_text) {
 #' @returns String header text
 slack_build_header <- function(n_signals) {
   if (n_signals == 0) {
-    paste0(Sys.Date(), ": No signals identified")
+    paste0(formatters$format_date(Sys.Date()), ": No signals identified")
   } else {
-    paste0(":rotating_light: <!channel> ", Sys.Date(), ": ", n_signals, " alerts identified")
+    paste0(":rotating_light: <!channel> ", formatters$format_date(Sys.Date()), ": ", n_signals, " alerts identified")
   }
 }
 
@@ -144,8 +143,8 @@ slack_build_workflow_status <- function(indicator_id) {
 
   if (nrow(df_sel) == 1) {
     status <- df_sel[1, ]$workflow_runs.conclusion
-    run_id <- df_sel[1, ]$workflow_runs.id
     if (status == "failure") {
+      run_id <- df_sel[1]$workflow_runs.id
       run_link <- paste0(base_logs_url, run_id)
       paste0(":red_circle: ", indicator_id, ": Failed update - <", run_link, "|Check logs> \n")
     } else if (status == "success") {
@@ -160,15 +159,18 @@ slack_build_workflow_status <- function(indicator_id) {
 }
 
 # Get the indicator ids of all workflows
-indicators_path <- ".github/workflows"
-indicators_files <- list.files(indicators_path)
-indicators_files <- indicators_files[stringr$str_starts(indicators_files, "monitor_")]
-indicators <- stringr$str_extract(indicators_files, "(?<=monitor_)[^\\.]+(?=\\.yaml)")
+indicators <- ".github/workflows" |>
+  list.files(
+    pattern = "^monitor_"
+  ) |>
+  stringr::str_remove_all(
+    "^monitor_|\\.yaml$"
+  )
 
 full_status <- ""
 n_signals <- 0
 signals <- ""
-test <- Sys.getenv("TEST", unset = TRUE)
+test <- Sys.getenv("HS_TEST", unset = TRUE)
 
 for (ind in indicators) {
   logger$log_info(paste0("Checking GitHub Actions status for ", ind, "..."))
