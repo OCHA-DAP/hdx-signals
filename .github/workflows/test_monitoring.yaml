@@ -9,7 +9,7 @@ name: Test monitoring
 permissions: read-all
 
 jobs:
-  lint:
+  test:
       runs-on: ubuntu-latest
       steps:
           - name: Checkout repository
