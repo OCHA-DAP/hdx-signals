@@ -151,9 +151,9 @@ slack_build_workflow_status <- function(indicator_id) {
   )
 
   if (nrow(df_sel) == 1) {
-    status <- df_sel[1, ]$workflow_runs.conclusion
+    status <- df_sel$workflow_runs.conclusion
     if (status == "failure") {
-      run_id <- df_sel[1]$workflow_runs.id
+      run_id <- df_sel$workflow_runs.id
       run_link <- paste0(base_logs_url, run_id)
       paste0(":red_circle: ", indicator_id, ": Failed update - <", run_link, "|Check logs> \n")
     } else if (status == "success") {
