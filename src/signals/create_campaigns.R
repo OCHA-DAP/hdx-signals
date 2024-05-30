@@ -66,7 +66,11 @@ create_campaigns <- function(
   }
 
   # get template folder, title, and subject header
-  campaign_details <- get_campaign_details(indicator_id = indicator_id, campaign_date = campaign_date, dry_run = dry_run)
+  campaign_details <- get_campaign_details(
+    indicator_id = indicator_id,
+    campaign_date = campaign_date,
+    dry_run = dry_run
+  )
 
   # generate email campaign with no conditional logic for the archive
   archive_df <- create_campaign(
