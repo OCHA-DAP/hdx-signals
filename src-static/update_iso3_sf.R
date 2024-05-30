@@ -73,7 +73,7 @@ update_adm0_sf <- function(iso3) {
 
 #' Filter ADM0 shapefile
 #'
-#' Filters the shapefile for a given `iso3` code. Used when countries have
+#' Filters the shapefile for a given `iso3` code. Used when locations have
 #' small territories far from the main location area in the shapefile, which
 #' makes plotting extremely difficult. Filtering only setup for these
 #' specific `iso3` codes.

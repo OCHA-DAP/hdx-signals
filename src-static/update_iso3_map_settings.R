@@ -29,7 +29,7 @@ iso3_map_ratio <- function(iso3) {
 #' Gets the width and height of the map from the map ratio
 #'
 #' Just produces plots with equal area. Will likely need adjustments for specific
-#' countries.
+#' locations.
 iso3_width_height <- function(iso3) {
   ratio <- iso3_map_ratio(iso3)
   height <- max(min(sqrt(24 / ratio), 6), 4) # ensure the ratios are bound to be 6x4 as most lopsided
@@ -37,7 +37,7 @@ iso3_width_height <- function(iso3) {
   data.frame(width, height)
 }
 
-# get the widths and heights for all countries
+# get the widths and heights for all locations
 iso3_codes <- all_iso3_codes$all_iso3_codes()
 
 df_width_height <- purrr$map(
@@ -48,7 +48,7 @@ df_width_height <- purrr$map(
 
 df_width_height$iso3 <- iso3_codes
 
-# produce legend placement and alignment manually for countries
+# produce legend placement and alignment manually for locations
 
 df_legend <- dplyr$tribble(
   ~iso3, ~legend_position, ~justification, ~direction,

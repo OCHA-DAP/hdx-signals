@@ -89,7 +89,7 @@ df_ocha_names <- readr$read_csv(
 #' conversion necessary.
 region_match_df <- dplyr$tribble(
   ~iso3, ~region_custom,
-  "ASM", "Asia and the Pacific", # small countries lacking UNHCR regions
+  "ASM", "Asia and the Pacific", # small locations lacking UNHCR regions
   "ANT", "Latin America and the Caribbean",
   "AZO", "Europe",
   "CAI", "Middle East and North Africa",
@@ -155,12 +155,12 @@ df_names <- df_ocha_names |>
   )
 
 #######################
-#### HRP COUNTRIES ####
+#### HRP LOCATIONS ####
 #######################
 
 df_hrp <- dplyr$tibble(
   iso3 = iso3_codes,
-  hrp_location = iso3 %in% cs$read_az_file("input/hrp_countries.parquet")$iso3
+  hrp_location = iso3 %in% cs$read_az_file("input/hrp_locations.parquet")$iso3
 )
 
 ############################
@@ -182,4 +182,4 @@ cs$update_az_file(
   name = fname
 )
 
-log_info(paste0("Successfully downloaded countries info and saved to ", fname))
+log_info(paste0("Successfully downloaded locations info and saved to ", fname))

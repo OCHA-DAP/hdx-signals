@@ -56,9 +56,9 @@ hs_logger$configure_logger()
 #'     `output/{indicator_id}/test/signals.parquet`. The campaign is uploaded
 #'     to Mailchimp and then used for test visualization.
 #' @param test_filter Used only if `test` is `TRUE`. If `NULL`, the default, then
-#'     2 random signals from different countries are selected for testing. If you
+#'     2 random signals from different locations are selected for testing. If you
 #'     pass in a vector of `iso3` codes, then the latest signals from those
-#'     countries are used for testing.
+#'     locations are used for testing.
 #'
 #' @export
 generate_signals <- function(

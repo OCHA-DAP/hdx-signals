@@ -113,7 +113,7 @@ create_campaigns <- function(
 #'
 #' Creates a Mailchimp campaign. First, an email body is created
 #' and used to generate a new Mailchimp template for the campaign. Segmentation
-#' is done based on the indicator and countries, and the empty segment is used
+#' is done based on the indicator and locations, and the empty segment is used
 #' if this is an historical campaign. Finally, a new campaign is created in
 #' Mailchimp and sent out.
 #'

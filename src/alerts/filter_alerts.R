@@ -34,7 +34,7 @@ box::use(../utils/all_iso3_codes)
 #'      in `input/indicator_mapping.parquet`.
 #' @param first_run Whether or not this is the first run of the campaign.
 #' @param test Whether or not the alerts are being generated for testing. If so,
-#'      we simply take the latest alerts for any countries passed in, ignoring if
+#'      we simply take the latest alerts for any locations passed in, ignoring if
 #'      there were other recent alerts.
 #'
 #' @returns Data frame of new alerts matching the criteria above
@@ -165,7 +165,7 @@ recursive_subsequent_alerts <- function(df) {
 
 #' Filters out alerts for testing
 #'
-#' Simply returns the latest alert for all countries in the data.
+#' Simply returns the latest alert for all locations in the data.
 filter_alerts_test <- function(df) {
   df |>
     dplyr$group_by(
