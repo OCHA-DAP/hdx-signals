@@ -20,7 +20,7 @@ hs_logger$monitoring_log_setup(indicator_id)
 # df_raw <- create_dummy_acled_raw()
 df_wrangled <- wrangle_conflict$wrangle(df_raw)
 
-# test should be false since we want to mimic "production"
+# dry_run should be false since we want to mimic "production"
 # behaviour as much as possible. But should be run with
 # HS_LOCAL = FALSE so that we don't connect to any external systems
 df_conflict <- generate_signals(
@@ -32,7 +32,7 @@ df_conflict <- generate_signals(
   info_fn = info_conflict$info,
   map_fn = map_conflict$map,
   summary_fn = summary_conflict$summary,
-  test = FALSE
+  dry_run = FALSE
 )
 
 # TODO: Check output is what we expect

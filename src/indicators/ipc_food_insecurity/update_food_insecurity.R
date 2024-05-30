@@ -11,8 +11,8 @@ box::use(../../utils/hs_logger)
 box::use(../../utils/update_coverage)
 
 first_run <- as.logical(Sys.getenv("FIRST_RUN", unset = FALSE))
-test <- as.logical(Sys.getenv("HS_TEST", unset = TRUE))
-test_filter <- if (test) c("AFG", "SSD") else NULL
+dry_run <- as.logical(Sys.getenv("HS_DRY_RUN", unset = TRUE))
+dry_run_filter <- if (dry_run) c("AFG", "SSD") else NULL
 indicator_id <- "ipc_food_insecurity"
 
 hs_logger$configure_logger()
@@ -36,7 +36,7 @@ df_ipc <- generate_signals$generate_signals(
   summary_fn = summary_food_insecurity$summary,
   map_fn = map_food_insecurity$map,
   info_fn = info_food_insecurity$info,
-  test = test,
-  test_filter = test_filter,
+  dry_run = dry_run,
+  dry_run_filter = dry_run_filter,
   first_run = first_run
 )

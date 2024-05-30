@@ -10,7 +10,7 @@ on:
           options:
             - "TRUE"
             - "FALSE"
-        HS_TEST:
+        HS_DRY_RUN:
           required: true
           type: choice
           default: "TRUE"
@@ -42,7 +42,7 @@ jobs:
         env:
           HS_EMAIL: ${{ secrets.HS_EMAIL}}
           HS_SURVEY_LINK: ${{ secrets.HS_SURVEY_LINK}}
-          HS_TEST: ${{ inputs.HS_TEST || 'FALSE' }}
+          HS_DRY_RUN: ${{ inputs.HS_DRY_RUN || 'FALSE' }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           DSCI_AZ_SAS_DEV: ${{ secrets.DSCI_AZ_SAS_DEV }}
           DSCI_AZ_SAS_PROD: ${{ secrets.DSCI_AZ_SAS_PROD }}
