@@ -152,9 +152,9 @@ az_file_detect <- function(pattern = NULL, stage = c("prod", "dev")) {
 stage_to_blob <- function(stage = c("prod", "dev")) {
   stage <- rlang$arg_match(stage)
   if (stage == "prod") {
-    blob_prod
+    blob_prod()
   } else {
-    blob_dev
+    blob_dev()
   }
 }
 
@@ -171,8 +171,7 @@ azure_endpoint_url <- function(service = c("blob", "file"), stage = c("prod", "d
   service <- rlang$arg_match(service)
   stage <- rlang$arg_match(stage)
   # service and stage injected into endpoint string using `{glue}`
-  dsci_az_endpoint <- "https://imb0chd0{stage}.{service}.core.windows.net/"
-  glue$glue(dsci_az_endpoint)
+  glue$glue("https://imb0chd0{stage}.{service}.core.windows.net/")
 }
 
 #' Builds the path of the signals.parquet files
@@ -192,26 +191,30 @@ signals_path <- function(indicator_id, test) {
   )
 }
 
-# gets the Dsci blob endpoints using the HDX Signals SAS
-blob_endpoint_dev <- az$blob_endpoint(
-  endpoint = azure_endpoint_url("blob", "dev"),
-  sas = get_env("DSCI_AZ_SAS_DEV")
-)
+#' Connects to the prod Azure blob
+#'
+#' @returns The prod blob container
+blob_prod <- function() {
+  blob_endpoint_prod <- az$blob_endpoint(
+    endpoint = azure_endpoint_url("blob", "prod"),
+    sas = get_env("DSCI_AZ_SAS_PROD")
+  )
+  az$blob_container(
+    endpoint = blob_endpoint_prod,
+    name = "hdx-signals-mc"
+  )
+}
 
-blob_endpoint_prod <- az$blob_endpoint(
-  endpoint = azure_endpoint_url("blob", "prod"),
-  sas = get_env("DSCI_AZ_SAS_PROD")
-)
-
-
-# blob object for HDX Signals, used to read and write data
-blob_dev <- az$blob_container(
-  endpoint = blob_endpoint_dev,
-  name = "hdx-signals"
-)
-
-# blob object for HDX Signals, used to read and write data
-blob_prod <- az$blob_container(
-  endpoint = blob_endpoint_prod,
-  name = "hdx-signals-mc"
-)
+#' Connects to the dev Azure blob
+#'
+#' @returns The dev blob container
+blob_dev <- function() {
+  blob_endpoint_dev <- az$blob_endpoint(
+    endpoint = azure_endpoint_url("blob", "dev"),
+    sas = get_env("DSCI_AZ_SAS_DEV")
+  )
+  az$blob_container(
+    endpoint = blob_endpoint_dev,
+    name = "hdx-signals"
+  )
+}
