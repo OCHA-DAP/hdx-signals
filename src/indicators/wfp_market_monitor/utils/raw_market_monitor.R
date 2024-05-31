@@ -6,8 +6,24 @@ box::use(cs = ../../../../src/utils/cloud_storage)
 #'
 #' @export
 raw <- function() {
-  cs$read_az_file(
+  df <- cs$read_az_file(
     name = "BasketCostChange.csv",
     blob = "wfp"
   )
+
+  req_cols <- c(
+    "MMFPSNTotImpactMonthlyChange",
+    "MMFPSNTotImpactMonthlyCode",
+    "MMFPSNDate",
+    "CountryName"
+  )
+
+  if (!all(req_cols %in% names(df))) {
+    stop(
+      "Not all required columns available in the raw WFP data. Check the ",
+      "data provided by WFP to see how it has changed and follow up accordingly.",
+      call. = FALSE
+    )
+  }
+  df
 }
