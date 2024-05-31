@@ -32,7 +32,7 @@ ai_summarizer_without_location <- function(prompt, info, location) {
   if (stringr$str_detect(ai_summary, location)) {
     ai_summary <- ai_summarizer(
       prompt = paste0(
-        "Please rewrite this short text to exclude the location name ",
+        "Please rewrite this short text to exclude the name ",
         location,
         ". Keep the output the same length or shorter than the original ",
         "input. Here is the text to rewrite --> "
