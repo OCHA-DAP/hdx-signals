@@ -27,3 +27,4 @@ jobs:
             env:
               HS_LOCAL: "TRUE"
               DRY_RUN: "FALSE"
+              DSCI_AZ_SAS_PROD: ${{ secrets.DSCI_AZ_SAS_PROD }}
