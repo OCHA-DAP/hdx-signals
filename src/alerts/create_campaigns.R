@@ -13,10 +13,6 @@ box::use(../email/mailchimp/custom_segmentation)
 box::use(../utils/formatters)
 box::use(../email/mailchimp/delete)
 
-box::use(../utils/hs_logger)
-
-hs_logger$configure_logger()
-
 #' Create campaigns
 #'
 #' Creates Mailchimp campaign(s). The way segmentation works,

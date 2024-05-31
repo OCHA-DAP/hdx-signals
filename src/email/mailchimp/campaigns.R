@@ -5,9 +5,6 @@ box::use(./base_api)
 box::use(../../utils/gmas_test_run)
 box::use(../../utils/get_env[get_env])
 box::use(./folders)
-box::use(../../utils/hs_logger)
-
-hs_logger$configure_logger()
 
 #' Adds a campaign to Mailchimp
 #'
