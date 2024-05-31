@@ -44,14 +44,7 @@ hs_logger$configure_logger()
 #'     done by splitting the campaigns dataset by data and generating alerts
 #'     across each date individually. If it is not the first run, then the
 #'     entire alerts data frame is converted into a single campaign during monitoring.
-<<<<<<< HEAD
-#' @param overwrite_content Overwrite existing content in the indicator signals.
-#'     This is to be used when we don't want to generate new alerts, but want to
-#'     fix something in the campaign content itself.
 #' @param dry_run Whether or not to generate the signals for testing (defaults to
-=======
-#' @param test Whether or not to generate the signals for testing (defaults to
->>>>>>> main
 #'     `FALSE`. If `TRUE`, only a limited number of alerts are generated, based
 #'     on the `dry_run_filter` argument. If `HS_LOCAL` is `TRUE`, previews are
 #'     generated using local HTML. Certain browsers cannot display local files
@@ -90,41 +83,18 @@ generate_signals <- function(
   )
 
   # generate the new alerts that will receive a campaign
-<<<<<<< HEAD
-  if (!overwrite_content) {
-    # filter out the data before generating new alerts
-    df_alerts <- df_wrangled |>
-      filter_test_data(
-        dry_run = dry_run,
-        dry_run_filter = dry_run_filter
-      ) |>
-      alert_fn() |>
-      generate_alerts(
-        indicator_id = indicator_id,
-        first_run = first_run,
-        dry_run = dry_run
-      )
-  } else {
-    # use existing alerts, and just delete the campaign content from Mailchimp and re-create
-    # we don't filter the wrangled data here because no need to, we already
-    # should have a limited set of alerts
-    df_alerts <- cs$read_az_file(fn_signals) |>
-      delete_campaign_content()
-  }
-=======
   # filter out the data before generating new alerts
   df_alerts <- df_wrangled |>
     filter_test_data(
-      test = test,
-      test_filter = test_filter
+      dry_run = dry_run,
+      dry_run_filter = dry_run_filter
     ) |>
     alert_fn() |>
     generate_alerts(
       indicator_id = indicator_id,
       first_run = first_run,
-      test = test
+      dry_run = dry_run
     )
->>>>>>> main
 
   # return empty data frame if alerts is empty
   if (nrow(df_alerts) == 0) {
