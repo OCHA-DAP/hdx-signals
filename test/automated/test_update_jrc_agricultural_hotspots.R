@@ -19,8 +19,8 @@ generate_signals_wrapper <- function(df_wrangled) {
     summary_fn = summary_agricultural_hotspots$summary,
     info_fn = info_agricultural_hotspots$info,
     plot_fn = plot_agricultural_hotspots$plot,
-    dry_run = dry_run,
-    dry_run_filter = dry_run_filter
+    dry_run = FALSE,
+    dry_run_filter = NULL
   )
 }
 

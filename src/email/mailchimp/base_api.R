@@ -11,7 +11,6 @@ box::use(../../utils/get_env[get_env])
 #'
 #' @export
 mc_api <- function(lists_api = TRUE) {
-  print("!returning mc api..")
   base_request <- httr2$request(
     "https://us14.api.mailchimp.com/3.0"
   ) |>
@@ -30,6 +29,5 @@ mc_api <- function(lists_api = TRUE) {
       "e908cb9d48"
     )
   }
-  print(base_request)
   base_request
 }
