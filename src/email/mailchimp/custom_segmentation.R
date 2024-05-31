@@ -38,6 +38,7 @@ box::use(../../utils/get_env[get_env])
 #'
 #' @export
 mc_email_segment <- function(indicator_id, iso3, dry_run = FALSE) {
+  df_ind <- cs$read_az_file("input/indicator_mapping.parquet")
   df_ind <- dplyr$filter(df_ind, indicator_id == !!indicator_id)
   emails <- mc_subscriber_emails(
     df_ind = df_ind,
@@ -74,6 +75,7 @@ mc_email_segment <- function(indicator_id, iso3, dry_run = FALSE) {
 #' or country. The `df_ind` passed in must already be filtered to a specific
 #' indicator ID.
 mc_subscriber_emails <- function(df_ind, iso3, dry_run) {
+  df_interests <- audience$mc_groups()
   # first we get the list of interest ids based on the iso3 codes
   regions <- unique(country_codes$iso3_to_regions(iso3))
   countries <- country_codes$iso3_to_names(iso3)
@@ -106,9 +108,10 @@ mc_subscriber_emails <- function(df_ind, iso3, dry_run) {
 #'
 #' Gets emails for interest and geo_ids.
 interest_emails <- function(interest, geo_ids, dry_run) {
+  df_interests <- audience$mc_groups()
   interest_id <- df_interests$interest_id[match(interest, df_interests$name)]
   purrr$map_chr(
-    .x = member_list,
+    .x = audience$mc_members(),
     .f = \(member) {
       ind_interest <- member$interests[[interest_id]]
       if (ind_interest && (!dry_run || "hdx-signals-test" %in% purrr$map_chr(member$tags, \(tag) tag$name))) {
@@ -133,7 +136,7 @@ interest_emails <- function(interest, geo_ids, dry_run) {
 #' Gets emails for indicator tags based on the tag, geo_ids, and dry_run
 tag_emails <- function(interest_tag, geo_ids, dry_run) {
   purrr$map_chr(
-    .x = member_list,
+    .x = audience$mc_members(),
     .f = \(member) {
       member_tags <- purrr$map_chr(member$tags, \(tag) tag$name)
       tag_interest <- tag_interest %in% member_tags
@@ -180,7 +183,3 @@ mc_archive_segment <- function() {
     )
   )
 }
-
-df_interests <- audience$mc_groups()
-member_list <- audience$mc_members()
-df_ind <- cs$read_az_file("input/indicator_mapping.parquet")
