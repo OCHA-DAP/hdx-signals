@@ -16,9 +16,7 @@ wrangle <- function(df_raw) {
       iso3 = country_codes$names_to_iso3(CountryName),
       date = MMFPSNDate,
       basket_change = MMFPSNTotImpactMonthlyChange,
-      basket_change_class = MMFPSNTotImpactMonthlyCode,
-      staple_food = MMFPSNMainStapleFood,
-      staple_food_change = MMFPSNMonthlyChangeSA
+      basket_change_class = MMFPSNTotImpactMonthlyCode
     ) |>
     dplyr$arrange(
       iso3,
