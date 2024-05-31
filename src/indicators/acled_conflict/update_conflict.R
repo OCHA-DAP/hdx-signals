@@ -1,6 +1,3 @@
-box::use(logger[log_info, log_debug])
-box::use(readxl)
-
 # indicator utilities
 box::use(./utils/raw_conflict)
 box::use(./utils/wrangle_conflict)
