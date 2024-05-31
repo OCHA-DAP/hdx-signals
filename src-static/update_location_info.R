@@ -199,4 +199,11 @@ cs$update_az_file(
   name = fname
 )
 
+# TEMP: switch when system can read in parquet from Azure prod
+cs$update_az_file(
+  df = dplyr$select(df_location_info, -lat, -lon),
+  name = "signals_location_metadata.csv",
+  stage = "dev"
+)
+
 log_info(paste0("Successfully downloaded locations info and saved to ", fname))
