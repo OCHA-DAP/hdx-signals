@@ -78,7 +78,7 @@ slack_build_header <- function(n_signals) {
       formatters$format_date(Sys.Date()),
       ": ",
       n_signals,
-      " signals(s) identified"
+      " signal(s) identified"
     )
   }
 }
