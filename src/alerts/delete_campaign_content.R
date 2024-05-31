@@ -25,50 +25,39 @@ box::use(./template_data)
 delete_campaign_content <- function(df) {
   # first, split out other images if present
   if ("other_images_ids" %in% names(df) && any(!is.na(df$other_images_ids))) {
-    df <- tidyr$separate_wider_delim(
+    df_delete <- tidyr$separate_wider_delim(
       data = df,
       cols = other_images_ids,
       delim = ";",
       names_sep = "_",
       too_few = "align_start"
     )
+  } else {
+    df_delete <- df
   }
 
   # get all file ids from the data frame and delete them
   delete_ids(
-    df = df,
+    df = df_delete,
     cols = c("plot_id", "map_id", "plot2_id", dplyr$starts_with("other_images_id")),
     object_type = "file"
   )
 
   # delete the templates
   delete_ids(
-    df = df,
+    df = df_delete,
     cols = dplyr$starts_with("template_id"),
     object_type = "template"
   )
   # delete the campaigns
   delete_ids(
-    df = df,
+    df = df_delete,
     cols = dplyr$starts_with("campaign_id"),
     object_type = "campaign"
   )
 
-  # now drop all the columns and return the data frame of alerts
-  # only do this if available
-  if (all(c("iso3", "value") %in% names(df))) {
-    df_delete <- dplyr$bind_cols(
-      template_data$campaign_content_template,
-      template_data$campaign_template |>
-        dplyr$select(-iso3, -date)
-    )
-    df |>
-      dplyr$select(
-        -dplyr$any_of(
-          names(df_delete)
-        )
-      )
-  }
+  # return empty input data frame
+  df[0, ]
 }
 
 #' Deletes all IDs found in specified columns

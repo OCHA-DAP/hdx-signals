@@ -44,10 +44,14 @@ hs_logger$configure_logger()
 #'     done by splitting the campaigns dataset by data and generating alerts
 #'     across each date individually. If it is not the first run, then the
 #'     entire alerts data frame is converted into a single campaign during monitoring.
+<<<<<<< HEAD
 #' @param overwrite_content Overwrite existing content in the indicator signals.
 #'     This is to be used when we don't want to generate new alerts, but want to
 #'     fix something in the campaign content itself.
 #' @param dry_run Whether or not to generate the signals for testing (defaults to
+=======
+#' @param test Whether or not to generate the signals for testing (defaults to
+>>>>>>> main
 #'     `FALSE`. If `TRUE`, only a limited number of alerts are generated, based
 #'     on the `dry_run_filter` argument. If `HS_LOCAL` is `TRUE`, previews are
 #'     generated using local HTML. Certain browsers cannot display local files
@@ -73,7 +77,6 @@ generate_signals <- function(
     summary_fn = NULL,
     info_fn = NULL,
     first_run = FALSE,
-    overwrite_content = FALSE,
     dry_run = FALSE,
     dry_run_filter = NULL) {
   # file name differs if testing or not
@@ -82,12 +85,12 @@ generate_signals <- function(
   check_existing_signals(
     indicator_id = indicator_id,
     first_run = first_run,
-    overwrite_content = overwrite_content,
     fn_signals = fn_signals,
     dry_run = dry_run
   )
 
   # generate the new alerts that will receive a campaign
+<<<<<<< HEAD
   if (!overwrite_content) {
     # filter out the data before generating new alerts
     df_alerts <- df_wrangled |>
@@ -108,6 +111,20 @@ generate_signals <- function(
     df_alerts <- cs$read_az_file(fn_signals) |>
       delete_campaign_content()
   }
+=======
+  # filter out the data before generating new alerts
+  df_alerts <- df_wrangled |>
+    filter_test_data(
+      test = test,
+      test_filter = test_filter
+    ) |>
+    alert_fn() |>
+    generate_alerts(
+      indicator_id = indicator_id,
+      first_run = first_run,
+      test = test
+    )
+>>>>>>> main
 
   # return empty data frame if alerts is empty
   if (nrow(df_alerts) == 0) {

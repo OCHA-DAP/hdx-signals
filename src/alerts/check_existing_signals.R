@@ -18,22 +18,19 @@ box::use(../utils/hs_local)
 #'
 #' @param indicator_id ID of the indicator
 #' @param first_run Whether or not this is the first run
-#' @param overwrite_content Whether or not to overwrite the content of existing rows
-#'     in a `signals.parquet` file, rather than generating a new one.
 #' @param fn_signals File name of the Signals data
 #' @param dry_run Whether or not this is for testing signals development. If `TRUE`,
 #'     errors are not generated if data is in the overall `output/signals.parquet`
 #'     file, so we can test efficiently.
 #'
 #' @export
-check_existing_signals <- function(indicator_id, first_run, overwrite_content, fn_signals, dry_run) {
+check_existing_signals <- function(indicator_id, first_run, fn_signals, dry_run) {
   if (hs_local$hs_local()) {
     return(invisible(NULL))
   }
 
   check_ind_signals(
     indicator_id = indicator_id,
-    overwrite_content = overwrite_content,
     fn_signals = fn_signals
   )
 
@@ -48,10 +45,9 @@ check_existing_signals <- function(indicator_id, first_run, overwrite_content, f
 #' Check indicator signals file
 #'
 #' Checks the indicator signals file, `fn_signals`, and throws error if there
-#' are existing rows in `output/{indicator}/signals.parquet` file and
-#' `overwrite_content` is `FALSE`, or if there are no rows and `overwrite_content`
-#' is `TRUE`.
-check_ind_signals <- function(indicator_id, overwrite_content, fn_signals) {
+#' are existing rows in `output/{indicator}/signals.parquet` file since that
+#' must be triaged before overwriting.
+check_ind_signals <- function(indicator_id, fn_signals) {
   if (fn_signals %in% az_files) {
     num_ind_signals <- nrow(cs$read_az_file(fn_signals))
   } else {
@@ -60,7 +56,7 @@ check_ind_signals <- function(indicator_id, overwrite_content, fn_signals) {
 
 
   # generate an error if the indicator signals are non-empty
-  if (num_ind_signals > 0 && !overwrite_content) {
+  if (num_ind_signals > 0) {
     stop(
       stringr$str_wrap(
         paste0(
@@ -69,27 +65,7 @@ check_ind_signals <- function(indicator_id, overwrite_content, fn_signals) {
           " signals data ",
           fn_signals,
           " on Azure is non-empty. Please triage this data into `output/signals.parquet` ",
-          "prior to generating new signals by running `triage_signals()`. ",
-          "If you want to re-create content on this ",
-          "existing dataset, then you should run ",
-          "`generate_signals(..., overwrite_content = TRUE)`."
-        )
-      ),
-      call. = FALSE
-    )
-  }
-
-  # generate an error if the indicator signals is empty but we said `overwrite_content = TRUE`
-  if (num_ind_signals == 0 && overwrite_content) {
-    stop(
-      stringr$str_wrap(
-        paste0(
-          "The ",
-          indicator_id,
-          " signals data ",
-          fn_signals,
-          " on Azure is empty. You specified `overwrite_content = TRUE` but there ",
-          "is no existing alerts or content to overwrite. "
+          "prior to generating new signals by running `triage_signals()`. "
         )
       ),
       call. = FALSE
