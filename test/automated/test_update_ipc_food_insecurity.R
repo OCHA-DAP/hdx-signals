@@ -1,4 +1,5 @@
-box::use(assertthat)
+box::use(testthat)
+box::use(httptest)
 
 box::use(../../src/indicators/ipc_food_insecurity/utils/wrangle_food_insecurity)
 box::use(../../src/indicators/ipc_food_insecurity/utils/alert_food_insecurity)
@@ -6,10 +7,7 @@ box::use(../../src/indicators/ipc_food_insecurity/utils/plot_food_insecurity)
 box::use(../../src/indicators/ipc_food_insecurity/utils/summary_food_insecurity)
 box::use(../../src/indicators/ipc_food_insecurity/utils/map_food_insecurity)
 box::use(../../src/indicators/ipc_food_insecurity/utils/info_food_insecurity)
-
 box::use(../../src/alerts/generate_signals[generate_signals])
-box::use(../../src/utils/hs_logger)
-hs_logger$configure_logger()
 
 # Create a simple wrapper function so that we can just pass in the wrangled df
 generate_signals_wrapper <- function(df_wrangled) {
@@ -26,12 +24,15 @@ generate_signals_wrapper <- function(df_wrangled) {
   )
 }
 
-# Test basic case
-df_ipc <- readRDS("test/data/ipc_basic.RDS") |>
-  wrangle_food_insecurity$wrangle() |>
-  generate_signals_wrapper()
+# TODO: Work on wrapping with httptest$with_mock_dir("test/mock_apis", {) 
+# to mock API requests to IPC API
+options(httptest.verbose = TRUE)
 
-assertthat$assert_that(nrow(df_ipc) == 0, msg = "Output DataFrame should not have any signals")
-assertthat$assert_that(ncol(df_ipc) == 38, msg = "Output DataFrame does not have the correct number of columns")
+testthat$test_that("the base case for IPC food insecurity runs and doesn't create any signals", {
+  df_ipc <- readRDS("test/data/ipc_basic.RDS") |>
+    wrangle_food_insecurity$wrangle() |>
+    generate_signals_wrapper()
+  testthat$expect_equal(nrow(df_ipc), 0)
+  testthat$expect_equal(ncol(df_ipc), 38)
+})
 
-# TODO: Create additional test cases with different input dfs
