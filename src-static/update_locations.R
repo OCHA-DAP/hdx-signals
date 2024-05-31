@@ -1,57 +1,55 @@
+box::use(readr)
 box::use(dplyr)
 box::use(countrycode)
-box::use(purrr)
-box::use(sf)
-box::use(ripc)
-box::use(idmc)
-box::use(readr)
-box::use(stringr)
 box::use(logger[log_info])
 
-box::use(../src/utils/get_iso3_sf)
 box::use(cs = ../src/utils/cloud_storage)
 box::use(../src/utils/hs_logger)
 
 hs_logger$configure_logger()
 
-log_info("Updating location info...")
+log_info("Updating locations we cover...")
 
-# prevent geometry errors
-sf$sf_use_s2(FALSE)
-
-########################
-#### LOCATION NAMES ####
-########################
-
-df_ocha_names <- readr$read_csv(
+# update all the iso3 codes (and names and regions) for locations we want to potentially cover in HDX Signals
+df_taxonomy <- readr$read_csv(
   file = "https://docs.google.com/spreadsheets/d/1NjSI2LaS3SqbgYc0HdD8oIb7lofGtiHgoKKATCpwVdY/export?format=csv&gid=1088874596", #nolint
   col_types = readr$cols()
-) |>
+)
+
+###########################
+#### GET ISO3 AND NAME ####
+###########################
+
+df_ocha_names <- df_taxonomy |>
   dplyr$slice(-1) |>
   readr$type_convert(
     col_types = readr$cols()
   ) |>
   dplyr$transmute(
-    iso3 = ifelse(
-      is.na(`ISO 3166-1 Alpha 3-Codes`),
-      `x Alpha3 codes`,
-      `ISO 3166-1 Alpha 3-Codes`
+    iso3 = dplyr$case_when(
+      `Preferred Term` == "Sark" ~ "CRQ",
+      is.na(`ISO 3166-1 Alpha 3-Codes`) ~ `x Alpha3 codes`,
+      .default = `ISO 3166-1 Alpha 3-Codes`
     ),
     location = `Preferred Term`,
     location_note = ifelse(
-      is.na(`ISO 3166-1 Alpha 3-Codes`),
+      is.na(`ISO 3166-1 Alpha 3-Codes`) | iso3 == "CRQ",
       "Custom Alpha 3 code",
       NA_character_
     )
   ) |>
   dplyr$filter(
-    !is.na(iso3) # drops Sark
+    iso3 != "ATA" # antarctica
   ) |>
   dplyr$add_row(
     iso3 = c("AB9", "LAC"),
     location = c("Abyei Area", "Tri-national Border of Rio Lempa"),
     location_note = c("Abyei Area reported on in IDMC using AB9 code", "Custom code used by IPC for 3 country analysis")
   )
+
+#####################
+#### ADD REGIONS ####
+#####################
 
 #' Adding OCHA regions for ISO3 codes with no UNHCR region defined in `countrycode`
 #' Because we extract OCHA regions from the UNHCR regions with only minimal
@@ -85,6 +83,7 @@ region_match_df <- dplyr$tribble(
   "WLF", "Asia and the Pacific",
   "ALA", "Europe",
   "XKX", "Europe",
+  "CRQ", "Europe",
   "AB9", "East and Horn of Africa", # custom ISO3 for IDMC
   "LAC", "Latin America and the Caribbean", # custom ISO3 for IPC
   "COD", "West and Central Africa", # UNHCR region doesn't match OCHA region
@@ -93,112 +92,46 @@ region_match_df <- dplyr$tribble(
   "CAN", "North America" # Creating custom North America region
 )
 
-df_names <- df_ocha_names |>
+df_regions <- df_ocha_names |>
   dplyr$left_join(
     region_match_df,
     by = "iso3"
-  ) |>
+  )
+
+# don't use dplyr to avoid warnings for missing values in countrycode
+uses_custom_reg <- !is.na(df_regions$region_custom)
+df_regions$unhcr_region <- NA_character_
+df_regions$unhcr_region[uses_custom_reg] <- df_regions$region_custom[uses_custom_reg]
+df_regions$unhcr_region[!uses_custom_reg] <- countrycode$countrycode(
+  sourcevar = df_regions$iso3[!uses_custom_reg],
+  origin = "iso3c",
+  destination = "unhcr.region"
+)
+
+# pull together unhcr region and custom region into one final dataset
+df_locations <- df_regions |>
   dplyr$transmute(
     iso3,
     location,
     location_note,
-    unhcr_region = suppressWarnings(
-      countrycode$countrycode(
-        sourcevar = iso3,
-        origin = "iso3c",
-        destination = "unhcr.region"
-      )
-    ),
     region = dplyr$case_when(
       !is.na(region_custom) ~ region_custom,
       unhcr_region == "The Americas" ~ "Latin America and the Caribbean",
       unhcr_region %in% c("Southern Africa", "East and Horn of Africa") ~ "Southern and Eastern Africa",
       .default = unhcr_region
     )
-  ) |>
-  dplyr$filter(
-    iso3 != "ATA" # drops antarctica
-  ) |>
-  dplyr$select(
-    -unhcr_region
   )
 
-iso3_codes <- df_names$iso3
-
-#######################
-#### GET CENTROIDS ####
-#######################
-
-df_centroids <- purrr$map(
-  .x = iso3_codes,
-  .f = \(iso3) {
-    get_iso3_sf$get_iso3_sf(iso3 = iso3, file = "centroids") |>
-      sf$st_coordinates() |>
-      dplyr$as_tibble() |>
-      dplyr$mutate(
-        iso3 = iso3
-      )
-  },
-  .progress = TRUE
-) |>
-  purrr$list_rbind() |>
-  dplyr$transmute(
-    iso3,
-    lat = Y,
-    lon = X
+if (any(is.na(dplyr$select(df_locations, -location_note)))) {
+  stop(
+    "Location date has missing values, fix before re-running.",
+    call. = FALSE
   )
-
-#######################
-#### HRP LOCATIONS ####
-#######################
-
-df_hrp <- dplyr$tibble(
-  iso3 = iso3_codes,
-  hrp_location = iso3 %in% cs$read_az_file("input/hrp_locations.parquet")$iso3
-)
-
-############################
-#### INDICATOR COVERAGE ####
-############################
-
-# automatically read in coverage from any coverage files in Azure
-coverage_files <- cs$az_file_detect(".*/coverage.parquet")
-
-df_coverage <- purrr$map(
-  .x = coverage_files,
-  .f = \(fp) {
-    indicator_id <- stringr$str_extract(fp, "(?<=output/)(.*)(?=/coverage.parquet)")
-    dplyr$tibble(
-      "{indicator_id}" := iso3_codes %in% cs$read_az_file(fp)$iso3
-    )
-  }
-) |>
-  purrr$list_cbind() |>
-  dplyr$mutate(
-    iso3 = iso3_codes,
-    .before = 1
+} else {
+  fname <- "input/locations.parquet"
+  cs$update_az_file(
+    df = df_locations,
+    name = fname
   )
-
-#######################
-#### FINAL DATASET ####
-#######################
-
-df_location_info <- purrr$reduce(
-  .x = list(df_names, df_hrp, df_centroids, df_coverage),
-  .f = \(x, y) dplyr$left_join(x, y, by = "iso3")
-)
-
-fname <- "input/location_info.parquet"
-cs$update_az_file(
-  df = df_location_info,
-  name = fname
-)
-
-# TEMP: switch when system can read in parquet from Azure prod
-cs$update_az_file(
-  df = dplyr$select(df_location_info, -lat, -lon),
-  name = "signals_location_metadata.csv",
-  stage = "dev"
-)
-
-log_info(paste0("Successfully downloaded locations info and saved to ", fname))
+  log_info(paste0("Successfully created locations date and saved to ", fname))
+}
