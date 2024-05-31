@@ -84,6 +84,16 @@ read_az_file <- function(name, stage = c("prod", "dev")) {
 #'
 #' @export
 update_az_file <- function(df, name, stage = c("prod", "dev")) {
+
+  if (hs_local()) {
+    log_debug(
+      "`update_az_file()` not saving data as `hs_local()` is `TRUE`. ",
+      "Set `HS_LOCAL` env variable to `FALSE` if you want the data to be ",
+      "saved, but be careful of sending emails or calling the OpenAI API."
+    )
+    return(invisible(NULL))
+  }
+
   blob <- stage_to_blob(stage)
   fileext <- tools$file_ext(name)
   tf <- tempfile(fileext = paste0(".", fileext))
@@ -95,14 +105,6 @@ update_az_file <- function(df, name, stage = c("prod", "dev")) {
     geojson = sf$st_write(obj = df, dsn = tf, quiet = TRUE)
   )
 
-  if (hs_local()) {
-    log_debug(
-      "`update_az_file()` not saving data as `hs_local()` is `TRUE`. ",
-      "Set `HS_LOCAL` env variable to `FALSE` if you want the data to be ",
-      "saved, but be careful of sending emails or calling the OpenAI API."
-    )
-    return(invisible(NULL))
-  }
 
   # wrapping to suppress printing of progress bar
   invisible(
