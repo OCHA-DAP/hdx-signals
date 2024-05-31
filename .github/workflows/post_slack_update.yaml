@@ -9,6 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GH_TOKEN: ${{ secrets.GH_TOKEN}}
+      DSCI_AZ_SAS_PROD: ${{ secrets.DSCI_AZ_SAS_PROD }}
       HS_SLACK_URL: ${{ secrets.HS_SLACK_URL}}
       HS_TEST: ${{ 'FALSE' }}
     steps: 
