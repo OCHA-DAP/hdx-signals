@@ -24,7 +24,7 @@ generate_signals_wrapper <- function(df_wrangled) {
   )
 }
 
-# TODO: Work on wrapping with httptest$with_mock_dir("test/mock_apis", {) 
+# TODO: Work on wrapping with httptest$with_mock_dir("test/mock_apis", {)
 # to mock API requests to IPC API
 options(httptest.verbose = TRUE)
 
@@ -35,4 +35,3 @@ testthat$test_that("the base case for IPC food insecurity runs and doesn't creat
   testthat$expect_equal(nrow(df_ipc), 0)
   testthat$expect_equal(ncol(df_ipc), 38)
 })
-
