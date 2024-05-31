@@ -23,13 +23,9 @@ jobs:
 
           - name: Test monitoring
             shell: bash
-            run: |
-              shopt -s globstar
-              set -e
-              for x in test/automated/test_*.R; do Rscript "$x"; done
+            run: find test/automated/ -name "test_*.R" -exec Rscript {} \;
             env:
               HS_LOCAL: "TRUE"
               DRY_RUN: "FALSE"
               DSCI_AZ_SAS_DEV: ${{ secrets.DSCI_AZ_SAS_DEV }}
               DSCI_AZ_SAS_PROD: ${{ secrets.DSCI_AZ_SAS_PROD }}
-              MAILCHIMP_API_KEY: ${{ secrets.MAILCHIMP_API_KEY }}
