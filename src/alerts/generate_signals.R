@@ -44,9 +44,6 @@ hs_logger$configure_logger()
 #'     done by splitting the campaigns dataset by data and generating alerts
 #'     across each date individually. If it is not the first run, then the
 #'     entire alerts data frame is converted into a single campaign during monitoring.
-#' @param overwrite_content Overwrite existing content in the indicator signals.
-#'     This is to be used when we don't want to generate new alerts, but want to
-#'     fix something in the campaign content itself.
 #' @param test Whether or not to generate the signals for testing (defaults to
 #'     `FALSE`. If `TRUE`, only a limited number of alerts are generated, based
 #'     on the `test_filter` argument. If `GMAS_TEST_RUN` is `TRUE`, previews are
@@ -73,46 +70,31 @@ generate_signals <- function(
     summary_fn = NULL,
     info_fn = NULL,
     first_run = FALSE,
-    overwrite_content = FALSE,
     test = FALSE,
     test_filter = NULL) {
   # file name differs if testing or not
-  fn_signals <- paste0(
-    "output/",
-    indicator_id,
-    if (test) "/test" else "",
-    "/signals.parquet"
-  )
+  fn_signals <- cs$signals_path(indicator_id, test)
 
   check_existing_signals(
     indicator_id = indicator_id,
     first_run = first_run,
-    overwrite_content = overwrite_content,
     fn_signals = fn_signals,
     test = test
   )
 
   # generate the new alerts that will receive a campaign
-  if (!overwrite_content) {
-    # filter out the data before generating new alerts
-    df_alerts <- df_wrangled |>
-      filter_test_data(
-        test = test,
-        test_filter = test_filter
-      ) |>
-      alert_fn() |>
-      generate_alerts(
-        indicator_id = indicator_id,
-        first_run = first_run,
-        test = test
-      )
-  } else {
-    # use existing alerts, and just delete the campaign content from Mailchimp and re-create
-    # we don't filter the wrangled data here because no need to, we already
-    # should have a limited set of alerts
-    df_alerts <- cs$read_az_file(fn_signals) |>
-      delete_campaign_content()
-  }
+  # filter out the data before generating new alerts
+  df_alerts <- df_wrangled |>
+    filter_test_data(
+      test = test,
+      test_filter = test_filter
+    ) |>
+    alert_fn() |>
+    generate_alerts(
+      indicator_id = indicator_id,
+      first_run = first_run,
+      test = test
+    )
 
   # return empty data frame if alerts is empty
   if (nrow(df_alerts) == 0) {

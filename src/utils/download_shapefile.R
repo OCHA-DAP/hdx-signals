@@ -11,11 +11,18 @@ box::use(sf)
 #'
 #' @param url URL to download
 #' @param layer Layer to read
+#' @param data_source `character` name of data_source. If supplied a column named "data_source"
+#'     will added to sf object with the specified data_source input. If NULL (default)
+#'     no column added.
 #'
 #' @returns sf object
 #'
 #' @export
-download_shapefile <- function(url, layer = NULL) {
+download_shapefile <- function(
+  url,
+  layer = NULL,
+  data_source = NULL
+) {
   if (stringr$str_ends(url, ".zip")) {
     utils$download.file(
       url = url,
@@ -45,15 +52,19 @@ download_shapefile <- function(url, layer = NULL) {
   }
 
   if (!is.null(layer)) {
-    sf$st_read(
+    ret <- sf$st_read(
       fn,
       layer = layer,
       quiet = TRUE
     )
   } else {
-    sf$st_read(
+    ret <- sf$st_read(
       fn,
       quiet = TRUE
     )
   }
+  if (!is.null(data_source)) {
+    ret$data_source <- data_source
+  }
+  ret
 }

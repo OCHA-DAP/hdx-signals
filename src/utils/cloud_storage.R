@@ -154,9 +154,9 @@ get_blob <- function(blob = c("prod", "dev", "wfp")) {
   blob <- rlang$arg_match(blob)
   switch(
     blob,
-    prod = blob_prod,
-    dev = blob_dev,
-    wfp = blob_wfp
+    prod = blob_prod(),
+    dev = blob_dev(),
+    wfp = blob_wfp()
   )
 }
 
@@ -174,36 +174,66 @@ azure_endpoint_url <- function(service = c("blob", "file"), stage = c("prod", "d
   service <- rlang$arg_match(service)
   stage <- rlang$arg_match(stage)
   # service and stage injected into endpoint string using `{glue}`
-  dsci_az_endpoint <- "https://imb0chd0{stage}.{service}.core.windows.net/"
-  glue$glue(dsci_az_endpoint)
+  glue$glue("https://imb0chd0{stage}.{service}.core.windows.net/")
 }
 
-# gets the Dsci blob endpoints using the HDX Signals SAS
-blob_endpoint_dev <- az$blob_endpoint(
-  endpoint = azure_endpoint_url("blob", "dev"),
-  sas = get_env("DSCI_AZ_SAS_DEV")
-)
+#' Builds the path of the signals.parquet files
+#'
+#' @param indicator_id ID of the indicator
+#' @param test Whether looking for the test file or not
+#'
+#' @returns String path
+#'
+#' @export
+signals_path <- function(indicator_id, test) {
+  paste0(
+    "output/",
+    indicator_id,
+    if (test) "/test" else "",
+    "/signals.parquet"
+  )
+}
 
-blob_endpoint_prod <- az$blob_endpoint(
-  endpoint = azure_endpoint_url("blob", "prod"),
-  sas = get_env("DSCI_AZ_SAS_PROD")
-)
+#' Connects to the prod Azure blob
+#'
+#' @returns The prod blob container
+blob_prod <- function() {
+  blob_endpoint_prod <- az$blob_endpoint(
+    endpoint = azure_endpoint_url("blob", "prod"),
+    sas = get_env("DSCI_AZ_SAS_PROD")
+  )
+  az$blob_container(
+    endpoint = blob_endpoint_prod,
+    name = "hdx-signals-mc"
+  )
+}
 
+#' Connects to the dev Azure blob
+#'
+#' @returns The dev blob container
+blob_dev <- function() {
+  blob_endpoint_dev <- az$blob_endpoint(
+    endpoint = azure_endpoint_url("blob", "dev"),
+    sas = get_env("DSCI_AZ_SAS_DEV")
+  )
+  az$blob_container(
+    endpoint = blob_endpoint_dev,
+    name = "wfp"
+  )
+}
 
-# blob object for HDX Signals, used to read and write data
-blob_dev <- az$blob_container(
-  endpoint = blob_endpoint_dev,
-  name = "hdx-signals"
-)
-
-# blob object for HDX Signals, used to read and write data
-blob_prod <- az$blob_container(
-  endpoint = blob_endpoint_prod,
-  name = "hdx-signals-mc"
-)
-
-# blob object for WFP, where the market monitoring data is stored
-blob_wfp <- az$blob_container(
-  endpoint = blob_endpoint_dev,
-  name = "wfp"
-)
+#' Connects to the Azure blob with WFP data
+#'
+#' Contains the WFP market monitor data updated by WFP.
+#'
+#' @returns The WFP blob container
+blob_wfp <- function() {
+  blob_endpoint_dev <- az$blob_endpoint(
+    endpoint = azure_endpoint_url("blob", "dev"),
+    sas = get_env("DSCI_AZ_SAS_DEV")
+  )
+  az$blob_container(
+    endpoint = blob_endpoint_dev,
+    name = "hdx-signals"
+  )
+}

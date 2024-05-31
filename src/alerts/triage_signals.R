@@ -22,9 +22,8 @@ box::use(../utils/get_env[get_env])
 #' - `DELETE` the campaign content, which will delete the campaign content but
 #' leave the alerts information. This is so you don't recalculate when we would
 #' signal, just the visuals and other campaign information in the email. This will
-#' delete all campaign content from Mailchimp and then remove those columns from
-#' `output/{indicator_id}/signals.parquet`. You will have to run
-#' `generate_signals(..., overwrite_content = TRUE)`.
+#' delete all campaign content from Mailchimp and then delete all of the rows
+#' from `output/{indicator_id}/signals.parquet`.
 #'
 #' - `Any other user input`: Do nothing, in which you can decide later manually what to do, and use
 #' `delete_campaign_content()` or `send_signals()` yourself manually.
@@ -52,13 +51,7 @@ box::use(../utils/get_env[get_env])
 #'
 #' @export
 triage_signals <- function(indicator_id, n_campaigns = 10, test = FALSE) {
-  fn_signals <- paste0(
-    "output/",
-    indicator_id,
-    if (test) "/test" else "",
-    "/signals.parquet"
-  )
-
+  fn_signals <- cs$signals_path(indicator_id, test)
   df <- get_signals_df(fn_signals)
   preview_signals(df = df, n_campaigns = n_campaigns)
   approve_signals(df = df, fn_signals = fn_signals, test = test)
@@ -174,8 +167,8 @@ approve_signals <- function(df, fn_signals, test) {
         )
       )
       if (new_input == "DELETE") {
-        delete_campaign_content(df)
-        cs$update_az_file(df[0, ], fn_signals)
+        df_deleted <- delete_campaign_content(df)
+        cs$update_az_file(df_deleted, fn_signals)
       } else {
         message(
           "You have not deleted the content in ",
@@ -189,9 +182,6 @@ approve_signals <- function(df, fn_signals, test) {
   } else if (user_command == "DELETE") {
     # replace the campaign content with the deleted stuff
     df_deleted <- delete_campaign_content(df)
-    if (test) {
-      df_deleted <- df_deleted[0, ]
-    }
 
     cs$update_az_file(
       df = df_deleted,
