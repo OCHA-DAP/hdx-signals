@@ -271,6 +271,6 @@ save_core_signals_hdx <- function(df) {
   cs$update_az_file(
     df = df,
     name = "output/signals.csv",
-    stage = "dev"
+    blob = "dev"
   )
 }
