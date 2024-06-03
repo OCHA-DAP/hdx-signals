@@ -5,9 +5,9 @@ box::use(cs = ./cloud_storage)
 #' For help in building out the static datasets for the system, this returns
 #' all ISO3 codes we want to handle, including some custom codes not standardized
 #' in the `{countrycode}` package. These are all updated directly in
-#' `src-static/update_iso3_codes.R`.
+#' `src-static/update_locations.R`.
 #'
 #' @export
 all_iso3_codes <- function() {
-  cs$read_az_file("input/iso3_codes.parquet")$iso3
+  cs$read_az_file("input/locations.parquet")$iso3
 }

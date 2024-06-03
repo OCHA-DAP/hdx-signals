@@ -27,18 +27,18 @@ df_ocha_names <- df_taxonomy |>
   ) |>
   dplyr$transmute(
     iso3 = dplyr$case_when(
-      `Preferred Term` == "Sark" ~ "CRQ",
-      is.na(`ISO 3166-1 Alpha 3-Codes`) ~ `x Alpha3 codes`,
+      `x Alpha3 codes` == "XKX" ~ "XKX",
       .default = `ISO 3166-1 Alpha 3-Codes`
     ),
     location = `Preferred Term`,
     location_note = ifelse(
-      is.na(`ISO 3166-1 Alpha 3-Codes`) | iso3 == "CRQ",
+      is.na(`ISO 3166-1 Alpha 3-Codes`),
       "Custom Alpha 3 code",
       NA_character_
     )
   ) |>
   dplyr$filter(
+    !is.na(iso3), # other custom alpha 3 we don't cover like Azores or Galapagos
     iso3 != "ATA" # antarctica
   ) |>
   dplyr$add_row(
@@ -57,8 +57,6 @@ df_ocha_names <- df_taxonomy |>
 region_match_df <- dplyr$tribble(
   ~iso3, ~region_custom,
   "ASM", "Asia and the Pacific", # small locations lacking UNHCR regions
-  "ANT", "Latin America and the Caribbean",
-  "AZO", "Europe",
   "CAI", "Middle East and North Africa",
   "CHI", "Europe",
   "GLI", "Latin America and the Caribbean",
