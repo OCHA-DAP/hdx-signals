@@ -19,111 +19,14 @@ log_info("Updating location info...")
 # prevent geometry errors
 sf$sf_use_s2(FALSE)
 
-########################
-#### LOCATION NAMES ####
-########################
+############################
+#### GET BASE LOCATIONS ####
+############################
 
-df_ocha_names <- readr$read_csv(
-  file = "https://docs.google.com/spreadsheets/d/1NjSI2LaS3SqbgYc0HdD8oIb7lofGtiHgoKKATCpwVdY/export?format=csv&gid=1088874596", #nolint
-  col_types = readr$cols()
-) |>
-  dplyr$slice(-1) |>
-  readr$type_convert(
-    col_types = readr$cols()
-  ) |>
-  dplyr$transmute(
-    iso3 = ifelse(
-      is.na(`ISO 3166-1 Alpha 3-Codes`),
-      `x Alpha3 codes`,
-      `ISO 3166-1 Alpha 3-Codes`
-    ),
-    location = `Preferred Term`,
-    location_note = ifelse(
-      is.na(`ISO 3166-1 Alpha 3-Codes`),
-      "Custom Alpha 3 code",
-      NA_character_
-    )
-  ) |>
-  dplyr$filter(
-    !is.na(iso3) # drops Sark
-  ) |>
-  dplyr$add_row(
-    iso3 = c("AB9", "LAC"),
-    location = c("Abyei Area", "Tri-national Border of Rio Lempa"),
-    location_note = c("Abyei Area reported on in IDMC using AB9 code", "Custom code used by IPC for 3 country analysis")
-  )
-
-#' Adding OCHA regions for ISO3 codes with no UNHCR region defined in `countrycode`
-#' Because we extract OCHA regions from the UNHCR regions with only minimal
-#' conversion necessary.
-region_match_df <- dplyr$tribble(
-  ~iso3, ~region_custom,
-  "ASM", "Asia and the Pacific", # small locations lacking UNHCR regions
-  "ANT", "Latin America and the Caribbean",
-  "AZO", "Europe",
-  "CAI", "Middle East and North Africa",
-  "CHI", "Europe",
-  "GLI", "Latin America and the Caribbean",
-  "IOT", "Asia and the Pacific",
-  "CXR", "Asia and the Pacific",
-  "CCK", "Asia and the Pacific",
-  "FLK", "Latin America and the Caribbean",
-  "ATF", "Southern and Eastern Africa",
-  "GGY", "Europe",
-  "HMD", "Southern and Eastern Africa",
-  "IMN", "Europe",
-  "JEY", "Europe",
-  "MYT", "Southern and Eastern Africa",
-  "NFK", "Asia and the Pacific",
-  "PCN", "Asia and the Pacific",
-  "BLM", "Latin America and the Caribbean",
-  "SHN", "Southern and Eastern Africa",
-  "TWN", "Asia and the Pacific",
-  "TKL", "Asia and the Pacific",
-  "VIR", "Latin America and the Caribbean",
-  "UMI", "Asia and the Pacific",
-  "WLF", "Asia and the Pacific",
-  "ALA", "Europe",
-  "XKX", "Europe",
-  "AB9", "East and Horn of Africa", # custom ISO3 for IDMC
-  "LAC", "Latin America and the Caribbean", # custom ISO3 for IPC
-  "COD", "West and Central Africa", # UNHCR region doesn't match OCHA region
-  "COG", "West and Central Africa", # UNHCR region doesn't match OCHA region
-  "USA", "North America", # Creating custom North America region
-  "CAN", "North America" # Creating custom North America region
-)
-
-df_names <- df_ocha_names |>
-  dplyr$left_join(
-    region_match_df,
-    by = "iso3"
-  ) |>
-  dplyr$transmute(
-    iso3,
-    location,
-    location_note,
-    unhcr_region = suppressWarnings(
-      countrycode$countrycode(
-        sourcevar = iso3,
-        origin = "iso3c",
-        destination = "unhcr.region"
-      )
-    ),
-    region = dplyr$case_when(
-      !is.na(region_custom) ~ region_custom,
-      unhcr_region == "The Americas" ~ "Latin America and the Caribbean",
-      unhcr_region %in% c("Southern Africa", "East and Horn of Africa") ~ "Southern and Eastern Africa",
-      .default = unhcr_region
-    )
-  ) |>
-  dplyr$filter(
-    iso3 != "ATA" # drops antarctica
-  ) |>
-  dplyr$select(
-    -unhcr_region
-  )
-
-iso3_codes <- df_names$iso3
+# we use the base locations defined in `update_locations.R`
+# and generate information for all of those locations
+df_locations <- cs$read_az_file("input/locations.parquet")
+iso3_codes <- df_locations$iso3
 
 #######################
 #### GET CENTROIDS ####
