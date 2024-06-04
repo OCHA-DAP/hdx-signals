@@ -191,9 +191,9 @@ download_adm0_sf <- function(iso3) {
     )
   } else if (iso3 == "IOT") {
     download_shapefile$download_shapefile(
-      url = "https://public.opendatasoft.com/api/explore/v2.1/catalog/datasets/world-administrative-boundaries/exports/geojson?lang=en&timezone=Europe%2FLondon",#nolint
+      url = "https://public.opendatasoft.com/api/explore/v2.1/catalog/datasets/world-administrative-boundaries/exports/geojson?lang=en&timezone=Europe%2FLondon", #nolint
       boundary_source = "Opendatasoft"
-    ) |> # nolint
+    ) |>
       dplyr$filter(
         iso3 == "IOT"
       )
