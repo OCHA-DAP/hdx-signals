@@ -4,7 +4,7 @@ box::use(dplyr)
 box::use(readxl)
 box::use(stringr)
 box::use(glue)
-box::use(logger[log_info])
+box::use(logger)
 
 box::use(../src/utils/location_codes)
 box::use(cs = ../src/utils/cloud_storage)
@@ -14,7 +14,7 @@ hs_logger$configure_logger()
 
 # TODO: Remove once this passes from GH runner
 if (interactive()) {
-  log_info("Updating ACLED info...")
+  logger$log_info("Updating ACLED info...")
 
   # read excel file of acled location codes from their website
   download.file(
@@ -58,8 +58,8 @@ if (interactive()) {
     name = fname
   )
 
-  log_info(paste0("Successfully downloaded ACLED info and saved to ", fname))
+  logger$log_info(paste0("Successfully downloaded ACLED info and saved to ", fname))
 
 } else {
-  log_info("Skipping ACLED data download")
+  logger$log_info("Skipping ACLED data download")
 }

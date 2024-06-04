@@ -274,4 +274,4 @@ purrr$walk(
   .progress = interactive()
 )
 
-log_info("Successfully updated ADM0 data")
+logger$log_info("Successfully updated ADM0 data")

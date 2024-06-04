@@ -2,7 +2,7 @@ box::use(dplyr)
 box::use(purrr)
 box::use(sf)
 box::use(stringr)
-box::use(logger[log_info])
+box::use(logger)
 
 box::use(../src/utils/get_iso3_sf)
 box::use(cs = ../src/utils/cloud_storage)
@@ -10,7 +10,7 @@ box::use(../src/utils/hs_logger)
 
 hs_logger$configure_logger()
 
-log_info("Updating location info...")
+logger$log_info("Updating location info...")
 
 # prevent geometry errors
 suppressMessages(
@@ -90,4 +90,4 @@ cs$update_az_file(
   blob = "dev"
 )
 
-log_info(paste0("Successfully downloaded locations info and saved to ", fname))
+logger$log_info(paste0("Successfully downloaded locations info and saved to ", fname))

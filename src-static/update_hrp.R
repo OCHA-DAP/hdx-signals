@@ -2,14 +2,14 @@ box::use(dplyr)
 box::use(countrycode)
 box::use(readxl)
 box::use(stringr)
-box::use(logger[log_info])
+box::use(logger)
 
 box::use(cs = ../src/utils/cloud_storage)
 box::use(../src/utils/hs_logger)
 
 hs_logger$configure_logger()
 
-log_info("Updating HRP info...")
+logger$log_info("Updating HRP info...")
 
 # Download 2024 file from HDX
 # Needs manual munging since no programmatically readable list of HRP countries
@@ -46,4 +46,4 @@ readxl$read_excel(
     name = fname
   )
 
-log_info(paste0("Successfully downloaded HRP info and saved to ", fname))
+logger$log_info(paste0("Successfully downloaded HRP info and saved to ", fname))
