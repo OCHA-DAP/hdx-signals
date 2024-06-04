@@ -19,7 +19,7 @@ hs_logger$monitoring_log_setup(indicator_id)
 df_raw <- raw_agricultural_hotspots$raw()
 df_wrangled <- wrangle_agricultural_hotspots$wrangle(df_raw)
 
-# update coverage data to ensure location_info up to date
+# update coverage data to ensure locations_metadata up to date
 update_coverage$update_coverage(
   indicator_id = indicator_id,
   iso3 = df_wrangled$iso3

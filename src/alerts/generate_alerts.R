@@ -3,7 +3,7 @@ box::use(janitor)
 
 box::use(./filter_alerts)
 box::use(./template_data)
-box::use(../utils/add_location_info)
+box::use(../utils/add_locations_metadata)
 
 #' Generate and upload alerts data frame
 #'
@@ -32,7 +32,7 @@ generate_alerts <- function(df, indicator_id, first_run = FALSE, test = FALSE) {
   df |>
     validate_alerts() |>
     add_alert_level() |>
-    add_location_info$add_location_info() |>
+    add_locations_metadata$add_locations_metadata() |>
     filter_alerts$filter_alerts(
       indicator_id = indicator_id,
       first_run = first_run,

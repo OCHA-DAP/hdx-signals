@@ -78,21 +78,21 @@ iso2_to_iso3 <- function(iso2) {
 
 #' Get name from ISO3 code
 #'
-#' Get name from ISO3 codes. Uses the `location_info.parquet` file to match them up.
+#' Get name from ISO3 codes. Uses the `locations_metadata.parquet` file to match them up.
 #'
 #' @export
 iso3_to_names <- function(iso3) {
-  df_info$location[match(iso3, df_info$iso3)]
+  df_metadata$location[match(iso3, df_metadata$iso3)]
 }
 
 #' Get region from ISO3 code
 #'
-#' Get region from ISO3 codes. Uses the `location_info.parquet` file as the
+#' Get region from ISO3 codes. Uses the `locations_metadata.parquet` file as the
 #' definitive region coding.
 #'
 #' @export
 iso3_to_regions <- function(iso3) {
-  df_info$region[match(iso3, df_info$iso3)]
+  df_metadata$region[match(iso3, df_metadata$iso3)]
 }
 
-df_info <- cs$read_az_file("input/location_info.parquet")
+df_metadata <- cs$read_az_file("input/locations_metadata.parquet")

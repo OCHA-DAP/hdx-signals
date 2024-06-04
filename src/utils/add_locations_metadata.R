@@ -14,14 +14,14 @@ box::use(cs = ./cloud_storage)
 #' @return The input data frame with additional columns added
 #'
 #' @export
-add_location_info <- function(df) {
-  df_new <- df_info |>
+add_locations_metadata <- function(df) {
+  df_new <- df_metadata |>
     dplyr$right_join(
       df,
       by = "iso3"
     ) |>
     dplyr$select(
-      iso3, location, region:lon
+      iso3, location, region, hrp_location, lat, lon
     )
 
   if (any(is.na(df_new))) {
@@ -29,8 +29,8 @@ add_location_info <- function(df) {
       stringr$str_wrap(
         paste0(
           "Missing location information, check that the ISO3 code is properly stored ",
-          "and handled in `input/location_info.parquet`. If not, fix the data ",
-          "by updating `src-raw/update_location_info.R`, then regenerate the alerts."
+          "and handled in `input/locations_metadata.parquet`. If not, fix the data ",
+          "by updating `src-raw/update_locations_metadata.R`, then regenerate the alerts."
         )
       ),
       call. = FALSE
@@ -40,4 +40,4 @@ add_location_info <- function(df) {
   df_new
 }
 
-df_info <- cs$read_az_file("input/location_info.parquet")
+df_metadata <- cs$read_az_file("input/locations_metadata.parquet")
