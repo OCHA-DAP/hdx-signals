@@ -20,24 +20,25 @@ hs_logger$configure_logger()
 #' Read a Parquet file stored on Microsoft Azure Data Storage blob
 #'
 #' Reads a file from the `hdx-signals` bucket.
-#' Th"e file is read based on its prefix. Currently, the only support is for
-#' Apache Parquet and GeoJSON files, but other support can be added if necessary.
+#' The file is read based on its prefix in `name`. Currently, the only support is for
+#' Apache Parquet, CSV, GeoJSON and GeoJSON files, but other support can be added if necessary.
 #'
 #' Function parsing is done based on file type:
 #'
 #' * Apache Parquet: [arrow::write_parquet()].
-#' * GeoJSON: [sf::st_read()]
 #' * CSV: [readr::read_csv()]
+#' * GeoJSON: [sf::st_read()]
+#' * JSON: [jsonlite::read_json()]
 #'
 #' @param name Name of the file to read, including directory prefixes (`input/` or `output/`)
 #'     and file extension, such as `.parquet`.
-#' @param stage Stage in the Azure storage to read from, either `prod` or `dev`.
+#' @param blob Blob in the Azure storage to read from, either `prod`, `dev`, or `wfp`.
 #'
 #' @returns Data frame.
 #'
 #' @export
-read_az_file <- function(name, stage = c("prod", "dev")) {
-  blob <- stage_to_blob(stage)
+read_az_file <- function(name, blob = c("prod", "dev", "wfp")) {
+  blob <- get_blob(blob)
   fileext <- tools$file_ext(name)
   tf <- tempfile(fileext = paste0(".", fileext))
 
@@ -78,13 +79,13 @@ read_az_file <- function(name, stage = c("prod", "dev")) {
 #' @param df Data frame or simple features to save out.
 #' @param name Name of the file to write, including prefix (`input/` or `output/`)
 #'     and filetype `.parquet`.
-#' @param stage Stage in the Azure storage to read from, either `prod` or `dev`.
+#' @param blob Blob in the Azure storage to read from, either `prod`, `dev`, or `wfp`.
 #'
 #' @returns Nothing, but file is written to the `hdx-signals` bucket.
 #'
 #' @export
-update_az_file <- function(df, name, stage = c("prod", "dev")) {
-  blob <- stage_to_blob(stage)
+update_az_file <- function(df, name, blob = c("prod", "dev", "wfp")) {
+  blob <- get_blob(blob)
   fileext <- tools$file_ext(name)
   tf <- tempfile(fileext = paste0(".", fileext))
 
@@ -123,11 +124,11 @@ update_az_file <- function(df, name, stage = c("prod", "dev")) {
 #' then all files in the bucket are returned.
 #'
 #' @param pattern Pattern to look for. Passed to [stringr::str_detect()]
-#' @param stage Stage in the Azure storage to read from, either `prod` or `dev`.
+#' @param blob Blob in the Azure storage to read from, either `prod`, `dev`, or `wfp`.
 #'
 #' @export
-az_file_detect <- function(pattern = NULL, stage = c("prod", "dev")) {
-  blob <- stage_to_blob(stage)
+az_file_detect <- function(pattern = NULL, blob = c("prod", "dev", "wfp")) {
+  blob <- get_blob(blob)
   # get blob files but don't return dirs
   blob_df <- az$list_blobs(blob)
   blob_df <- blob_df[!blob_df$isdir, ]
@@ -142,20 +143,21 @@ az_file_detect <- function(pattern = NULL, stage = c("prod", "dev")) {
 #### SETUP CONTAINER ####
 #########################
 
-#' Stage to blob
+#' Get blob container
 #'
-#' Checks the stage argument and ensures that the correct blob is returned.
-#'
-#' @param stage Stage in the Azure storage to read from, either `prod` or `dev`.
+#' @param blob Blob in the Azure store to read from, either `prod` or `dev`,
+#'     to access the primary `hdx-signals` blobs, or `wfp` to read from the WFP
+#'     blob in dev.
 #'
 #' @returns Correct blob to read and write from
-stage_to_blob <- function(stage = c("prod", "dev")) {
-  stage <- rlang$arg_match(stage)
-  if (stage == "prod") {
-    blob_prod
-  } else {
-    blob_dev
-  }
+get_blob <- function(blob = c("prod", "dev", "wfp")) {
+  blob <- rlang$arg_match(blob)
+  switch(
+    blob,
+    prod = blob_prod(),
+    dev = blob_dev(),
+    wfp = blob_wfp()
+  )
 }
 
 #' Get the endpoint URL
@@ -164,37 +166,74 @@ stage_to_blob <- function(stage = c("prod", "dev")) {
 #' as well if necessary. Used to create blob object in `blob_endpoint`.
 #'
 #' @param service Service to access, either `blob` (default) or `file.`
-#' @param stage Stage to access, either `prod` (default) or `dev`. Used because
-#'     some external services can only read from `dev` currently, so need to
-#'     store the output CSV for HDX on `dev`.
+#' @param stage Store to access, either `prod` (default) or `dev`. `dev`
+#'     is used because some exernal services can only read from `dev` currently,
+#'     so need to store the output CSV for HDX on `dev`, and some external data
+#'     read for input is on `dev`.
 azure_endpoint_url <- function(service = c("blob", "file"), stage = c("prod", "dev")) {
   service <- rlang$arg_match(service)
   stage <- rlang$arg_match(stage)
   # service and stage injected into endpoint string using `{glue}`
-  dsci_az_endpoint <- "https://imb0chd0{stage}.{service}.core.windows.net/"
-  glue$glue(dsci_az_endpoint)
+  glue$glue("https://imb0chd0{stage}.{service}.core.windows.net/")
 }
 
-# gets the Dsci blob endpoints using the HDX Signals SAS
-blob_endpoint_dev <- az$blob_endpoint(
-  endpoint = azure_endpoint_url("blob", "dev"),
-  sas = get_env("DSCI_AZ_SAS_DEV")
-)
+#' Builds the path of the signals.parquet files
+#'
+#' @param indicator_id ID of the indicator
+#' @param test Whether looking for the test file or not
+#'
+#' @returns String path
+#'
+#' @export
+signals_path <- function(indicator_id, test) {
+  paste0(
+    "output/",
+    indicator_id,
+    if (test) "/test" else "",
+    "/signals.parquet"
+  )
+}
 
-blob_endpoint_prod <- az$blob_endpoint(
-  endpoint = azure_endpoint_url("blob", "prod"),
-  sas = get_env("DSCI_AZ_SAS_PROD")
-)
+#' Connects to the prod Azure blob
+#'
+#' @returns The prod blob container
+blob_prod <- function() {
+  blob_endpoint_prod <- az$blob_endpoint(
+    endpoint = azure_endpoint_url("blob", "prod"),
+    sas = get_env("DSCI_AZ_SAS_PROD")
+  )
+  az$blob_container(
+    endpoint = blob_endpoint_prod,
+    name = "hdx-signals-mc"
+  )
+}
 
+#' Connects to the dev Azure blob
+#'
+#' @returns The dev blob container
+blob_dev <- function() {
+  blob_endpoint_dev <- az$blob_endpoint(
+    endpoint = azure_endpoint_url("blob", "dev"),
+    sas = get_env("DSCI_AZ_SAS_DEV")
+  )
+  az$blob_container(
+    endpoint = blob_endpoint_dev,
+    name = "wfp"
+  )
+}
 
-# blob object for HDX Signals, used to read and write data
-blob_dev <- az$blob_container(
-  endpoint = blob_endpoint_dev,
-  name = "hdx-signals"
-)
-
-# blob object for HDX Signals, used to read and write data
-blob_prod <- az$blob_container(
-  endpoint = blob_endpoint_prod,
-  name = "hdx-signals-mc"
-)
+#' Connects to the Azure blob with WFP data
+#'
+#' Contains the WFP market monitor data updated by WFP.
+#'
+#' @returns The WFP blob container
+blob_wfp <- function() {
+  blob_endpoint_dev <- az$blob_endpoint(
+    endpoint = azure_endpoint_url("blob", "dev"),
+    sas = get_env("DSCI_AZ_SAS_DEV")
+  )
+  az$blob_container(
+    endpoint = blob_endpoint_dev,
+    name = "hdx-signals"
+  )
+}
