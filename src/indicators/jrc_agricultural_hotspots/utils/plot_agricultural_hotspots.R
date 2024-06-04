@@ -69,8 +69,8 @@ hotspots_ts <- function(df_wrangled, df_raw, title, date) {
     dplyr$mutate(
       year = lubridate$year(date),
       month = lubridate$month(date, label = TRUE),
-      hs_name = forcats$fct_expand(hs_name,"Major hotspot" ,"Hotspot","No hotspot"),
-      hs_name = forcats$fct_relevel(hs_name, "Major hotspot" ,"Hotspot","No hotspot")
+      hs_name = forcats$fct_expand(hs_name, "Major hotspot", "Hotspot", "No hotspot"),
+      hs_name = forcats$fct_relevel(hs_name, "Major hotspot", "Hotspot", "No hotspot")
     ) |>
     dplyr$filter(
       max(year, -Inf) - year < 5
