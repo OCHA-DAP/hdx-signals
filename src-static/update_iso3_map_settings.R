@@ -42,7 +42,8 @@ iso3_codes <- all_iso3_codes$all_iso3_codes()
 
 df_width_height <- purrr$map(
   .x = iso3_codes,
-  .f = iso3_width_height
+  .f = iso3_width_height,
+  .progress = interactive()
 ) |>
   purrr$list_rbind()
 
@@ -58,7 +59,6 @@ df_legend <- dplyr$tribble(
   "AGO", "left", "top", "vertical",
   "AIA", "inside", c(0, 1), "horizontal",
   "ALA", "top", "left", "horizontal",
-  "AB9", "left", "top", "vertical",
   "ALB", "left", "top", "vertical",
   "AND", "left", "top", "vertical",
   "ARE", "inside", c(0, 1), "horizontal",
@@ -290,7 +290,6 @@ df_legend <- dplyr$tribble(
   "URY", "left", "top", "vertical",
   "USA", "top", "left", "horizontal",
   "UZB", "top", "left", "horizontal",
-  "UKR", "top", "left", "horizontal",
   "VAT", "top", "left", "horizontal",
   "VCT", "inside", c(0, 1), "vertical",
   "VEN", "left", "top", "vertical",
@@ -334,6 +333,14 @@ df_map_settings <- dplyr$left_join(
   df_width_height,
   by = "iso3"
 )
+
+if (any(is.na(df_map_settings))) {
+  stop(
+    "Data missing from `df_map_settings`, fix before trying again.",
+    call. = FALSE
+  )
+}
+
 
 fname <- "input/iso3_map_settings.json"
 cs$update_az_file(
