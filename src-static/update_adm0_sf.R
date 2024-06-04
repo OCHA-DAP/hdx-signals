@@ -233,7 +233,7 @@ download_fieldmaps_sf <- function(iso3, layer = NULL) {
   iso3 <- tolower(iso3)
   download_shapefile$download_shapefile(
     url = glue$glue("https://data.fieldmaps.io/cod/originals/{iso3}.gpkg.zip"),
-    boundary_source = "OCHA, Fieldmaps",
+    boundary_source = "FieldMaps, OCHA",
     layer = layer
   )
 }
