@@ -1,5 +1,6 @@
 box::use(dplyr)
 box::use(scales)
+box::use(forcats)
 box::use(gg = ggplot2)
 box::use(gghdx)
 box::use(lubridate)
@@ -67,7 +68,9 @@ hotspots_ts <- function(df_wrangled, df_raw, title, date) {
   df_plot <- df_wrangled |>
     dplyr$mutate(
       year = lubridate$year(date),
-      month = lubridate$month(date, label = TRUE)
+      month = lubridate$month(date, label = TRUE),
+      hs_name = forcats$fct_expand(hs_name, "Major hotspot", "Hotspot", "No hotspot"),
+      hs_name = forcats$fct_relevel(hs_name, "Major hotspot", "Hotspot", "No hotspot")
     ) |>
     dplyr$filter(
       max(year, -Inf) - year < 5
@@ -102,9 +105,6 @@ hotspots_ts <- function(df_wrangled, df_raw, title, date) {
       )
     ) +
     gg$labs(
-      x = "",
-      y = "",
-      fill = "",
       title = title,
       caption = caption
     ) +
@@ -113,6 +113,8 @@ hotspots_ts <- function(df_wrangled, df_raw, title, date) {
       fill = gg$guide_legend(byrow = TRUE)
     ) +
     gg$theme(
+      legend.title = gg$element_blank(),
+      axis.title   = gg$element_blank(),
       panel.grid = gg$element_blank(),
       legend.position = "left",
       legend.direction = "vertical",
