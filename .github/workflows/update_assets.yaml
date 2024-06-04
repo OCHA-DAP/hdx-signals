@@ -29,9 +29,13 @@ jobs:
               shell: bash
               run: Rscript ./src-static/update_locations.R
 
-            - name: Update spatial data for all locations
+            - name: Update adm0 data for all locations
               shell: bash
-              run: Rscript ./src-static/update_iso3_sf.R
+              run: Rscript ./src-static/update_adm0_sf.R
+
+            - name: Update adm0 centroid for all locations
+              shell: bash
+              run: Rscript ./src-static/update_centroids_sf.R
 
             - name: Update cities data for all locations
               shell: bash

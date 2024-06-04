@@ -1,21 +1,20 @@
-#' Script to update location boundaries and then their centroids
+#' Script to update location boundaries
 
 box::use(glue)
 box::use(sf)
 box::use(dplyr)
 box::use(purrr)
 box::use(stringr)
-box::use(logger[log_info])
+box::use(logger)
 
 box::use(cs = ../src/utils/cloud_storage)
-box::use(../src/utils/download_shapefile[download_shapefile])
-box::use(../src/utils/all_iso3_codes[all_iso3_codes])
-box::use(../src/utils/get_iso3_sf)
+box::use(../src/utils/download_shapefile)
+box::use(../src/utils/all_iso3_codes)
 box::use(../src/utils/hs_logger)
 
 hs_logger$configure_logger()
 
-log_info("Updating additional map data...")
+logger$log_info("Updating ADM0 data...")
 
 # prevent errors when unioning
 suppressMessages(
@@ -42,6 +41,7 @@ suppressMessages(
 #' @export
 update_adm0_sf <- function(iso3) {
   sf_simplified <- download_adm0_sf(iso3) |>
+    sf$st_set_agr("constant") |>
     filter_adm0_sf(iso3) |>
     simplify_adm0()
 
@@ -167,9 +167,7 @@ st_crop_adj_bbox <- function(sf_obj, xmin = 0, xmax = 0, ymin = 0, ymax = 0) {
 #' https://geoportal.un.org/arcgis/home/item.html?id=d7caaff3ef4b4f7c82689b7c4694ad92
 #'
 #' @param iso3 ISO3
-#' @param update_azure `logical` if TRUE (default) update json file in azure
-#'     if FALSE
-download_adm0_sf <- function(iso3, update_azure = TRUE) {
+download_adm0_sf <- function(iso3) {
   if (iso3 == "LAC") {
     # for LAC we get all 3 of El Salvador, Guatemala, and Honduras
     dplyr$filter(sf_world, iso3cd %in% c("SLV", "GTM", "HND")) |>
@@ -180,19 +178,19 @@ download_adm0_sf <- function(iso3, update_azure = TRUE) {
       dplyr$summarise(boundary_source = "UN Geo Hub", do_union = FALSE)
 
   } else if (iso3 == "AB9") {
-    download_shapefile(
+    download_shapefile$download_shapefile(
       url = "https://open.africa/dataset/56d1d233-0298-4b6a-8397-d0233a1509aa/resource/76c698c9-e282-4d00-9202-42bcd908535b/download/ssd_admbnda_abyei_imwg_nbs_20180401.zip", # nolint
       layer = "ssd_admbnda_abyei_imwg_nbs_20180401",
       boundary_source  = "Open Africa"
     )
   } else if (iso3 == "XKX") {
-    download_shapefile(
+    download_shapefile$download_shapefile(
       url = "https://data.geocode.earth/wof/dist/shapefile/whosonfirst-data-admin-xk-latest.zip",
       layer = "whosonfirst-data-admin-xk-country-polygon",
       boundary_source = "Who's On First"
     )
   } else if (iso3 == "IOT") {
-    download_shapefile(
+    download_shapefile$download_shapefile(
       url = "https://public.opendatasoft.com/api/explore/v2.1/catalog/datasets/world-administrative-boundaries/exports/geojson?lang=en&timezone=Europe%2FLondon",#nolint
       boundary_source = "Opendatasoft"
     ) |> # nolint
@@ -201,18 +199,20 @@ download_adm0_sf <- function(iso3, update_azure = TRUE) {
       )
 
   } else if (iso3 == "UMI") {
-    download_shapefile(
+    download_shapefile$download_shapefile(
       url = "https://data.geocode.earth/wof/dist/shapefile/whosonfirst-data-admin-um-latest.zip",
-      boundary_source  = "Who's On First"
+      boundary_source  = "Who's On First",
+      layer = "whosonfirst-data-admin-um-region-polygon"
     )
   } else if (iso3 == "WLF") {
-    download_shapefile(
+    download_shapefile$download_shapefile(
       url = "https://pacificdata.org/data/dataset/0319bab7-4b09-4fcc-81d6-e2c2a8694078/resource/9f6d96d5-02e5-44d8-bb42-4244bde23aa5/download/wf_tsz_pol_april2022.zip",#nolint
-      boundary_source = "Pacific Data Hub"
+      boundary_source = "Pacific Data Hub",
+      layer = "wf_tsz_pol_april2022"
     ) # nolint
   } else if (iso3 == "FJI") {
     # make sure that we shift the coordinates so it plots correctly
-    download_fieldmaps_sf("FJI") |>
+    download_fieldmaps_sf("FJI", "fji_adm0") |>
       sf$st_shift_longitude()
   } else {
     # first try getting cod, and fallback to the UN geodata
@@ -231,7 +231,7 @@ download_adm0_sf <- function(iso3, update_azure = TRUE) {
 #' @param iso3 ISO3 code
 download_fieldmaps_sf <- function(iso3, layer = NULL) {
   iso3 <- tolower(iso3)
-  download_shapefile(
+  download_shapefile$download_shapefile(
     url = glue$glue("https://data.fieldmaps.io/cod/originals/{iso3}.gpkg.zip"),
     boundary_source = "OCHA, Fieldmaps",
     layer = layer
@@ -264,58 +264,14 @@ sf_world <- cs$read_az_file("input/un_geodata.geojson") |>
     boundary_source = "UN Geo Hub"
   )
 
-#' Update the centroids for ISO3
-#'
-#' Done using this method to ensure that if errors are generated, progress is not
-#' lost. So incrementally load the adm0 boundaries for a location, calculate the centroid,
-#' then store on Azure. It also adds in the `boundary_source` column to the centroids
-#' file as well, which is best for transparency and also allows us to bring it
-#' into the location metadata in `update_location_metadata.R`.
-#'
-#' If a centroid is incorrect or needs adjusting due to strange geometries for the
-#' ISO3 code, specific adjustments can be made to the function below to catch
-#' specific errors.
-#'
-#' @param iso3 ISO3 code
-#'
-#' @returns
-update_centroids_sf <- function(iso3) {
-  iso3_sf <- get_iso3_sf$get_iso3_sf(iso3)
-  iso3_sf |>
-    sf$st_centroid() |>
-    sf$st_coordinates() |>
-    dplyr$as_tibble() |>
-    dplyr$transmute(
-      iso3 = !!iso3,
-      boundary_source = unique(iso3_sf$boundary_source),
-      lat = Y,
-      lon = ifelse(X <= 180, X, X - 360)
-    ) |>
-    cs$update_az_file(
-      name = glue$glue("input/centroids/{iso3}.parquet")
-    )
-}
-
 ################
 #### UPDATE ####
 ################
 
-log_info("...Updating ADM0 files...")
-
-# first update adm0 files
 purrr$walk(
-  .x = all_iso3_codes(),
+  .x = all_iso3_codes$all_iso3_codes(),
   .f = update_adm0_sf,
   .progress = interactive()
 )
 
-log_info("...Updating centroids...")
-
-# then update centroids
-purrr$walk(
-  .x = all_iso3_codes(),
-  .f = update_centroids_sf,
-  .progress = interactive()
-)
-
-log_info("Successfully updated map data")
+log_info("Successfully updated ADM0 data")
