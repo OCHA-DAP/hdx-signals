@@ -19,9 +19,6 @@ add_locations_metadata <- function(df) {
     dplyr$right_join(
       df,
       by = "iso3"
-    ) |>
-    dplyr$select(
-      iso3, location, region, hrp_location, lat, lon
     )
 
   if (any(is.na(df_new))) {
@@ -40,4 +37,7 @@ add_locations_metadata <- function(df) {
   df_new
 }
 
-df_metadata <- cs$read_az_file("input/locations_metadata.parquet")
+df_metadata <- cs$read_az_file("input/locations_metadata.parquet") |>
+  dplyr$select(
+    iso3, location, region, hrp_location, lat, lon
+  )
