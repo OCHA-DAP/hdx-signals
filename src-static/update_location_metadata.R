@@ -1,10 +1,6 @@
 box::use(dplyr)
-box::use(countrycode)
 box::use(purrr)
 box::use(sf)
-box::use(ripc)
-box::use(idmc)
-box::use(readr)
 box::use(stringr)
 box::use(logger[log_info])
 
@@ -17,7 +13,9 @@ hs_logger$configure_logger()
 log_info("Updating location info...")
 
 # prevent geometry errors
-sf$sf_use_s2(FALSE)
+suppressMessages(
+  sf$sf_use_s2(FALSE)
+)
 
 ############################
 #### GET BASE LOCATIONS ####
@@ -28,28 +26,16 @@ sf$sf_use_s2(FALSE)
 df_locations <- cs$read_az_file("input/locations.parquet")
 iso3_codes <- df_locations$iso3
 
-#######################
-#### GET CENTROIDS ####
-#######################
+##################################
+#### GET CENTROIDS AND SOURCE ####
+##################################
 
 df_centroids <- purrr$map(
   .x = iso3_codes,
-  .f = \(iso3) {
-    get_iso3_sf$get_iso3_sf(iso3 = iso3, file = "centroids") |>
-      sf$st_coordinates() |>
-      dplyr$as_tibble() |>
-      dplyr$mutate(
-        iso3 = iso3
-      )
-  },
-  .progress = TRUE
+  .f = \(iso3) cs$read_az_file(glue$glue("input/centroids/{iso3}.parquet")),
+  .progress = interactive()
 ) |>
-  purrr$list_rbind() |>
-  dplyr$transmute(
-    iso3,
-    lat = Y,
-    lon = X
-  )
+  purrr$list_rbind()
 
 #######################
 #### HRP LOCATIONS ####
@@ -86,22 +72,22 @@ df_coverage <- purrr$map(
 #### FINAL DATASET ####
 #######################
 
-df_location_info <- purrr$reduce(
-  .x = list(df_names, df_hrp, df_centroids, df_coverage),
+df_locations_metadata <- purrr$reduce(
+  .x = list(df_locations, df_hrp, df_centroids, df_coverage),
   .f = \(x, y) dplyr$left_join(x, y, by = "iso3")
 )
 
-fname <- "input/location_info.parquet"
+fname <- "input/locations_metadata.parquet"
 cs$update_az_file(
-  df = df_location_info,
+  df = df_locations_metadata,
   name = fname
 )
 
 # TEMP: switch when system can read in parquet from Azure prod
 cs$update_az_file(
-  df = dplyr$select(df_location_info, -lat, -lon),
-  name = "signals_location_metadata.csv",
-  stage = "dev"
+  df = dplyr$select(df_locations_metadata, -lat, -lon),
+  name = "signals_locations_metadata.csv",
+  blob = "dev"
 )
 
 log_info(paste0("Successfully downloaded locations info and saved to ", fname))
