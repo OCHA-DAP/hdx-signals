@@ -56,3 +56,7 @@ jobs:
             - name: Update ACLED info
               shell: bash
               run: Rscript ./src-static/update_acled_info.R
+
+             - name: Update indicator mapping file
+              shell: bash
+              run: Rscript ./src-static/update_indicator_mapping.R
