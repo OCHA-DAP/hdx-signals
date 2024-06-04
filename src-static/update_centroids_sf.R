@@ -66,7 +66,7 @@ update_centroids_sf <- function(iso3) {
 
 # then update centroids
 purrr$walk(
-  .x = all_iso3_codes(),
+  .x = all_iso3_codes$all_iso3_codes(),
   .f = update_centroids_sf,
   .progress = interactive()
 )
