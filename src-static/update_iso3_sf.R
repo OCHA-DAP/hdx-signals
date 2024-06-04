@@ -5,7 +5,6 @@ box::use(sf)
 box::use(dplyr)
 box::use(purrr)
 box::use(stringr)
-box::use(lwgeom)
 box::use(logger[log_info])
 
 box::use(cs = ../src/utils/cloud_storage)
@@ -178,7 +177,7 @@ download_adm0_sf <- function(iso3, update_azure = TRUE) {
       # pull together polygons by iso3cd
       dplyr$summarise(do_union = TRUE, .groups = "drop") |>
       # then merge all iso3cds into 1 multipolygon retaining boundaries
-      dplyr$summarise(do_union = FALSE)
+      dplyr$summarise(data_source = "UN Geo Hub", do_union = FALSE)
 
   } else if (iso3 == "AB9") {
     download_shapefile(
@@ -190,7 +189,7 @@ download_adm0_sf <- function(iso3, update_azure = TRUE) {
     download_shapefile(
       url = "https://data.geocode.earth/wof/dist/shapefile/whosonfirst-data-admin-xk-latest.zip",
       layer = "whosonfirst-data-admin-xk-country-polygon",
-      data_soure = "Who's On First"
+      data_source = "Who's On First"
     )
   } else if (iso3 == "IOT") {
     download_shapefile(
@@ -302,7 +301,8 @@ log_info("...Updating ADM0 files...")
 # first update adm0 files
 purrr$walk(
   .x = all_iso3_codes(),
-  .f = update_adm0_sf
+  .f = update_adm0_sf,
+  .progress = interactive()
 )
 
 log_info("...Updating centroids...")
@@ -310,7 +310,8 @@ log_info("...Updating centroids...")
 # then update centroids
 purrr$walk(
   .x = all_iso3_codes(),
-  .f = update_centroids_sf
+  .f = update_centroids_sf,
+  .progress = interactive()
 )
 
 log_info("Successfully updated map data")
