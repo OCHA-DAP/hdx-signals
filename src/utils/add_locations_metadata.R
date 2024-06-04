@@ -21,7 +21,7 @@ add_locations_metadata <- function(df) {
       by = "iso3"
     )
 
-  if (any(is.na(df_new))) {
+  if (any(is.na(df_new[, names(df_metadata)]))) {
     stop(
       stringr$str_wrap(
         paste0(

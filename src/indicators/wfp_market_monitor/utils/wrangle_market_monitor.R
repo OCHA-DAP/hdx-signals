@@ -1,6 +1,6 @@
 box::use(dplyr)
 
-box::use(../../../utils/country_codes)
+box::use(../../../utils/location_codes)
 
 #' Download raw market monitoring data
 #'
@@ -13,7 +13,7 @@ wrangle <- function(df_raw) {
       MMFPSNDataLevel == "National"
     ) |>
     dplyr$transmute(
-      iso3 = country_codes$names_to_iso3(CountryName),
+      iso3 = location_codes$names_to_iso3(CountryName),
       date = MMFPSNDate,
       basket_change = MMFPSNTotImpactMonthlyChange,
       basket_change_class = MMFPSNTotImpactMonthlyCode
