@@ -38,7 +38,8 @@ update_cities_sf <- function(iso3) {
     cities_sf <- dplyr$filter(
       pop_sf,
       adm0_a3 == iso3,
-      !(name %in% c("Laayoune", "Monaco", "Singapore", "Vatican City"))
+      !(name %in% c("Laayoune", "Monaco", "Singapore", "Vatican City", "Manama",
+                    "Hong Kong", "Jerusalem"))
     )
   }
 
@@ -83,7 +84,8 @@ pop_sf <- download_shapefile(
 
 purrr$walk(
   .x = all_iso3_codes(),
-  .f = update_cities_sf
+  .f = update_cities_sf,
+  .progress = interactive()
 )
 
 log_info("Successfully updated cities data to input/cities/*")
