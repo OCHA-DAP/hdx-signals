@@ -245,9 +245,9 @@ save_core_signals_hdx <- function(df) {
   df <- dplyr$select(
     df,
     iso3,
-    country,
+    location,
     region,
-    hrp_country,
+    hrp_location,
     indicator_name,
     indicator_source,
     indicator_id,

@@ -120,7 +120,7 @@ create_image_poss <- purrr$possibly(create_image, data.frame(id = "ERROR", url =
 #' Filters data frame for image generation
 #'
 #' Filters the data frame image generation. Takes in the `iso3` code
-#' and `date` of an alert, and filters the wrangled data frame to that country.
+#' and `date` of an alert, and filters the wrangled data frame to that location.
 #' If the `date` is older than 90 days, then the wrangled data frame is filtered
 #' to only have data up to the `date`.
 filter_plot_df <- function(iso3, date, df) {

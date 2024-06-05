@@ -71,7 +71,7 @@ map_test <- function(
 }
 
 #' Plot randomly generated points over basemap created from in map_points.R
-#' User provides iso3 code and sampling specs and function returns country-level
+#' User provides iso3 code and sampling specs and function returns location-level
 #' plot with spatially random points containing random values used to size the
 #' point geoms.
 #'

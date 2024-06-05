@@ -218,7 +218,7 @@ blob_dev <- function() {
   )
   az$blob_container(
     endpoint = blob_endpoint_dev,
-    name = "wfp"
+    name = "hdx-signals"
   )
 }
 
@@ -234,6 +234,6 @@ blob_wfp <- function() {
   )
   az$blob_container(
     endpoint = blob_endpoint_dev,
-    name = "hdx-signals"
+    name = "wfp"
   )
 }

@@ -40,8 +40,8 @@ plot <- function(df_alerts, df_wrangled, preview = FALSE) {
 
 #' Plot WHO cholera data
 #'
-#' Plots cholera data for a specific country, defined by an ISO3 code.
-#' The wrangled cholera data is loaded in and filtered to that country.
+#' Plots cholera data for a specific location, defined by an ISO3 code.
+#' The wrangled cholera data is loaded in and filtered to that location.
 #' Cholera is plotted as weekly cases, and the background is light red whenever
 #' cases are above 1,000.
 #'

@@ -4,12 +4,12 @@ box::use(sf)
 
 box::use(../../utils/get_iso3_sf)
 
-#' Geom for cities in a country
+#' Geom for cities in a location
 #'
 #' Uses the Natural Earth populated places data to add cities to a map. Some
-#' countries have no cities, but often due to size, so we don't add them
+#' locations have no cities, but often due to size, so we don't add them
 #' where they do not exist since they are mainly useful to contextualize locations
-#' in larger countries.
+#' in larger locations.
 #'
 #' Adds in the geom for the points and the geom for the labels.
 #'

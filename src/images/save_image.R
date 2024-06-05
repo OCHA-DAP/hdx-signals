@@ -8,7 +8,7 @@ box::use(../email/mailchimp/images)
 #' Save image produced for HDX Signals
 #'
 #' Saves image produced for HDX signals. Takes in a plot object `p`, gives it a
-#' name based on the country, indicator, and date, then uploads it. The returned
+#' name based on the location, indicator, and date, then uploads it. The returned
 #' data frame of ID and URL has names based on `image_use`, whether they are the
 #' initial `plot`, the `map`, or the `plot2` image for the campaign.
 #'

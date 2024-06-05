@@ -1,5 +1,3 @@
-box::use(logger[log_info, log_debug])
-
 # indicator utilities
 box::use(./utils/raw_conflict)
 box::use(./utils/wrangle_conflict)
@@ -11,6 +9,7 @@ box::use(./utils/summary_conflict)
 
 box::use(../../alerts/generate_signals[generate_signals])
 box::use(../../utils/hs_logger)
+box::use(../../utils/update_coverage)
 
 test <- as.logical(Sys.getenv("HS_TEST", unset = TRUE))
 test_filter <- if (test) c("AFG", "SSD") else NULL
@@ -22,6 +21,12 @@ hs_logger$monitoring_log_setup(indicator_id)
 # get data
 df_raw <- raw_conflict$raw()
 df_wrangled <- wrangle_conflict$wrangle(df_raw)
+
+# update coverage data
+update_coverage$update_coverage(
+  indicator_id = indicator_id,
+  iso3 = df_wrangled$iso3
+)
 
 # now generate signals
 df_conflict <- generate_signals(

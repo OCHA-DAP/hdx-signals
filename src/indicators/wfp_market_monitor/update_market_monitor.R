@@ -8,6 +8,7 @@ box::use(./utils/summary_market_monitor)
 
 box::use(../../alerts/generate_signals[generate_signals])
 box::use(../../utils/hs_logger)
+box::use(../../utils/update_coverage)
 
 test <- as.logical(Sys.getenv("HS_TEST", unset = TRUE))
 test_filter <- if (test) c("BDI", "SSD") else NULL
@@ -19,6 +20,12 @@ hs_logger$monitoring_log_setup(indicator_id)
 # get data
 df_raw <- raw_market_monitor$raw()
 df_wrangled <- wrangle_market_monitor$wrangle(df_raw)
+
+# update coverage for ipc
+update_coverage$update_coverage(
+  indicator_id = indicator_id,
+  iso3 = df_wrangled$iso3
+)
 
 # now generate signals
 generate_signals(

@@ -800,19 +800,6 @@
       ],
       "Hash": "680ad542fbcf801442c83a6ac5a2126c"
     },
-    "lwgeom": {
-      "Package": "lwgeom",
-      "Version": "0.2-14",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Requirements": [
-        "R",
-        "Rcpp",
-        "sf",
-        "units"
-      ],
-      "Hash": "f1fb7cc9fc60f3b039201174268aaad9"
-    },
     "magick": {
       "Package": "magick",
       "Version": "2.8.3",

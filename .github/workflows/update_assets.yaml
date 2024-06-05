@@ -18,16 +18,45 @@ jobs:
           GMAS_TEST_RUN: ${{ inputs.test || 'FALSE' }}
           DSCI_AZ_SAS_DEV: ${{ secrets.DSCI_AZ_SAS_DEV }}
           DSCI_AZ_SAS_PROD: ${{ secrets.DSCI_AZ_SAS_PROD }}
-        steps:   
+        steps:
             - name: Checkout repository
               uses: actions/checkout@v3
 
             - name: Set up environment
               uses: ocha-dap/hdx-signals-actions@2dfcc5c8796903a01b393b8ebed26d2582f305ff
 
-            - name: Run R scripts to update files
+            - name: First, update locations we cover
               shell: bash
-              run: |
-                shopt -s globstar
-                set -e
-                for x in src-static/update_*.R; do Rscript "$x"; done
+              run: Rscript ./src-static/update_locations.R
+
+            - name: Update adm0 data for all locations
+              shell: bash
+              run: Rscript ./src-static/update_adm0_sf.R
+
+            - name: Update adm0 centroid for all locations
+              shell: bash
+              run: Rscript ./src-static/update_centroids_sf.R
+
+            - name: Update cities data for all locations
+              shell: bash
+              run: Rscript ./src-static/update_cities_sf.R
+
+            - name: Update HRP classifications for all locations
+              shell: bash
+              run: Rscript ./src-static/update_hrp.R
+
+            - name: Update locations metadata after previous updates
+              shell: bash
+              run: Rscript ./src-static/update_locations_metadata.R
+
+            - name: Update map settings for all locations
+              shell: bash
+              run: Rscript ./src-static/update_iso3_map_settings.R
+
+            - name: Update ACLED info
+              shell: bash
+              run: Rscript ./src-static/update_acled_info.R
+
+            - name: Update indicator mapping file
+              shell: bash
+              run: Rscript ./src-static/update_indicator_mapping.R
