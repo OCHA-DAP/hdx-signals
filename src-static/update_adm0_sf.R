@@ -25,7 +25,7 @@ suppressMessages(
 #### FUNCTIONS ####
 ###################
 
-#' Update the ADM0 geojson for a country on Azure blob storage
+#' Update the ADM0 geojson for a location on Azure blob storage
 #'
 #' Takes in an `iso3` code, and downloads and loads the location data.
 #'
@@ -56,12 +56,12 @@ update_adm0_sf <- function(iso3) {
 #' Takes in an adm0 spatial file and simplifies it.
 #'
 #' Once downloaded and loaded, the file is simplified to ensure that only the
-#' country boundaries are available as a single row, using `sf::st_union()`.
+#' location boundaries are available as a single row, using `sf::st_union()`.
 #' This makes it simple for plotting and for calculating centroids.
 #'
 #' @param sf ISO3 code
 #'
-#' @returns sf class object contain admin 0 country boundary
+#' @returns sf class object contain admin 0 location boundary
 #'
 #' @export
 simplify_adm0 <- function(sf_adm0) {
