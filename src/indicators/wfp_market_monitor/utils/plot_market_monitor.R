@@ -41,7 +41,7 @@ plot <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
 
 #' Plot WFP food basket prices
 #'
-#' Plots food basket prices data for a specific country, defined by an ISO3 code.
+#' Plots food basket prices data for a specific location, defined by an ISO3 code.
 #'
 #' @param df_wrangled Wrangled data frame for plotting.
 #' @param df_raw Raw data frame for plotting, not used to plot displacement time

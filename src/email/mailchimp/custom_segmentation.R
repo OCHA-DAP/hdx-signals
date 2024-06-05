@@ -15,7 +15,7 @@ box::use(../../utils/get_env[get_env])
 #' limitations in the Mailchimp API that prevents us from segmenting by complex
 #' conditions. Since it only allows joining segment conditions with "any" or "all",
 #' it is not able to capture our use case. This is because our interest groups
-#' (the indicators and regions/countries) are stored as separate categories
+#' (the indicators and regions/locations) are stored as separate categories
 #' in Mailchimp, so subsetting the audience by indicators and each region requires
 #' a separate segment condition. So, segmenting with the "any" condition doesn't
 #' work because that doesn't require the user subscribed to that indicator, it
@@ -25,7 +25,7 @@ box::use(../../utils/get_env[get_env])
 #'
 #' Thus, we need to create custom static segments (lists of emails to send to) by
 #' filtering our audience manually. This function creates a manual segment for
-#' the `indicator_id` and countries covered in the alert. The static segment is
+#' the `indicator_id` and locations covered in the alert. The static segment is
 #' saved with the `indicator_id` as its name, and overwritten every team, because
 #' we do not need to maintain this segmentation in the long run.
 #'
@@ -112,7 +112,7 @@ interest_emails <- function(interest, geo_ids, test) {
     .f = \(member) {
       ind_interest <- member$interests[[interest_id]]
       if (ind_interest && (!test || "hdx-signals-test" %in% purrr$map_chr(member$tags, \(tag) tag$name))) {
-        # only check for countries if they were interested in the indicator
+        # only check for locations if they were interested in the indicator
         # returns email if they were signed up to any of the geographies signalled
         # otherwise it returns an empty character vector
         if (any(as.logical(member$interests[geo_ids]))) {
@@ -138,7 +138,7 @@ tag_emails <- function(interest_tag, geo_ids, test) {
       member_tags <- purrr$map_chr(member$tags, \(tag) tag$name)
       tag_interest <- tag_interest %in% member_tags
       if (tag_interest && (!test || "hdx-signals-test" %in% member_tags)) {
-        # only check for countries if they were interested in the indicator
+        # only check for locations if they were interested in the indicator
         # returns email if they were signed up to any of the geographies signalled
         # otherwise it returns an empty character vector
         if (any(as.logical(member$interests[geo_ids]))) {

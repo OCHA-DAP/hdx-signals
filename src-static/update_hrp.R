@@ -12,7 +12,7 @@ hs_logger$configure_logger()
 logger$log_info("Updating HRP info...")
 
 # Download 2024 file from HDX
-# Needs manual munging since no programmatically readable list of HRP countries
+# Needs manual munging since no programmatically readable list of HRP locations
 # Will have to update when list changes
 
 # Read file
