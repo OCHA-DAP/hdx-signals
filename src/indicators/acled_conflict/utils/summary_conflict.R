@@ -59,7 +59,8 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
         .x = prompt_short,
         .y = summary_long,
         .f = ai_summarizer$ai_summarizer
-      )
+      ),
+      summary_source = "ACLED reporting"
     )
 
   # ensuring the output matches the original input
@@ -70,6 +71,7 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
     ) |>
     dplyr$select(
       summary_long,
-      summary_short
+      summary_short,
+      summary_source
     )
 }

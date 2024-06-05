@@ -50,11 +50,17 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
           summary_short
         ),
         summary_short
+      ),
+      summary_source = ifelse(
+        ch,
+        "CH reports",
+        "IPC analyses"
       )
     ) |>
     dplyr$select(
       summary_long,
-      summary_short
+      summary_short,
+      summary_source,
     )
 }
 

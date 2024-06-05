@@ -66,6 +66,7 @@ campaign_content_template <- dplyr$tibble(
   other_images_captions = NA_character_,
   summary_long = NA_character_,
   summary_short = NA_character_,
+  summary_source = NA_character_,
   hdx_url = NA_character_,
   source_url = NA_character_,
   other_urls = NA_character_,

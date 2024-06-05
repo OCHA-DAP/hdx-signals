@@ -149,6 +149,7 @@ generate_summary <- function(
     null_return = dplyr$tibble(
       summary_long = NA_character_,
       summary_short = NA_character_,
+      summary_source = NA_character_,
       .rows = nrow(df_alerts)
     ),
     empty = empty
