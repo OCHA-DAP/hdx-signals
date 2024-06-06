@@ -165,6 +165,7 @@ create_campaign <- function(
 
       template <- create_template$create_template(
         body = body,
+        banner_url = campaign_details$banner_url,
         archive_url = archive_url
       )
 
@@ -263,6 +264,7 @@ get_campaign_details <- function(indicator_id, campaign_date, test) {
       format(campaign_date, "_%Y_%m_%d"),
       "{names_paste}" # for glue within create_campaign()
     ),
-    folder = df_ind$mc_folder
+    folder = df_ind$mc_folder,
+    banner_url = df_ind$banner_url
   )
 }
