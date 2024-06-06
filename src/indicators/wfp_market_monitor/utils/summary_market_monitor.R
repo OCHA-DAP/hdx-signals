@@ -1,6 +1,5 @@
 box::use(dplyr)
 box::use(scales)
-box::use(rvest)
 
 #' Add campaign info to market monitor alerts
 #'
