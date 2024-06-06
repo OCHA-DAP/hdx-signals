@@ -170,15 +170,12 @@ create_campaign <- function(
         archive_url = archive_url
       )
 
-      # Check against automatically set variable
-      is_gh_actions <- Sys.getenv("GITHUB_ACTIONS") == "true"
-
       templates$mc_add_template(
         html = template,
         folder = campaign_details$folder,
         # only preview the archive template, not those with conditional logic
         # don't preview if running from within GitHub Actions
-        preview = archive && test && !is_gh_actions
+        preview = archive && test && interactive()
       )
     },
     error = function(e) {
