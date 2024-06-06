@@ -1,8 +1,7 @@
 In one sentence, please summarize the main reason for displacement
 reported in the following text. Here are two rules:
 
-- Avoid providing specific numbers or dates, just provide the general
-reasons behind the displacement and other key qualitative information.
+- Avoid providing specific numbers or dates.
 - Only use the information provided to you. If the information is limited, keep
 the summarization brief. 
 

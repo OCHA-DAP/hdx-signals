@@ -1,4 +1,5 @@
-Please condense the following information into a single 10 word line,similar to text you might see on a news ticker. Outputs could look likethe following 2 examples:'Armed attacks in the capital force residents to flee to the countryside' or'Instability due to gang activity drives displacement across the country'.
+Please condense the following information into a single 10 word line,similar to text you might see on a news ticker. Outputs could look likethe following 2 examples:
+'Armed attacks in the capital force residents to flee to the countryside' or'Instability due to gang activity drives displacement across the country'.
 
 Do not include the country name in the output.This output is invalid: 'Riverine floods in Burkina Faso destroys homes,
 displaces communities'

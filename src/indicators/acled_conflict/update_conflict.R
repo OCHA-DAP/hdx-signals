@@ -7,7 +7,7 @@ box::use(./utils/map_conflict)
 box::use(./utils/info_conflict)
 box::use(./utils/summary_conflict)
 
-box::use(../../alerts/generate_signals[generate_signals])
+box::use(../../alerts/generate_signals)
 box::use(../../utils/hs_logger)
 box::use(../../utils/update_coverage)
 
@@ -29,7 +29,7 @@ update_coverage$update_coverage(
 )
 
 # now generate signals
-df_conflict <- generate_signals(
+df_conflict <- generate_signals$generate_signals(
   df_wrangled = df_wrangled,
   df_raw = df_raw,
   indicator_id = indicator_id,

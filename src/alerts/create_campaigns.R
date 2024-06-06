@@ -102,7 +102,10 @@ create_campaigns <- function(
     dplyr$select(df_campaign_content, iso3, date),
     archive_df,
     email_df
-  )
+  ) |>
+    dplyr$mutate(
+      campaign_url_archive = paste(campaign_url_archive, iso3, sep = "#")
+    )
 
   # add the date of the campaign
   df_campaigns$campaign_date <- campaign_date
