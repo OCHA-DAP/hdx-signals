@@ -1,5 +1,4 @@
 box::use(dplyr)
-box::use(logger[log_info, log_debug])
 
 # indicator utilities
 box::use(./utils/raw_displacement)
@@ -14,7 +13,7 @@ box::use(../../alerts/generate_signals[generate_signals])
 box::use(../../utils/hs_logger)
 box::use(../../utils/update_coverage)
 
-test <- as.logical(Sys.getenv("HS_TEST", unset = FALSE))
+test <- as.logical(Sys.getenv("HS_TEST", unset = TRUE))
 test_filter <- if (test) c("AFG", "SSD") else NULL
 
 indicator_id <- "idmc_displacement_disaster"

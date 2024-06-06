@@ -23,7 +23,7 @@ add_summary <- function(text, source) {
     )
 
     text_block$add_text(
-      text = caveat,
+      text = text,
       header = "Situation summary",
       header_level = 3,
       pre_header_text = caveat,
