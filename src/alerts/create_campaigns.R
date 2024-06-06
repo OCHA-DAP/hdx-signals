@@ -159,6 +159,7 @@ create_campaign <- function(
         other_images_captions = df_campaign_content$other_images_captions,
         summary_long = df_campaign_content$summary_long,
         summary_short = df_campaign_content$summary_short,
+        summary_source = df_campaign_content$summary_source,
         further_information = df_campaign_content$further_information,
         use_conditions = !archive
       )

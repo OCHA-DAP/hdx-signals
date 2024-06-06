@@ -12,7 +12,7 @@ add_line <- function() {
   # nolint start
   '
 <tr>
-    <td style="background-color:#ffffff;padding-top:20px;padding-bottom:20px;padding-right:24px;padding-left:24px"
+    <td style="background-color:#ffffff;padding-top:0px;padding-bottom:20px;padding-right:24px;padding-left:24px"
         class="mceBlockContainer" valign="top">
         <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%"
             style="background-color:#ffffff;width:100%" role="presentation" class="mceDividerContainer"

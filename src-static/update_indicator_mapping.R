@@ -17,7 +17,7 @@ log_info("Updating indicator mapping...")
 df <- dplyr$tribble(
   ~indicator_id, ~mc_interest, ~mc_tag, ~mc_folder, ~indicator_title, ~indicator_subject, ~static_segment, ~banner_url,
   "idmc_displacement_conflict", "Conflict-driven displacement - IDMC", NA_character_, "HDX Signals - IDMC Conflict", "Conflict-driven displacement", "Conflict-driven displacement", 25093,  "https://mcusercontent.com/ea3f905d50ea939780139789d/images/9f24c42f-e363-9843-0789-c5a2ef4c1e94.png",
-  "idmc_displacement_disaster", "Disaster-driven displacement - IDMC", NA_character_, "HDX Signals - IDMC Disaster", "Disaster-driven displacement","Disaster-driven displacemen", 25097,  "https://mcusercontent.com/ea3f905d50ea939780139789d/images/9f24c42f-e363-9843-0789-c5a2ef4c1e94.png",
+  "idmc_displacement_disaster", "Disaster-driven displacement - IDMC", NA_character_, "HDX Signals - IDMC Disaster", "Disaster-driven displacement","Disaster-driven displacement", 25097,  "https://mcusercontent.com/ea3f905d50ea939780139789d/images/9f24c42f-e363-9843-0789-c5a2ef4c1e94.png",
   "ipc_food_insecurity", "Food insecurity - IPC/CH", NA_character_, "HDX Signals - IPC", "Food insecurity", "Food insecurity", 25101, "https://mcusercontent.com/ea3f905d50ea939780139789d/images/acc34c0e-ad04-3e80-a1a0-1c9a4a664926.png",
   "who_cholera", NA_character_, "CHOLERA", "HDX Signals - Cholera", "Cholera", "Cholera", 25105, "https://mcusercontent.com/ea3f905d50ea939780139789d/images/acc34c0e-ad04-3e80-a1a0-1c9a4a664926.png",
   "jrc_agricultural_hotspots", "Agricultural hotspots - JRC ASAP", NA_character_, "HDX Signals - JRC ASAP", "Agricultural hotspots", "Agricultural hotspots", 25109, "https://mcusercontent.com/ea3f905d50ea939780139789d/images/c13c0ad9-5a19-6bf1-b759-9cb83b37905e.png",
