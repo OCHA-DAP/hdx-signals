@@ -10,24 +10,22 @@ box::use(glue)
 #' @export
 add_line <- function() {
   # nolint start
-  '<table border="0" cellpadding="0" cellspacing="0" width="100%" class="mcnDividerBlock" style="min-width:100%;">
-    <tbody class="mcnDividerBlockOuter">
-        <tr>
-            <td class="mcnDividerBlockInner" style="min-width: 100%; padding: 18px;">
-                <table class="mcnDividerContent" border="0" cellpadding="0" cellspacing="0" width="100%" style="min-width: 100%;border-top-width: 1px;border-top-style: solid;border-top-color: #CCCCCC;">
-                    <tbody><tr>
-                        <td>
-                            <span></span>
-                        </td>
-                    </tr>
-                </tbody></table>
-<!--
-                <td class="mcnDividerBlockInner" style="padding: 18px;">
-                <hr class="mcnDividerContent" style="border-bottom-color:none; border-left-color:none; border-right-color:none; border-bottom-width:0; border-left-width:0; border-right-width:0; margin-top:0; margin-right:0; margin-bottom:0; margin-left:0;" />
--->
-            </td>
-        </tr>
-    </tbody>
-</table>'
+  '
+<tr>
+    <td style="background-color:#ffffff;padding-top:20px;padding-bottom:20px;padding-right:24px;padding-left:24px"
+        class="mceBlockContainer" valign="top">
+        <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%"
+            style="background-color:#ffffff;width:100%" role="presentation" class="mceDividerContainer"
+            data-block-id="84">
+            <tbody>
+                <tr>
+                    <td style="min-width:100%;border-top-width:2px;border-top-style:solid;border-top-color:#d6d6d6"
+                        class="mceDividerBlock" valign="top"></td>
+                </tr>
+            </tbody>
+        </table>
+    </td>
+</tr>
+  '
   # nolint end
 }
