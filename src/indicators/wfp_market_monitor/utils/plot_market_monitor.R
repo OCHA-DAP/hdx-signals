@@ -7,6 +7,7 @@ box::use(../../../utils/location_codes)
 box::use(../../../utils/formatters)
 box::use(../../../images/create_images)
 box::use(../../../images/plots/theme_signals)
+box::use(../../../images/plots/caption)
 
 #' Plot WFP market monitor food basket price changes
 #'
@@ -51,11 +52,9 @@ plot <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
 #'
 #' @returns Plot of cholera for that wrangled data
 food_basket_ts <- function(df_wrangled, df_raw, title, date) {
-  caption <- paste(
-    "Data from WFP Global Market Monitor, https://www.wfp.org/publications/market-monitor",
-    paste("Created", formatters$format_date(Sys.Date())),
-    location_codes$iso3_to_names(unique(df_wrangled$iso3)),
-    sep = "\n"
+  caption <- caption$caption(
+    indicator_id = "wfp_market_monitor",
+    iso3 = unique(df_wrangled$iso3)
   )
 
   df_plot <- df_wrangled |>

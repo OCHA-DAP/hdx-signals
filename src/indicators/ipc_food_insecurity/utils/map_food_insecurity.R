@@ -7,6 +7,7 @@ box::use(sf)
 box::use(../../../utils/location_codes)
 box::use(../../../utils/formatters)
 box::use(../../../images/create_images)
+box::use(../../../images/plots/caption)
 
 box::use(../../../images/maps/map_points)
 box::use(../../../images/maps/gg_map)
@@ -56,11 +57,10 @@ map <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
 #' @returns Plot of cholera for that wrangled data
 food_insecurity_map <- function(df_wrangled, df_raw, title, date) {
   iso3 <- unique(df_wrangled$iso3)
-  caption <- paste(
-    "Data from the IPC/CH, https://www.ipcinfo.org",
-    paste("Created", formatters$format_date(Sys.Date())),
-    location_codes$iso3_to_names(iso3),
-    sep = "\n"
+  caption <- caption$caption(
+    indicator_id = "ipc_food_insecurity",
+    iso3 = unique(df_wrangled$iso3),
+    map = TRUE
   )
 
   # get information for calling the IPC/CH API

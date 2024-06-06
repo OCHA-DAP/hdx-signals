@@ -10,6 +10,7 @@ box::use(ggrepel)
 box::use(../../../utils/location_codes)
 box::use(../../../utils/formatters)
 box::use(../../../images/plots/theme_signals)
+box::use(../../../images/plots/caption)
 box::use(../../../images/create_images)
 
 #' Plot IPC food insecurity
@@ -56,11 +57,9 @@ plot <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
 #'
 #' @returns Plot of cholera for that wrangled data
 food_insecurity_ts <- function(df_wrangled, df_raw, title, date) {
-  caption <- paste(
-    "Data from the IPC, https://www.ipcinfo.org",
-    paste("Created", formatters$format_date(Sys.Date())),
-    location_codes$iso3_to_names(unique(df_wrangled$iso3)),
-    sep = "\n"
+  caption <- caption$caption(
+    indicator_id = "ipc_food_insecurity",
+    iso3 = unique(df_wrangled$iso3)
   )
 
   df_plot <- df_wrangled |>
