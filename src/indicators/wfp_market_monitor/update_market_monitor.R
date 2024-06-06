@@ -6,7 +6,7 @@ box::use(./utils/plot_market_monitor)
 box::use(./utils/info_market_monitor)
 box::use(./utils/summary_market_monitor)
 
-box::use(../../alerts/generate_signals[generate_signals])
+box::use(../../alerts/generate_signals)
 box::use(../../utils/hs_logger)
 box::use(../../utils/update_coverage)
 
@@ -28,7 +28,7 @@ update_coverage$update_coverage(
 )
 
 # now generate signals
-generate_signals(
+generate_signals$generate_signals(
   df_wrangled = df_wrangled,
   df_raw = df_raw,
   indicator_id = "wfp_market_monitor",
