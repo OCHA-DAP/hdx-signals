@@ -11,7 +11,7 @@ box::use(cs = ../../../../src/utils/cloud_storage)
 #' @export
 info <- function(df_alerts, df_wrangled, df_raw) {
   # get links to point towards the IDMC website
-  df_links <- cs$read_az_file("input/idmc_country_links.parquet")
+  df_links <- cs$read_az_file("input/idmc_urls.csv")
 
   # get links for all the source urls to provide to the user
   df_source_links <- df_raw |>
@@ -72,7 +72,7 @@ info <- function(df_alerts, df_wrangled, df_raw) {
     ) |>
     dplyr$mutate(
       hdx_url = as.character(glue$glue("https://data.humdata.org/dataset/idmc-event-data-for-{tolower(iso3)}")),
-      source_url = as.character(glue$glue("https://www.internal-displacement.org/countries/{country_link}")),
+      source_url = url,
       n_text = dplyr$case_when(
         total_n == 1 ~ "report",
         total_n == 2 ~ "two reports",
