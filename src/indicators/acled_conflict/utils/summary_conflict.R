@@ -3,27 +3,7 @@ box::use(lubridate)
 box::use(purrr)
 
 box::use(../../../../src/utils/ai_summarizer)
-
-# prompts to be used below
-prompt_short <- readLines(
-  file.path(
-    "src",
-    "indicators",
-    "acled_conflict",
-    "prompts",
-    "short.txt"
-  )
-) |> paste(collapse = " ")
-
-prompt_long <- readLines(
-  file.path(
-    "src",
-    "indicators",
-    "acled_conflict",
-    "prompts",
-    "long.txt"
-  )
-) |> paste(collapse = " ")
+box::use(../../../../src/utils/get_prompts)
 
 #' Add campaign info to ACLED conflict data
 #'
@@ -31,6 +11,8 @@ prompt_long <- readLines(
 #'
 #' @export
 summary <- function(df_alerts, df_wrangled, df_raw) {
+  prompts <- get_prompts$get_prompts("acled_conflict")
+
   # get all the event info from the raw data for all the source urls to provide to the user
   df_event_info <- df_wrangled |>
     dplyr$select(
@@ -56,12 +38,12 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
     ) |>
     dplyr$mutate(
       summary_long = purrr$map2_chr(
-        .x = prompt_long,
+        .x = prompts$long,
         .y = event_info,
         .f = ai_summarizer$ai_summarizer
       ),
       summary_short = purrr$map2_chr(
-        .x = prompt_short,
+        .x = prompts,
         .y = summary_long,
         .f = ai_summarizer$ai_summarizer
       ),

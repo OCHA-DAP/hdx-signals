@@ -2,9 +2,11 @@ box::use(dplyr)
 box::use(purrr)
 box::use(rvest)
 box::use(stringr)
+box::use(glue)
 box::use(pdftools)
 
 box::use(../../../../src/utils/ai_summarizer)
+box::use(../../../../src/utils/get_prompts)
 
 #' Generate summary for food insecurity alerts
 #'
@@ -12,6 +14,11 @@ box::use(../../../../src/utils/ai_summarizer)
 #'
 #' @export
 summary <- function(df_alerts, df_wrangled, df_raw) {
+  prompts <- get_prompts$get_prompts(
+    indicator_id = "ipc_food_insecurity",
+    prompts = "short"
+  )
+
   df_alerts |>
     dplyr$mutate(
       summary_long = purrr$pmap_chr(
@@ -22,22 +29,9 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
         ),
         .f = ipc_ch_summarizer
       ),
-      prompt_short = paste(
-        "Please condense the following information into a single 10 word line,",
-        "similar to text you might see on a news ticker. Outputs could look like",
-        "the following 2 examples:",
-        "'Food insecurity in the capital worsens following failed rainy season' or",
-        "'Seasonal forecasts indicate deteriorating food security in the northwest'.",
-        "Do not include the country name in the output.",
-        "This output is invalid: 'Burkina Faso projected to experience worsening",
-        "food insecurity due to conflict, instability'.",
-        "Expect the reader to have no context, but this is",
-        "intended to capture their attention, so keep the messaging simple, clear",
-        "and punchy. Use only the information below in your summary:\n\n"
-      ),
       summary_short = purrr$pmap_chr(
         .l = list(
-          prompt = prompt_short,
+          prompt = prompts$short,
           info = summary_long,
           location = location
         ),
@@ -74,17 +68,21 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
 #'
 #' @param url URL for the analysis
 #' @param ch If `TRUE` it's a CH analysis, otherwise it's IPC
+#' @param location Name of the location
 #'
 #' @returns Summarized text data
 ipc_ch_summarizer <- function(url, ch, location) {
   if (is.na(url)) {
     return(NA_character_)
   } else if (ch) {
-    ch_summarizer(url = url, location = location)
+    txt <- ch_scraper(url = url)
+    org <- "ch"
   } else {
     txt <- ipc_scraper(url)
-    ipc_summarizer(txt)
+    org <- "ipc"
   }
+
+  text_summarizer(txt = txt, org = org)
 }
 
 #' Scrapes IPC URL for information
@@ -110,30 +108,25 @@ ipc_scraper <- function(url) {
 #'
 #' Scrapes the IPC webmaps for location reports.
 #'
-#' @param txt Text scraped from IPC website using `ipc_scraper()`
+#' @param txt Text scraped from IPC website using `ipc_scraper()` or sourced
+#'     from CH documents. The first value is used for recommendation summaries,
+#'     and the second value for situation summaries, because that is how the parsing
+#'     is returned from the IPC. It is just the same document for CH.
 #'
 #' @returns AI summarization
-ipc_summarizer <- function(txt) {
+text_summarizer <- function(txt, org) {
+  prompts <- get_prompts$get_prompts(
+    indicator_id = "ipc_food_insecurity",
+    prompts = glue$glue(c("{org}_recs", "{org}_sit_rep"))
+  )
+
   # feed these to the AI to get a summarization
   sit_rep <- ai_summarizer$ai_summarizer(
-    prompt = paste(
-      "Please shortly summarize the current food insecurity situation in 2 to 3",
-      "sentences. Expect the reader to be familiar with the terminology and general",
-      "context, but wants to know exactly what is happening",
-      "based on information provided. Avoid using",
-      "too many technical details, and just get the key points across.",
-      "Use the following data to generate the output --> "
-    ),
+    prompt = glue$glue(prompts[[1]]),
     info = txt[1]
   )
   recs <- ai_summarizer$ai_summarizer(
-    prompt =  paste(
-      "Please shortly summarize the key recommendations in 2 to 3",
-      "sentences. Expect the reader to be familiar with the terminology and general",
-      "context, but wants a quick summary of recommendations from the data.",
-      "Avoid using technical jargon and just get the key points across.",
-      "Use the following data to generate the output --> "
-    ),
+    prompt = glue$glue(prompts[[2]]),
     info = txt[2]
   )
 
@@ -164,40 +157,20 @@ ipc_summarizer <- function(txt) {
 #' Parses CH publications for information
 #'
 #' Since there are (typically) no location publications with specific links for the CH,
-#' each one is a URL of a PDF. We parse this and pass for summarization.
+#' each one is a URL of a PDF. We parse this very simply so it can be passed
+#' for summarisation.
 #'
 #' @param url URL to the PDF publications
 #'
 #' @returns Summary of text from the publication
-ch_summarizer <- function(url, location) {
+ch_scraper <- function(url) {
   # get text from the PDFs for info for AI prompt
-  info <- pdftools$pdf_text(url) |>
+  txt <- pdftools$pdf_text(url) |>
     paste(
       sep = "\n",
       collapse = "\n"
     )
 
-  prompt <- paste(
-    "I need a summary of the food security situation in",
-    location,
-    "based on the following document. The document is written in French, and about",
-    "multiple countries, but I only want information about",
-    location,
-    "in the summarization. There are a lot of random numbers in the text because",
-    "the text was scraped from a PDF with tables, so please just focus on the",
-    "explanatory text, not numeric figures. Assume the reader is familiar with",
-    "food insecurity and general",
-    "context, but wants to know what is happening based on this report, and also",
-    "interested in what actions are recommended. Please produce a text summary",
-    "with two sections, Overview:, which provides a general situation summary",
-    "and recommendations, which is the recommendation actions, both for",
-    location,
-    ". The final format should look like:",
-    "'<b>Overview</b>:<br><br> {overview text}<br><br><b>Recommendations</b>:<br><br> {recommendations text}',",
-    "usingHTML <br> tags to add lines to the output and bold tags on the headings.",
-    "Ensure that the outputs {overview text} and {recommendations text} are",
-    "limited in length to 3 sentences, 4 at most.",
-    "Here is the information to use for summarization --> "
-  )
-  ai_summarizer$ai_summarizer(info = info, prompt = prompt)
+  # same text needs to be used for recommendations and summarisations
+  c(txt, txt)
 }

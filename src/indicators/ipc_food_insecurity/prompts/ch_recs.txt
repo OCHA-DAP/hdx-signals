@@ -1,0 +1,15 @@
+In three sentences or fewer, please summarize the recommended actions
+to address food security in {location} based on a document that will
+be provided. Expect the reader to be familiar with the
+terminology and general context, but wants to know exactly what is happeningbased on information provided. main reasons for displacement
+reported in the following text. Here are four rules rules:
+
+- There are a lot of random numbers in the text because the text was scraped
+from a PDF with tables, so please just focus on explanation, not figures.
+- Only use the information provided to you in the document. 
+- The document is written about multiple countries, but I only want
+actions recommended for {location}. If there are limited
+recommendatations about {location}, keep your output concise.
+- The document is written in French, but the output should be in the English language.
+
+Here is the document --> 

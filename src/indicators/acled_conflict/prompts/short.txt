@@ -1,8 +1,13 @@
 Please condense the following information into a single 10 word line,
 similar to text you might see on a news ticker. Outputs could look like
 the following 2 examples:
-'Conflict between agropasturalists surges in the northwest' or
-'Military offensive in the south sees surge in fatalities'.
+'Tropical storm threatens crop harvest, exacerbating socio-economic driven food insecurity' or 
+'Rainfall patterns have improved, but poor vegetation conditions continue in the south'.
+
+Do not include the country name in the output.This output is invalid: 'Long-term drought conditions persists in South Sudan'
+
 Expect the reader to have no context, but this is
 intended to capture their attention, so keep the messaging simple, clear
-and punchy. Use only the information below in your summary:\n\n
+and punchy.
+
+Only use the following information in your summary --> 
