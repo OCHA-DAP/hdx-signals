@@ -4,7 +4,6 @@ box::use(gghdx)
 box::use(dplyr)
 
 box::use(./theme_signals)
-box::use(../../utils/formatters)
 
 #' Plot time series data
 #'
@@ -48,7 +47,7 @@ plot_ts <- function(
       color = gghdx$hdx_hex("sapphire-hdx")
     ) +
     gghdx$scale_y_continuous_hdx(
-      labels = formatters$format_key_figures,
+      labels = gghdx$label_number_hdx(),
     ) +
     gg$scale_x_date(
       breaks = scales$pretty_breaks(),
