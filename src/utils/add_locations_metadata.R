@@ -39,5 +39,5 @@ add_locations_metadata <- function(df) {
 
 df_metadata <- cs$read_az_file("input/locations_metadata.parquet") |>
   dplyr$select(
-    iso3, location, region, hrp_location, lat, lon
+    iso3, location, region, hrp_location, boundary_source, lat, lon
   )
