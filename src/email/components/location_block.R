@@ -59,9 +59,8 @@ add_location <- function(
       .y = stringr$str_split(other_images_captions, ";"),
       .f = \(src, caption) image_block$add_image(src = src, caption = caption)
     ),
-    summary_block$add_summary(text = summary_long, source = summary_source),
     further_info_block$add_further_info(text = further_information),
-    line_block$add_line()
+    summary_block$add_summary(text = summary_long, source = summary_source)
   ) |>
     conditional_merge$conditional_merge(
       iso3 = iso3,
