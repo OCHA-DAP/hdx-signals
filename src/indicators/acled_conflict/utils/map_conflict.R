@@ -84,7 +84,7 @@ conflict_map <- function(df_wrangled, df_raw, title, date) {
     df = sf_raw,
     val_col = "fatalities",
     size = "Fatalities",
-    subtitle = title,
+    title = title,
     caption = caption,
     use_map_settings = TRUE
   )

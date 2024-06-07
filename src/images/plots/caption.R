@@ -24,15 +24,20 @@ caption <- function(indicator_id, iso3, map = FALSE) {
       "; Boundaries - ",
       df_metadata$boundary_source[df_metadata$iso3 == iso3]
     )
+    map_caveat <- paste(
+      "The boundaries and names shown and the designations used on this map",
+      "do not imply official endorsement or acceptance by the United Nations.",
+      sep = "\n"
+    )
   } else {
     map_source <- ""
+    map_caveat <- ""
   }
 
   glue$glue(
-    "Data source: {ind_source}{map_source}",
-    "Created {formatters$format_date(Sys.Date())}",
-    "{location_codes$iso3_to_names(iso3)}",
-    .sep = "\n"
+    "Data source: {ind_source}{map_source}\n",
+    "{location_codes$iso3_to_names(iso3)}, created {formatters$format_date(Sys.Date())}",
+    "\n{map_caveat}"
   )
 }
 
