@@ -8,11 +8,9 @@ box::use(purrr)
 box::use(../../../src/utils/all_iso3_codes)
 box::use(./map_test)
 
-all_iso3 <- all_iso3_codes$all_iso3_codes()
-
-all_iso3 |>
   purrr$map(
-    \(iso3) {
+    .x = all_iso3_codes$all_iso3_codes(),
+    .f = \(iso3) {
       map_test$map_test(
         iso3 = iso3,
         sample_n = 1:20,
