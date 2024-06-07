@@ -260,6 +260,7 @@ save_core_signals_hdx <- function(df) {
     other_images = other_images_urls,
     summary_long,
     summary_short,
+    summary_source,
     hdx_url,
     source_url,
     other_urls,
@@ -270,7 +271,6 @@ save_core_signals_hdx <- function(df) {
 
   cs$update_az_file(
     df = df,
-    name = "output/signals.csv",
-    blob = "dev"
+    name = "output/signals.csv"
   )
 }
