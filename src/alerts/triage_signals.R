@@ -231,6 +231,20 @@ read_core_signals <- function() {
   }
 }
 
+#' Triggers a Github Actions HDX pipeline workflow
+#'
+#' Uses a webhook event to trigger a workflow run in GithubActions via the dispatch method.
+#' @param link Url directing to the workflow dispatch event
+#' @param auth_key Authorization key to the github repository.
+trigger_hdx_pipeline <- function(link, auth_key) {
+  df <- list(event_type="webhook")
+  httr::POST(url = link,
+             body =  jsonlite::toJSON(df, pretty = T, auto_unbox = T),
+             httr::add_headers(`accept` = 'application/vnd.github.v3+json'),
+             httr::add_headers(`authorization` = auth_key),
+             httr::content_type('application/json'))
+}
+
 #' Save core signals data for HDX
 #'
 #' Filters the core signals data for HDX and then saves to `dev` for use in HDX.
