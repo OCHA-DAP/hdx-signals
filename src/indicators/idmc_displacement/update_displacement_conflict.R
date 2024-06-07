@@ -1,5 +1,4 @@
 box::use(dplyr)
-box::use(logger[log_info, log_debug])
 
 # indicator utilities
 box::use(./utils/raw_displacement)
@@ -10,7 +9,10 @@ box::use(./utils/info_displacement)
 box::use(./utils/summary_displacement)
 box::use(./utils/map_displacement)
 
-box::use(../../alerts/generate_signals[generate_signals])
+box::use(../../alerts/generate_signals)
+box::use(../../alerts/triage_signals)
+
+
 box::use(../../utils/hs_logger)
 box::use(../../utils/update_coverage)
 
@@ -34,7 +36,7 @@ update_coverage$update_coverage(
   iso3 = df_wrangled$iso3
 )
 
-df_conflict <- generate_signals(
+df_conflict <- generate_signals$generate_signals(
   df_wrangled = df_wrangled,
   df_raw = df_raw,
   indicator_id = indicator_id,

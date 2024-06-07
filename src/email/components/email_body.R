@@ -86,7 +86,7 @@ create_body <- function(
         "<a href='https://github.com/OCHA-DAP/hdx-signals'>GitHub</a>. Provide ",
         "feedback through our <a href='{Sys.getenv('HS_SURVEY_LINK')}'>",
         "user survey</a>, or reach out to <a href='mailto:{Sys.getenv('HS_EMAIL')}",
-        "'>{Sys.getenv('HS_EMAIL')}</a> with any questions, comments, or other",
+        "'>{Sys.getenv('HS_EMAIL')}</a> with any questions, comments, or other ",
         "feedback."
       )
     )

@@ -2,7 +2,6 @@ box::use(dplyr)
 box::use(readr)
 box::use(tidyr)
 box::use(stringr)
-box::use(ripc)
 box::use(rvest)
 
 #' Creates food insecurity alerts dataset
@@ -17,13 +16,21 @@ alert <- function(df_wrangled) {
   # get general alerts
   df_alerts <- df_wrangled |>
     dplyr$filter(
-      phase %in% c("p3plus", "p4plus", "phase5"),
-      `percentage-current` > `percentage-current_lag` |
-        `percentage-current` < `percentage-projected` |
-        `percentage-current` < `percentage-second_projected` |
+        phase == "p3plus" & `percentage-current` >= 0.2 |
+        phase == "p3plus" & `percentage-projected` >= 0.2 |
+        phase == "p3plus" & `percentage-second_projected` >= 0.2 |
+        phase == "p4plus" & `percentage-current` >= 0.05 |
+        phase == "p4plus" & `percentage-projected` >= 0.05 |
+        phase == "p4plus" & `percentage-second_projected` >= 0.05 |
         phase == "phase5" & `percentage-current` > 0 |
         phase == "phase5" & `percentage-projected` > 0 |
         phase == "phase5" & `percentage-second_projected` > 0
+    ) |>
+    dplyr$filter(
+      `percentage-current` > `percentage-current_lag` & compare_current |
+        !compare_current |
+        `percentage-current` < `percentage-projected` |
+        `percentage-current` < `percentage-second_projected`
     ) |>
     dplyr$select(
       -starts_with("plot_date")
@@ -61,9 +68,7 @@ alert <- function(df_wrangled) {
       ),
       phase_level = ifelse(phase_level == 5, "5", paste0(phase_level, "+")),
       analysis_id,
-      title,
-      title_suffix,
-      analysis_area,
+      analysis_area = `analysis_area-current`,
       link
     )
 

@@ -10,7 +10,7 @@ box::use(glue)
 #' @export
 add_line <- function() {
   # nolint start
-  '
+  glue$glue('
 <tr>
     <td style="background-color:#ffffff;padding-top:0px;padding-bottom:20px;padding-right:24px;padding-left:24px"
         class="mceBlockContainer" valign="top">
@@ -19,7 +19,7 @@ add_line <- function() {
             data-block-id="84">
             <tbody>
                 <tr>
-                    <td style="min-width:100%;border-top-width:2px;border-top-style:solid;border-top-color:#d6d6d6"
+                    <td style="min-width:100%;border-top-width:3px;border-top-style:solid;border-top-color:#d6d6d6"
                         class="mceDividerBlock" valign="top"></td>
                 </tr>
             </tbody>
@@ -27,5 +27,6 @@ add_line <- function() {
     </td>
 </tr>
   '
+  )
   # nolint end
 }

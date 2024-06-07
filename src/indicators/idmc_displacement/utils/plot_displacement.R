@@ -65,7 +65,7 @@ displacement_ts <- function(df_wrangled, df_raw, title, date) {
   plot_ts$plot_ts(
     df = dplyr$filter(df_plot, !is.na(displacement_30d)),
     val_col = "displacement_30d",
-    y_axis = "Displacement (monthly)",
+    y_axis = "Displacements (monthly)",
     title = title,
     subtitle = "",
     caption = caption
