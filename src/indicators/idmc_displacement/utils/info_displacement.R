@@ -73,6 +73,14 @@ info <- function(df_alerts, df_wrangled, df_raw) {
     dplyr$mutate(
       hdx_url = as.character(glue$glue("https://data.humdata.org/dataset/idmc-event-data-for-{tolower(iso3)}")),
       source_url = url,
+      source_url_info = ifelse(
+        is.na(url),
+        ".",
+        glue$glue(
+          ', and see the ',
+          '<a href="{source_url}">IDMC page</a> for more information.'
+        )
+      ),
       n_text = dplyr$case_when(
         total_n == 1 ~ "report",
         total_n == 2 ~ "two reports",
@@ -81,8 +89,7 @@ info <- function(df_alerts, df_wrangled, df_raw) {
       ),
       further_information = as.character(
         glue$glue(
-          'Access the data directly <a href="{hdx_url}">on HDX</a>, and see the ',
-          '<a href="{source_url}">IDMC page</a> for more information. ',
+          'Access the data directly <a href="{hdx_url}">on HDX</a>{source_url_info} ',
           "Get context from the {n_text} sourced by the IDMC:",
           "\n\n{other_urls_html}"
         )
