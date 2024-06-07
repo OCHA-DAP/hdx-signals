@@ -1,8 +1,7 @@
 box::use(dplyr)
 box::use(purrr)
-box::use(rlang[`!!`])
-box::use(scales)
 box::use(lubridate)
+box::use(gghdx)
 
 box::use(../../../utils/location_codes)
 box::use(../../../utils/formatters)
@@ -23,7 +22,7 @@ plot <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
   df_plot <- df_alerts |>
     dplyr$mutate(
       title = paste0(
-        scales$label_comma()(value),
+        gghdx$format_number_hdx(value),
         " conflict fatalities since ",
         formatters$format_date(date - lubridate$days(30))
       )

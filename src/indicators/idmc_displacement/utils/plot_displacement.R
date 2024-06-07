@@ -1,10 +1,7 @@
 box::use(dplyr)
-box::use(purrr)
-box::use(rlang[`!!`])
-box::use(scales)
+box::use(gghdx)
 box::use(lubridate)
 
-box::use(../../../utils/location_codes)
 box::use(../../../utils/formatters)
 box::use(../../../images/plots/plot_ts)
 box::use(../../../images/plots/caption)
@@ -26,7 +23,7 @@ plot <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
   df_plot <- df_alerts |>
     dplyr$mutate(
       title = paste0(
-        scales$label_comma()(round(value)),
+        gghdx$format_number_hdx(round(value)),
         " internal displacements due to ",
         displacement_cause,
         " since ",
