@@ -62,8 +62,8 @@ map_test <- function(
     gg$ggsave(
       filename = fp,
       plot = p,
-      width = df_ms$width,
-      height = df_ms$height,
+      width = 6,
+      height = 4,
       units = "in",
       bg = "white"
     )

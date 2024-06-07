@@ -16,7 +16,7 @@ box::use(./map_test)
         sample_n = 1:20,
         sample_values = 1:20000,
         use_bbox = TRUE,
-        out_dir = "map_test"
+        out_dir = "/Users/caldwellst/Desktop/map_test3"
       )
     }
   )

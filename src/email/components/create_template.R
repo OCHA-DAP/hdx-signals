@@ -20,7 +20,7 @@ box::use(./email_body)
 #'     archive.
 #' @returns String of the new HTML template
 create_template <- function(body, banner_url, archive_url = "*|ARCHIVE|*") {
-  template <- readLines("src/email/components/hdx_signals_template_v3.html", warn = FALSE) |>
+  template <- readLines("src/email/components/hdx_signals_template.html", warn = FALSE) |>
     paste(
       collapse = "\n"
     )
