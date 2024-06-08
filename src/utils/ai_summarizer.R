@@ -146,5 +146,5 @@ insistent_ai <- purrr$insistently(
       )$choices$message.content
     }
   },
-  rate = purrr$rate_delay(pause = 3, max_times = 5)
+  rate = purrr$rate_delay(pause = 1, max_times = 25)
 )
