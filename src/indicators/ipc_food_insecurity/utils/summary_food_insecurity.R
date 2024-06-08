@@ -30,13 +30,17 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
         ),
         .f = ipc_ch_summarizer
       ),
-      summary_short = purrr$pmap_chr(
-        .l = list(
-          prompt = prompts$short,
-          info = summary_long,
-          location = location
-        ),
-        .f = ai_summarizer$ai_summarizer_without_location
+      summary_short = ifelse(
+        is.na(summary_long),
+        plot_title, # use the plot title if no text to summarize
+        purrr$pmap_chr(
+          .l = list(
+            prompt = prompts$short,
+            info = summary_long,
+            location = location
+          ),
+          .f = ai_summarizer$ai_summarizer_without_location
+        )
       ),
       summary_short = ifelse(
         phase_level == "5",
@@ -46,10 +50,10 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
         ),
         summary_short
       ),
-      summary_source = ifelse(
-        ch,
-        "CH reports",
-        "IPC analyses"
+      summary_source = dplyr$case_when(
+        is.na(summary_long) ~ NA_character_,
+        ch ~ "CH reports",
+        .default = "IPC analyses"
       )
     ) |>
     dplyr$select(
@@ -81,7 +85,7 @@ ipc_ch_summarizer <- function(url, ch, location) {
   } else {
     txt <- ipc_scraper(url)
     # check that scraping was successful and exit early if not
-    if (length(txt) == 0 || all(is.na(txt))) {
+    if (length(txt) == 0 || all(is.na(txt)) || (length(txt) == 1 && nchar(txt) < 100)) {
       return(NA_character_)
     }
     org <- "ipc"

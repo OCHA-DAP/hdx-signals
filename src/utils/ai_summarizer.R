@@ -29,6 +29,10 @@ hs_logger$configure_logger()
 #' @export
 ai_summarizer_without_location <- function(prompt, info, location) {
   ai_summary <- ai_summarizer(prompt = prompt, info = info)
+  if (is.na(ai_summary)) {
+    return(NA_character_)
+  }
+
   if (stringr$str_detect(ai_summary, location)) {
     ai_summary <- ai_summarizer(
       prompt = paste0(
@@ -70,8 +74,14 @@ ai_summarizer_without_location <- function(prompt, info, location) {
 #'
 #' @export
 ai_summarizer <- function(prompt, info) {
+  # pass NA directly out
+  if (is.na(info)) {
+    return(NA_character_)
+  }
+
   nchars <- nchar(info)
   total_nchar <- sum(nchars)
+
   if (total_nchar > 120000) {
     # if a single block of text, split on new lines and sentences
     # so we can pass in separate chunks to the AI
