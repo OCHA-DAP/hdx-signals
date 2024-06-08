@@ -37,7 +37,7 @@ df_ipc <- generate_signals$generate_signals(
   summary_fn = summary_food_insecurity$summary,
   map_fn = map_food_insecurity$map,
   info_fn = info_food_insecurity$info,
-  test = FALSE,
+  test = test,
   test_filter = test_filter,
-  first_run = TRUE
+  first_run = first_run
 )
