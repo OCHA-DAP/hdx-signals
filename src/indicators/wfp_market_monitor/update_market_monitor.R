@@ -28,7 +28,7 @@ update_coverage$update_coverage(
 )
 
 # now generate signals
-generate_signals$generate_signals(
+df_market_monitor <- generate_signals$generate_signals(
   df_wrangled = df_wrangled,
   df_raw = df_raw,
   indicator_id = "wfp_market_monitor",

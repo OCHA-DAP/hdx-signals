@@ -1,7 +1,8 @@
 box::use(glue)
 
 box::use(./text_block)
-box::use(./missing[missing_text])
+box::use(./line_block)
+box::use(./missing)
 
 #' Summary block
 #'
@@ -11,8 +12,8 @@ box::use(./missing[missing_text])
 #'
 #' @export
 add_summary <- function(text, source) {
-  if (missing_text(text)) {
-    ""
+  if (missing$missing_text(text)) {
+    line_block$add_line() # need line to break up country blocks if no summary
   } else {
     caveat <- glue$glue(
       '<em><span style="font-size: 14px">The text below and introductory headlines were ',

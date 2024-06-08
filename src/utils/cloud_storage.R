@@ -204,7 +204,7 @@ blob_prod <- function() {
   )
   az$blob_container(
     endpoint = blob_endpoint_prod,
-    name = "hdx-signals-mc"
+    name = "hdx-signals"
   )
 }
 
