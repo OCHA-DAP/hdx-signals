@@ -98,7 +98,10 @@ preview_signals <- function(df, n_campaigns) {
   if (n_campaigns == 0) {
     return(invisible(NULL))
   }
-  urls <- df$campaign_url_archive
+  # get unique campaign URLs (so exclude jump link to country)
+  urls <- df$campaign_url_archive |>
+    stringr$str_remove("#[A-Z]{3}$") |>
+    unique()
   url_list <- split(urls, ceiling(seq_along(urls) / n_campaigns))
   purrr$walk(
     .x = url_list,
