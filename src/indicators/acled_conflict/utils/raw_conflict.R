@@ -39,11 +39,7 @@ raw <- function(first_run = FALSE) {
     log_debug("ACLED data already downloaded today. Using existing raw.parquet file on Azure")
     cs$read_az_file("output/acled_conflict/raw.parquet")
   } else {
-    if (first_run) {
-      start_date <- "2018-01-01"
-    } else {
-      start_date <- as.character(Sys.Date() - lubridate$days(1500))
-    }
+    start_date <- "2018-01-01"
 
     log_debug(paste0("Downloading ACLED data since ", start_date))
     df_acled <- httr2$request(
