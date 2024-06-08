@@ -130,7 +130,6 @@ text_summarizer <- function(txt, org) {
   )
 
   # feed these to the AI to get a summarization
-  # use tryCatch in the rare case where after retries no summarization is generatable
   sit_rep <- ai_summarizer$ai_summarizer(
     prompt = glue$glue(prompts[[1]]),
     info = txt[1]

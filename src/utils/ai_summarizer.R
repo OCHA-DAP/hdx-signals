@@ -109,9 +109,9 @@ ai_summarizer <- function(prompt, info) {
     # put all info into a single string
     if (length(info) > 1) {
       info <- paste(info, collapse = "\n")
-    )
+    }
 
-    # use tryCatch for the rare cases where after retries no summarization is generatable
+    # use tryCatch in the rare case where after retries no summarization is generatable
     ai_summary <- tryCatch(
       insistent_ai(prompt, info),
       error = \(e) NA_character_
