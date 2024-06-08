@@ -104,7 +104,8 @@ food_insecurity_map <- function(df_wrangled, df_raw, title, date) {
   )
 
   # make sure we catch for the few instances where no map is available via API
-  if (is.null(sf_ipc)) return(NA)
+  # use NULL because `is.null()` is not vectorized, so easier than `NA`
+  if (is.null(sf_ipc)) return(NULL)
 
   # if points available, separate those out
   geom_type <- sf$st_geometry_type(sf_ipc)

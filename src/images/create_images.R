@@ -95,7 +95,7 @@ create_image <- function(
   p <- image_fn(df_wrangled, df_raw, title, date)
 
   # allow `image_fn` to return NA if some maps can fail to generate without error
-  if (is.na(p)) {
+  if (is.null(p)) {
     return(
       data.frame(
         id = NA_character_,
