@@ -81,7 +81,7 @@ ipc_ch_summarizer <- function(url, ch, location) {
   } else {
     txt <- ipc_scraper(url)
     # check that scraping was successful and exit early if not
-    if (length(txt) == 0 | is.na(txt)) {
+    if (length(txt) == 0 || all(is.na(txt))) {
       return(NA_character_)
     }
     org <- "ipc"
