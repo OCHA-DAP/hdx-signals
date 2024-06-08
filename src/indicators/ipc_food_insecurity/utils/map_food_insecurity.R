@@ -3,6 +3,7 @@ box::use(stringr)
 box::use(gg = ggplot2)
 box::use(ripc)
 box::use(sf)
+box::use(logger)
 
 box::use(../../../utils/location_codes)
 box::use(../../../utils/formatters)
@@ -57,6 +58,7 @@ map <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
 #' @returns Plot of cholera for that wrangled data
 food_insecurity_map <- function(df_wrangled, df_raw, title, date) {
   iso3 <- unique(df_wrangled$iso3)
+  logger$log_info(iso3)
   caption <- caption$caption(
     indicator_id = "ipc_food_insecurity",
     iso3 = unique(df_wrangled$iso3),
@@ -100,7 +102,7 @@ food_insecurity_map <- function(df_wrangled, df_raw, title, date) {
   sf_points <- dplyr$filter(sf_ipc, geom_type == "POINT")
   sf_areas <- dplyr$filter(sf_ipc, geom_type != "POINT")
 
-  gg_map$gg_map(iso3) +
+  p <- gg_map$gg_map(iso3) +
     gg$geom_sf(
       data = sf_areas,
       mapping = gg$aes(
@@ -109,25 +111,31 @@ food_insecurity_map <- function(df_wrangled, df_raw, title, date) {
       color = "white",
       linewidth = 0.1
     ) +
-    geom_cities$geom_cities(iso3) +
-    gg$geom_sf(
-      data = sf_points,
-      mapping = gg$aes(
-        fill = overall_phase,
-        shape = point_type
-      ),
-      color = "black"
-    ) +
-    gg$scale_shape_manual(
-      values = c(
-        "Urban" = 21,
-        "IDP" = 22,
-        "Refugee" = 23,
-        "Rural" = 24,
-        "Household group" = 25
-      ),
+    geom_cities$geom_cities(iso3)
 
-    ) +
+  # only map points if there are any, avoids warnings for missing scales
+  if (nrow(sf_points) > 0) {
+    p <- p +
+      gg$geom_sf(
+        data = sf_points,
+        mapping = gg$aes(
+          fill = overall_phase,
+          shape = point_type
+        ),
+        color = "black"
+      ) +
+      gg$scale_shape_manual(
+        values = c(
+          "Urban" = 21,
+          "IDP" = 22,
+          "Refugee" = 23,
+          "Rural" = 24,
+          "Household group" = 25
+        )
+      )
+  }
+
+  p +
     gg$scale_fill_manual(
       values = c(
         "0" = "#FFFFFF",

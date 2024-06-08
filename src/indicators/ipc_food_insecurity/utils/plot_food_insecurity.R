@@ -8,6 +8,7 @@ box::use(readr)
 box::use(ggrepel)
 box::use(utils)
 box::use(glue)
+box::use(logger)
 
 box::use(../../../images/plots/theme_signals)
 box::use(../../../images/plots/caption)
@@ -61,6 +62,8 @@ food_insecurity_ts <- function(df_wrangled, df_raw, title, date) {
     indicator_id = "ipc_food_insecurity",
     iso3 = unique(df_wrangled$iso3)
   )
+
+  logger$log_info(unique(df_wrangled$iso3))
 
   # only plot the points that are comparable to the latest
   df_plot <- df_wrangled |>
@@ -121,28 +124,40 @@ food_insecurity_ts <- function(df_wrangled, df_raw, title, date) {
       plot_date = plot_date + lubridate$month(6)
     )
 
-  gg$ggplot(
+  p <- gg$ggplot(
     mapping = gg$aes(
       x = plot_date,
       y = percentage,
       color = phase
     )
-  ) +
-    gg$geom_line(
-      data = df_current,
-      linewidth = 0.7
-    ) +
+  )
+
+  # only add current line if sufficient data (more than one analysis available)
+  if (length(unique(df_current$plot_date)) > 1) {
+    p <- p +
+      gg$geom_line(
+        data = df_current,
+        linewidth = 0.7
+      )
+  }
+
+  # some analyses don't have projections, so don't plot line or points in this case
+  if (length(unique(df_projected$type)) > 1) {
+    p <- p +
+      gg$geom_line(
+        data = df_projected,
+        linetype = 2,
+        linewidth = 0.7
+      ) +
+      gg$geom_point(
+        data = dplyr$filter(df_projected, plot_date == max(plot_date, as.Date("1500-01-01"))),
+        size = 3
+      )
+  }
+
+  p +
     gg$geom_point(
       data = dplyr$filter(df_current, plot_date == max(plot_date, as.Date("1500-01-01"))),
-      size = 3
-    ) +
-    gg$geom_line(
-      data = df_projected,
-      linetype = 2,
-      linewidth = 0.7
-    ) +
-    gg$geom_point(
-      data = dplyr$filter(df_projected, plot_date == max(plot_date, as.Date("1500-01-01"))),
       size = 3
     ) +
     ggrepel$geom_text_repel(
