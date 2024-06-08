@@ -1,9 +1,11 @@
 box::use(dplyr)
 box::use(lubridate)
 box::use(purrr)
+box::use(stringr)
 
 box::use(../../../../src/utils/ai_summarizer)
 box::use(../../../../src/utils/get_prompts)
+box::use(../../../../src/utils/parse_pdf)
 
 #' Add campaign info to cholera alerts
 #'
@@ -19,11 +21,12 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
       iso3,
       displacement_start_date,
       displacement_end_date,
-      event_info
+      event_info,
+      event_url
     )
 
   # now join together and get summarizations
-  df_summary <- df_alerts |>
+  df_joined <- df_alerts |>
     dplyr$full_join(
       df_event_info,
       by = "iso3"
@@ -33,15 +36,34 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
       displacement_end_date >= date - lubridate$days(30),
       # keep recent reports for monitoring
       displacement_start_date <= date | (Sys.Date() - displacement_start_date <= 90 & Sys.Date() - date <= 90)
-    ) |>
+    )
+
+  # only extract url info when we can to avoid users
+  df_joined$url_info <- NA_character_
+  valid_pdfs <- stringr$str_detect(df_joined$event_url, "\\.pdf$")
+  df_joined$url_info[valid_pdfs] <- purrr$map_chr(
+    .x = df_joined$event_url[valid_pdfs],
+    .f = parse_pdf$parse_pdf
+  )
+
+  df_summary <- df_joined |>
     dplyr$summarize(
       event_info = paste(event_info, collapse = " "),
+      url_info = paste(url_info[!is.na(url_info)], collapse = "\n"),
       .groups = "drop"
     ) |>
     dplyr$mutate(
+      overall_info = ifelse(
+        url_info == "",
+        event_info,
+        paste0(
+          event_info,
+          ". Here is additional raw text sourced directly from original PDFs --> "
+        )
+      ),
       summary_long = purrr$map2_chr(
         .x = prompts$long,
-        .y = event_info,
+        .y = overall_info,
         .f = ai_summarizer$ai_summarizer
       ),
       summary_short = purrr$map2_chr(
