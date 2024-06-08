@@ -24,8 +24,8 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
       summary_long = purrr$pmap_chr(
         .l = list(
           url = link,
-          location = location,
-          ch = ch
+          ch = ch,
+          location = location
         ),
         .f = ipc_ch_summarizer
       ),
@@ -117,7 +117,7 @@ ipc_scraper <- function(url) {
 text_summarizer <- function(txt, org) {
   prompts <- get_prompts$get_prompts(
     indicator_id = "ipc_food_insecurity",
-    prompts = glue$glue(c("{org}_recs", "{org}_sit_rep"))
+    prompts = paste0(org, c("_recs", "_sit_rep"))
   )
 
   # feed these to the AI to get a summarization

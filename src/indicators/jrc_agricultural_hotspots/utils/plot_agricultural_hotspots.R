@@ -109,15 +109,18 @@ hotspots_ts <- function(df_wrangled, df_raw, title, date) {
     ) +
     gg$coord_equal() +
     gg$guides(
-      fill = gg$guide_legend(byrow = TRUE)
+      fill = gg$guide_legend(
+        byrow = TRUE,
+        show.legend = TRUE
+      )
     ) +
     gg$theme(
       legend.title = gg$element_blank(),
-      axis.title   = gg$element_blank(),
+      axis.title = gg$element_blank(),
       panel.grid = gg$element_blank(),
       legend.position = "left",
       legend.direction = "vertical",
-      legend.spacing.x = gg$unit(x = 0.1, units = "in"),
+      legend.spacing.y = gg$unit(x = 0.1, units = "in"),
       axis.line.x = gg$element_blank()
     )
 }

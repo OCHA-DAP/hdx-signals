@@ -28,7 +28,6 @@ alert <- function(df_wrangled) {
     ) |>
     dplyr$filter(
       `percentage-current` > `percentage-current_lag` & compare_current |
-        !compare_current |
         `percentage-current` < `percentage-projected` |
         `percentage-current` < `percentage-second_projected`
     ) |>
@@ -60,7 +59,7 @@ alert <- function(df_wrangled) {
       date,
       alert_level_numeric = as.integer(pmin(phase_level - 2, 2)),
       value,
-      type = ifelse(stringr$str_detect(name, "projected"), "projected", "estimated"),
+      type = ifelse(stringr$str_detect(name, "projected"), "projected", "current"),
       map_date = ifelse(
         type == "projected" & !is.na(`map_date-projected`),
         `map_date-projected`,

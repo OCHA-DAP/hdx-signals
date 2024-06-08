@@ -6,9 +6,9 @@ box::use(gghdx)
 box::use(lubridate)
 box::use(readr)
 box::use(ggrepel)
+box::use(utils)
+box::use(glue)
 
-box::use(../../../utils/location_codes)
-box::use(../../../utils/formatters)
 box::use(../../../images/plots/theme_signals)
 box::use(../../../images/plots/caption)
 box::use(../../../images/create_images)
@@ -29,9 +29,9 @@ plot <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
     dplyr$mutate(
       title = paste0(
         scales$label_percent(accuracy = 1)(value),
-        " of the population ",
+        " of the ",
         type,
-        " to be in P",
+        " analyzed population in P",
         phase_level
       )
     )
@@ -62,7 +62,17 @@ food_insecurity_ts <- function(df_wrangled, df_raw, title, date) {
     iso3 = unique(df_wrangled$iso3)
   )
 
+  # only plot the points that are comparable to the latest
   df_plot <- df_wrangled |>
+    dplyr$group_by(
+      phase
+    ) |>
+    dplyr$mutate( # only keep rows that are comparable
+      compare_filter = cumsum(
+        compare_current != dplyr$lead(compare_current, default = utils$tail(compare_current, n = 1))
+      )
+    ) |>
+    dplyr$ungroup() |>
     dplyr$filter(
       phase %in% c("phase3", "phase4", "phase5")
     ) |>
@@ -74,6 +84,20 @@ food_insecurity_ts <- function(df_wrangled, df_raw, title, date) {
     dplyr$filter(
       !is.na(plot_date)
     )
+
+  # subtitle for plots to highlight coverage
+  analysis_area <- utils$tail(df_plot$analysis_area, n = 1)
+  if (is.na(analysis_area)) {
+    analysis_area_txt <- ""
+  } else {
+    analysis_area_txt <- glue$glue("{analysis_area}, ")
+  }
+  coverage <- utils$tail(df_plot$coverage, n = 1) |>
+    scales$label_percent(accuracy = 1)()
+
+  subtitle <- glue$glue(
+    "{analysis_area_txt}{coverage} population coverage in latest analysis"
+  )
 
   # only plot the current values in solid lines
   df_current <- df_plot |>
@@ -96,18 +120,6 @@ food_insecurity_ts <- function(df_wrangled, df_raw, title, date) {
       label = paste0("P", readr$parse_number(phase)),
       plot_date = plot_date + lubridate$month(6)
     )
-
-  # also plot the analysis area/suffix
-  df_area_labels <- df_current |>
-    dplyr$filter(
-      !is.na(analysis_area)
-    )
-
-  if (nrow(df_area_labels) > 0) {
-    subtitle <- "Subnational analyses indicated by hollow points"
-  } else {
-    subtitle <- ""
-  }
 
   gg$ggplot(
     mapping = gg$aes(
@@ -133,22 +145,10 @@ food_insecurity_ts <- function(df_wrangled, df_raw, title, date) {
       data = dplyr$filter(df_projected, plot_date == max(plot_date, as.Date("1500-01-01"))),
       size = 3
     ) +
-    gg$geom_point(
-      data = df_area_labels,
-      size = 3,
-      shape = 21,
-      fill = "white"
-    ) +
     ggrepel$geom_text_repel(
       data = df_phase_labels,
       mapping = gg$aes(
         label = label
-      )
-    ) +
-    ggrepel$geom_text_repel(
-      data = dplyr$filter(df_area_labels, phase == "phase3"),
-      mapping = gg$aes(
-        label = analysis_area
       )
     ) +
     gghdx$scale_y_continuous_hdx(

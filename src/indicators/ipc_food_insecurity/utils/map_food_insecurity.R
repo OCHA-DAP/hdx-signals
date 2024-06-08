@@ -28,7 +28,7 @@ map <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
   df_map <- df_alerts |>
     dplyr$mutate(
       title = paste0(
-        "Phase classifications, ",
+        "Area phase classifications, ",
         type,
         "\n",
         map_date
@@ -60,8 +60,13 @@ food_insecurity_map <- function(df_wrangled, df_raw, title, date) {
   caption <- caption$caption(
     indicator_id = "ipc_food_insecurity",
     iso3 = unique(df_wrangled$iso3),
-    map = TRUE
+    map = TRUE,
+    extra_caption = "Population in these areas can still be classified in other phases."
   )
+  # get title and subtitle from the title
+  title_split <- stringr$str_split(string = title, pattern = "\\n", simplify = TRUE)
+  title <- title_split[1]
+  subtitle <- title_split[2]
 
   # get information for calling the IPC/CH API
   df_analysis_info <- df_wrangled |>
@@ -80,7 +85,14 @@ food_insecurity_map <- function(df_wrangled, df_raw, title, date) {
     return_format = "geojson"
   ) |>
     dplyr$mutate(
-      overall_phase = as.character(overall_phase)
+      overall_phase = as.character(overall_phase),
+      point_type = dplyr$case_when(
+        admin_type == "idp" ~ "IDP",
+        admin_type == "urb" ~ "Urban",
+        admin_type == "rfg" ~ "Refugee",
+        admin_type == "hhg" ~ "Household group",
+        .default = "Rural"
+      )
     )
 
   # if points available, separate those out
@@ -101,10 +113,20 @@ food_insecurity_map <- function(df_wrangled, df_raw, title, date) {
     gg$geom_sf(
       data = sf_points,
       mapping = gg$aes(
-        fill = overall_phase
+        fill = overall_phase,
+        shape = point_type
       ),
-      color = "white",
-      shape = 21
+      color = "black"
+    ) +
+    gg$scale_shape_manual(
+      values = c(
+        "Urban" = 21,
+        "IDP" = 22,
+        "Refugee" = 23,
+        "Rural" = 24,
+        "Household group" = 25
+      ),
+
     ) +
     gg$scale_fill_manual(
       values = c(
@@ -124,7 +146,9 @@ food_insecurity_map <- function(df_wrangled, df_raw, title, date) {
       x = "",
       y = "",
       fill = "Phase",
+      shape = "Settlement",
       title = title,
+      subtitle = subtitle,
       caption = caption
     ) +
     map_theme$map_theme(iso3 = iso3, use_map_settings = TRUE)

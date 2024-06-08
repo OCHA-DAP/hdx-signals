@@ -51,7 +51,8 @@ wrangle <- function(df_raw) {
         "(?<=[0-9]{4} )(.*)"
       ) |> stringr$str_remove_all(
         "\\(|\\)"
-      ),
+      ) |>
+        stringr$str_to_title(),
       analysis_area = dplyr$case_when( # subarea specified in some IPC publications
         title_suffix == "" ~ NA_character_, # empty string
         stringr$str_detect(title_suffix, "Proj|proj") ~ NA_character_, # projection updates

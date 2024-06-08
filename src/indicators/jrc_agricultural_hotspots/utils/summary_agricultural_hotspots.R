@@ -14,7 +14,7 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
 
   df_summary <- df_alerts |>
     dplyr$select(
-      -comment # joining back up with all historic comments
+      -comment
     ) |>
     dplyr$full_join(
       dplyr$select(df_wrangled, iso3, comment_date = date, date_label, comment),

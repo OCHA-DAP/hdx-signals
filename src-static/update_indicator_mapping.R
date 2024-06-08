@@ -81,7 +81,7 @@ df <- dplyr$bind_rows(
     mc_folder = "HDX Signals - ACLED",
     indicator_subject = "Armed conflict",
     static_segment = 25117,
-    banner_url = "https://mcusercontent.com/ea3f905d50ea939780139789d/images/3ad15370-6636-586a-b8c2-c49297531694.png", #nolint
+    banner_url = "https://mcusercontent.com/ea3f905d50ea939780139789d/images/86ba2e73-ddc6-5555-b903-6de9cfb82ec1.png", #nolint
     data_source = "Armed conflict - ACLED"
   )
 )

@@ -35,5 +35,7 @@ generate_signals$generate_signals(
   alert_fn = alert_market_monitor$alert,
   plot_fn = plot_market_monitor$plot,
   info_fn = info_market_monitor$info,
-  summary_fn = summary_market_monitor$summary
+  summary_fn = summary_market_monitor$summary,
+  test = test,
+  test_filter = test_filter
 )
