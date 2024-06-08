@@ -7,6 +7,7 @@ box::use(pdftools)
 
 box::use(../../../../src/utils/ai_summarizer)
 box::use(../../../../src/utils/get_prompts)
+box::use(../../../../src/utils/parse_pdf)
 
 #' Generate summary for food insecurity alerts
 #'
@@ -79,6 +80,10 @@ ipc_ch_summarizer <- function(url, ch, location) {
     org <- "ch"
   } else {
     txt <- ipc_scraper(url)
+    # check that scraping was successful and exit early if not
+    if (length(txt) == 0 | is.na(txt)) {
+      return(NA_character_)
+    }
     org <- "ipc"
   }
 
@@ -165,11 +170,7 @@ text_summarizer <- function(txt, org) {
 #' @returns Summary of text from the publication
 ch_scraper <- function(url) {
   # get text from the PDFs for info for AI prompt
-  txt <- pdftools$pdf_text(url) |>
-    paste(
-      sep = "\n",
-      collapse = "\n"
-    )
+  txt <- parse_pdf$parse_pdf(url)
 
   # same text needs to be used for recommendations and summarisations
   c(txt, txt)
