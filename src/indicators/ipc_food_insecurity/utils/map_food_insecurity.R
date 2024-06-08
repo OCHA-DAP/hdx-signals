@@ -82,21 +82,29 @@ food_insecurity_map <- function(df_wrangled, df_raw, title, date) {
     )
 
   # load in areas to map from the IPC/CH API
-  sf_ipc <- ripc$ipc_get_areas(
-    id = df_analysis_info$id,
-    period = df_analysis_info$period,
-    return_format = "geojson"
-  ) |>
-    dplyr$mutate(
-      overall_phase = as.character(overall_phase),
-      point_type = dplyr$case_when(
-        admin_type == "idp" ~ "IDP",
-        admin_type == "urb" ~ "Urban",
-        admin_type == "rfg" ~ "Refugee",
-        admin_type == "hhg" ~ "Household group",
-        .default = "Rural"
-      )
-    )
+  sf_ipc <- tryCatch(
+    {
+      ripc$ipc_get_areas(
+        id = df_analysis_info$id,
+        period = df_analysis_info$period,
+        return_format = "geojson"
+      ) |>
+        dplyr$mutate(
+          overall_phase = as.character(overall_phase),
+          point_type = dplyr$case_when(
+            admin_type == "idp" ~ "IDP",
+            admin_type == "urb" ~ "Urban",
+            admin_type == "rfg" ~ "Refugee",
+            admin_type == "hhg" ~ "Household group",
+            .default = "Rural"
+          )
+        )
+    },
+    error = \(e) NA
+  )
+
+  # make sure we catch for the few instances where no map is available via API
+  if (is.na(sf_ipc)) return(NA)
 
   # if points available, separate those out
   geom_type <- sf$st_geometry_type(sf_ipc)

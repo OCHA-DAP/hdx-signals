@@ -35,7 +35,7 @@ caption <- function(
     )
 
     if (!is.null(extra_boundary_source)) {
-      map_source <- paste0(", ", extra_boundary_source)
+      map_source <- paste(map_source, extra_boundary_source, sep = ", ")
     }
 
     map_caveat <- paste(

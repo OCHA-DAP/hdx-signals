@@ -93,6 +93,17 @@ create_image <- function(
   )
 
   p <- image_fn(df_wrangled, df_raw, title, date)
+
+  # allow `image_fn` to return NA if some maps can fail to generate without error
+  if (is.na(p)) {
+    return(
+      data.frame(
+        id = NA_character_,
+        url = NA_character_
+      )
+    )
+  }
+
   if (use_map_settings) {
     save_image$save_map(
       p = p,
