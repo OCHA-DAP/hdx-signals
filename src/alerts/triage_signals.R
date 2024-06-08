@@ -266,7 +266,8 @@ save_core_signals_hdx <- function(df) {
     other_urls,
     further_information,
     campaign_url = campaign_url_archive,
-    campaign_date
+    campaign_date,
+    signals_version
   )
 
   cs$update_az_file(
