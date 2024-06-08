@@ -15,6 +15,11 @@ box::use(rvest)
 alert <- function(df_wrangled) {
   # get general alerts
   df_alerts <- df_wrangled |>
+    dplyr$mutate(
+      any_p5 = phase == "phase5" & `percentage-current` > 0 |
+        phase == "phase5" & `percentage-projected` > 0 |
+        phase == "phase5" & `percentage-second_projected` > 0
+    ) |>
     dplyr$filter(
         phase == "p3plus" & `percentage-current` >= 0.2 |
         phase == "p3plus" & `percentage-projected` >= 0.2 |
@@ -22,14 +27,13 @@ alert <- function(df_wrangled) {
         phase == "p4plus" & `percentage-current` >= 0.05 |
         phase == "p4plus" & `percentage-projected` >= 0.05 |
         phase == "p4plus" & `percentage-second_projected` >= 0.05 |
-        phase == "phase5" & `percentage-current` > 0 |
-        phase == "phase5" & `percentage-projected` > 0 |
-        phase == "phase5" & `percentage-second_projected` > 0
+        any_p5
     ) |>
     dplyr$filter(
       `percentage-current` > `percentage-current_lag` & compare_current |
         `percentage-current` < `percentage-projected` |
-        `percentage-current` < `percentage-second_projected`
+        `percentage-current` < `percentage-second_projected` |
+        any_p5
     ) |>
     dplyr$select(
       -starts_with("plot_date")
