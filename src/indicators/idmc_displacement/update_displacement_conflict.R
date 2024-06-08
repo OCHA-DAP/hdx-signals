@@ -10,14 +10,11 @@ box::use(./utils/summary_displacement)
 box::use(./utils/map_displacement)
 
 box::use(../../alerts/generate_signals)
-box::use(../../alerts/triage_signals)
-
-
 box::use(../../utils/hs_logger)
 box::use(../../utils/update_coverage)
 
 first_run <- as.logical(Sys.getenv("FIRST_RUN", unset = FALSE))
- test <- as.logical(Sys.getenv("HS_TEST", unset = TRUE))
+test <- as.logical(Sys.getenv("HS_TEST", unset = TRUE))
 test_filter <- if (test) c("AFG", "SSD") else NULL
 
 indicator_id <- "idmc_displacement_conflict"
