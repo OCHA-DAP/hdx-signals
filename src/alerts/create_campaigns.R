@@ -111,6 +111,7 @@ create_campaigns <- function(
   # add the date of the campaign
   df_campaigns$campaign_date <- campaign_date
   df_campaigns$signals_version <- get_signals_version$get_signals_version()
+  df_campaigns
 }
 
 #' Create a campaign
