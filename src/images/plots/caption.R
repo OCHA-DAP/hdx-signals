@@ -15,16 +15,29 @@ box::use(cs = ../../utils/cloud_storage)
 #' @param iso3 ISO3 code
 #' @param map Whether or not it's for a map. If `TRUE`, adds in boundary data
 #'     sourcing.
+#' @param extra_boundary_source Extra boundary source, if mapping data from
+#'     outside the admin0 shape, such as IPC areas. Only used if `map` is `TRUE`
+#'     and `!is.null(extra_boundary_source)`.
 #' @param extra_caption Extra caption to add as the first line.
 #'
 #' @export
-caption <- function(indicator_id, iso3, map = FALSE, extra_caption = NULL) {
+caption <- function(
+    indicator_id,
+    iso3,
+    map = FALSE,
+    extra_boundary_source = NULL,
+    extra_caption = NULL) {
   ind_source <- df_ind$data_source[df_ind$indicator_id == indicator_id]
   if (map) {
     map_source <- paste0(
       "; Boundaries - ",
       df_metadata$boundary_source[df_metadata$iso3 == iso3]
     )
+
+    if (!is.null(extra_boundary_source)) {
+      map_source <- paste0(", ", extra_boundary_source)
+    }
+
     map_caveat <- paste(
       "The boundaries and names shown and the designations used on this map",
       "do not imply official endorsement or acceptance by the United Nations.",

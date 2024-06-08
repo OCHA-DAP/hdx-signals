@@ -63,6 +63,7 @@ food_insecurity_map <- function(df_wrangled, df_raw, title, date) {
     indicator_id = "ipc_food_insecurity",
     iso3 = unique(df_wrangled$iso3),
     map = TRUE,
+    extra_boundary_source = "IPC/CH",
     extra_caption = "Population in these areas can still be classified in other phases."
   )
   # get title and subtitle from the title
