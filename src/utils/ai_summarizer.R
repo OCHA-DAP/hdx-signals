@@ -75,7 +75,7 @@ ai_summarizer_without_location <- function(prompt, info, location) {
 #' @export
 ai_summarizer <- function(prompt, info) {
   # pass NA directly out
-  if (is.na(info)) {
+  if (all(is.na(info))) {
     return(NA_character_)
   }
 
