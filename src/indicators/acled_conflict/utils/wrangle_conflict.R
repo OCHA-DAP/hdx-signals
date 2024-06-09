@@ -35,9 +35,11 @@ wrangle <- function(df_raw, first_run = FALSE) {
       date = as.Date(event_date),
       fatalities = as.numeric(fatalities)
     ) |>
+    dplyr$filter(
+      date >= "2018-01-01"
+    ) |>
     dplyr$group_by(
-      iso3,
-      date = event_date
+      iso3, date
     ) |>
     dplyr$summarize(
       fatalities = sum(fatalities),

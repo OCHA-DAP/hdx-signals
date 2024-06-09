@@ -43,10 +43,14 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
         .y = event_info,
         .f = ai_summarizer$ai_summarizer
       ),
-      summary_short = purrr$map2_chr(
-        .x = prompts$short,
-        .y = summary_long,
-        .f = ai_summarizer$ai_summarizer
+      summary_short = ifelse(
+        is.na(summary_long) | summary_long == "",
+        plot_title,
+        purrr$map2_chr(
+          .x = prompts$short,
+          .y = summary_long,
+          .f = ai_summarizer$ai_summarizer
+        )
       ),
       summary_source = "ACLED reporting"
     )
