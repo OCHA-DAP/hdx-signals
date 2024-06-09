@@ -1,8 +1,7 @@
 In three sentences or fewer, please summarize the food security situation
 in {location} based on a document that will
 be provided. Expect the reader to be familiar with the
-terminology and general context, but wants to know exactly what is happeningbased on information provided. main reasons for displacement
-reported in the following text. Here are four rules rules:
+terminology and general context, but wants to know exactly what is happeningbased on information provided in the text. Here are four rules:
 
 - There are a lot of random numbers in the text because the text was scraped
 from a PDF with tables, so please just focus on explanation, not figures.
