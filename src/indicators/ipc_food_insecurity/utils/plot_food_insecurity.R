@@ -63,8 +63,6 @@ food_insecurity_ts <- function(df_wrangled, df_raw, title, date) {
     iso3 = unique(df_wrangled$iso3)
   )
 
-  logger$log_info(unique(df_wrangled$iso3))
-
   # only plot the points that are comparable to the latest
   df_plot <- df_wrangled |>
     dplyr$group_by(
