@@ -49,9 +49,11 @@ scrape_urls <- function(x) {
   no_urls <- is.na(urls) | !stringr$str_detect(urls, "http|www")
 
   if (all(no_urls)) {
-    dplyr$tibble(
-      other_urls = NA_character_,
-      other_urls_info = ""
+    return(
+      dplyr$tibble(
+        other_urls = NA_character_,
+        other_urls_info = ""
+      )
     )
   }
 
