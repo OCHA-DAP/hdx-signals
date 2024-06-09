@@ -30,6 +30,7 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
     dplyr$group_by(iso3, date) |>
     dplyr$filter(
       event_date >= date - lubridate$days(30),
+      event_date <= date,
       !is.na(notes)
     ) |>
     dplyr$summarize(
