@@ -5,7 +5,7 @@ box::use(./utils/summary_agricultural_hotspots)
 box::use(./utils/info_agricultural_hotspots)
 box::use(./utils/plot_agricultural_hotspots)
 
-box::use(../../alerts/generate_signals[generate_signals])
+box::use(../../alerts/generate_signals)
 box::use(../../utils/hs_logger)
 box::use(../../utils/update_coverage)
 
@@ -27,7 +27,7 @@ update_coverage$update_coverage(
 )
 
 # now generate signals
-df_jrc <- generate_signals(
+df_jrc <- generate_signals$generate_signals(
   df_wrangled = df_wrangled,
   indicator_id = indicator_id,
   alert_fn = alert_agricultural_hotspots$alert,
