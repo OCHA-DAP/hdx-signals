@@ -6,7 +6,9 @@ box::use(./get_env)
 #'
 #' Triggers the HDX pipeline to upload data to HDX in the `hdx-signals` HDX
 #' dataset as a resource. The pipeline is in the `OCHA-DAP/hdx-signals-alerts`
-#' repository.
+#' repository, and we simply create a webhook to run the pipeline. No data is
+#' actually sent from R, the pipeline in that repository simply pulls from Azure
+#' into HDX.
 #'
 #' @export
 push_hdx <- function() {
@@ -25,5 +27,6 @@ push_hdx <- function() {
     ) |>
     httr2$req_auth_bearer_token(
       token = bearer
-    )
+    ) |>
+    httr2$req_perform()
 }
