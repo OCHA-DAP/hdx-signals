@@ -143,19 +143,24 @@ insistent_ai <- purrr$insistently(
       "Test output."
     } else {
       get_env("OPENAI_API_KEY", output = FALSE)
-      openai$create_chat_completion(
-        model = "gpt-4o",
-        messages = list(
-          list(
-            "role" = "user",
-            "content" = prompt
-          ),
-          list(
-            "role" = "user",
-            "content" = info
+
+      # suppress warnings because warnings are generated inside the openai
+      # package if calls need to be retried, which we don't want to create failures
+      suppressWarnings(
+        openai$create_chat_completion(
+          model = "gpt-4o",
+          messages = list(
+            list(
+              "role" = "user",
+              "content" = prompt
+            ),
+            list(
+              "role" = "user",
+              "content" = info
+            )
           )
-        )
-      )$choices$message.content
+        )$choices$message.content
+      )
     }
   },
   rate = purrr$rate_delay(pause = 1, max_times = 25)
