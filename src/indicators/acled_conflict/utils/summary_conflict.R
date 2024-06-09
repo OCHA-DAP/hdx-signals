@@ -44,7 +44,7 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
         .f = ai_summarizer$ai_summarizer
       ),
       summary_short = purrr$map2_chr(
-        .x = prompts,
+        .x = prompts$short,
         .y = summary_long,
         .f = ai_summarizer$ai_summarizer
       ),
