@@ -148,7 +148,7 @@ food_insecurity_ts <- function(df_wrangled, df_raw, title, date) {
         linewidth = 0.7
       ) +
       gg$geom_point(
-        data = dplyr$filter(df_projected, plot_date == max(plot_date, as.Date("1500-01-01"))),
+        data = df_projected,
         size = 3
       )
   }
