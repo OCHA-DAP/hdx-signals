@@ -332,7 +332,12 @@ df_map_settings <- dplyr$left_join(
   df_legend,
   df_width_height,
   by = "iso3"
-)
+) |>
+  dplyr$mutate(
+    legend_position = ifelse(ratio > 3,"bottom","left"),
+    direction = ifelse(ratio > 3,"horizontal","vertical")
+
+  )
 
 if (any(is.na(df_map_settings))) {
   stop(

@@ -31,6 +31,8 @@ map_theme <- function(iso3, use_map_settings = TRUE) {
     )
   }
 
+
+
   gg$theme(
     rect = gg$element_blank(),
     axis.ticks = gg$element_blank(),
@@ -41,9 +43,12 @@ map_theme <- function(iso3, use_map_settings = TRUE) {
     axis.line.x = gg$element_blank(),
     legend.position = df_ms$legend_position,
     legend.direction = df_ms$direction,
-    legend.justification = unlist(df_ms$justification_numeric),
+    legend.justification = unlist(df_ms$justification),
     legend.location = df_ms$location
   )
 }
 
 df_map_settings <- cs$read_az_file("input/iso3_map_settings.json")
+
+
+
