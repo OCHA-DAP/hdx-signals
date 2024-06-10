@@ -335,9 +335,10 @@ df_map_settings <- dplyr$left_join(
 ) |>
   dplyr$mutate(
     legend_position = ifelse(ratio > 3,"bottom","left"),
-    direction = ifelse(ratio > 3,"horizontal","vertical")
-
+    direction = ifelse(ratio > 3,"horizontal","vertical"),
+    location = "plot"
   )
+
 
 if (any(is.na(df_map_settings))) {
   stop(
