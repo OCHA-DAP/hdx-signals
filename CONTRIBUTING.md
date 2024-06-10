@@ -83,21 +83,16 @@ changes made.
 *   We use [testthat](https://cran.r-project.org/package=testthat) for unit tests. 
    Contributions with test cases included are easier to accept.
    
-*   `{box}` is used for module and library management for importing local modules
-and R libraries. Use only the `box::use()` syntax with `library$function()` and
+*   We use [box](https://cran.r-project.org/package=box) for module and
+library management for importing local modules and R libraries.
+Use only the `box::use()` syntax with `library$function()` and
 never `library(library)` or `library::function()`.
 
-*   `{renv}` is used for package management. Any new dependencies need to be
-added to the lockfile. You can easily do by running
+*   We use `{renv}` for package management. Any new dependencies need to be
+added to the lockfile. You can easily do this by running
 `renv::snapshot()` in your branch once you've finished coding, and new detected
 dependencies will be add automatically. Use `renv::restore()` in any branch to
 bring your cache up-to-date with the lockfile in there.
 
 *   All environment variables required in the system need to be documented in
     [ENVIRONMENT.md](/ENVIRONMENT.md)
-
-## Code of Conduct
-
-Please note that the hdx-signals project is released with a
-[Contributor Code of Conduct](CODE_OF_CONDUCT.md). By contributing to this
-project you agree to abide by its terms.

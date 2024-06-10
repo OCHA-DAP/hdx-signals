@@ -14,14 +14,14 @@ are generated.
 
 The code is structured as below. Refer to the directories for specific details.
 
-- [src](/src): All source code for scanning all datasets, generating signals content,
+- [src](src/README.md): All source code for scanning all datasets, generating signals content,
 sendin emails through Mailchimp, and interacting with the cloud store.
-- [src-static](/src-static): Source code for generating static assets such as
+- [src-static](src-static/README.md): Source code for generating static assets such as
 metadata for locations covered in Signals, spatial files for use in maps, and other
-resources utilized in [src](/src).
-- [test](/test): Unit testing utilities for code and manual testing to explore changes
+resources utilized in [src](src/README.md).
+- [test](test/README.md): Unit testing utilities for code and manual testing to explore changes
 to visual design in the system.
-- [.github](/.github): Workflows that automate data scanning and other processes.
+- [.github](.github/README.md): Workflows that automate data scanning and other processes.
 
 ### Environment
 
