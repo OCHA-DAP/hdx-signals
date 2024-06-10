@@ -55,7 +55,6 @@ cholera_ts <- function(df_wrangled, title) {
     val_col = "cholera_cases",
     y_axis = "Cholera cases",
     title = title,
-    subtitle = "",
     caption = "Data from the WHO AFRO, https://www.afro.who.int"
   )
 }

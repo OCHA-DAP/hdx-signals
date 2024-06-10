@@ -101,7 +101,6 @@ food_basket_ts <- function(df_wrangled, df_raw, title, date) {
       x = "",
       y = "% change (monthly)",
       title = title,
-      subtitle = "",
       caption = caption
     )
 

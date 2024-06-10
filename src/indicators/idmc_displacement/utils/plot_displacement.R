@@ -67,7 +67,6 @@ displacement_ts <- function(df_wrangled, df_raw, title, date) {
     val_col = "displacement_30d",
     y_axis = "Displacements (monthly)",
     title = title,
-    subtitle = "",
     caption = caption
   )
 }
