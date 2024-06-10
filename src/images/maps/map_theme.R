@@ -39,7 +39,6 @@ map_theme <- function(iso3, use_map_settings = TRUE) {
     panel.grid.major = gg$element_blank(),
     panel.grid.minor = gg$element_blank(),
     axis.line.x = gg$element_blank(),
-    plot.caption = gg$element_text(hjust = 1),
     legend.position = df_ms$legend_position,
     legend.direction = df_ms$direction,
     legend.justification = unlist(df_ms$justification_numeric),

@@ -1,4 +1,8 @@
 box::use(readr)
+box::use(utils)
+box::use(dplyr)
+
+box::use(../../../utils/location_codes)
 
 #' Download raw JRC ASAP drought data
 #'
@@ -6,8 +10,25 @@ box::use(readr)
 #'
 #' @export
 raw <- function() {
-  readr$read_csv(
-    file = "https://data.humdata.org/dataset/43b7c86b-8f74-4422-840d-17f30ef3fd2f/resource/b495dbc5-abf4-4efd-9501-3cde16bf23c9/download/asap-hotspots-monthly.csv", # nolint
-    col_types = readr$cols()
+  utils$download.file(
+    url = "https://agricultural-production-hotspots.ec.europa.eu/files/hotspots_html_ts.zip",
+    destfile = zf <- tempfile(fileext = ".zip"),
+    quiet = TRUE
   )
+
+  utils$unzip(
+    zipfile = zf,
+    exdir = td <- tempdir()
+  )
+
+  readr$read_delim(
+    file = file.path(
+      td, "hotspots_html_ts.csv"
+    ),
+    col_types = readr$cols(),
+    delim = ";"
+  ) |>
+    dplyr$mutate(
+      iso3 = location_codes$names_to_iso3(asap0_name)
+    )
 }

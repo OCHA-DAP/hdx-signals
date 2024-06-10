@@ -90,7 +90,7 @@ update_az_file <- function(df, name, blob = c("prod", "dev", "wfp")) {
   tf <- tempfile(fileext = paste0(".", fileext))
 
   switch(fileext,
-    csv = readr$write_csv(x = df, file = tf),
+    csv = readr$write_csv(x = df, file = tf, na = ""),
     parquet = arrow$write_parquet(x = df, sink = tf),
     json = jsonlite$write_json(x = df, path = tf),
     geojson = sf$st_write(obj = df, dsn = tf, quiet = TRUE)
@@ -204,7 +204,7 @@ blob_prod <- function() {
   )
   az$blob_container(
     endpoint = blob_endpoint_prod,
-    name = "hdx-signals-mc"
+    name = "hdx-signals"
   )
 }
 

@@ -4,7 +4,8 @@ box::use(gghdx)
 box::use(sf)
 box::use(dplyr)
 
-box::use(../../../src/images/plots/theme_signals)
+box::use(../../../src/images/plots/caption)
+
 box::use(../../../src/images/maps/gg_map)
 box::use(../../../src/images/maps/geom_cities)
 box::use(../../../src/images/maps/geom_centroids)
@@ -61,8 +62,8 @@ map_test <- function(
     gg$ggsave(
       filename = fp,
       plot = p,
-      width = df_ms$width,
-      height = df_ms$height,
+      width = 6,
+      height = 4,
       units = "in",
       bg = "white"
     )
@@ -104,7 +105,12 @@ map_with_points_test  <- function(
     df = gdf_sample_pts,
     val_col = "value",
     size = "Test bubble",
-    subtitle = iso3
+    title = iso3,
+    caption = caption$caption(
+      indicator_id = "acled_conflict",
+      iso3 = iso3,
+      map = TRUE
+    )
   )
 }
 #' Generate pts for test map from iso3 code

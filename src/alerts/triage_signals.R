@@ -4,9 +4,10 @@ box::use(purrr)
 box::use(dplyr)
 
 box::use(cs = ../utils/cloud_storage)
-box::use(./delete_campaign_content[delete_campaign_content])
+box::use(./delete_campaign_content)
 box::use(../email/mailchimp/campaigns)
-box::use(../utils/get_env[get_env])
+box::use(../utils/get_env)
+box::use(../utils/push_hdx)
 
 #' Triage signals generated automatically
 #'
@@ -98,7 +99,10 @@ preview_signals <- function(df, n_campaigns) {
   if (n_campaigns == 0) {
     return(invisible(NULL))
   }
-  urls <- df$campaign_url_archive
+  # get unique campaign URLs (so exclude jump link to country)
+  urls <- df$campaign_url_archive |>
+    stringr$str_remove("#[A-Z]{3}$") |>
+    unique()
   url_list <- split(urls, ceiling(seq_along(urls) / n_campaigns))
   purrr$walk(
     .x = url_list,
@@ -127,7 +131,7 @@ preview_campaign_urls <- function(campaign_urls) {
 #' @param fn_signals File name to the signals data
 #' @param test Whether or not the signals were for testing.
 approve_signals <- function(df, fn_signals, test) {
-  user_name <- get_env("HS_ADMIN_NAME")
+  user_name <- get_env$get_env("HS_ADMIN_NAME")
 
   user_command <- readline(
     paste0(
@@ -167,7 +171,7 @@ approve_signals <- function(df, fn_signals, test) {
         )
       )
       if (new_input == "DELETE") {
-        df_deleted <- delete_campaign_content(df)
+        df_deleted <- delete_campaign_content$delete_campaign_content(df)
         cs$update_az_file(df_deleted, fn_signals)
       } else {
         message(
@@ -181,7 +185,7 @@ approve_signals <- function(df, fn_signals, test) {
     }
   } else if (user_command == "DELETE") {
     # replace the campaign content with the deleted stuff
-    df_deleted <- delete_campaign_content(df)
+    df_deleted <- delete_campaign_content$delete_campaign_content(df)
 
     cs$update_az_file(
       df = df_deleted,
@@ -233,12 +237,14 @@ read_core_signals <- function() {
 
 #' Save core signals data for HDX
 #'
-#' Filters the core signals data for HDX and then saves to `dev` for use in HDX.
+#' Filters the core signals data for HDX, saves to `prod` container in Azure
+#' and then pushes to HDX.
 #'
 #' This just drops a few columns, and
-#' renames some for the final output data CSV that goes onto HDX. The data
-#' is then saved out to the `dev` blob for pipelining into HDX, because currently
-#' pipeline cannot read from `prod`.
+#' renames some for the final output data CSV that goes onto HDX. The data is
+#' pushed first to the Azure blob store, and then triggers the HDX pipeline
+#' https://github.com/OCHA-DAP/hdx-signals-alerts to push the data to HDX. That
+#' is done use
 #'
 #' @param df Data frame to save out
 save_core_signals_hdx <- function(df) {
@@ -260,17 +266,20 @@ save_core_signals_hdx <- function(df) {
     other_images = other_images_urls,
     summary_long,
     summary_short,
+    summary_source,
     hdx_url,
     source_url,
     other_urls,
     further_information,
     campaign_url = campaign_url_archive,
-    campaign_date
+    campaign_date,
+    signals_version
   )
 
   cs$update_az_file(
     df = df,
-    name = "output/signals.csv",
-    blob = "dev"
+    name = "output/signals.csv"
   )
+
+  push_hdx$push_hdx()
 }

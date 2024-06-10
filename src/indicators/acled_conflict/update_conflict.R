@@ -7,10 +7,11 @@ box::use(./utils/map_conflict)
 box::use(./utils/info_conflict)
 box::use(./utils/summary_conflict)
 
-box::use(../../alerts/generate_signals[generate_signals])
+box::use(../../alerts/generate_signals)
 box::use(../../utils/hs_logger)
 box::use(../../utils/update_coverage)
 
+first_run <- as.logical(Sys.getenv("FIRST_RUN", unset = FALSE))
 test <- as.logical(Sys.getenv("HS_TEST", unset = TRUE))
 test_filter <- if (test) c("AFG", "SSD") else NULL
 indicator_id <- "acled_conflict"
@@ -29,7 +30,7 @@ update_coverage$update_coverage(
 )
 
 # now generate signals
-df_conflict <- generate_signals(
+df_conflict <- generate_signals$generate_signals(
   df_wrangled = df_wrangled,
   df_raw = df_raw,
   indicator_id = indicator_id,
@@ -39,5 +40,6 @@ df_conflict <- generate_signals(
   map_fn = map_conflict$map,
   summary_fn = summary_conflict$summary,
   test = test,
-  test_filter = test_filter
+  test_filter = test_filter,
+  first_run = first_run
 )

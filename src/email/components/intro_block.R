@@ -27,7 +27,7 @@ add_intro <- function(
   # create table of contents manually using jumplinks and conditional text
   toc_items <- purrr$map2_chr(
     .x = glue$glue(
-      '<li><a href="#{iso3}">{location}</a>: {summary_short}</li>'
+      '<li><p><a href="#{iso3}">{location}</a>: {summary_short}</p></li>'
     ),
     .y = iso3,
     .f = \(x, y) {

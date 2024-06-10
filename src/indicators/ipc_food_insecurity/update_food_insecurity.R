@@ -6,10 +6,11 @@ box::use(./utils/summary_food_insecurity)
 box::use(./utils/map_food_insecurity)
 box::use(./utils/info_food_insecurity)
 
-box::use(../../alerts/generate_signals[generate_signals])
+box::use(../../alerts/generate_signals)
 box::use(../../utils/hs_logger)
 box::use(../../utils/update_coverage)
 
+first_run <- as.logical(Sys.getenv("FIRST_RUN", unset = FALSE))
 test <- as.logical(Sys.getenv("HS_TEST", unset = TRUE))
 test_filter <- if (test) c("AFG", "SSD") else NULL
 indicator_id <- "ipc_food_insecurity"
@@ -27,7 +28,7 @@ update_coverage$update_coverage(
 )
 
 # now generate signals
-df_ipc <- generate_signals(
+df_ipc <- generate_signals$generate_signals(
   df_wrangled = df_wrangled,
   indicator_id = indicator_id,
   alert_fn = alert_food_insecurity$alert,
@@ -36,5 +37,6 @@ df_ipc <- generate_signals(
   map_fn = map_food_insecurity$map,
   info_fn = info_food_insecurity$info,
   test = test,
-  test_filter = test_filter
+  test_filter = test_filter,
+  first_run = first_run
 )
