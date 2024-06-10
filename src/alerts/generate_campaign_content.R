@@ -140,7 +140,7 @@ generate_summary <- function(
     df_raw,
     fn = NULL,
     empty = FALSE) {
-  df_signals <- dplyr::read_csv("signals.csv") |>
+  df_signals <- readr::read_csv("signals.csv") |>
     dplyr::filter(indicator_id == unique(df_alerts$indicator_id)) |>
     dplyr::select(iso3, date, dplyr::starts_with("summary"))
 
