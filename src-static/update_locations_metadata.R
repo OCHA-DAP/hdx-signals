@@ -8,6 +8,7 @@ box::use(glue)
 box::use(../src/utils/get_iso3_sf)
 box::use(cs = ../src/utils/cloud_storage)
 box::use(../src/utils/hs_logger)
+box::use(../src/utils/push_hdx)
 
 hs_logger$configure_logger()
 
@@ -94,3 +95,7 @@ cs$update_az_file(
 )
 
 logger$log_info(paste0("Successfully downloaded locations info and saved to ", fname))
+
+push_hdx$push_hdx()
+
+logger$log_info(paste0("Successfully trigger webhook to push ", fname, " to HDX"))
