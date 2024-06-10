@@ -19,11 +19,11 @@ theme_signals <- function(margin_location = c("title", "subtitle")) {
   theme_margins <- switch(
     margin_location,
     "title" = gg$theme(
-      plot.title = gg$element_text(size = 14, margin = gg$margin(b = 0.05, unit = "in"))
+      plot.title = gg$element_text(size = 14, margin = gg$margin(b = 0.1, unit = "in"))
     ),
     "subtitle" = gg$theme(
-      plot.title = gg$element_text(size = 14, margin = gg$margin(b = 0.01, unit = "in")),
-      plot.subtitle = gg$element_text(margin = gg$margin(b = 0.05, unit = "in"))
+      plot.title = gg$element_text(size = 14, margin = gg$margin(b = 0.05, unit = "in")),
+      plot.subtitle = gg$element_text(margin = gg$margin(b = 0.1, unit = "in"))
     )
   )
 
