@@ -28,10 +28,12 @@ generate_signals_wrapper <- function(df_wrangled) {
 # to mock API requests to IPC API
 options(httptest.verbose = TRUE)
 
-testthat$test_that("the base case for IPC food insecurity runs and doesn't create any signals", {
-  df_ipc <- readRDS("test/data/ipc_basic.RDS") |>
-    wrangle_food_insecurity$wrangle() |>
-    generate_signals_wrapper()
-  testthat$expect_equal(nrow(df_ipc), 0)
-  testthat$expect_equal(ncol(df_ipc), 38)
+httptest$with_mock_dir("test/mock_apis", {
+  testthat$test_that("the base case for IPC food insecurity runs and doesn't create any signals", {
+    df_ipc <- readRDS("test/data/ipc_basic.RDS") |>
+      wrangle_food_insecurity$wrangle() |>
+      generate_signals_wrapper()
+    testthat$expect_equal(nrow(df_ipc), 0)
+    testthat$expect_equal(ncol(df_ipc), 38)
+  })
 })
