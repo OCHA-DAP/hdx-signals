@@ -336,9 +336,9 @@ df_map_settings <- dplyr$left_join(
   dplyr$mutate(
     legend_position = ifelse(ratio > 1.5, "bottom", "left"),
     direction = ifelse(ratio > 1.5, "horizontal", "vertical"),
+    justification = ifelse(ratio > 1.5, 0.1, 0.9),
     location = "plot"
   )
-
 
 if (any(is.na(df_map_settings))) {
   stop(
