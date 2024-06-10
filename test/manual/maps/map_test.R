@@ -176,6 +176,7 @@ random_spatial_sample <- function(
     sample_n = 1:20,
     sample_values = 1:20000) {
 
+
   num_pts <- sample(x = sample_n, size = 1, replace = TRUE)
 
   if (use_bbox) {

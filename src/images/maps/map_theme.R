@@ -48,6 +48,3 @@ map_theme <- function(iso3, use_map_settings = TRUE) {
 }
 
 df_map_settings <- cs$read_az_file("input/iso3_map_settings.json")
-
-
-
