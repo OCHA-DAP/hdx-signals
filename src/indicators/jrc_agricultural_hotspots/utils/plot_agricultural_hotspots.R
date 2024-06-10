@@ -121,6 +121,8 @@ hotspots_ts <- function(df_wrangled, df_raw, title, date) {
       legend.position = "left",
       legend.direction = "vertical",
       legend.spacing.y = gg$unit(x = 0.1, units = "in"),
-      axis.line.x = gg$element_blank()
+      axis.line.x = gg$element_blank(),
+      plot.caption =  gg$element_text(margin = gg$margin(t = 0.25,r = 0,b = 0,l = 0,unit = "in")),
+      plot.title = gg$element_text(margin = gg$margin(t = 0,r = 0,b = 0.25,l = 0,unit="in"))
     )
 }
