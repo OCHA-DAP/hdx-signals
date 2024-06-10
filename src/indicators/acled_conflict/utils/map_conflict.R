@@ -51,7 +51,7 @@ map <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
 #' @returns Plot of cholera for that wrangled data
 conflict_map <- function(df_wrangled, df_raw, title, date) {
   caption <- caption$caption(
-    indicator_id = "armed_conflict",
+    indicator_id = "acled_conflict",
     iso3 = unique(df_wrangled$iso3),
     map = TRUE
   )
