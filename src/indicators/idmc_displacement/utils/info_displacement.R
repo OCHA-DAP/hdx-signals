@@ -77,7 +77,7 @@ info <- function(df_alerts, df_wrangled, df_raw) {
         is.na(url),
         ".",
         glue$glue(
-          ', and see the ',
+          ", and see the ",
           '<a href="{source_url}">IDMC page</a> for more information.'
         )
       ),

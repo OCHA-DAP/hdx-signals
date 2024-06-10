@@ -11,4 +11,3 @@ box::use(dplyr)
 format_date <- function(date) {
   trimws(format(date, format = "%e %B %Y"))
 }
-

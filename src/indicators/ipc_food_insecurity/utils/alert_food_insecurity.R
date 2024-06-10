@@ -21,7 +21,7 @@ alert <- function(df_wrangled) {
         phase == "phase5" & `percentage-second_projected` > 0
     ) |>
     dplyr$filter(
-        phase == "p3plus" & `percentage-current` >= 0.2 |
+      phase == "p3plus" & `percentage-current` >= 0.2 |
         phase == "p3plus" & `percentage-projected` >= 0.2 |
         phase == "p3plus" & `percentage-second_projected` >= 0.2 |
         phase == "p4plus" & `percentage-current` >= 0.05 |

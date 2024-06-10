@@ -8,15 +8,15 @@ box::use(purrr)
 box::use(../../../src/utils/all_iso3_codes)
 box::use(./map_test)
 
-  purrr$map(
-    .x = all_iso3_codes$all_iso3_codes(),
-    .f = \(iso3) {
-      map_test$map_test(
-        iso3 = iso3,
-        sample_n = 1:20,
-        sample_values = 1:20000,
-        use_bbox = TRUE,
-        out_dir = "/Users/caldwellst/Desktop/map_test3"
-      )
-    }
-  )
+purrr$map(
+  .x = all_iso3_codes$all_iso3_codes(),
+  .f = \(iso3) {
+    map_test$map_test(
+      iso3 = iso3,
+      sample_n = 1:20,
+      sample_values = 1:20000,
+      use_bbox = TRUE,
+      out_dir = "/Users/caldwellst/Desktop/map_test3"
+    )
+  }
+)
