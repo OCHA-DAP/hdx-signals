@@ -42,7 +42,7 @@ generate_campaign_content <- function(
     summary_fn = NULL,
     info_fn = NULL,
     empty = FALSE) {
-  df_campaigns <- df_alerts |>
+  df_alerts |>
     generate_images(df_wrangled, df_raw, plot_fn, "plot", empty) |>
     generate_images(df_wrangled, df_raw, map_fn, "map", empty) |>
     generate_images(df_wrangled, df_raw, plot2_fn, "plot2", empty) |>
