@@ -42,8 +42,7 @@ map_theme <- function(iso3, use_map_settings = TRUE) {
     legend.position = df_ms$legend_position,
     legend.direction = df_ms$direction,
     legend.justification = unlist(df_ms$justification),
-    legend.location = df_ms$location,
-    plot.caption = gg$element_text(hjust = 0)
+    legend.location = df_ms$location
   )
 }
 
