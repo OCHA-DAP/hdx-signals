@@ -173,5 +173,9 @@ food_insecurity_map <- function(df_wrangled, df_raw, title, date) {
       subtitle = subtitle,
       caption = caption
     ) +
-    map_theme$map_theme(iso3 = iso3, use_map_settings = TRUE)
+    map_theme$map_theme(
+      iso3 = iso3,
+      use_map_settings = TRUE,
+      margin_location = "subtitle"
+    )
 }
