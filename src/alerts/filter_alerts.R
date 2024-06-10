@@ -2,7 +2,6 @@ box::use(dplyr)
 box::use(rlang[`!!`])
 
 box::use(cs = ../utils/cloud_storage)
-box::use(../utils/all_iso3_codes)
 
 #' Filters alerts only to new alerts
 #'
@@ -34,7 +33,7 @@ box::use(../utils/all_iso3_codes)
 #'      in `input/indicator_mapping.parquet`.
 #' @param first_run Whether or not this is the first run of the campaign.
 #' @param dry_run Whether or not the alerts are being generated for a dry run. If so,
-#'      we simply take the latest alerts for any countries passed in, ignoring if
+#'      we simply take the latest alerts for any locations passed in, ignoring if
 #'      there were other recent alerts.
 #'
 #' @returns Data frame of new alerts matching the criteria above
@@ -92,7 +91,7 @@ filter_alerts_ongoing <- function(df_alerts, indicator_id) {
     dplyr$ungroup() |>
     dplyr$arrange(
       alert_level,
-      country
+      location
     )
 
   # drop new high alerts only if another high alert in the past 6 months
@@ -120,7 +119,7 @@ filter_alerts_ongoing <- function(df_alerts, indicator_id) {
     df_new_alerts_medium
   ) |>
     dplyr$arrange(
-      country
+      location
     )
 }
 
@@ -130,7 +129,7 @@ filter_alerts_ongoing <- function(df_alerts, indicator_id) {
 #' recursive filtering to remove alerts within 180 days of each other. Generates
 #' an error if a campaign file exists.
 filter_alerts_first_run <- function(df_alerts) {
-  # recursively filter all of our alerts for each country
+  # recursively filter all of our alerts for each location
   df_alerts |>
     dplyr$group_by(
       iso3
@@ -141,7 +140,7 @@ filter_alerts_first_run <- function(df_alerts) {
     dplyr$ungroup()
 }
 
-#' Filters out country alerts
+#' Filters out location alerts
 #'
 #' Starting with the oldest alerts, filter out alerts that are within
 #' 180 days of it, moving on to the next remaining alert.
@@ -165,7 +164,7 @@ recursive_subsequent_alerts <- function(df) {
 
 #' Filters out alerts for testing
 #'
-#' Simply returns the latest alert for all countries in the data.
+#' Simply returns the latest alert for all locations in the data.
 filter_alerts_test <- function(df) {
   df |>
     dplyr$group_by(

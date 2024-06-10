@@ -19,7 +19,7 @@ alerts_template_base <- dplyr$tibble(
 #' Template data frame for full alerts
 #'
 #' The required columns and typing that must be output for the full alerts after
-#' generation with `alert_{indicator}.R` and adding country info to get the
+#' generation with `alert_{indicator}.R` and adding location info to get the
 #' final output from `generate_alerts.R`. Used in `generate_signals.R` on to
 #' verify all columns correct.
 #'
@@ -27,16 +27,16 @@ alerts_template_base <- dplyr$tibble(
 alerts_template_full <- dplyr$bind_cols(
   alerts_template_base,
   dplyr$tibble(
-    country = NA_character_,
+    location = NA_character_,
     region = NA_character_,
-    hrp_country = NA,
+    hrp_location = NA,
     lat = NA_real_,
     lon = NA_real_,
     alert_level = NA_character_
   )
 ) |>
   dplyr$relocate(
-    country:lon,
+    location:lon,
     .after = iso3
   ) |>
   dplyr$relocate(

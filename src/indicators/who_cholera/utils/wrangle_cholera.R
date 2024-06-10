@@ -3,8 +3,9 @@ box::use(readr)
 box::use(lubridate)
 box::use(janitor)
 box::use(stringr)
-box::use(countrycode)
 box::use(zoo)
+
+box::use(../../../utils/location_codes)
 
 #' Wrangle cholera data
 #'
@@ -25,7 +26,7 @@ wrangle <- function(df_raw) {
         !stringr$str_detect(tolower(event), "intestinal|bacterial|shigellosis|salmonellosis")
     ) |>
     dplyr$transmute(
-      iso3 = countrycode$countryname(country, destination = "iso3c"),
+      iso3 = location_codes$names_to_iso3(country),
       event,
       start_date_raw = dplyr$case_when(
         !is.na(start_of_reporting_period) ~ start_of_reporting_period,
@@ -44,7 +45,7 @@ wrangle <- function(df_raw) {
     dplyr$select(
       -start_date_raw
     ) |>
-    dplyr$group_by( # some countries have multiple sets of cases reported each date (DRC)
+    dplyr$group_by( # some locations have multiple sets of cases reported each date (DRC)
       iso3,
       date
     ) |>

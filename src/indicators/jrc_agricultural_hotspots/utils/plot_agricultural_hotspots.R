@@ -1,10 +1,11 @@
 box::use(dplyr)
 box::use(scales)
+box::use(forcats)
 box::use(gg = ggplot2)
 box::use(gghdx)
 box::use(lubridate)
 
-box::use(../../../utils/country_codes)
+box::use(../../../utils/location_codes)
 box::use(../../../utils/formatters)
 box::use(../../../images/plots/theme_signals)
 box::use(../../../images/create_images)
@@ -47,7 +48,7 @@ plot <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
 
 #' Plot JRC drought data
 #'
-#' Plots JRC drought data for a specific country.
+#' Plots JRC drought data for a specific location.
 #'
 #' @param df_wrangled Wrangled data frame for plotting.
 #' @param df_raw Raw data frame for plotting, not used to plot displacement time
@@ -60,14 +61,16 @@ hotspots_ts <- function(df_wrangled, df_raw, title, date) {
   caption <- paste(
     "Data from JRC ASAP, https://agricultural-production-hotspots.ec.europa.eu",
     paste("Created", formatters$format_date(Sys.Date())),
-    country_codes$iso3_to_names(unique(df_wrangled$iso3)),
+    location_codes$iso3_to_names(unique(df_wrangled$iso3)),
     sep = "\n"
   )
 
   df_plot <- df_wrangled |>
     dplyr$mutate(
       year = lubridate$year(date),
-      month = lubridate$month(date, label = TRUE)
+      month = lubridate$month(date, label = TRUE),
+      hs_name = forcats$fct_expand(hs_name, "Major hotspot", "Hotspot", "No hotspot"),
+      hs_name = forcats$fct_relevel(hs_name, "Major hotspot", "Hotspot", "No hotspot")
     ) |>
     dplyr$filter(
       max(year, -Inf) - year < 5
@@ -102,9 +105,6 @@ hotspots_ts <- function(df_wrangled, df_raw, title, date) {
       )
     ) +
     gg$labs(
-      x = "",
-      y = "",
-      fill = "",
       title = title,
       caption = caption
     ) +
@@ -113,6 +113,8 @@ hotspots_ts <- function(df_wrangled, df_raw, title, date) {
       fill = gg$guide_legend(byrow = TRUE)
     ) +
     gg$theme(
+      legend.title = gg$element_blank(),
+      axis.title   = gg$element_blank(),
       panel.grid = gg$element_blank(),
       legend.position = "left",
       legend.direction = "vertical",

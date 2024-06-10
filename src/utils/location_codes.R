@@ -3,12 +3,12 @@ box::use(purrr)
 
 box::use(cs = ./cloud_storage)
 
-#' Get ISO3 code from country name
+#' Get ISO3 code from location name
 #'
-#' @param country_names Vector of country names
+#' @param location_names Vector of location names
 #'
 #' @export
-names_to_iso3 <- function(country_names) {
+names_to_iso3 <- function(location_names) {
   # these need custom handling because they don't match in `countryname()`
   custom_names <- list(
     Micronesia = "FSM",
@@ -17,11 +17,11 @@ names_to_iso3 <- function(country_names) {
   )
 
   # separate out names that need custom handling
-  iso3 <- character(length(country_names))
-  custom_iso3 <- country_names %in% names(custom_names)
-  iso3[custom_iso3] <- purrr$map_chr(country_names[custom_iso3], \(x) custom_names[[x]])
+  iso3 <- character(length(location_names))
+  custom_iso3 <- location_names %in% names(custom_names)
+  iso3[custom_iso3] <- purrr$map_chr(location_names[custom_iso3], \(x) custom_names[[x]])
   iso3[!custom_iso3] <- countrycode$countryname(
-    sourcevar = country_names[!custom_iso3],
+    sourcevar = location_names[!custom_iso3],
     destination = "iso3c"
   )
   iso3
@@ -78,21 +78,21 @@ iso2_to_iso3 <- function(iso2) {
 
 #' Get name from ISO3 code
 #'
-#' Get name from ISO3 codes. Uses the `country_info.parquet` file to match them up.
+#' Get name from ISO3 codes. Uses the `locations_metadata.parquet` file to match them up.
 #'
 #' @export
 iso3_to_names <- function(iso3) {
-  df_info <- cs$read_az_file("input/country_info.parquet")
-  df_info$country[match(iso3, df_info$iso3)]
+  df_metadata$location[match(iso3, df_metadata$iso3)]
 }
 
 #' Get region from ISO3 code
 #'
-#' Get region from ISO3 codes. Uses the `country_info.parquet` file as the
+#' Get region from ISO3 codes. Uses the `locations_metadata.parquet` file as the
 #' definitive region coding.
 #'
 #' @export
 iso3_to_regions <- function(iso3) {
-  df_info <- cs$read_az_file("input/country_info.parquet")
-  df_info$region[match(iso3, df_info$iso3)]
+  df_metadata$region[match(iso3, df_metadata$iso3)]
 }
+
+df_metadata <- cs$read_az_file("input/locations_metadata.parquet")

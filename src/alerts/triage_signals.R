@@ -245,9 +245,9 @@ save_core_signals_hdx <- function(df) {
   df <- dplyr$select(
     df,
     iso3,
-    country,
+    location,
     region,
-    hrp_country,
+    hrp_location,
     indicator_name,
     indicator_source,
     indicator_id,
@@ -271,6 +271,6 @@ save_core_signals_hdx <- function(df) {
   cs$update_az_file(
     df = df,
     name = "output/signals.csv",
-    stage = "dev"
+    blob = "dev"
   )
 }

@@ -28,7 +28,7 @@ info <- function(df_alerts, df_wrangled, df_raw) {
         is.na(analysis_area_text),
         "",
         glue$glue(
-          " This IPC/CH analysis covers a partial area of the country{analysis_area_text}",
+          " This IPC/CH analysis covers a partial area of {location}, {analysis_area_text}.",
           " Refer to the source documents for clarity on coverage and time series ",
           "comparability, as coverage of previous analyses may be different. "
         )

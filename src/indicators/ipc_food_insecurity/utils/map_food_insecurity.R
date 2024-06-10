@@ -4,7 +4,7 @@ box::use(gg = ggplot2)
 box::use(ripc)
 box::use(sf)
 
-box::use(../../../utils/country_codes)
+box::use(../../../utils/location_codes)
 box::use(../../../utils/formatters)
 box::use(../../../images/create_images)
 
@@ -59,7 +59,7 @@ food_insecurity_map <- function(df_wrangled, df_raw, title, date) {
   caption <- paste(
     "Data from the IPC/CH, https://www.ipcinfo.org",
     paste("Created", formatters$format_date(Sys.Date())),
-    country_codes$iso3_to_names(iso3),
+    location_codes$iso3_to_names(iso3),
     sep = "\n"
   )
 

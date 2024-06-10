@@ -12,6 +12,7 @@ box::use(./utils/map_displacement)
 
 box::use(../../alerts/generate_signals[generate_signals])
 box::use(../../utils/hs_logger)
+box::use(../../utils/update_coverage)
 
 dry_run <- as.logical(Sys.getenv("HS_DRY_RUN", unset = TRUE))
 dry_run_filter <- if (dry_run) c("AFG", "SSD") else NULL
@@ -21,12 +22,20 @@ indicator_id <- "idmc_displacement_disaster"
 hs_logger$configure_logger()
 hs_logger$monitoring_log_setup(indicator_id)
 
-df_raw <- raw_displacement$raw()
+df_raw <- raw_displacement$raw() |>
+  dplyr$filter(displacement_type == "Disaster")
+
 df_wrangled <- wrangle_displacement$wrangle(df_raw)
 
+# update coverage data to ensure locations_metadata up to date
+update_coverage$update_coverage(
+  indicator_id = indicator_id,
+  iso3 = df_wrangled$iso3
+)
+
 df_disaster <- generate_signals(
-  df_wrangled = dplyr$filter(df_wrangled, displacement_type == "Disaster"),
-  df_raw = dplyr$filter(df_raw, displacement_type == "Disaster"),
+  df_wrangled = df_wrangled,
+  df_raw = df_raw,
   indicator_id = indicator_id,
   alert_fn = alert_displacement$alert,
   plot_fn = plot_displacement$plot,

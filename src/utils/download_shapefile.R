@@ -11,8 +11,9 @@ box::use(sf)
 #'
 #' @param url URL to download
 #' @param layer Layer to read
-#' @param data_source `character` name of data_source. If supplied a column named "data_source"
-#'     will added to sf object with the specified data_source input. If NULL (default)
+#' @param boundary_source `character` name of source for the admin 0 boundaries
+#'     layer. If supplied a column named "boundary_source"
+#'     will added to sf object with the specified input. If `NULL` (default)
 #'     no column added.
 #'
 #' @returns sf object
@@ -21,7 +22,7 @@ box::use(sf)
 download_shapefile <- function(
   url,
   layer = NULL,
-  data_source = NULL
+  boundary_source = NULL
 ) {
   if (stringr$str_ends(url, ".zip")) {
     utils$download.file(
@@ -63,8 +64,8 @@ download_shapefile <- function(
       quiet = TRUE
     )
   }
-  if (!is.null(data_source)) {
-    ret$data_source <- data_source
+  if (!is.null(boundary_source)) {
+    ret$boundary_source <- boundary_source
   }
   ret
 }

@@ -7,7 +7,7 @@ box::use(rlang)
 # local modules
 box::use(./base_api)
 box::use(cs = ../../utils/cloud_storage)
-box::use(../../utils/country_codes)
+box::use(../../utils/location_codes)
 
 #' Get members information
 #'
@@ -70,41 +70,6 @@ mc_interests_ids <- function(interest_names, category_id = NULL) {
   interest_ids[interest_names] |>
     unname() |>
     as.list()
-}
-
-#' Get Mailchimp interests for ISO3 codes
-#'
-#' Return all relevant Mailchimp interests for the ISO3 codes. The interests are UNHCR
-#' regions and whether or not they are an HRP country.
-#'
-#' For the list of ISO3 codes, all relevant interests are returned that cover the
-#' ISO3 codes. So if AFG and GBR are passed in, the European and Asian and the
-#' Pacific regions would be returned, as well as HRP countries. This is to
-#' ensure that email segmentation is sent to everyone interested in the
-#' list of countries provided. By default, the IDs are returned, which can
-#' be used for segmentation using `mc_group_conditions()`. Otherwise, full names
-#' are returned which are used in conditional blocks.
-#'
-#' @param iso3 Vector of ISO3 codes
-#' @param use End use. If `segmentation`, then IDs are returned which can be
-#'     used in conditions. If `conditional_blocks`, then a comma separated
-#'     string is returned.
-#'
-#' @returns Interest names string separated by commas or list of interest IDs
-#'
-#' @export
-mc_interests_iso3 <- function(iso3) {
-  regions <- countrycode$countrycode(iso3, origin = "iso3c", destination = "unhcr.region")
-
-  if (any(iso3 %in% hrp_countries$iso3)) {
-    regions <- c(regions, "HRP countries")
-  }
-
-  regions <- sort(unique(regions))
-
-  if (use == "segmentation") {
-    mc_interests_ids(regions)
-  }
 }
 
 #' Get merge fields ID

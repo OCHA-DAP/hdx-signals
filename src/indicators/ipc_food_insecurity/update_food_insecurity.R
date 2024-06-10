@@ -1,5 +1,3 @@
-box::use(logger[log_info, log_debug])
-
 box::use(./utils/raw_food_insecurity)
 box::use(./utils/wrangle_food_insecurity)
 box::use(./utils/alert_food_insecurity)
@@ -10,6 +8,7 @@ box::use(./utils/info_food_insecurity)
 
 box::use(../../alerts/generate_signals[generate_signals])
 box::use(../../utils/hs_logger)
+box::use(../../utils/update_coverage)
 
 dry_run <- as.logical(Sys.getenv("HS_DRY_RUN", unset = TRUE))
 dry_run_filter <- if (dry_run) c("AFG", "SSD") else NULL
@@ -20,6 +19,12 @@ hs_logger$monitoring_log_setup(indicator_id)
 
 df_raw <- raw_food_insecurity$raw()
 df_wrangled <- wrangle_food_insecurity$wrangle(df_raw)
+
+# update coverage for ipc
+update_coverage$update_coverage(
+  indicator_id = indicator_id,
+  iso3 = df_wrangled$iso3
+)
 
 # now generate signals
 df_ipc <- generate_signals(

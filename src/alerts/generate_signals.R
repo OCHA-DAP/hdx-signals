@@ -55,7 +55,7 @@ hs_logger$configure_logger()
 #' @param dry_run_filter Used only if `dry_run` is `TRUE`. If `NULL`, the default, then
 #'     2 random signals from different countries are selected for testing. If you
 #'     pass in a vector of `iso3` codes, then the latest signals from those
-#'     countries are used for testing.
+#'     locations are used for testing.
 #'
 #' @export
 generate_signals <- function(

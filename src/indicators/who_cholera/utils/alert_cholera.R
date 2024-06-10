@@ -1,9 +1,7 @@
 # external packages
 box::use(dplyr)
 box::use(tidyr)
-box::use(countrycode)
 box::use(utils)
-box::use(scales)
 
 #' Creates cholera alerts dataset
 #'

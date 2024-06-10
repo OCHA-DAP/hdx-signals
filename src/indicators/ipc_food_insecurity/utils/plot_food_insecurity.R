@@ -7,7 +7,7 @@ box::use(lubridate)
 box::use(readr)
 box::use(ggrepel)
 
-box::use(../../../utils/country_codes)
+box::use(../../../utils/location_codes)
 box::use(../../../utils/formatters)
 box::use(../../../images/plots/theme_signals)
 box::use(../../../images/create_images)
@@ -46,7 +46,7 @@ plot <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
 
 #' Plot IPC food insceurity data
 #'
-#' Plots food insecurity data for a specific country.
+#' Plots food insecurity data for a specific location.
 #'
 #' @param df_wrangled Wrangled data frame for plotting.
 #' @param df_raw Raw data frame for plotting, not used to plot displacement time
@@ -59,7 +59,7 @@ food_insecurity_ts <- function(df_wrangled, df_raw, title, date) {
   caption <- paste(
     "Data from the IPC, https://www.ipcinfo.org",
     paste("Created", formatters$format_date(Sys.Date())),
-    country_codes$iso3_to_names(unique(df_wrangled$iso3)),
+    location_codes$iso3_to_names(unique(df_wrangled$iso3)),
     sep = "\n"
   )
 

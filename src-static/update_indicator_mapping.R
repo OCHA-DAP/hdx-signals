@@ -16,8 +16,8 @@ log_info("Updating indicator mapping...")
 # nolint start
 df <- dplyr$tribble(
   ~indicator_id, ~mc_interest, ~mc_tag, ~mc_folder, ~indicator_title, ~indicator_subject, ~static_segment,
-  "idmc_displacement_conflict", "Internal displacement, conflict - IDMC", NA_character_, "HDX Signals - IDMC Conflict", "Internal displacement, conflict", "Displacement, conflict", 25093,
-  "idmc_displacement_disaster", "Internal displacement, disaster - IDMC", NA_character_, "HDX Signals - IDMC Disaster", "Internal displacement, disaster","Displacement, disaster", 25097,
+  "idmc_displacement_conflict", "Conflict-driven displacement - IDMC", NA_character_, "HDX Signals - IDMC Conflict", "Conflict-driven displacement", "Conflict-driven displacement", 25093,
+  "idmc_displacement_disaster", "Disaster-driven displacement - IDMC", NA_character_, "HDX Signals - IDMC Disaster", "Disaster-driven displacement","Disaster-driven displacemen", 25097,
   "ipc_food_insecurity", "Food insecurity - IPC/CH", NA_character_, "HDX Signals - IPC", "Food insecurity", "Food insecurity", 25101,
   "who_cholera", NA_character_, "CHOLERA", "HDX Signals - Cholera", "Cholera", "Cholera", 25105,
   "jrc_agricultural_hotspots", "Agricultural hotspots - JRC ASAP", NA_character_, "HDX Signals - JRC ASAP", "Agricultural hotspots", "Agricultural hotspots", 25109,
