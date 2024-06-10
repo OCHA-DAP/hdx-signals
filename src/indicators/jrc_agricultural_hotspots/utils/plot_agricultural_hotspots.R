@@ -42,7 +42,7 @@ plot <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
     df_raw = df_raw,
     image_fn = hotspots_ts,
     image_use = "plot",
-    height = 3,
+    height = NA,
     width = 6
   )
 }
