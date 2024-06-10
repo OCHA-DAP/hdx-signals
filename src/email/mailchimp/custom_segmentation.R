@@ -114,13 +114,8 @@ interest_emails <- function(interest, geo_ids, dry_run) {
     .x = audience$mc_members(),
     .f = \(member) {
       ind_interest <- member$interests[[interest_id]]
-<<<<<<< HEAD
       if (ind_interest && (!dry_run || "hdx-signals-test" %in% purrr$map_chr(member$tags, \(tag) tag$name))) {
-        # only check for countries if they were interested in the indicator
-=======
-      if (ind_interest && (!test || "hdx-signals-test" %in% purrr$map_chr(member$tags, \(tag) tag$name))) {
         # only check for locations if they were interested in the indicator
->>>>>>> main
         # returns email if they were signed up to any of the geographies signalled
         # otherwise it returns an empty character vector
         if (any(as.logical(member$interests[geo_ids]))) {
