@@ -334,8 +334,8 @@ df_map_settings <- dplyr$left_join(
   by = "iso3"
 ) |>
   dplyr$mutate(
-    legend_position = ifelse(ratio > 3,"bottom","left"),
-    direction = ifelse(ratio > 3,"horizontal","vertical"),
+    legend_position = ifelse(ratio > 1.5,"bottom","left"),
+    direction = ifelse(ratio > 1.5,"horizontal","vertical"),
     location = "plot"
   )
 
