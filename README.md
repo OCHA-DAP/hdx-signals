@@ -21,7 +21,7 @@ metadata for locations covered in Signals, spatial files for use in maps, and ot
 resources utilized in [src](/src).
 - [test](/test): Unit testing utilities for code and manual testing to explore changes
 to visual design in the system.
-- [.github][/.github]: Workflows that automate data scanning and other processes.
+- [.github](/.github): Workflows that automate data scanning and other processes.
 
 ### Environment
 
