@@ -35,6 +35,7 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
     ) |>
     dplyr$summarize(
       event_info = paste(notes, collapse = " "),
+      plot_title = unique(plot_title),
       .groups = "drop"
     ) |>
     dplyr$mutate(
