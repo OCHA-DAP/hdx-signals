@@ -16,14 +16,14 @@ theme_signals <- function() {
   gghdx$theme_hdx() +
     gg$theme(
       axis.text.x = gg$element_text(vjust = 1),
-      plot.title = gg$element_text(size = 14),
+      plot.title = gg$element_text(size = 14, margin = gg$margin(t = 0, r = 0, b = 0.25, l = 0, unit = "in")),
       axis.title = gg$element_text(size = 12),
       axis.text = gg$element_text(size = 11),
-      plot.caption = gg$element_text(size = 8, hjust = 1),
+      plot.caption = gg$element_text(size = 8, hjust = 1,margin = gg$margin(t = 0.25, r = 0, b = 0, l = 0, unit = "in")),
       plot.caption.position = "plot",
       legend.text = gg$element_text(size = 9),
       legend.title = gg$element_text(size = 11),
       panel.background = gg$element_rect(fill = "white", linewidth = 0),
-      plot.background = gg$element_rect(fill = "white", linewidth = 0)
+      plot.background = gg$element_rect(fill = "white", linewidth = 0),
     )
 }
