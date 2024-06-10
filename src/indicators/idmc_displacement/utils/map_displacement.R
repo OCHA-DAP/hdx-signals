@@ -39,7 +39,9 @@ map <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
     df_raw = df_raw,
     image_fn = displacement_map,
     image_use = "map",
-    use_map_settings = TRUE
+    width = 6,
+    height = 4,
+    use_map_settings = FALSE
   )
 }
 
