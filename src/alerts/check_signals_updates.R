@@ -109,7 +109,6 @@ slack_build_alert <- function(indicator_id, df) {
 #' @returns DataFrame with metadata for all runs
 query_github <- function(indicator_id) {
   workflow_id <- paste0("monitor_", indicator_id, ".yaml")
-  base_logs_url <- "https://github.com/ocha-dap/hdx-signals/actions/runs/"
   httr2$request(
     "https://api.github.com/repos/ocha-dap/hdx-signals/actions/workflows"
   ) |>
@@ -162,6 +161,7 @@ slack_build_workflow_status <- function(indicator_id) {
   if (nrow(df_sel) == 1) {
     status <- df_sel$workflow_runs.conclusion
     if (status == "failure") {
+      base_logs_url <- "https://github.com/ocha-dap/hdx-signals/actions/runs/"
       run_id <- df_sel$workflow_runs.id
       run_link <- paste0(base_logs_url, run_id)
       paste0(":red_circle: ", indicator_id, ": Failed update - <", run_link, "|Check logs> \n")
