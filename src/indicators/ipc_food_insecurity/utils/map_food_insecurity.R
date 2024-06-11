@@ -99,6 +99,9 @@ food_insecurity_map <- function(df_wrangled, df_raw, title, date) {
             admin_type == "hhg" ~ "Household group",
             .default = "Rural"
           )
+        ) |>
+        dplyr$filter( # drop some extremely complex shapes
+          !(stringr$str_detect(sf$st_geometry_type(geometry), "POINT") & is.na(admin_type))
         )
     },
     error = \(e) NULL
@@ -170,5 +173,9 @@ food_insecurity_map <- function(df_wrangled, df_raw, title, date) {
       subtitle = subtitle,
       caption = caption
     ) +
-    map_theme$map_theme(iso3 = iso3, use_map_settings = TRUE)
+    map_theme$map_theme(
+      iso3 = iso3,
+      use_map_settings = TRUE,
+      margin_location = "subtitle"
+    )
 }
