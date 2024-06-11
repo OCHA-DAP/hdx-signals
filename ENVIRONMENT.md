@@ -10,11 +10,8 @@ transferred automatically from Azure into [HDX](https://data.humdata.org).
 
 ### Azure
 
-To read to and from the Azure storage containers, you need the following environment
-variables.
+To read to and from the Azure storage containers, you need the following two permissions:
 
-- `DSCI_AZ_ENDPOINT`: URL endpoint to the Azure blob store, with `{glue}` string
-syntax for `stage` and `service`. 
 - `DSCI_AZ_SAS_PROD`: SAS token for access to the production stage container.
 - `DSCI_AZ_SAS_DEV`: SAS token for access to the development stage container. Not
 currently used, but historically some data was stored on `dev`.
