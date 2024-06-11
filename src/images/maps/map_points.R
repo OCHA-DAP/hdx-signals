@@ -34,7 +34,6 @@ map_points <- function(
     use_map_settings = TRUE) {
 
   num_unique_vals <- length(unique(df[[val_col]]))
-  n_breaks <- ifelse(num_unique_vals < 3, num_unique_vals, 3)
 
   gg_map$gg_map(iso3) +
     gg$geom_sf(
@@ -57,7 +56,7 @@ map_points <- function(
     geom_cities$geom_cities(iso3) +
     gg$scale_size_continuous(
       breaks = scales$breaks_pretty(
-        n = n_breaks
+        n = min(3, num_unique_vals)
       ),
       labels = gghdx$label_number_hdx()
     ) +
