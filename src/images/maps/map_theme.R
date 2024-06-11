@@ -43,7 +43,7 @@ map_theme <- function(iso3, use_map_settings = TRUE, margin_location = c("title"
       axis.line.x = gg$element_blank(),
       legend.position = df_ms$legend_position,
       legend.direction = df_ms$direction,
-      legend.justification = unlist(df_ms$justification),
+      legend.justification = df_ms$justification,
       legend.location = df_ms$location
     )
 }
