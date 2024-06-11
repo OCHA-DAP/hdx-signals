@@ -32,7 +32,7 @@ theme_signals <- function(margin_location = c("title", "subtitle")) {
       axis.text.x = gg$element_text(vjust = 1),
       axis.title = gg$element_text(size = 12),
       axis.text = gg$element_text(size = 11),
-      plot.caption = gg$element_text(size = 8, hjust = 0, margin = gg$margin(t = 0.05, unit = "in")),
+      plot.caption = gg$element_text(size = 8, hjust = 0, margin = gg$margin(t = 0.1, unit = "in")),
       plot.caption.position = "plot",
       legend.text = gg$element_text(size = 9),
       legend.title = gg$element_text(size = 11),
