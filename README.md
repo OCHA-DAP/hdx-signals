@@ -1,4 +1,4 @@
-<img src="https://github.com/OCHA-DAP/hdx-signals/assets/HDXSignalsLogo_V2.png" width=200>
+# HDX Signals
 
 HDX Signals is a product of [HDX](https://data.humdata.org) that monitors key
 datasets and generates automated emails when significant, negative changes
