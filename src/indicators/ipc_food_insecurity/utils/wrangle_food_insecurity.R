@@ -59,7 +59,7 @@ wrangle <- function(df_raw) {
         stringr$str_detect(title_suffix, "[0-9]{4}") ~ NA_character_, # just versioning of BDI
         stringr$str_detect(title_suffix, "ème") ~ NA_character_, # versioning for COD
         stringr$str_detect(title_suffix, "è Cycle") ~ NA_character_, # versioning for COD
-        title_suffix %in% c("LRA", "SRA") ~ NA_character_, # versioning for KEN
+        stringr$str_detect(tolower(title_suffix), "sra|lra") ~ NA_character_, # versioning for KEN
         !is.na(title_suffix) ~ title_suffix,
         .default = NA_character_
       )
