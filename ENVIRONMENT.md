@@ -1,7 +1,9 @@
 # Environment variables
 
 Below are the environment variables used in this repository. Get in touch with
-the maintainers if you do not have them and feel you should be given access.
+the maintainers if you do not have them and feel you should be given access. The easiest
+way to define them for use in R is in an `.Renviron` file, either global or local.
+You can directly do this in R with `usethis::edit_r_environ()`.
 
 ## Reading and writing data
 
