@@ -13,16 +13,32 @@ If you’ve found a bug, please file an issue that illustrates the bug with a mi
 [reprex](https://www.tidyverse.org/help/#reprex) (this will also help you write a unit test, if needed).
 See the Tidyverse guide on [how to create a great issue](https://code-review.tidyverse.org/issues/) for more advice.
 
+## Overall flow
+
+### Developer setup
+
+Before you start, follow these steps to setup the repository for development:
+
+1. Clone GitHub repository.
+2. Install R version 4.3.3. You might find the R installation manager [rig](https://github.com/r-lib/rig) helpful in managing your installation versions.
+3. Install `{renv}` with `install.packages("renv").
+4. Install project dependencies using `renv::init()`.
+5. Ensure you have the necessary environment variables defined. See [ENVIRONMENT.md](ENVIRONMENT.md) for more details.
+
 ### Pull request process
+
+Create a pull request to address a specific issue.
 
 *   Pull the latest version of `main` and install all dependencies with `renv::restore()`.
 *   Create a Git branch for your pull request (PR). You could use `usethis::pr_init("brief-description-of-change")`.
-*   Make your changes, commit to git, and then create a PR by running `usethis::pr_push()`, and following the prompts in your browser.
+*   Make your changes, commit to git, and then create a PR in GitHub. For convenience you can do this by running `usethis::pr_push()`, and following the prompts in your browser.
     Ensure that `CHANGES.md` is updated as described below.
     The title of your PR should briefly describe the change.
     The body of your PR should contain `Fixes #issue-number`.
 
 ### Update `CHANGES.md`
+
+Add a bullet point to the `CHANGES.md` file to describe the changes in your PR.
 
 *   All PR changes need to be reflected in `CHANGES.md`. Add a bullet to the top
 of `NEWS.md` (i.e. just below the first header). Follow the style described
@@ -67,6 +83,8 @@ Feel free to propose additional categories, but those need to be reflected here 
 consistency.
 
 ### Versioning
+
+Update the version in `.signals-version`, following semantic versioning guidelines
 
 *   Follow standard semantic versioning guidelines for `major.minor.patch`. Versioning
 should be incrementally updated regardless of whether or not there are any user-facing
