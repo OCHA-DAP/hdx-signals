@@ -12,7 +12,7 @@ box::use(./email_body)
 #'
 #' `archive_url` is passed because campaigns with conditional logic to hide location
 #' blocks are empty in the archive. So, a campaign with no conditional logic is
-#' created, and that URL is used for all alerts.
+#' created, and that URL is used for all signals
 #'
 #' @param body String of text to go in the body.
 #' @param archive_url Archive URL to be linked in the top right of the email.

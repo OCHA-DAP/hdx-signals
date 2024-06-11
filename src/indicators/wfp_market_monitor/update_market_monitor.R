@@ -6,7 +6,7 @@ box::use(./utils/plot_market_monitor)
 box::use(./utils/info_market_monitor)
 box::use(./utils/summary_market_monitor)
 
-box::use(../../alerts/generate_signals)
+box::use(../../signals/generate_signals)
 box::use(../../utils/hs_logger)
 box::use(../../utils/update_coverage)
 

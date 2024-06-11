@@ -5,7 +5,7 @@ box::use(./utils/summary_agricultural_hotspots)
 box::use(./utils/info_agricultural_hotspots)
 box::use(./utils/plot_agricultural_hotspots)
 
-box::use(../../alerts/generate_signals)
+box::use(../../signals/generate_signals)
 box::use(../../utils/hs_logger)
 box::use(../../utils/update_coverage)
 
