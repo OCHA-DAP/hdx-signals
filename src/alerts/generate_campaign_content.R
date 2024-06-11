@@ -140,20 +140,15 @@ generate_summary <- function(
     df_raw,
     fn = NULL,
     empty = FALSE) {
-  generate_section(
-    df_alerts = df_alerts,
-    df_wrangled = df_wrangled,
-    df_raw = df_raw,
-    fn = fn,
-    fn_name = deparse(substitute(fn)),
-    null_return = dplyr$tibble(
-      summary_long = NA_character_,
-      summary_short = NA_character_,
-      summary_source = NA_character_,
-      .rows = nrow(df_alerts)
-    ),
-    empty = empty
-  )
+  df_signals <- readr::read_csv("signals.csv") |>
+    dplyr::filter(indicator_id == unique(df_alerts$indicator_id)) |>
+    dplyr::select(iso3, date, dplyr::starts_with("summary"))
+
+  df_alerts |>
+    dplyr::left_join(
+      df_signals,
+      by = c("iso3", "date")
+    )
 }
 
 #' Generate info for alerts
