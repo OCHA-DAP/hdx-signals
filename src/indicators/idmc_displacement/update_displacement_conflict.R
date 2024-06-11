@@ -9,7 +9,7 @@ box::use(./utils/info_displacement)
 box::use(./utils/summary_displacement)
 box::use(./utils/map_displacement)
 
-box::use(../../alerts/generate_signals)
+box::use(../../signals/generate_signals)
 box::use(../../utils/hs_logger)
 box::use(../../utils/update_coverage)
 

@@ -3,7 +3,7 @@ box::use(stringr)
 
 box::use(cs = ./cloud_storage)
 
-#' Add location and region columns
+#' Add location metadata columns
 #'
 #' Generates columns of location information from a static file stored on Azure
 #' by simply performing a left join by iso3 code. Adds location name, region,

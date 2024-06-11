@@ -1,32 +1,15 @@
 ## Indicators
 
-Early warnings are run from different sets of global indicators. All of the
-analysis code is contained under the `src` folder. Each indicator has
-its own folder with a `update_(...).R` file that downloads raw data for the
+Different core datasets are scanned for signals. Each indicator has
+its own folder with a `update_{...}.R` file that downloads raw data for the
 indicator, wrangles into a usable file for visualizations and alerts, and
-generates flags for that indicator. These files are all standalone files that
-can be run without any other external inputs, with all outputs being saved
-direct to Google Drive. Once each individual indicator is updated, 
-`src/send_alerts.R` pulls together the alerts data and sends out emails when
-new alerts are detected. 
+generates signals. Utilities for wrangling, analyzing, and creating signals content
+is contained in a `utils` folder. Prompts for AI summarization are in a `prompts`
+folder.
 
-The specific methodologies used for each of the indicators within the project
-are contained in their own specific README files, linked below. The
-output for all data sources are three files:
+Each `update_{...}.R` script is run automatically in GitHub Actions. When signals
+are detected, an `output/{indicator_id}/signals.parquet` file is created that can
+then be triaged into the overall Signals dataset.
 
-1. `flags.parquet`: a flagging dataset that has a row of flags
-with a start date, end date, and explanatory message. There is only one
-output flag for each source of data.
-2. `raw.parquet`: the raw data from the data source that can be used to
-contextualize the alert. Typically only useful in tabular format.
-3. `wrangleds.parquet`: the wrangled data from the data source that can
-be used to contextualize the alert, and is generally ready for plotting.
-
-When stored in the Google Cloud Storage bucket, each of these files is stored with
-the path `output/{indicator}/{file}.parquet`.
-
-The current indicators included in the CERF GMS are:
-
-- [Internal Displacement Monitoring Centre (IDMC) displacement data](/src/indicators/idmc/README.md)
-- [Integrated Food Security Phase Classification (IPC) food security data](/src/indicators/ipc/README.md)
-- [WHO AFRO cholera data](/src/indicators/cholera/README.md)
+Methodologies for signalling for each dataset are specified in the public-facing
+Gitbook documentation.

@@ -7,7 +7,7 @@ box::use(./utils/map_conflict)
 box::use(./utils/info_conflict)
 box::use(./utils/summary_conflict)
 
-box::use(../../alerts/generate_signals)
+box::use(../../signals/generate_signals)
 box::use(../../utils/hs_logger)
 box::use(../../utils/update_coverage)
 
