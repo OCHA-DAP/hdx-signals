@@ -81,7 +81,7 @@ create_body <- function(
     ),
     text_block$add_text(
       text = glue$glue(
-        "Read more about HDX Signals on <a href='https://data.humdata.org/signals'>",
+        "Read more about Signals on HDX's <a href='https://data.humdata.org/signals'>",
         "website</a> and find all source code on ",
         "<a href='https://github.com/OCHA-DAP/hdx-signals'>GitHub</a>. Provide ",
         "feedback through our <a href='{Sys.getenv('HS_SURVEY_LINK')}'>",
