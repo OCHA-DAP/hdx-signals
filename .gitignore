@@ -150,7 +150,7 @@ src/email/figure/*
 *food_security_ipc.md
 
 # Don't commit any HTML files since .md files displayed directly
-/*.html
+*.html
 !src/email/components/html_signals_template.html
 
 # auth
