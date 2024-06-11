@@ -24,9 +24,7 @@ plot <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
     dplyr$mutate(
       title = paste0(
         gghdx$format_number_hdx(round(value)),
-        " internal displacements due to ",
-        displacement_cause,
-        " since ",
+        " internal displacements since ",
         formatters$format_date(date - lubridate$days(30))
       )
     )
@@ -67,7 +65,7 @@ displacement_ts <- function(df_wrangled, df_raw, title, date) {
     val_col = "displacement_30d",
     y_axis = "Displacements (monthly)",
     title = title,
-    subtitle = "",
+    subtitle = paste0(unique(df_wrangled$displacement_type), "-driven displacements"),
     caption = caption
   )
 }

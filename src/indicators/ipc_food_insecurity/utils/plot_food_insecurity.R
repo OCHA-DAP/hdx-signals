@@ -177,7 +177,7 @@ food_insecurity_ts <- function(df_wrangled, df_raw, title, date) {
     gg$expand_limits(
       y = 0
     ) +
-    theme_signals$theme_signals() +
+    theme_signals$theme_signals("subtitle") +
     gg$theme(
       legend.position = "none"
     ) +
