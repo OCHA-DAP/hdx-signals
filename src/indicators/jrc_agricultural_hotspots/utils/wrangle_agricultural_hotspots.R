@@ -23,5 +23,8 @@ wrangle <- function(df_raw) {
     dplyr$arrange(
       iso3,
       date
+    ) |>
+    dplyr$filter(
+      hs_code != 3 # 3 is the code for not assessed, so remove from the data
     )
 }
