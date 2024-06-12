@@ -1,5 +1,0 @@
-# Agricultural Hotspots
-
-## Source
-
-## Methodology

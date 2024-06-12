@@ -1,10 +1,10 @@
 # Table of contents
 
 * [Overview](README.md)
-* [Indicators](indicators/README.md)
-  * [Agricultural Hotspots](indicators/agricultural-hotspots.md)
-  * [Conflict Events](indicators/conflict-events.md)
-  * [Food Insecurity](indicators/food-insecurity.md)
-  * [Internal Displacement](indicators/internal-displacement.md)
-  * [Market Monitoring](indicators/market-monitoring.md)
+* [Datasets](datasets/README.md)
+  * [Agricultural Hotspots](datasets/agricultural-hotspots.md)
+  * [Armed Conflict](datasets/armed-conflict.md)
+  * [Food Insecurity](datasets/food-insecurity.md)
+  * [Internal Displacement](datasets/internal-displacement.md)
+  * [Market Monitoring](datasets/market-monitoring.md)
 * [Limitations](limitations.md)
