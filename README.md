@@ -7,8 +7,8 @@ are detected.
 Find all code and technical documentation behind HDX Signals in
 this repository. Read more about HDX Signals and sign up to receive signals direct
 in your inbox on [our website](https://data.humdata.org/signals). See our
-methods documentation for details on datasets included and when signals
-are generated.
+[methodology](https://un-ocha-centre-for-humanitarian.gitbook.io/hdx-signals)
+documentation for details on datasets included and how signals are generated.
 
 ## Overview
 
