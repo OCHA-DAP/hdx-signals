@@ -1,4 +1,6 @@
-# Market Monitoring
+# Market monitoring
+
+Signals are sent when month-to-month price increases reach a newly high level not seen in previous months.
 
 ## Source
 
