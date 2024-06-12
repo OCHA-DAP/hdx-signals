@@ -11,6 +11,7 @@ box::use(sf)
 #'
 #' @param url URL to download
 #' @param layer Layer to read
+#' @param iso3 `character` string of ISO3 code to add to the file.
 #' @param boundary_source `character` name of source for the admin 0 boundaries
 #'     layer. If supplied a column named "boundary_source"
 #'     will added to sf object with the specified input. If `NULL` (default)
@@ -22,6 +23,7 @@ box::use(sf)
 download_shapefile <- function(
   url,
   layer = NULL,
+  iso3 = NULL,
   boundary_source = NULL
 ) {
   if (stringr$str_ends(url, ".zip")) {
@@ -64,8 +66,10 @@ download_shapefile <- function(
       quiet = TRUE
     )
   }
-  if (!is.null(boundary_source)) {
-    ret$boundary_source <- boundary_source
-  }
+
+  # add in iso3 and boundary source. if NULL, no change will happen
+  ret$iso3 <- iso3
+  ret$boundary_source <- boundary_source
+
   ret
 }
