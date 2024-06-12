@@ -4,7 +4,7 @@ Signals are sent when the hotspot classification for a location increases.
 
 ## Source
 
-[Anomaly Hotspots of Agricultural Production (ASAP)](https://agricultural-production-hotspots.ec.europa.eu) data produced by the Joint Research Centre. ASAP is an online decision support system for early warning about hotspots of agricultural production anomaly (crop and rangeland), developed for food security crises prevention and response.
+We monitor [Anomaly Hotspots of Agricultural Production (ASAP)](https://agricultural-production-hotspots.ec.europa.eu) data produced by the Joint Research Centre. ASAP is an online decision support system for early warning about hotspots of agricultural production anomaly (crop and rangeland), developed for food security crises prevention and response.
 
 The ASAP system produces automatic warnings at a subnational level, using a range of remote sensing and earth observation data to monitor agricultural conditions. These subnational warnings are converted into national level hotspots analyses by a team of analysts. Each location is classified as `No hotspot`, `Hotspot`, or `Major hotspot`.&#x20;
 
