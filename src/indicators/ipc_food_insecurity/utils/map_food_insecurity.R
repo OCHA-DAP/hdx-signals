@@ -5,6 +5,7 @@ box::use(ripc)
 box::use(sf)
 box::use(logger)
 box::use(sf)
+box::use(forcats)
 
 box::use(../../../utils/location_codes)
 box::use(../../../utils/formatters)
@@ -115,7 +116,11 @@ food_insecurity_map <- function(df_wrangled, df_raw, title, date) {
   # if points available, separate those out
   geom_type <- sf$st_geometry_type(sf_ipc)
   sf_points <- dplyr$filter(sf_ipc, geom_type == "POINT")
-  sf_areas <- dplyr$filter(sf_ipc, geom_type != "POINT")
+  sf_areas <- dplyr$filter(sf_ipc, geom_type != "POINT") |>
+    dplyr$mutate(
+      overall_phase = forcats$fct_expand(overall_phase, "1","2","3","4","5"),
+      overall_phase = forcats$fct_relevel(overall_phase, "1","2","3","4","5")
+    )
 
   p <- gg_map$gg_map(iso3) +
     gg$geom_sf(
@@ -123,6 +128,7 @@ food_insecurity_map <- function(df_wrangled, df_raw, title, date) {
       mapping = gg$aes(
         fill = overall_phase
       ),
+      show.legend = c(fill = TRUE),
       color = "white",
       linewidth = 0.1
     ) +
@@ -141,23 +147,24 @@ food_insecurity_map <- function(df_wrangled, df_raw, title, date) {
   # only map points if there are any, avoids warnings for missing scales
   if (nrow(sf_points) > 0) {
     p <- p +
-      gg$geom_sf(
-        data = sf_points,
-        mapping = gg$aes(
-          fill = overall_phase,
-          shape = point_type
-        ),
-        color = "black"
-      ) +
-      gg$scale_shape_manual(
-        values = c(
-          "Urban" = 21,
-          "IDP" = 22,
-          "Refugee" = 23,
-          "Rural" = 24,
-          "Household group" = 25
+        gg$geom_sf(
+          data = sf_points,
+          mapping = gg$aes(
+            fill = overall_phase,
+            shape = point_type
+          ),
+          show.legend = c(fill = FALSE, shape = TRUE, color =FALSE),
+          color = "black"
+        ) +
+        gg$scale_shape_manual(
+          values = c(
+            "Urban" = 21,
+            "IDP" = 22,
+            "Refugee" = 23,
+            "Rural" = 24,
+            "Household group" = 25
+          )
         )
-      )
   }
 
   p +
@@ -169,7 +176,8 @@ food_insecurity_map <- function(df_wrangled, df_raw, title, date) {
         "3" = "#E67800",
         "4" = "#C80000",
         "5" = "#640000"
-      )
+      ),
+      drop = F
     ) +
     gg$coord_sf(
       clip = "off",
@@ -178,7 +186,7 @@ food_insecurity_map <- function(df_wrangled, df_raw, title, date) {
     gg$labs(
       x = "",
       y = "",
-      fill = "Phase",
+      fill = "IPC Phase",
       shape = "Settlement",
       title = title,
       subtitle = subtitle,
