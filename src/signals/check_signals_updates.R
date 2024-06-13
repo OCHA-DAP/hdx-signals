@@ -187,7 +187,8 @@ indicators <- ".github/workflows" |>
 
 full_status <- ""
 n_signals <- 0
-signals <- ""
+# Needs to have at least 1 character for the Slack API
+signals <- " "
 test <- Sys.getenv("HS_TEST", unset = TRUE)
 
 for (ind in indicators) {
