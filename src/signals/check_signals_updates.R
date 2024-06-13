@@ -187,7 +187,7 @@ indicators <- ".github/workflows" |>
 
 full_status <- ""
 n_signals <- 0
-signals <- ""
+signals <- " "
 test <- Sys.getenv("HS_TEST", unset = TRUE)
 
 for (ind in indicators) {
