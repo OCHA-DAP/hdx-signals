@@ -4,7 +4,6 @@ box::use(gghdx)
 box::use(dplyr)
 
 box::use(./theme_signals)
-box::use(../../utils/formatters)
 
 #' Plot time series data
 #'
@@ -28,7 +27,7 @@ plot_ts <- function(
     title,
     subtitle = gg$waiver(),
     caption = gg$waiver()) {
-  df |>
+  p <- df |>
     dplyr$filter(
       max(date, as.Date("1500-01-01")) - date <= 365 * 5
     ) |>
@@ -48,7 +47,7 @@ plot_ts <- function(
       color = gghdx$hdx_hex("sapphire-hdx")
     ) +
     gghdx$scale_y_continuous_hdx(
-      labels = formatters$format_key_figures,
+      labels = gghdx$label_number_hdx(),
     ) +
     gg$scale_x_date(
       breaks = scales$pretty_breaks(),
@@ -60,7 +59,6 @@ plot_ts <- function(
     gg$expand_limits(
       y = 0
     ) +
-    theme_signals$theme_signals() +
     gg$labs(
       x = "",
       y = y_axis,
@@ -68,4 +66,10 @@ plot_ts <- function(
       subtitle = subtitle,
       caption = caption
     )
+
+  # determine where to place the margin
+  margin_location <- if (inherits(subtitle, "waiver")) "title" else "subtitle"
+  p +
+    theme_signals$theme_signals(margin_location)
+
 }

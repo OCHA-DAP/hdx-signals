@@ -5,10 +5,11 @@ box::use(./utils/summary_agricultural_hotspots)
 box::use(./utils/info_agricultural_hotspots)
 box::use(./utils/plot_agricultural_hotspots)
 
-box::use(../../alerts/generate_signals[generate_signals])
+box::use(../../signals/generate_signals)
 box::use(../../utils/hs_logger)
 box::use(../../utils/update_coverage)
 
+first_run <- as.logical(Sys.getenv("FIRST_RUN", unset = FALSE))
 dry_run <- as.logical(Sys.getenv("HS_DRY_RUN", unset = TRUE))
 dry_run_filter <- if (dry_run) c("AFG", "SSD") else NULL
 indicator_id <- "jrc_agricultural_hotspots"
@@ -26,7 +27,7 @@ update_coverage$update_coverage(
 )
 
 # now generate signals
-df_jrc <- generate_signals(
+df_jrc <- generate_signals$generate_signals(
   df_wrangled = df_wrangled,
   indicator_id = indicator_id,
   alert_fn = alert_agricultural_hotspots$alert,
@@ -34,5 +35,6 @@ df_jrc <- generate_signals(
   info_fn = info_agricultural_hotspots$info,
   plot_fn = plot_agricultural_hotspots$plot,
   dry_run = dry_run,
-  dry_run_filter = dry_run_filter
+  dry_run_filter = dry_run_filter,
+  first_run = first_run
 )

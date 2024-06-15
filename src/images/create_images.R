@@ -93,6 +93,17 @@ create_image <- function(
   )
 
   p <- image_fn(df_wrangled, df_raw, title, date)
+
+  # allow `image_fn` to return NA if some maps can fail to generate without error
+  if (is.null(p)) {
+    return(
+      data.frame(
+        id = NA_character_,
+        url = NA_character_
+      )
+    )
+  }
+
   if (use_map_settings) {
     save_image$save_map(
       p = p,
@@ -120,7 +131,7 @@ create_image_poss <- purrr$possibly(create_image, data.frame(id = "ERROR", url =
 #' Filters data frame for image generation
 #'
 #' Filters the data frame image generation. Takes in the `iso3` code
-#' and `date` of an alert, and filters the wrangled data frame to that location.
+#' and `date` of a signal, and filters the wrangled data frame to that location.
 #' If the `date` is older than 90 days, then the wrangled data frame is filtered
 #' to only have data up to the `date`.
 filter_plot_df <- function(iso3, date, df) {
@@ -132,13 +143,13 @@ filter_plot_df <- function(iso3, date, df) {
 }
 
 
-#' Validates that the correct alerts data frame is passed
+#' Validates that the correct signals data frame is passed
 #'
 #' Checks that columns are present and have correct typing. Particularly checks
 #' that a temporary `title` column has been added to the base alerts data frame,
 #' which will be used as the plot title.
 #'
-#' @param df Data frame of alerts to validate
+#' @param df Data frame of signals to validate
 validate_images_alerts <- function(df) {
   if (!all(c("iso3", "date", "title", "indicator_id") %in% names(df))) {
     stop(

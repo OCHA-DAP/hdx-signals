@@ -7,13 +7,13 @@ box::use(dplyr)
 #'
 #' @export
 alerts_template_base <- dplyr$tibble(
-  iso3 = NA_character_,
-  indicator_name = NA_character_,
-  indicator_source = NA_character_,
-  indicator_id = NA_character_,
-  date = as.Date(integer(0), origin = "1970-01-01"),
-  alert_level_numeric = NA_integer_,
-  value = NA_real_
+  iso3 = character(),
+  indicator_name = character(),
+  indicator_source = character(),
+  indicator_id = character(),
+  date = as.Date(integer(0)),
+  alert_level_numeric = integer(),
+  value = numeric()
 )
 
 #' Template data frame for full alerts
@@ -27,12 +27,12 @@ alerts_template_base <- dplyr$tibble(
 alerts_template_full <- dplyr$bind_cols(
   alerts_template_base,
   dplyr$tibble(
-    location = NA_character_,
-    region = NA_character_,
-    hrp_location = NA,
-    lat = NA_real_,
-    lon = NA_real_,
-    alert_level = NA_character_
+    location = character(),
+    region = character(),
+    hrp_location = logical(),
+    lat = numeric(),
+    lon = numeric(),
+    alert_level = character()
   )
 ) |>
   dplyr$relocate(
@@ -52,24 +52,25 @@ alerts_template_full <- dplyr$bind_cols(
 #'
 #' @export
 campaign_content_template <- dplyr$tibble(
-  plot_title = NA_character_,
-  plot_id = NA_character_,
-  plot_url = NA_character_,
-  map_title = NA_character_,
-  map_id = NA_character_,
-  map_url = NA_character_,
-  plot2_title = NA_character_,
-  plot2_id = NA_character_,
-  plot2_url = NA_character_,
-  other_images_ids = NA_character_,
-  other_images_urls = NA_character_,
-  other_images_captions = NA_character_,
-  summary_long = NA_character_,
-  summary_short = NA_character_,
-  hdx_url = NA_character_,
-  source_url = NA_character_,
-  other_urls = NA_character_,
-  further_information = NA_character_
+  plot_title = character(),
+  plot_id = character(),
+  plot_url = character(),
+  map_title = character(),
+  map_id = character(),
+  map_url = character(),
+  plot2_title = character(),
+  plot2_id = character(),
+  plot2_url = character(),
+  other_images_ids = character(),
+  other_images_urls = character(),
+  other_images_captions = character(),
+  summary_long = character(),
+  summary_short = character(),
+  summary_source = character(),
+  hdx_url = character(),
+  source_url = character(),
+  other_urls = character(),
+  further_information = character()
 )
 
 #' Overall campaign template
@@ -81,15 +82,16 @@ campaign_content_template <- dplyr$tibble(
 #'
 #' @export
 campaign_template <- dplyr$tibble(
-  iso3 = NA_character_,
-  date = as.Date(x = integer(0), origin = "1970-01-01"),
-  template_id_archive = NA_character_,
-  template_id_email = NA_character_,
-  campaign_id_archive = NA_character_,
-  campaign_id_email = NA_character_,
-  campaign_url_archive = NA_character_,
-  campaign_url_email = NA_character_,
-  campaign_date = as.Date(x = integer(0), origin = "1970-01-01")
+  iso3 = character(),
+  date = as.Date(integer()),
+  template_id_archive = character(),
+  template_id_email = character(),
+  campaign_id_archive = character(),
+  campaign_id_email = character(),
+  campaign_url_archive = character(),
+  campaign_url_email = character(),
+  campaign_date = as.Date(integer()),
+  signals_version = character()
 )
 
 #' Overall signals template

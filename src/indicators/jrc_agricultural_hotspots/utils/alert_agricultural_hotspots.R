@@ -18,7 +18,8 @@ alert <- function(df_wrangled) {
       indicator_id = paste(indicator_source, indicator_name, sep = "_"),
       date,
       alert_level_numeric = as.integer(hs_code),
-      value = hs_code
+      value = hs_code,
+      comment
     ) |>
     dplyr$group_by(iso3) |>
     dplyr$filter(

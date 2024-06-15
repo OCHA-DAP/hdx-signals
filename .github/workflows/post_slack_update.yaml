@@ -22,4 +22,4 @@ jobs:
 
         - name: Create Slack message
           shell: bash
-          run: Rscript ./src/alerts/check_signals_updates.R
+          run: Rscript ./src/signals/check_signals_updates.R

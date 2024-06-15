@@ -16,6 +16,7 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
         )(value),
         " increase in the cost of the food basket"
       ),
-      summary_long = NA_character_
+      summary_long = NA_character_,
+      summary_source = NA_character_
     )
 }

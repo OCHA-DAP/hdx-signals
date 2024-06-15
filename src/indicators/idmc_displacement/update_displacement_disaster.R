@@ -1,5 +1,4 @@
 box::use(dplyr)
-box::use(logger[log_info, log_debug])
 
 # indicator utilities
 box::use(./utils/raw_displacement)
@@ -10,10 +9,11 @@ box::use(./utils/info_displacement)
 box::use(./utils/summary_displacement)
 box::use(./utils/map_displacement)
 
-box::use(../../alerts/generate_signals[generate_signals])
+box::use(../../signals/generate_signals)
 box::use(../../utils/hs_logger)
 box::use(../../utils/update_coverage)
 
+first_run <- as.logical(Sys.getenv("FIRST_RUN", unset = FALSE))
 dry_run <- as.logical(Sys.getenv("HS_DRY_RUN", unset = TRUE))
 dry_run_filter <- if (dry_run) c("AFG", "SSD") else NULL
 
@@ -33,7 +33,7 @@ update_coverage$update_coverage(
   iso3 = df_wrangled$iso3
 )
 
-df_disaster <- generate_signals(
+df_disaster <- generate_signals$generate_signals(
   df_wrangled = df_wrangled,
   df_raw = df_raw,
   indicator_id = indicator_id,
@@ -43,5 +43,6 @@ df_disaster <- generate_signals(
   summary_fn = summary_displacement$summary,
   map_fn = map_displacement$map,
   dry_run = dry_run,
-  dry_run_filter = dry_run_filter
+  dry_run_filter = dry_run_filter,
+  first_run = first_run
 )

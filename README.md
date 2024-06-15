@@ -1,28 +1,43 @@
-# CERF Global Monitoring and Alert System (GMAS)
+# HDX Signals
 
-This repository contains the code base for the CERF GMAS.
+HDX Signals is a product of [HDX](https://data.humdata.org) that monitors key
+datasets and generates automated emails when significant, negative changes
+are detected. 
 
-## Introduction
+Find all code and technical documentation behind HDX Signals in
+this repository. Read more about HDX Signals and sign up to receive signals direct
+in your inbox on [our website](https://data.humdata.org/signals). See our
+[methodology](https://un-ocha-centre-for-humanitarian.gitbook.io/hdx-signals)
+documentation for details on datasets included and how signals are generated.
 
-The CERF GMAS is an early warning system designed to generate alerts on
-potentially new or worsening crises. Alerts are intended to be just an initial
-signal that a crisis should be further explored and see if action, such as
-rapid response, is justified.
+## Overview
 
-### Overall system
+The code is structured as below. Refer to the directories for specific details.
 
-The system works by updating a series of indicators data, generating alerts when
-abnormalities are detected, and sending emails for any new and recent alerts.
-Refer to the [system document](/src) for full details.
+- [src](src/README.md): All source code for scanning all datasets, generating signals content,
+sendin emails through Mailchimp, and interacting with the cloud store.
+- [src-static](src-static/README.md): Source code for generating static assets such as
+metadata for locations covered in Signals, spatial files for use in maps, and other
+resources utilized in [src](src/README.md).
+- [test](test/README.md): Unit testing utilities for code and manual testing to explore changes
+to visual design in the system.
+- [.github](.github/README.md): Workflows that automate data scanning and other processes.
 
-### Testing and development
+### Environment
 
-For testing email design and interactive development, testing whether the system
-runs properly, refer to the [testing documentation](/src/test).
+[{renv}](https://github.com/rstudio/renv) is used for package management.
+[{box}](https://github.com/klmr/box) is used for module importation. More details
+on their usage in contributing. See all required environment variables and brief
+descriptions in [ENVIRONMENT.md](ENVIRONMENT.md).
+
+### Contributing 
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for details on coding practices for
+the system and how to contribute.
 
 ### Changes
 
-All changes to the repository are tracked in [NEWS.md](NEWS.md).
+All changes to the repository are tracked in [CHANGES.md](CHANGES.md).
 
 ----
 

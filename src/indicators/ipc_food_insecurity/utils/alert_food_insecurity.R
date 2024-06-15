@@ -2,7 +2,6 @@ box::use(dplyr)
 box::use(readr)
 box::use(tidyr)
 box::use(stringr)
-box::use(ripc)
 box::use(rvest)
 
 #' Creates food insecurity alerts dataset
@@ -16,14 +15,25 @@ box::use(rvest)
 alert <- function(df_wrangled) {
   # get general alerts
   df_alerts <- df_wrangled |>
-    dplyr$filter(
-      phase %in% c("p3plus", "p4plus", "phase5"),
-      `percentage-current` > `percentage-current_lag` |
-        `percentage-current` < `percentage-projected` |
-        `percentage-current` < `percentage-second_projected` |
-        phase == "phase5" & `percentage-current` > 0 |
+    dplyr$mutate(
+      any_p5 = phase == "phase5" & `percentage-current` > 0 |
         phase == "phase5" & `percentage-projected` > 0 |
         phase == "phase5" & `percentage-second_projected` > 0
+    ) |>
+    dplyr$filter(
+      phase == "p3plus" & `percentage-current` >= 0.2 |
+        phase == "p3plus" & `percentage-projected` >= 0.2 |
+        phase == "p3plus" & `percentage-second_projected` >= 0.2 |
+        phase == "p4plus" & `percentage-current` >= 0.05 |
+        phase == "p4plus" & `percentage-projected` >= 0.05 |
+        phase == "p4plus" & `percentage-second_projected` >= 0.05 |
+        any_p5
+    ) |>
+    dplyr$filter(
+      `percentage-current` > `percentage-current_lag` & compare_current |
+        `percentage-current` < `percentage-projected` |
+        `percentage-current` < `percentage-second_projected` |
+        any_p5
     ) |>
     dplyr$select(
       -starts_with("plot_date")
@@ -53,7 +63,7 @@ alert <- function(df_wrangled) {
       date,
       alert_level_numeric = as.integer(pmin(phase_level - 2, 2)),
       value,
-      type = ifelse(stringr$str_detect(name, "projected"), "projected", "estimated"),
+      type = ifelse(stringr$str_detect(name, "projected"), "projected", "current"),
       map_date = ifelse(
         type == "projected" & !is.na(`map_date-projected`),
         `map_date-projected`,
@@ -61,9 +71,7 @@ alert <- function(df_wrangled) {
       ),
       phase_level = ifelse(phase_level == 5, "5", paste0(phase_level, "+")),
       analysis_id,
-      title,
-      title_suffix,
-      analysis_area,
+      analysis_area = `analysis_area-current`,
       link
     )
 

@@ -3,10 +3,12 @@ box::use(stringr)
 box::use(gg = ggplot2)
 box::use(ripc)
 box::use(sf)
+box::use(logger)
 
 box::use(../../../utils/location_codes)
 box::use(../../../utils/formatters)
 box::use(../../../images/create_images)
+box::use(../../../images/plots/caption)
 
 box::use(../../../images/maps/map_points)
 box::use(../../../images/maps/gg_map)
@@ -27,7 +29,7 @@ map <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
   df_map <- df_alerts |>
     dplyr$mutate(
       title = paste0(
-        "Phase classifications, ",
+        "Area phase classifications, ",
         type,
         "\n",
         map_date
@@ -40,7 +42,9 @@ map <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
     df_raw = df_raw,
     image_fn = food_insecurity_map,
     image_use = "map",
-    use_map_settings = TRUE
+    width = 6,
+    height = 4,
+    use_map_settings = FALSE
   )
 }
 
@@ -56,12 +60,17 @@ map <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
 #' @returns Plot of cholera for that wrangled data
 food_insecurity_map <- function(df_wrangled, df_raw, title, date) {
   iso3 <- unique(df_wrangled$iso3)
-  caption <- paste(
-    "Data from the IPC/CH, https://www.ipcinfo.org",
-    paste("Created", formatters$format_date(Sys.Date())),
-    location_codes$iso3_to_names(iso3),
-    sep = "\n"
+  caption <- caption$caption(
+    indicator_id = "ipc_food_insecurity",
+    iso3 = unique(df_wrangled$iso3),
+    map = TRUE,
+    extra_boundary_source = "IPC/CH",
+    extra_caption = "Population in these areas can still be classified in other phases."
   )
+  # get title and subtitle from the title
+  title_split <- stringr$str_split(string = title, pattern = "\\n", simplify = TRUE)
+  title <- title_split[1]
+  subtitle <- title_split[2]
 
   # get information for calling the IPC/CH API
   df_analysis_info <- df_wrangled |>
@@ -74,21 +83,40 @@ food_insecurity_map <- function(df_wrangled, df_raw, title, date) {
     )
 
   # load in areas to map from the IPC/CH API
-  sf_ipc <- ripc$ipc_get_areas(
-    id = df_analysis_info$id,
-    period = df_analysis_info$period,
-    return_format = "geojson"
-  ) |>
-    dplyr$mutate(
-      overall_phase = as.character(overall_phase)
-    )
+  sf_ipc <- tryCatch(
+    {
+      ripc$ipc_get_areas(
+        id = df_analysis_info$id,
+        period = df_analysis_info$period,
+        return_format = "geojson"
+      ) |>
+        dplyr$mutate(
+          overall_phase = as.character(overall_phase),
+          point_type = dplyr$case_when(
+            admin_type == "idp" ~ "IDP",
+            admin_type == "urb" ~ "Urban",
+            admin_type == "rfg" ~ "Refugee",
+            admin_type == "hhg" ~ "Household group",
+            .default = "Rural"
+          )
+        ) |>
+        dplyr$filter( # drop some extremely complex shapes
+          !(stringr$str_detect(sf$st_geometry_type(geometry), "POINT") & is.na(admin_type))
+        )
+    },
+    error = \(e) NULL
+  )
+
+  # make sure we catch for the few instances where no map is available via API
+  # use NULL because `is.null()` is not vectorized, so easier than `NA`
+  if (is.null(sf_ipc)) return(NULL)
 
   # if points available, separate those out
   geom_type <- sf$st_geometry_type(sf_ipc)
   sf_points <- dplyr$filter(sf_ipc, geom_type == "POINT")
   sf_areas <- dplyr$filter(sf_ipc, geom_type != "POINT")
 
-  gg_map$gg_map(iso3) +
+  p <- gg_map$gg_map(iso3) +
     gg$geom_sf(
       data = sf_areas,
       mapping = gg$aes(
@@ -97,15 +125,31 @@ food_insecurity_map <- function(df_wrangled, df_raw, title, date) {
       color = "white",
       linewidth = 0.1
     ) +
-    geom_cities$geom_cities(iso3) +
-    gg$geom_sf(
-      data = sf_points,
-      mapping = gg$aes(
-        fill = overall_phase
-      ),
-      color = "white",
-      shape = 21
-    ) +
+    geom_cities$geom_cities(iso3)
+
+  # only map points if there are any, avoids warnings for missing scales
+  if (nrow(sf_points) > 0) {
+    p <- p +
+      gg$geom_sf(
+        data = sf_points,
+        mapping = gg$aes(
+          fill = overall_phase,
+          shape = point_type
+        ),
+        color = "black"
+      ) +
+      gg$scale_shape_manual(
+        values = c(
+          "Urban" = 21,
+          "IDP" = 22,
+          "Refugee" = 23,
+          "Rural" = 24,
+          "Household group" = 25
+        )
+      )
+  }
+
+  p +
     gg$scale_fill_manual(
       values = c(
         "0" = "#FFFFFF",
@@ -124,8 +168,14 @@ food_insecurity_map <- function(df_wrangled, df_raw, title, date) {
       x = "",
       y = "",
       fill = "Phase",
-      subtitle = title,
+      shape = "Settlement",
+      title = title,
+      subtitle = subtitle,
       caption = caption
     ) +
-    map_theme$map_theme(iso3 = iso3, use_map_settings = TRUE)
+    map_theme$map_theme(
+      iso3 = iso3,
+      use_map_settings = TRUE,
+      margin_location = "subtitle"
+    )
 }

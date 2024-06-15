@@ -26,18 +26,13 @@ box::use(../../../../src/utils/location_codes)
 wrangle <- function(df_raw, first_run = FALSE) {
   df_info <- cs$read_az_file("input/acled_info.parquet")
 
-  # lowest possible start_date based on when data was downloaded
-  start_date_min <- if (first_run) as.Date("2018-01-01") else Sys.Date() - lubridate$days(1500)
-
   df_raw |>
     dplyr$mutate(
       iso3 = location_codes$ison_to_iso3(as.numeric(iso)),
-      date = as.Date(event_date),
       fatalities = as.numeric(fatalities)
     ) |>
     dplyr$group_by(
-      iso3,
-      date = event_date
+      iso3, date = event_date
     ) |>
     dplyr$summarize(
       fatalities = sum(fatalities),
@@ -54,7 +49,7 @@ wrangle <- function(df_raw, first_run = FALSE) {
     ) |>
     tidyr$complete( # completes data between start_date from ACLED report and max date
       date = seq.Date(
-        from = min(min(date), max(start_date, start_date_min)),
+        from = min(min(date), max(start_date, as.Date("2018-01-01"))),
         to = max(date),
         by = "day"
       ),

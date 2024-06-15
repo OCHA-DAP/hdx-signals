@@ -3,7 +3,7 @@ box::use(stringr)
 
 box::use(cs = ./cloud_storage)
 
-#' Add location and region columns
+#' Add location metadata columns
 #'
 #' Generates columns of location information from a static file stored on Azure
 #' by simply performing a left join by iso3 code. Adds location name, region,
@@ -39,5 +39,5 @@ add_locations_metadata <- function(df) {
 
 df_metadata <- cs$read_az_file("input/locations_metadata.parquet") |>
   dplyr$select(
-    iso3, location, region, hrp_location, lat, lon
+    iso3, location, region, hrp_location, boundary_source, lat, lon
   )

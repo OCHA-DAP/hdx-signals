@@ -42,7 +42,7 @@ generate_campaign_content <- function(
     summary_fn = NULL,
     info_fn = NULL,
     empty = FALSE) {
-  df_campaigns <- df_alerts |>
+  df_alerts |>
     generate_images(df_wrangled, df_raw, plot_fn, "plot", empty) |>
     generate_images(df_wrangled, df_raw, map_fn, "map", empty) |>
     generate_images(df_wrangled, df_raw, plot2_fn, "plot2", empty) |>
@@ -149,6 +149,7 @@ generate_summary <- function(
     null_return = dplyr$tibble(
       summary_long = NA_character_,
       summary_short = NA_character_,
+      summary_source = NA_character_,
       .rows = nrow(df_alerts)
     ),
     empty = empty

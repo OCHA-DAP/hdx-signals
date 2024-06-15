@@ -529,19 +529,20 @@
     },
     "gghdx": {
       "Package": "gghdx",
-      "Version": "0.1.2",
+      "Version": "0.1.3.9000",
       "Source": "GitHub",
       "RemoteType": "github",
+      "RemoteHost": "api.github.com",
       "RemoteUsername": "OCHA-DAP",
       "RemoteRepo": "gghdx",
-      "RemoteRef": "HEAD",
-      "RemoteSha": "ba2411b1581a988299b7a0a0dadf64a4b008abb5",
-      "RemoteHost": "api.github.com",
+      "RemoteRef": "main",
+      "RemoteSha": "59cd8f0b71f838047b71aef65b612f047804508b",
       "Requirements": [
         "R",
         "dplyr",
         "ggplot2",
         "ggthemes",
+        "lifecycle",
         "magrittr",
         "purrr",
         "rlang",
@@ -549,7 +550,7 @@
         "sysfonts",
         "tibble"
       ],
-      "Hash": "1c7a05dbd1c888a193be1b19fcc5ccf0"
+      "Hash": "8b0a4d58260f59188d6da40b49aba240"
     },
     "ggplot2": {
       "Package": "ggplot2",

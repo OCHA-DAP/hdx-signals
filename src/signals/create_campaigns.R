@@ -11,6 +11,7 @@ box::use(../email/mailchimp/templates)
 box::use(../email/mailchimp/campaigns)
 box::use(../email/mailchimp/custom_segmentation)
 box::use(../utils/formatters)
+box::use(../utils/get_signals_version)
 box::use(../email/mailchimp/delete)
 
 box::use(../utils/hs_logger)
@@ -106,10 +107,14 @@ create_campaigns <- function(
     dplyr$select(df_campaign_content, iso3, date),
     archive_df,
     email_df
-  )
+  ) |>
+    dplyr$mutate(
+      campaign_url_archive = paste(campaign_url_archive, iso3, sep = "#")
+    )
 
   # add the date of the campaign
   df_campaigns$campaign_date <- campaign_date
+  df_campaigns$signals_version <- get_signals_version$get_signals_version()
   df_campaigns
 }
 
@@ -163,24 +168,23 @@ create_campaign <- function(
         other_images_captions = df_campaign_content$other_images_captions,
         summary_long = df_campaign_content$summary_long,
         summary_short = df_campaign_content$summary_short,
+        summary_source = df_campaign_content$summary_source,
         further_information = df_campaign_content$further_information,
         use_conditions = !archive
       )
 
       template <- create_template$create_template(
         body = body,
+        banner_url = campaign_details$banner_url,
         archive_url = archive_url
       )
-
-      # Check against automatically set variable
-      is_gh_actions <- Sys.getenv("GITHUB_ACTIONS") == "true"
 
       templates$mc_add_template(
         html = template,
         folder = campaign_details$folder,
         # only preview the archive template, not those with conditional logic
         # don't preview if running from within GitHub Actions
-        preview = archive && dry_run && !is_gh_actions
+        preview = archive && dry_run && interactive()
       )
     },
     error = function(e) {
@@ -242,7 +246,7 @@ create_campaign <- function(
 #' Get subject and title for campaigns
 #'
 #' Gets the subject and title for campaigns. Subjects are simply:
-#' `HDX Signals: INDICATOR, DATE`.
+#' `New Signal: INDICATOR, DATE`.
 #' The titles are for the file system, and so are similar, except also use
 #' `name_paste` to differentiate between
 get_campaign_details <- function(indicator_id, campaign_date, dry_run) {
@@ -267,6 +271,7 @@ get_campaign_details <- function(indicator_id, campaign_date, dry_run) {
       format(campaign_date, "_%Y_%m_%d"),
       "{names_paste}" # for glue within create_campaign()
     ),
-    folder = df_ind$mc_folder
+    folder = df_ind$mc_folder,
+    banner_url = df_ind$banner_url
   )
 }
