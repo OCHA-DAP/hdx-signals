@@ -3,11 +3,11 @@ on:
       branches: [main]
     pull_request:
       branches: [main]
- 
+
   name: Test monitoring
- 
+
   permissions: read-all
- 
+
   jobs:
     test:
         runs-on: ubuntu-latest
@@ -28,8 +28,8 @@ on:
                 set -e
                 for x in test/automated/test_*.R; do Rscript "$x"; done
               env:
-                HS_LOCAL: "TRUE"
-                DRY_RUN: "FALSE"
+                HS_TEST: "TRUE"
+                GMAS_TEST_RUN: "FALSE"
                 LOG_LEVEL: "ERROR"
                 DSCI_AZ_SAS_PROD: ${{ secrets.DSCI_AZ_SAS_PROD }}
                 IPC_API_KEY: ${{ secrets.IPC_API_KEY }}
