@@ -40,6 +40,6 @@ df_conflict <- generate_signals$generate_signals(
   map_fn = map_conflict$map,
   summary_fn = summary_conflict$summary,
   dry_run = dry_run,
-  dry_run_filter = dry_run_filter
+  dry_run_filter = dry_run_filter,
   first_run = first_run
 )
