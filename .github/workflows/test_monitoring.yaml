@@ -4,33 +4,33 @@ on:
     pull_request:
       branches: [main]
 
-  name: Test monitoring
+name: Test monitoring
 
-  permissions: read-all
+permissions: read-all
 
-  jobs:
-    test:
-        runs-on: ubuntu-latest
-        steps:
-            - name: Checkout repository
-              uses: actions/checkout@v4
-  
-            - name: Install R
-              uses: r-lib/actions/setup-r@v2
-  
-            - name: Set up environment
-              uses: ocha-dap/hdx-signals-actions@07b3181e914ef100bd9c8134f3c7a13383870b9d
-  
-            - name: Test monitoring
-              shell: bash
-              run: |
-                shopt -s globstar
-                set -e
-                for x in test/automated/test_*.R; do Rscript "$x"; done
-              env:
-                HS_TEST: "TRUE"
-                GMAS_TEST_RUN: "FALSE"
-                LOG_LEVEL: "ERROR"
-                DSCI_AZ_SAS_PROD: ${{ secrets.DSCI_AZ_SAS_PROD }}
-                IPC_API_KEY: ${{ secrets.IPC_API_KEY }}
+jobs:
+  test:
+      runs-on: ubuntu-latest
+      steps:
+          - name: Checkout repository
+            uses: actions/checkout@v4
+
+          - name: Install R
+            uses: r-lib/actions/setup-r@v2
+
+          - name: Set up environment
+            uses: ocha-dap/hdx-signals-actions@07b3181e914ef100bd9c8134f3c7a13383870b9d
+
+          - name: Test monitoring
+            shell: bash
+            run: |
+              shopt -s globstar
+              set -e
+              for x in test/automated/test_*.R; do Rscript "$x"; done
+            env:
+              HS_TEST: "TRUE"
+              GMAS_TEST_RUN: "FALSE"
+              LOG_LEVEL: "ERROR"
+              DSCI_AZ_SAS_PROD: ${{ secrets.DSCI_AZ_SAS_PROD }}
+              IPC_API_KEY: ${{ secrets.IPC_API_KEY }}
                 
