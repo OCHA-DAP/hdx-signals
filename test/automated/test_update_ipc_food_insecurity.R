@@ -36,4 +36,3 @@ testthat$test_that("the base case for IPC food insecurity runs and doesn't creat
   testthat$expect_equal(nrow(df_ipc), 0)
   testthat$expect_equal(nrow(df_ipc), 38)
 })
-
