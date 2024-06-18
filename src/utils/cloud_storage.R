@@ -17,9 +17,9 @@ box::use(../utils/hs_logger)
 
 hs_logger$configure_logger()
 
-#' Read a Parquet file stored on Microsoft Azure Data Storage blob
+#' Read a Parquet file stored in Microsoft Azure Data Storage container
 #'
-#' Reads a file from the `hdx-signals` bucket.
+#' Reads a file from the `hdx-signals` container.
 #' The file is read based on its prefix in `name`. Currently, the only support is for
 #' Apache Parquet, CSV, GeoJSON and GeoJSON files, but other support can be added if necessary.
 #'
@@ -32,13 +32,13 @@ hs_logger$configure_logger()
 #'
 #' @param name Name of the file to read, including directory prefixes (`input/` or `output/`)
 #'     and file extension, such as `.parquet`.
-#' @param blob Blob in the Azure storage to read from, either `prod`, `dev`, or `wfp`.
+#' @param container Container in the Azure storage to read from, either `prod`, `dev`, or `wfp`.
 #'
 #' @returns Data frame.
 #'
 #' @export
-read_az_file <- function(name, blob = c("prod", "dev", "wfp")) {
-  blob <- get_blob(blob)
+read_az_file <- function(name, container = c("prod", "dev", "wfp")) {
+  container <- get_container(container)
   fileext <- tools$file_ext(name)
   tf <- tempfile(fileext = paste0(".", fileext))
 
@@ -46,7 +46,7 @@ read_az_file <- function(name, blob = c("prod", "dev", "wfp")) {
   invisible(
     utils$capture.output(
       az$download_blob(
-        container = blob,
+        container = container,
         src = name,
         dest = tf
       )
@@ -61,31 +61,32 @@ read_az_file <- function(name, blob = c("prod", "dev", "wfp")) {
   )
 }
 
-#' Write data frame to Microsoft Azure Data Storage
+#' Write data frame to Microsoft Azure Data Storage container
 #'
 #' A convenient file saver that saves the data frame to the specified
 #' parquet file. Simply writes out the data frame based on the file extension and
 #' uploads that to the MADS container using [AzureStor::upload_blob()].
-#' Currently supports Apache Parquet, GeoJSON, and CSV files.
+#' Currently supports Apache Parquet, CSV, GeoJSON, and JSON files.
 #'
 #' Files written out based on file type:
 #'
 #' * Apache Parquet: [arrow::write_parquet()]
-#' * GeoJSON: [sf::st_write()]
 #' * CSV: [readr::write_csv()]
+#' * GeoJSON: [sf::st_write()]
+#' * JSON: [jsonlite::write_json]
 #'
-#' If `hs_local()`, the file is not uploaded to the container
+#' If `hs_local()`, the file is not uploaded to the container.
 #'
 #' @param df Data frame or simple features to save out.
 #' @param name Name of the file to write, including prefix (`input/` or `output/`)
 #'     and filetype `.parquet`.
-#' @param blob Blob in the Azure storage to read from, either `prod`, `dev`, or `wfp`.
+#' @param container Container in the Azure storage to write to, either `prod`, `dev`, or `wfp`.
 #'
-#' @returns Nothing, but file is written to the `hdx-signals` bucket.
+#' @returns Nothing, but file is written to the `hdx-signals` container.
 #'
 #' @export
-update_az_file <- function(df, name, blob = c("prod", "dev", "wfp")) {
-  blob <- get_blob(blob)
+update_az_file <- function(df, name, container = c("prod", "dev", "wfp")) {
+  container <- get_container(container)
   fileext <- tools$file_ext(name)
   tf <- tempfile(fileext = paste0(".", fileext))
 
@@ -109,7 +110,7 @@ update_az_file <- function(df, name, blob = c("prod", "dev", "wfp")) {
   invisible(
     utils$capture.output(
       az$upload_blob(
-        container = blob,
+        container = container,
         src = tf,
         dest = name
       )
@@ -117,20 +118,20 @@ update_az_file <- function(df, name, blob = c("prod", "dev", "wfp")) {
   )
 }
 
-#' Find MADS file names matching pattern
+#' Find file names matching pattern
 #'
-#' Pulls names from the `hdx-signals` bucket and
+#' Pulls names from the specified Azure Data Store container and
 #' filters those names by the passed patterns, if passed. If `pattern` is `NULL`,
 #' then all files in the bucket are returned.
 #'
 #' @param pattern Pattern to look for. Passed to [stringr::str_detect()]
-#' @param blob Blob in the Azure storage to read from, either `prod`, `dev`, or `wfp`.
+#' @param container Container in the Azure storage to read from, either `prod`, `dev`, or `wfp`.
 #'
 #' @export
-az_file_detect <- function(pattern = NULL, blob = c("prod", "dev", "wfp")) {
-  blob <- get_blob(blob)
-  # get blob files but don't return dirs
-  blob_df <- az$list_blobs(blob)
+az_file_detect <- function(pattern = NULL, container = c("prod", "dev", "wfp")) {
+  container <- get_container(container)
+  # get blob files in container but don't return dirs
+  blob_df <- az$list_blobs(container)
   blob_df <- blob_df[!blob_df$isdir, ]
   file_names <- blob_df$name
   if (!is.null(pattern)) {
@@ -145,18 +146,18 @@ az_file_detect <- function(pattern = NULL, blob = c("prod", "dev", "wfp")) {
 
 #' Get blob container
 #'
-#' @param blob Blob in the Azure store to read from, either `prod` or `dev`,
-#'     to access the primary `hdx-signals` blobs, or `wfp` to read from the WFP
-#'     blob in dev.
+#' @param container Container in the Azure store to read from, either `prod` or `dev`,
+#'     to access the primary `hdx-signals` containers, or `wfp` to read from the WFP
+#'     container in `dev`.
 #'
 #' @returns Correct blob to read and write from
-get_blob <- function(blob = c("prod", "dev", "wfp")) {
-  blob <- rlang$arg_match(blob)
+get_container <- function(container = c("prod", "dev", "wfp")) {
+  container <- rlang$arg_match(container)
   switch(
-    blob,
-    prod = blob_prod(),
-    dev = blob_dev(),
-    wfp = blob_wfp()
+    container,
+    prod = container_prod(),
+    dev = container_dev(),
+    wfp = container_wfp()
   )
 }
 
@@ -194,30 +195,30 @@ signals_path <- function(indicator_id, test) {
   )
 }
 
-#' Connects to the prod Azure blob
+#' Connects to the prod Azure blob container
 #'
 #' @returns The prod blob container
-blob_prod <- function() {
-  blob_endpoint_prod <- az$blob_endpoint(
+container_prod <- function() {
+  container_endpoint_prod <- az$blob_endpoint(
     endpoint = azure_endpoint_url("blob", "prod"),
     sas = get_env("DSCI_AZ_SAS_PROD")
   )
   az$blob_container(
-    endpoint = blob_endpoint_prod,
+    endpoint = container_endpoint_prod,
     name = "hdx-signals"
   )
 }
 
-#' Connects to the dev Azure blob
+#' Connects to the dev Azure container
 #'
 #' @returns The dev blob container
-blob_dev <- function() {
-  blob_endpoint_dev <- az$blob_endpoint(
+container_dev <- function() {
+  container_endpoint_dev <- az$blob_endpoint(
     endpoint = azure_endpoint_url("blob", "dev"),
     sas = get_env("DSCI_AZ_SAS_DEV")
   )
   az$blob_container(
-    endpoint = blob_endpoint_dev,
+    endpoint = container_endpoint_dev,
     name = "hdx-signals"
   )
 }
@@ -227,13 +228,13 @@ blob_dev <- function() {
 #' Contains the WFP market monitor data updated by WFP.
 #'
 #' @returns The WFP blob container
-blob_wfp <- function() {
-  blob_endpoint_dev <- az$blob_endpoint(
+container_wfp <- function() {
+  container_endpoint_dev <- az$blob_endpoint(
     endpoint = azure_endpoint_url("blob", "dev"),
     sas = get_env("DSCI_AZ_SAS_DEV")
   )
   az$blob_container(
-    endpoint = blob_endpoint_dev,
+    endpoint = container_endpoint_dev,
     name = "wfp"
   )
 }
