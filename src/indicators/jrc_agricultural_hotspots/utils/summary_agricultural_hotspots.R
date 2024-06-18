@@ -27,6 +27,7 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
     ) |>
     dplyr$group_by(
       iso3,
+      location,
       date
     ) |>
     dplyr$summarize(
@@ -59,7 +60,7 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
   df_alerts |>
     dplyr$left_join(
       df_summary,
-      by = c("iso3", "date")
+      by = c("iso3", "location", "date")
     ) |>
     dplyr$select(
       summary_long,

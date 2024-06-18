@@ -27,7 +27,7 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
       df_event_info,
       by = "iso3"
     ) |>
-    dplyr$group_by(iso3, date) |>
+    dplyr$group_by(iso3, location, date) |>
     dplyr$filter(
       event_date >= date - lubridate$days(30),
       event_date <= date,
@@ -63,7 +63,7 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
   df_alerts |>
     dplyr$left_join(
       df_summary,
-      by = c("iso3", "date")
+      by = c("iso3", "location", "date")
     ) |>
     dplyr$select(
       summary_long,
