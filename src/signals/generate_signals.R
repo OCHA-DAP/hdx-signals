@@ -87,7 +87,7 @@ generate_signals <- function(
   df_alerts <- df_wrangled |>
     filter_test_data(
       dry_run = dry_run,
-      test_filter = test_filter
+      dry_run_filter = dry_run_filter
     ) |>
     alert_fn() |>
     generate_alerts(
