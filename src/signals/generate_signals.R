@@ -73,7 +73,7 @@ generate_signals <- function(
     dry_run = FALSE,
     dry_run_filter = NULL) {
   # file name differs if testing or not
-  fn_signals <- cs$signals_path(indicator_id, test)
+  fn_signals <- cs$signals_path(indicator_id, dry_run)
 
   check_existing_signals(
     indicator_id = indicator_id,
@@ -121,7 +121,7 @@ generate_signals <- function(
 
   # if first run, create multiple campaigns, one for each date
   # don't do this if testing, just create one test email
-  if (first_run && !test) {
+  if (first_run && !dry_run) {
     df_campaigns <- df_campaign_content |>
       dplyr$group_by(
         date
