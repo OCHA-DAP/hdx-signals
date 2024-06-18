@@ -38,6 +38,7 @@ box::use(../../utils/get_env[get_env])
 #'
 #' @export
 mc_email_segment <- function(indicator_id, iso3, test = FALSE) {
+  df_ind <- cs$read_az_file("input/indicator_mapping.parquet")
   df_ind <- dplyr$filter(df_ind, indicator_id == !!indicator_id)
   emails <- mc_subscriber_emails(
     df_ind = df_ind,
@@ -78,7 +79,7 @@ mc_subscriber_emails <- function(df_ind, iso3, test) {
   regions <- unique(location_codes$iso3_to_regions(iso3))
   locations <- location_codes$iso3_to_names(iso3)
   # get the regional subscription IDs
-  region_ids <- df_interests |>
+  region_ids <- audience$mc_groups() |>
     dplyr$filter(
       title %in% regions,
       name == "All locations in the region"
@@ -88,7 +89,7 @@ mc_subscriber_emails <- function(df_ind, iso3, test) {
     )
 
   # find any IDs for subscribing to the specific location
-  location_ids <- df_interests$interest_id[match(locations, df_interests$name, nomatch = 0)]
+  location_ids <- audience$mc_groups()$interest_id[match(locations, audience$mc_groups()$name, nomatch = 0)]
   geo_ids <- c(region_ids, location_ids)
 
   # filter members to the specific indicator, by interest if a public subscription
@@ -106,9 +107,9 @@ mc_subscriber_emails <- function(df_ind, iso3, test) {
 #'
 #' Gets emails for interest and geo_ids.
 interest_emails <- function(interest, geo_ids, test) {
-  interest_id <- df_interests$interest_id[match(interest, df_interests$name)]
+  interest_id <- audience$mc_groups()$interest_id[match(interest, audience$mc_groups()$name)]
   purrr$map_chr(
-    .x = member_list,
+    .x = audience$mc_members(),
     .f = \(member) {
       ind_interest <- member$interests[[interest_id]]
       if (ind_interest && (!test || "hdx-signals-test" %in% purrr$map_chr(member$tags, \(tag) tag$name))) {
@@ -133,7 +134,7 @@ interest_emails <- function(interest, geo_ids, test) {
 #' Gets emails for indicator tags based on the tag, geo_ids, and test
 tag_emails <- function(interest_tag, geo_ids, test) {
   purrr$map_chr(
-    .x = member_list,
+    .x = audience$mc_members(),
     .f = \(member) {
       member_tags <- purrr$map_chr(member$tags, \(tag) tag$name)
       tag_interest <- tag_interest %in% member_tags
@@ -180,7 +181,3 @@ mc_archive_segment <- function() {
     )
   )
 }
-
-df_interests <- audience$mc_groups()
-member_list <- audience$mc_members()
-df_ind <- cs$read_az_file("input/indicator_mapping.parquet")
