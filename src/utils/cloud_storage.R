@@ -27,6 +27,7 @@ hs_logger$configure_logger()
 #'
 #' * Apache Parquet: [arrow::write_parquet()].
 #' * CSV: [readr::read_csv()]
+#' * Excel: [readxl::read_excel()]
 #' * GeoJSON: [sf::st_read()]
 #' * JSON: [jsonlite::read_json()]
 #'
@@ -57,7 +58,9 @@ read_az_file <- function(name, blob = c("prod", "dev", "wfp")) {
     parquet = arrow$read_parquet(tf),
     geojson = sf$st_read(tf, quiet = TRUE),
     json = dplyr$as_tibble(jsonlite$read_json(tf, simplifyVector = TRUE)),
-    csv = readr$read_csv(tf, col_types = readr$cols())
+    csv = readr$read_csv(tf, col_types = readr$cols()),
+    xls = readxl$read_xls(tf, col_types = "guess"),
+    xlsx = readxl$read_xlsx(tf, col_types = "guess")
   )
 }
 

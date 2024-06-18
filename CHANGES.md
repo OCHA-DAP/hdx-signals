@@ -1,5 +1,10 @@
 # Changes
 
+## 0.1.1.1 (18 June 2024)
+
+### System
+- Add functionality to automatically read Excel files from cloud storage in `read_az_file()`
+
 ## 0.1.1 (11 June 2024)
 
 ### Email
