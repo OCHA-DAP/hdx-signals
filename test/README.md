@@ -20,13 +20,13 @@ to reflect those changes within `input/flags_test.parquet`. This script re-gener
 
 For testing that the scripts update and run properly, the global monitoring system
 is also designed to not save out data, ping the OpenAI API, or send emails
-if the environment variable `GMAS_TEST_RUN` is set to `TRUE` or does not exist.
+if the environment variable `HS_LOCAL` is set to `TRUE` or does not exist.
 This means that if you are interactively testing and building within the environment,
 you will not accidentally send emails or anything else, you can feel safe that
 you will not change external files or engage external users.
 
 The `global-monitoring` GitHub Actions workflow allows you use to do a manual run
-with the `GMAS_TEST_RUN` set to `TRUE` so you can test that the workflow runs
+with the `HS_LOCAL` set to `TRUE` so you can test that the workflow runs
 without error, but without updating any files. By default, the CRON job
-`global-monitoring` workflow sets `GMAS_TEST_RUN` to `FALSE`, so should be the
+`global-monitoring` workflow sets `HS_LOCAL` to `FALSE`, so should be the
 only time that files are saved or emails are sent.

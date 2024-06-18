@@ -16,7 +16,7 @@ box::use(./template_data)
 #' - When we want to recreate campaigns before sending, so we delete it before
 #' recreation and replacement.
 #'
-#' No content is deleted from Mailchimp when `gmas_test_run()` is `TRUE`, but
+#' No content is deleted from Mailchimp when `hs_local()` is `TRUE`, but
 #' the data frame is still filtered.
 #'
 #' @param df Data frame of campaign content

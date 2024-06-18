@@ -3,7 +3,7 @@ box::use(openai)
 box::use(stringr)
 box::use(logger[log_debug])
 
-box::use(../utils/gmas_test_run[gmas_test_run])
+box::use(../utils/hs_local[hs_local])
 box::use(../utils/get_env[get_env])
 box::use(../utils/hs_logger)
 
@@ -63,7 +63,7 @@ ai_summarizer_without_location <- function(prompt, info, location) {
 #' `nchar(info) / 2`. `info` is concatenated back to a single string before
 #' being passed back to `insistent_ai()`.
 #'
-#' If `gmas_test_run()` returns `FALSE`, the OpenAI API is not called and simple
+#' If `hs_local()` returns `FALSE`, the OpenAI API is not called and simple
 #' `"Test output."` string is returned.
 #'
 #' @param prompt `character` string that provides a prompt to the AI.
@@ -129,14 +129,14 @@ ai_summarizer <- function(prompt, info) {
 #'
 #' Function that insistently calls the OpenAI API in case of failure
 #' utilizing the GPT-4o 128,000 token model which allows for loads of context. If
-#' `gmas_test_run()` returns `TRUE`, the API is not called and `"Test output"`
+#' `hs_local()` returns `TRUE`, the API is not called and `"Test output"`
 #' is returned, otherwise it returns the summarization from the API.
 insistent_ai <- purrr$insistently(
   \(prompt, info) {
-    if (gmas_test_run()) {
+    if (hs_local()) {
       log_debug(
-        "`ai_summarizer()` returning static output as `gmas_test_run()` is `TRUE`. ",
-        "Set `GMAS_TEST_RUN` env variable to `FALSE` if you want `ai_summarizer()` ",
+        "`ai_summarizer()` returning static output as `hs_local()` is `TRUE`. ",
+        "Set `HS_LOCAL` env variable to `FALSE` if you want `ai_summarizer()` ",
         "to ping the OpenAI API, but be wary of saving data and emailing."
       )
 

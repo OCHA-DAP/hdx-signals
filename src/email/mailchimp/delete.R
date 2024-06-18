@@ -3,7 +3,7 @@ box::use(rlang)
 box::use(stringr)
 
 box::use(./base_api)
-box::use(../../utils/gmas_test_run)
+box::use(../../utils/hs_local)
 
 #' Delete Mailchimp object
 #'
@@ -37,10 +37,10 @@ mc_delete_object <- function(id, object_type = c("file", "template", "campaign")
       "DELETE"
     )
 
-  if (gmas_test_run$gmas_test_run()) {
+  if (hs_local$hs_local()) {
     message(
       stringr$str_to_title(object_type),
-      " not deleted because `gmas_test_run()` is set to `TRUE`."
+      " not deleted because `hs_local()` is set to `TRUE`."
     )
   } else {
     # delete the template

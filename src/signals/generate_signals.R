@@ -7,7 +7,7 @@ box::use(rlang[`!!`])
 box::use(logger[log_info])
 
 box::use(cs = ../utils/cloud_storage)
-box::use(../utils/gmas_test_run)
+box::use(../utils/hs_local)
 box::use(./filter_test_data[filter_test_data])
 box::use(./generate_campaign_content[generate_campaign_content])
 box::use(./create_campaigns[create_campaigns])
@@ -44,15 +44,15 @@ hs_logger$configure_logger()
 #'     done by splitting the campaigns dataset by data and generating alerts
 #'     across each date individually. If it is not the first run, then the
 #'     entire alerts data frame is converted into a single campaign during monitoring.
-#' @param test Whether or not to generate the signals for testing (defaults to
+#' @param dry_run Whether or not to generate the signals for testing (defaults to
 #'     `FALSE`. If `TRUE`, only a limited number of alerts are generated, based
-#'     on the `test_filter` argument. If `GMAS_TEST_RUN` is `TRUE`, previews are
+#'     on the `dry_run_filter` argument. If `HS_LOCAL` is `TRUE`, previews are
 #'     generated using local HTML. Certain browsers cannot display local files
-#'     correctly, so you may need to test on Mailchimp. If `GMAS_TEST_RUN` is
+#'     correctly, so you may need to test on Mailchimp. If `HS_LOCAL` is
 #'     `FALSE`, the campaigns are saved to Azure in
 #'     `output/{indicator_id}/test/signals.parquet`. The campaign is uploaded
 #'     to Mailchimp and then used for test visualization.
-#' @param test_filter Used only if `test` is `TRUE`. If `NULL`, the default, then
+#' @param dry_run_filter Used only if `dry_run` is `TRUE`. If `NULL`, the default, then
 #'     2 random signals from different locations are selected for testing. If you
 #'     pass in a vector of `iso3` codes, then the latest signals from those
 #'     locations are used for testing.
@@ -70,8 +70,8 @@ generate_signals <- function(
     summary_fn = NULL,
     info_fn = NULL,
     first_run = FALSE,
-    test = FALSE,
-    test_filter = NULL) {
+    dry_run = FALSE,
+    dry_run_filter = NULL) {
   # file name differs if testing or not
   fn_signals <- cs$signals_path(indicator_id, test)
 
@@ -79,21 +79,21 @@ generate_signals <- function(
     indicator_id = indicator_id,
     first_run = first_run,
     fn_signals = fn_signals,
-    test = test
+    dry_run = dry_run
   )
 
   # generate the new alerts that will receive a campaign
   # filter out the data before generating new alerts
   df_alerts <- df_wrangled |>
     filter_test_data(
-      test = test,
+      dry_run = dry_run,
       test_filter = test_filter
     ) |>
     alert_fn() |>
     generate_alerts(
       indicator_id = indicator_id,
       first_run = first_run,
-      test = test
+      dry_run = dry_run
     )
 
   # return empty data frame if alerts is empty
@@ -133,7 +133,7 @@ generate_signals <- function(
             df_campaign_content = df,
             indicator_id = indicator_id,
             first_run = first_run,
-            test = FALSE
+            dry_run = FALSE
           )
         }
       ) |>
@@ -144,7 +144,7 @@ generate_signals <- function(
       df_campaign_content = df_campaign_content,
       indicator_id = indicator_id,
       first_run = first_run,
-      test = test
+      dry_run = dry_run
     )
   }
 
@@ -178,7 +178,7 @@ validate_campaigns <- function(df_campaigns, df_campaign_content) {
   any_error <- any(dplyr$select(df_campaigns, -c(date, campaign_date)) == "ERROR", na.rm = TRUE)
   df_incorrect <- !janitor$compare_df_cols_same(df_campaigns, df_check, bind_method = "rbind")
   if (any_error || df_incorrect) {
-    if (!gmas_test_run$gmas_test_run()) {
+    if (!hs_local$hs_local()) {
       delete_campaign_content(df_campaign_content)
       delete_campaign_content(df_campaigns)
       rlang$abort(
