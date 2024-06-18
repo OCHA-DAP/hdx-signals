@@ -1,8 +1,9 @@
-#' Checks if this run is a test run
+#' Checks if this run is to be executed without external connections
+#' to MailChimp and OpenAI 
 #'
 #' `hs_local()` looks for the environment variable `HS_LOCAL`. This is
 #' used in other functions so emails are not sent and data not saved back to the
-#' Google Cloud Storage bucket so test runs do not have any impact on the stored
+#' Azure storage container so test runs do not have any impact on the stored
 #' data and do not send out emails.
 #'
 #' By default, if `HS_LOCAL` is not set, then it defaults to `TRUE`. This
