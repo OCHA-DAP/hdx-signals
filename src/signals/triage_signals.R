@@ -129,7 +129,7 @@ preview_campaign_urls <- function(campaign_urls) {
 #'
 #' @param df Signals data frame
 #' @param fn_signals File name to the signals data
-#' @param test Whether or not the signals were for testing.
+#' @param dry_run Whether or not the signals were for a dry run.
 approve_signals <- function(df, fn_signals, dry_run) {
   user_name <- get_env$get_env("HS_ADMIN_NAME")
 
