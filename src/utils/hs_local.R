@@ -1,5 +1,5 @@
 #' Checks if this run is to be executed without external connections
-#' to MailChimp and OpenAI 
+#' to MailChimp and OpenAI
 #'
 #' `hs_local()` looks for the environment variable `HS_LOCAL`. This is
 #' used in other functions so emails are not sent and data not saved back to the
