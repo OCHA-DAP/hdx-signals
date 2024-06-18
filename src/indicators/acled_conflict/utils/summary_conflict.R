@@ -47,9 +47,12 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
       summary_short = ifelse(
         is.na(summary_long) | summary_long == "",
         plot_title,
-        purrr$map2_chr(
-          .x = prompts$short,
-          .y = summary_long,
+        purrr$pmap_chr(
+          .l = list(
+            prompt = prompts$short,
+            info = summary_long,
+            location = location
+          ),
           .f = ai_summarizer$ai_summarizer_without_location
         )
       ),

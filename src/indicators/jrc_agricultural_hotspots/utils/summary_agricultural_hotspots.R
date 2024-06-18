@@ -39,16 +39,17 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
       .groups = "drop"
     ) |>
     dplyr$mutate(
-      prompt_long = prompts$long,
-      prompt_short = prompts$short,
       summary_long = purrr$map2_chr(
-        .x = prompt_long,
+        .x = prompts$long,
         .y = info,
         .f = ai_summarizer$ai_summarizer
       ),
-      summary_short = purrr$map2_chr(
-        .x = prompt_short,
-        .y = summary_long,
+      summary_short = purrr$pmap_chr(
+        .l = list(
+          prompt = prompts$short,
+          info = summary_long,
+          location = location
+        ),
         .f = ai_summarizer$ai_summarizer_without_location
       ),
       summary_source = "the JRC-ASAP system"

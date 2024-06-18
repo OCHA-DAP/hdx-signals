@@ -66,9 +66,12 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
         .y = overall_info,
         .f = ai_summarizer$ai_summarizer
       ),
-      summary_short = purrr$map2_chr(
-        .x = prompts$short,
-        .y = summary_long,
+      summary_short = purrr$pmap_chr(
+        .l = list(
+          prompt = prompts$short,
+          info = summary_long,
+          location = location
+        ),
         .f = ai_summarizer$ai_summarizer_without_location
       ),
       summary_source = "IDMC analysis and source reports"
