@@ -170,8 +170,8 @@ st_crop_adj_bbox <- function(sf_obj, xmin = 0, xmax = 0, ymin = 0, ymax = 0) {
 download_adm0_sf <- function(iso3) {
   if (iso3 == "LAC") {
     # for LAC we get all 3 of El Salvador, Guatemala, and Honduras
-    dplyr$filter(sf_world, iso3cd %in% c("SLV", "GTM", "HND")) |>
-      dplyr$group_by(iso3cd) |>
+    dplyr$filter(sf_world, ISO3CD %in% c("SLV", "GTM", "HND")) |>
+      dplyr$group_by(ISO3CD) |>
       # pull together polygons by iso3cd
       dplyr$summarise(do_union = TRUE, .groups = "drop") |>
       # then merge all iso3cds into 1 multipolygon retaining boundaries
@@ -188,6 +188,12 @@ download_adm0_sf <- function(iso3) {
       url = "https://data.geocode.earth/wof/dist/shapefile/whosonfirst-data-admin-xk-latest.zip",
       layer = "whosonfirst-data-admin-xk-country-polygon",
       boundary_source = "Who's On First"
+    )
+  } else if (iso3 == "BLM") {
+    download_shapefile$download_shapefile(
+      url = "https://data.humdata.org/dataset/41f80e67-f140-494b-9b34-7861c4951364/resource/93991ce2-fcc0-476a-9cd4-44e12c002f55/download/blm_adm0.zip",
+      layer = "BLM_adm0",
+      boundary_source = "HDX, OCHA"
     )
   } else if (iso3 == "IOT") {
     download_shapefile$download_shapefile(
@@ -243,14 +249,14 @@ download_fieldmaps_sf <- function(iso3, layer = NULL) {
 #' UN Geodata stored on Azure is used if no COD shapefile is available and no
 #' other alternate data source is specified.
 get_un_geodata <- function(iso3) {
-  if (iso3 %in% sf_world$iso3cd) {
-    dplyr$filter(sf_world, iso3cd == iso3)
+  if (iso3 %in% sf_world$ISO3CD) {
+    dplyr$filter(sf_world, ISO3CD == iso3)
   } else {
     stop(
       stringr$str_wrap(
         paste0(
           iso3,
-          " data not available in the 'un_geodata.geojson' file. Add alternative ",
+          " data not available in the 'un_geodata_complex.geojson' file. Add alternative ",
           "method for accessing data to `get_adm0_sf()`."
         )
       )
@@ -259,7 +265,7 @@ get_un_geodata <- function(iso3) {
 }
 
 #' Loading in module level
-sf_world <- cs$read_az_file("input/un_geodata.geojson") |>
+sf_world <- cs$read_az_file("input/un_geodata_complex.geojson") |>
   dplyr$mutate(
     boundary_source = "UN Geo Hub"
   )
