@@ -195,12 +195,12 @@ food_insecurity_map <- function(df_wrangled, df_raw, title, date) {
 
 
 
-lac_labels <- function(){
+lac_labels <- function() {
   dplyr$tribble(
     ~X,        ~Y,   ~poly_label,
     -90.6285,  14.83991,   "Guatemala",
     -88.773358, 13.679912, "El Salvador",
     -87.215936, 14.565515,    "Honduras"
   ) |>
-    sf$st_as_sf( coords = c("X","Y"),crs=4326)
+    sf$st_as_sf(coords = c("X", "Y"), crs = 4326)
 }
