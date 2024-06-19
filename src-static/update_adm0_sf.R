@@ -191,7 +191,7 @@ download_adm0_sf <- function(iso3) {
     )
   } else if (iso3 == "BLM") {
     download_shapefile$download_shapefile(
-      url = "https://data.humdata.org/dataset/41f80e67-f140-494b-9b34-7861c4951364/resource/93991ce2-fcc0-476a-9cd4-44e12c002f55/download/blm_adm0.zip",
+      url = "https://data.humdata.org/dataset/41f80e67-f140-494b-9b34-7861c4951364/resource/93991ce2-fcc0-476a-9cd4-44e12c002f55/download/blm_adm0.zip", #nolint
       layer = "BLM_adm0",
       boundary_source = "HDX, OCHA"
     )
