@@ -134,7 +134,8 @@ food_insecurity_map <- function(df_wrangled, df_raw, title, date) {
     p <- p +
       gg$geom_sf_text(
         data = poly_labels,
-        gg$aes(label = poly_label)
+        gg$aes(label = poly_label),
+        size = 3
       )
   }
 
