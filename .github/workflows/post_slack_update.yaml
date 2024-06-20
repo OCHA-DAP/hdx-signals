@@ -12,8 +12,8 @@ jobs:
       GH_TOKEN: ${{ secrets.GH_TOKEN}}
       DSCI_AZ_SAS_PROD: ${{ secrets.DSCI_AZ_SAS_PROD }}
       HS_SLACK_URL: ${{ secrets.HS_SLACK_URL}}
-      HS_TEST: ${{ 'FALSE' }}
-    steps: 
+      HS_DRY_RUN: ${{ 'FALSE' }}
+    steps:
         - name: Checkout repository
           uses: actions/checkout@v3
 

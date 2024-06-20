@@ -189,7 +189,7 @@ full_status <- ""
 n_signals <- 0
 # Needs to have at least 1 character for the Slack API
 signals <- " "
-dry_run <- Sys.getenv("HS_TEST", unset = TRUE)
+dry_run <- Sys.getenv("HS_DRY_RUN", unset = TRUE)
 
 for (ind in indicators) {
   logger$log_info(paste0("Checking GitHub Actions status for ", ind, "..."))
