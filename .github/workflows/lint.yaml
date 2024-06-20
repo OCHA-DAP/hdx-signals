@@ -22,7 +22,7 @@ jobs:
 
           - name: Install dependencies
             shell: Rscript {0}
-            run: install.packages("lintr") 
+            run: install.packages(c("lintr", "box.linters"))
 
           - name: Lint
             run: lintr::lint_dir()
