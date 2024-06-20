@@ -170,23 +170,25 @@ st_crop_adj_bbox <- function(sf_obj, xmin = 0, xmax = 0, ymin = 0, ymax = 0) {
 download_adm0_sf <- function(iso3) {
   if (iso3 == "LAC") {
     # for LAC we get all 3 of El Salvador, Guatemala, and Honduras
-    dplyr$filter(sf_world, iso3cd %in% c("SLV", "GTM", "HND")) |>
-      dplyr$group_by(iso3cd) |>
-      # pull together polygons by iso3cd
+    dplyr$filter(sf_world, iso3 %in% c("SLV", "GTM", "HND")) |>
+      dplyr$group_by(iso3) |>
+      # pull together polygons by iso3
       dplyr$summarise(do_union = TRUE, .groups = "drop") |>
-      # then merge all iso3cds into 1 multipolygon retaining boundaries
-      dplyr$summarise(boundary_source = "UN Geo Hub", do_union = FALSE)
+      # then merge all iso3s into 1 multipolygon retaining boundaries
+      dplyr$summarise(iso3 = "LAC", boundary_source = "UN Geo Hub", do_union = FALSE)
 
   } else if (iso3 == "AB9") {
     download_shapefile$download_shapefile(
       url = "https://open.africa/dataset/56d1d233-0298-4b6a-8397-d0233a1509aa/resource/76c698c9-e282-4d00-9202-42bcd908535b/download/ssd_admbnda_abyei_imwg_nbs_20180401.zip", # nolint
       layer = "ssd_admbnda_abyei_imwg_nbs_20180401",
+      iso3 = iso3,
       boundary_source  = "Open Africa"
     )
   } else if (iso3 == "XKX") {
     download_shapefile$download_shapefile(
       url = "https://data.geocode.earth/wof/dist/shapefile/whosonfirst-data-admin-xk-latest.zip",
       layer = "whosonfirst-data-admin-xk-country-polygon",
+      iso3 = iso3,
       boundary_source = "Who's On First"
     )
   } else if (iso3 == "IOT") {
@@ -202,12 +204,14 @@ download_adm0_sf <- function(iso3) {
     download_shapefile$download_shapefile(
       url = "https://data.geocode.earth/wof/dist/shapefile/whosonfirst-data-admin-um-latest.zip",
       boundary_source  = "Who's On First",
+      iso3 = iso3,
       layer = "whosonfirst-data-admin-um-region-polygon"
     )
   } else if (iso3 == "WLF") {
     download_shapefile$download_shapefile(
       url = "https://pacificdata.org/data/dataset/0319bab7-4b09-4fcc-81d6-e2c2a8694078/resource/9f6d96d5-02e5-44d8-bb42-4244bde23aa5/download/wf_tsz_pol_april2022.zip",#nolint
       boundary_source = "Pacific Data Hub",
+      iso3 = iso3,
       layer = "wf_tsz_pol_april2022"
     ) # nolint
   } else if (iso3 == "FJI") {
@@ -233,8 +237,9 @@ download_fieldmaps_sf <- function(iso3, layer = NULL) {
   iso3 <- tolower(iso3)
   download_shapefile$download_shapefile(
     url = glue$glue("https://data.fieldmaps.io/cod/originals/{iso3}.gpkg.zip"),
-    boundary_source = "FieldMaps, OCHA",
-    layer = layer
+    layer = layer,
+    iso3 = iso3,
+    boundary_source = "FieldMaps, OCHA"
   )
 }
 
@@ -243,8 +248,8 @@ download_fieldmaps_sf <- function(iso3, layer = NULL) {
 #' UN Geodata stored on Azure is used if no COD shapefile is available and no
 #' other alternate data source is specified.
 get_un_geodata <- function(iso3) {
-  if (iso3 %in% sf_world$iso3cd) {
-    dplyr$filter(sf_world, iso3cd == iso3)
+  if (iso3 %in% sf_world$iso3) {
+    dplyr$filter(sf_world, iso3 == !!iso3)
   } else {
     stop(
       stringr$str_wrap(
@@ -253,14 +258,16 @@ get_un_geodata <- function(iso3) {
           " data not available in the 'un_geodata.geojson' file. Add alternative ",
           "method for accessing data to `get_adm0_sf()`."
         )
-      )
+      ),
+      call. = FALSE
     )
   }
 }
 
-#' Loading in module level
+#' Read in the data and just keep iso3 and boundary_source columns
 sf_world <- cs$read_az_file("input/un_geodata.geojson") |>
-  dplyr$mutate(
+  dplyr$transmute(
+    iso3 = iso3cd,
     boundary_source = "UN Geo Hub"
   )
 
