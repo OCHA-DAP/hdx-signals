@@ -79,10 +79,7 @@ raw <- function(first_run = FALSE) {
     ) |>
       cs$update_az_file("output/acled_conflict/download_date.parquet")
 
-    df_filtered <- dplyr$filter(
-      event_date >= "2018-01-01"
-    )
-    cs$update_az_file(df_filtered, "output/acled_conflict/raw.parquet")
-    df_filtered
+    cs$update_az_file(df_acled, "output/acled_conflict/raw.parquet")
+    df_acled
   }
 }

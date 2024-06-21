@@ -12,7 +12,7 @@ box::use(./further_info_block)
 #'
 #' Create a location block with information passed in. The only required fields
 #' are `iso3` and `location`, although typically all will be passed (even if missing)
-#' direct from alerts datasets. The `iso3` code is used to generate the conditional
+#' direct from signals datasets. The `iso3` code is used to generate the conditional
 #' merge for MailChimp so the location only appears to interested users.
 #'
 #' @param iso3 ISO3 code

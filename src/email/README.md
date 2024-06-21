@@ -1,29 +1,38 @@
 ## Email
 
-When new alerts are generated, they are sent out via email to the list of
-recipients defined in the `input/email_recipients.parquet`.
-The emails are sent using the {blastula} package, with the RMarkdown files
-in this folder composing the core of the email. An individual email is sent
-out for each new *alert type*, with multiple country alerts within a single
-email body.
+### Components
 
-1. `email.Rmd` composing the primary body of the email. It expects already to
-have in the global environment the variables `flag_type`, `flag_source`, and
-`df_email`. This is automatically handled in the [email utilities](/src/utils/email.R)
-where the `send_email()` function is passed these explicitly. These are then
-used to programmatically define the email structure, such as reference text
-and other parts of the body of the email.
+Emails are constructed from a base template,
+[`hdx_signals_template.html`](components/hdx_signals_template.html).
+This template has `{glue}` strings within them where the body of the email can
+be inserted, link to the banner image, and campaign URL. The body for the
+template is created with the `components` scripts, including various
+blocks of HTML for images, text, banners and other content. All of the content
+that is used comes from the campaign content generated and stored in the signals
+dataset.
 
-2. `alert_section.Rmd` generates the individual section for each country being
-alerted, including generic text describing the alert, a plot, and if included,
-NLP generated situation summary.
+To ensure that content is only seen by subscribers, we also wrap a lot of
+content in conditional merge logic that is a specific Mailchimp code that
+allows us to show email content only to interested subscribers. Read more
+on the [Mailchimp webpage](https://mailchimp.com/help/use-conditional-merge-tag-blocks/).
 
-3. `summary.Rmd` is the optional section that includes the NLP summary, and is
-split off as a separate RMarkdown file so it is not included in the output if
-no summary exists.
+### Mailchimp
 
-### Email history
+**Segmentation**
 
-A record of previous emails generated is stored in `output/email/flags_emailed.parquet`, which
-simply stores records from `output/flags_total.parquet` whenever they are used to generate
-an email, with a single additional column recording the date of the email.
+Segmentation is how we select recipients of emails. The primary function used
+for campaign generation is [`custom_segmentation.R`](mailchimp/custom_segmentation.R). It
+is used to identify subscribers to the Mailchimp Signals audience, and for every
+campaign, calculate who should receive email alerts. This is done by extracting
+the Mailchimp audience data and manually calculating all subscribers interested
+in any location ISO3 in the campaign and the specific indicator. This is manually
+done because the Mailchimp API does not allow complex logical combinations, so
+it's not possible to create segments through Mailchimp logic.
+
+**Other utilities**
+
+Other scripts are designed to help us load up content into Mailchimp and delete
+it when necessary. We store all content in folders for specific indicators,
+with the folder name in `input/indicator_mapping.parquet`. These are actually 3
+separate folders on the Mailchimp system to store files, templates, and campaigns,
+they just have the same name for the same dataset.

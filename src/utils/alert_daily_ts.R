@@ -4,13 +4,15 @@ box::use(janitor)
 box::use(zoo)
 box::use(rlang[`!!`])
 
-#' Creates the alert data frame
+#' Create alerts data frame from time series data
 #'
 #' Creates alerts from a data frame of daily time series data. Requires that
 #' `iso3`, `date`, and `value` columns are passed in with the correct type.
 #' As well, it checks that the `date` column is consecutive days.
 #'
-#' @param df Data frame of alerts with `iso3`, `date`, and `value` columns.
+#' @param df Data frame of alerts with `iso3`, `date` columns, as well as a value
+#'     column.
+#' @param val_col Name of the value columns.
 #' @param min_val Minimum value for the necessary alert.
 #' @param rs_days Number of days for the rolling sum, defaults to `30`.
 #'

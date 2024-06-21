@@ -9,7 +9,7 @@ box::use(magick) # silent requirement for cropping file
 
 # local module
 box::use(./base_api)
-box::use(../../utils/gmas_test_run)
+box::use(../../utils/hs_local)
 box::use(../../utils/temp_file)
 box::use(./folders)
 
@@ -24,7 +24,7 @@ box::use(./folders)
 #' @param fp File path to the image
 #' @param name Name of the object to be passed into the Mailchimp system.
 #' @param folder Name of the file folder on Mailchimp.
-#' @param preview Whether or not to preview the saved plot when `gmas_test_run()`
+#' @param preview Whether or not to preview the saved plot when `hs_local()`
 #'     is `TRUE`.
 #'
 #' @returns URL string to reference object on Mailchimp servers
@@ -47,7 +47,7 @@ mc_upload_image <- function(fp, name, folder, preview = FALSE) {
       )
     )
 
-  if (gmas_test_run$gmas_test_run()) {
+  if (hs_local$hs_local()) {
     # print out the image and return the dry run
     data.frame(
       id = "test-image-id",
@@ -81,7 +81,7 @@ mc_upload_image <- function(fp, name, folder, preview = FALSE) {
 #' @param width Width of the plot (in inches)
 #' @param crop Whether or not to run `knitr::plot_crop()` is run on the image
 #'     to crop white space around the image automatically.
-#' @param preview Whether or not to preview the saved plot when `gmas_test_run()`
+#' @param preview Whether or not to preview the saved plot when `hs_local()`
 #'     is `TRUE`.
 #'
 #' @returns URL string to reference object on Mailchimp servers
@@ -141,7 +141,7 @@ encode_image <- function(fp) {
 
 #' View image for testing
 #'
-#' Used if `gmas_test_run()`, will read a saved out image and view directly the
+#' Used if `hs_local()`, will read a saved out image and view directly the
 #' png on the active graphics device for interactive testing.
 #'
 #' @returns `fp` directly
