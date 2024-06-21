@@ -5,6 +5,7 @@
 ### Maps
 - New country boundaries spatial data used for locations that do not
 have COD boundaries, replacing the simplified boundaries used previously
+- Added country labels for single multilocation IPC map (Nicaragua, El Salvador,and Honduras)
 
 ### System
 - ISO3 codes added to the location boundary GeoJSON files
