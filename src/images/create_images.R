@@ -4,7 +4,7 @@ box::use(purrr)
 box::use(rlang[`!!`])
 box::use(rlang)
 
-box::use(./save_image)
+box::use(src/images/save_image)
 
 #' Overall workhorse to generate images
 #'

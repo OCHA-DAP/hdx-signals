@@ -1,13 +1,14 @@
-box::use(./utils/raw_agricultural_hotspots)
-box::use(./utils/wrangle_agricultural_hotspots)
-box::use(./utils/alert_agricultural_hotspots)
-box::use(./utils/summary_agricultural_hotspots)
-box::use(./utils/info_agricultural_hotspots)
-box::use(./utils/plot_agricultural_hotspots)
+box::use(src/indicators/jrc_agricultural_hotspots/utils/raw_agricultural_hotspots)
+box::use(src/indicators/jrc_agricultural_hotspots/utils/wrangle_agricultural_hotspots)
+box::use(src/indicators/jrc_agricultural_hotspots/utils/alert_agricultural_hotspots)
+box::use(src/indicators/jrc_agricultural_hotspots/utils/summary_agricultural_hotspots)
+box::use(src/indicators/jrc_agricultural_hotspots/utils/info_agricultural_hotspots)
+box::use(src/indicators/jrc_agricultural_hotspots/utils/plot_agricultural_hotspots)
 
-box::use(../../signals/generate_signals)
-box::use(../../utils/hs_logger)
-box::use(../../utils/update_coverage)
+box::use(src/signals/generate_signals)
+
+box::use(src/utils/hs_logger)
+box::use(src/utils/update_coverage)
 
 first_run <- as.logical(Sys.getenv("FIRST_RUN", unset = FALSE))
 dry_run <- as.logical(Sys.getenv("HS_DRY_RUN", unset = TRUE))

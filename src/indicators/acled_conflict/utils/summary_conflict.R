@@ -2,8 +2,8 @@ box::use(dplyr)
 box::use(lubridate)
 box::use(purrr)
 
-box::use(../../../../src/utils/ai_summarizer)
-box::use(../../../../src/utils/get_prompts)
+box::use(src/utils/ai_summarizer)
+box::use(src/utils/get_prompts)
 
 #' Add campaign info to ACLED conflict data
 #'

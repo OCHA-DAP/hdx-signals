@@ -3,9 +3,9 @@ box::use(lubridate)
 box::use(purrr)
 box::use(stringr)
 
-box::use(../../../../src/utils/ai_summarizer)
-box::use(../../../../src/utils/get_prompts)
-box::use(../../../../src/utils/parse_pdf)
+box::use(src/utils/ai_summarizer)
+box::use(src/utils/get_prompts)
+box::use(src/utils/parse_pdf)
 
 #' Add campaign info to cholera alerts
 #'

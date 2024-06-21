@@ -1,17 +1,18 @@
 box::use(dplyr)
 
 # indicator utilities
-box::use(./utils/raw_displacement)
-box::use(./utils/wrangle_displacement)
-box::use(./utils/alert_displacement)
-box::use(./utils/plot_displacement)
-box::use(./utils/info_displacement)
-box::use(./utils/summary_displacement)
-box::use(./utils/map_displacement)
+box::use(src/indicators/idmc_displacement/utils/raw_displacement)
+box::use(src/indicators/idmc_displacement/utils/wrangle_displacement)
+box::use(src/indicators/idmc_displacement/utils/alert_displacement)
+box::use(src/indicators/idmc_displacement/utils/plot_displacement)
+box::use(src/indicators/idmc_displacement/utils/info_displacement)
+box::use(src/indicators/idmc_displacement/utils/summary_displacement)
+box::use(src/indicators/idmc_displacement/utils/map_displacement)
 
-box::use(../../signals/generate_signals)
-box::use(../../utils/hs_logger)
-box::use(../../utils/update_coverage)
+box::use(src/signals/generate_signals)
+
+box::use(src/utils/hs_logger)
+box::use(src/utils/update_coverage)
 
 first_run <- as.logical(Sys.getenv("FIRST_RUN", unset = FALSE))
 dry_run <- as.logical(Sys.getenv("HS_DRY_RUN", unset = TRUE))

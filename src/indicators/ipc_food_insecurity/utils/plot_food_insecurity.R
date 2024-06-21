@@ -10,9 +10,9 @@ box::use(utils)
 box::use(glue)
 box::use(logger)
 
-box::use(../../../images/plots/theme_signals)
-box::use(../../../images/plots/caption)
-box::use(../../../images/create_images)
+box::use(src/images/plots/theme_signals)
+box::use(src/images/plots/caption)
+box::use(src/images/create_images)
 
 #' Plot IPC food insecurity
 #'

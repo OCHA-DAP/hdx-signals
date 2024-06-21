@@ -3,7 +3,7 @@ box::use(purrr)
 box::use(sf)
 box::use(units)
 
-box::use(../../utils/get_iso3_sf)
+box::use(src/utils/get_iso3_sf)
 
 #' Geom for location boundaries
 #'

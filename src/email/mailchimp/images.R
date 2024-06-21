@@ -8,10 +8,11 @@ box::use(knitr)
 box::use(magick) # silent requirement for cropping file
 
 # local module
-box::use(./base_api)
-box::use(../../utils/hs_local)
-box::use(../../utils/temp_file)
-box::use(./folders)
+box::use(src/email/mailchimp/base_api)
+box::use(src/email/mailchimp/folders)
+
+box::use(src/utils/hs_local)
+box::use(src/utils/temp_file)
 
 #' Upload image to Mailchimp
 #'

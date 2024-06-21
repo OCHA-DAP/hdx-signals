@@ -6,11 +6,11 @@ box::use(lubridate)
 box::use(tidyr)
 box::use(sf)
 
-box::use(../../../utils/location_codes)
-box::use(../../../utils/formatters)
-box::use(../../../images/maps/map_points)
-box::use(../../../images/plots/caption)
-box::use(../../../images/create_images)
+box::use(src/utils/location_codes)
+box::use(src/utils/formatters)
+box::use(src/images/maps/map_points)
+box::use(src/images/plots/caption)
+box::use(src/images/create_images)
 
 #' Map displacement events
 #'

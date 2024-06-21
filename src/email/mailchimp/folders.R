@@ -4,8 +4,9 @@ box::use(dplyr)
 box::use(rlang[`!!`])
 
 # local imports
-box::use(./base_api)
-box::use(cs = ../../utils/cloud_storage)
+box::use(src/email/mailchimp/base_api)
+
+box::use(cs = src/utils/cloud_storage)
 
 #' Get id for Mailchimp template folder
 #'

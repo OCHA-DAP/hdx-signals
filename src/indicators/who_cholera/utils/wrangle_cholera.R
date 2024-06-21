@@ -5,7 +5,7 @@ box::use(janitor)
 box::use(stringr)
 box::use(zoo)
 
-box::use(../../../utils/location_codes)
+box::use(src/utils/location_codes)
 
 #' Wrangle cholera data
 #'

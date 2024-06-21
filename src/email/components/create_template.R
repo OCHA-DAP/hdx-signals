@@ -1,6 +1,6 @@
 box::use(glue)
 
-box::use(./email_body)
+box::use(src/email/components/email_body)
 
 #' Create template HTML from body
 #'

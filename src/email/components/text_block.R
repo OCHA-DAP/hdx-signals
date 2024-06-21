@@ -1,7 +1,7 @@
 box::use(glue)
 box::use(uuid)
 
-box::use(./missing[missing_text])
+box::use(src/email/components/missing[missing_text])
 
 #' Add text block
 #'

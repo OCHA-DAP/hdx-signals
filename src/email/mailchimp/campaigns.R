@@ -1,11 +1,12 @@
 box::use(httr2)
 box::use(logger[log_info, log_debug])
 
-box::use(./base_api)
-box::use(../../utils/hs_local)
-box::use(../../utils/get_env[get_env])
-box::use(./folders)
-box::use(../../utils/hs_logger)
+box::use(src/email/mailchimp/base_api)
+box::use(src/email/mailchimp/folders)
+
+box::use(src/utils/hs_local)
+box::use(src/utils/get_env[get_env])
+box::use(src/utils/hs_logger)
 
 hs_logger$configure_logger()
 

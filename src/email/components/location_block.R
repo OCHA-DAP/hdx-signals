@@ -1,12 +1,12 @@
 box::use(purrr)
 box::use(stringr)
 
-box::use(./conditional_merge)
-box::use(./text_block)
-box::use(./image_block)
-box::use(./line_block)
-box::use(./summary_block)
-box::use(./further_info_block)
+box::use(src/email/components/conditional_merge)
+box::use(src/email/components/text_block)
+box::use(src/email/components/image_block)
+box::use(src/email/components/line_block)
+box::use(src/email/components/summary_block)
+box::use(src/email/components/further_info_block)
 
 #' Create location block
 #'

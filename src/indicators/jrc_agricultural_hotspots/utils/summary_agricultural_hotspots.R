@@ -1,8 +1,8 @@
 box::use(dplyr)
 box::use(purrr)
 
-box::use(../../../../src/utils/ai_summarizer)
-box::use(../../../../src/utils/get_prompts)
+box::use(src/utils/ai_summarizer)
+box::use(src/utils/get_prompts)
 
 #' Add campaign info to cholera alerts
 #'

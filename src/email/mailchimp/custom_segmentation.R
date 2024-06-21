@@ -3,11 +3,12 @@ box::use(purrr)
 box::use(rlang[`!!`])
 
 # local modules
-box::use(./segments)
-box::use(./audience)
-box::use(cs = ../../utils/cloud_storage)
-box::use(../../utils/location_codes)
-box::use(../../utils/get_env[get_env])
+box::use(src/email/mailchimp/segments)
+box::use(src/email/mailchimp/audience)
+
+box::use(cs = src/utils/cloud_storage)
+box::use(src/utils/location_codes)
+box::use(src/utils/get_env[get_env])
 
 #' Generate email segmentation
 #'

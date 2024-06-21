@@ -5,9 +5,10 @@ box::use(tidyr)
 box::use(rlang)
 
 # local modules
-box::use(./base_api)
-box::use(cs = ../../utils/cloud_storage)
-box::use(../../utils/location_codes)
+box::use(src/email/mailchimp/base_api)
+
+box::use(cs = src/utils/cloud_storage)
+box::use(src/utils/location_codes)
 
 #' Get members information
 #'

@@ -3,11 +3,13 @@ box::use(utils)
 box::use(purrr)
 box::use(dplyr)
 
-box::use(cs = ../utils/cloud_storage)
-box::use(./delete_campaign_content)
-box::use(../email/mailchimp/campaigns)
-box::use(../utils/get_env)
-box::use(../utils/push_hdx)
+box::use(src/signals/delete_campaign_content)
+
+box::use(src/email/mailchimp/campaigns)
+
+box::use(cs = src/utils/cloud_storage)
+box::use(src/utils/get_env)
+box::use(src/utils/push_hdx)
 
 #' Triage signals generated automatically
 #'

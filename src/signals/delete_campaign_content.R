@@ -2,8 +2,8 @@ box::use(dplyr)
 box::use(tidyr)
 box::use(stringr)
 
-box::use(../email/mailchimp/delete)
-box::use(./template_data)
+box::use(src/email/mailchimp/delete)
+box::use(src/signals/template_data)
 
 #' Deletes campaign content from data frame
 #'

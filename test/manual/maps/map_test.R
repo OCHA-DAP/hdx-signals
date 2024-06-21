@@ -4,14 +4,15 @@ box::use(gghdx)
 box::use(sf)
 box::use(dplyr)
 
-box::use(../../../src/images/plots/caption)
+box::use(src/images/plots/caption)
 
-box::use(../../../src/images/maps/gg_map)
-box::use(../../../src/images/maps/geom_cities)
-box::use(../../../src/images/maps/geom_centroids)
-box::use(../../../src/images/maps/map_points)
-box::use(../../../src/utils/get_iso3_sf)
-box::use(cs = ../../../src/utils/cloud_storage)
+box::use(src/images/maps/gg_map)
+box::use(src/images/maps/geom_cities)
+box::use(src/images/maps/geom_centroids)
+box::use(src/images/maps/map_points)
+
+box::use(src/utils/get_iso3_sf)
+box::use(cs = src/utils/cloud_storage)
 
 df_map_settings <- cs$read_az_file("input/iso3_map_settings.json")
 

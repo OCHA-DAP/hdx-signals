@@ -2,7 +2,7 @@ box::use(readr)
 box::use(utils)
 box::use(dplyr)
 
-box::use(../../../utils/location_codes)
+box::use(src/utils/location_codes)
 
 #' Download raw JRC ASAP drought data
 #'

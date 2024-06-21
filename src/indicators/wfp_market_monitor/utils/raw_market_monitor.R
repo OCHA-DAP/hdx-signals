@@ -1,4 +1,4 @@
-box::use(cs = ../../../../src/utils/cloud_storage)
+box::use(cs = src/utils/cloud_storage)
 
 #' Download raw market monitoring data
 #'

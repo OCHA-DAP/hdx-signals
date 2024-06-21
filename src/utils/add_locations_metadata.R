@@ -1,7 +1,7 @@
 box::use(dplyr)
 box::use(stringr)
 
-box::use(cs = ./cloud_storage)
+box::use(cs = src/utils/cloud_storage)
 
 #' Add location metadata columns
 #'

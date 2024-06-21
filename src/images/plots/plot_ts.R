@@ -3,7 +3,7 @@ box::use(scales)
 box::use(gghdx)
 box::use(dplyr)
 
-box::use(./theme_signals)
+box::use(src/images/plots/theme_signals)
 
 #' Plot time series data
 #'

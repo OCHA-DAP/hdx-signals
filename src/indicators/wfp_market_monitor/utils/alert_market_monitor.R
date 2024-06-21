@@ -1,7 +1,7 @@
 box::use(dplyr)
 box::use(rlang[`!!`])
 
-box::use(../../../../src/utils/alert_daily_ts)
+box::use(src/utils/alert_daily_ts)
 
 #' Creates displacement alerts dataset
 #'

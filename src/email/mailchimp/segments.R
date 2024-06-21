@@ -4,7 +4,7 @@ box::use(uuid)
 box::use(purrr)
 
 # local modules
-box::use(./base_api)
+box::use(src/email/mailchimp/base_api)
 
 #' Create conditions list for groups
 #'

@@ -1,5 +1,5 @@
 box::use(logger[log_error])
-box::use(./hs_logger)
+box::use(src/utils/hs_logger)
 
 hs_logger$configure_logger()
 

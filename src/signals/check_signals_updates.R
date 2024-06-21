@@ -5,10 +5,10 @@ box::use(logger)
 box::use(stringr)
 box::use(dplyr)
 
-box::use(../utils/get_env[get_env])
-box::use(../utils/hs_logger)
-box::use(../utils/formatters)
-box::use(cs = ../utils/cloud_storage)
+box::use(src/utils/get_env[get_env])
+box::use(src/utils/hs_logger)
+box::use(src/utils/formatters)
+box::use(cs = src/utils/cloud_storage)
 
 hs_logger$configure_logger()
 

@@ -1,5 +1,5 @@
-box::use(./text_block)
-box::use(./missing[missing_text])
+box::use(src/email/components/text_block)
+box::use(src/email/components/missing[missing_text])
 
 #' Further info block
 #'

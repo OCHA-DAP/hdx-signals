@@ -5,9 +5,9 @@ box::use(stringr)
 box::use(glue)
 box::use(pdftools)
 
-box::use(../../../../src/utils/ai_summarizer)
-box::use(../../../../src/utils/get_prompts)
-box::use(../../../../src/utils/parse_pdf)
+box::use(src/utils/ai_summarizer)
+box::use(src/utils/get_prompts)
+box::use(src/utils/parse_pdf)
 
 #' Generate summary for food insecurity alerts
 #'

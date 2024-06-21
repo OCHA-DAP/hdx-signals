@@ -5,11 +5,12 @@ box::use(gg = ggplot2)
 box::use(gghdx)
 box::use(lubridate)
 
-box::use(../../../utils/location_codes)
-box::use(../../../utils/formatters)
-box::use(../../../images/plots/theme_signals)
-box::use(../../../images/create_images)
-box::use(../../../images/plots/caption)
+box::use(src/utils/location_codes)
+box::use(src/utils/formatters)
+
+box::use(src/images/plots/theme_signals)
+box::use(src/images/create_images)
+box::use(src/images/plots/caption)
 
 #' Plot JRC ASAP
 #'

@@ -1,8 +1,8 @@
 box::use(dplyr)
 box::use(logger[log_info])
 
-box::use(cs = ../src/utils/cloud_storage)
-box::use(../src/utils/hs_logger)
+box::use(cs = src/utils/cloud_storage)
+box::use(src/utils/hs_logger)
 
 hs_logger$configure_logger()
 

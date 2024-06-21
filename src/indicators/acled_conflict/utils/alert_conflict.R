@@ -1,6 +1,6 @@
 box::use(dplyr)
 
-box::use(../../../../src/utils/alert_daily_ts)
+box::use(src/utils/alert_daily_ts)
 
 #' Creates cholera alerts dataset
 #'

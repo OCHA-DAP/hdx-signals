@@ -1,10 +1,10 @@
 box::use(purrr)
 box::use(glue)
 
-box::use(./location_block)
-box::use(./intro_block)
-box::use(./text_block)
-box::use(./line_block)
+box::use(src/email/components/location_block)
+box::use(src/email/components/intro_block)
+box::use(src/email/components/text_block)
+box::use(src/email/components/line_block)
 
 #' Create email body
 #'

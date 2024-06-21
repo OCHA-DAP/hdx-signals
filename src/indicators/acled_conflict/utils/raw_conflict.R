@@ -5,9 +5,9 @@ box::use(purrr)
 box::use(readr)
 box::use(logger[log_info, log_debug, log_error])
 
-box::use(../../../utils/hs_logger)
-box::use(cs = ../../../../src/utils/cloud_storage)
-box::use(../../../utils/get_env[get_env])
+box::use(src/utils/hs_logger)
+box::use(cs = src/utils/cloud_storage)
+box::use(src/utils/get_env[get_env])
 
 hs_logger$configure_logger()
 

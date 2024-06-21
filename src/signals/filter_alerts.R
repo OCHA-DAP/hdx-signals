@@ -1,7 +1,7 @@
 box::use(dplyr)
 box::use(rlang[`!!`])
 
-box::use(cs = ../utils/cloud_storage)
+box::use(cs = src/utils/cloud_storage)
 
 #' Filters alerts only to new alerts
 #'

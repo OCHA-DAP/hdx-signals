@@ -3,9 +3,9 @@ box::use(scales)
 box::use(gghdx)
 box::use(lubridate)
 
-box::use(./gg_map)
-box::use(./geom_cities)
-box::use(./map_theme)
+box::use(src/images/maps/gg_map)
+box::use(src/images/maps/geom_cities)
+box::use(src/images/maps/map_theme)
 
 #' Map points data
 #'

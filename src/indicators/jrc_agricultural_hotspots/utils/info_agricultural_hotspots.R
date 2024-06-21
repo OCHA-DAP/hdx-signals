@@ -4,7 +4,7 @@ box::use(stringr)
 box::use(glue)
 box::use(rvest)
 
-box::use(../../../../src/utils/ai_summarizer)
+box::use(src/utils/ai_summarizer)
 
 #' Add campaign info to cholera alerts
 #'

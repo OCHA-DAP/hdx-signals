@@ -3,9 +3,10 @@ box::use(purrr)
 box::use(rlang[`!!`])
 box::use(scales)
 
-box::use(../../../utils/formatters)
-box::use(../../../images/plots/plot_ts)
-box::use(../../../images/create_images)
+box::use(src/utils/formatters)
+
+box::use(src/images/plots/plot_ts)
+box::use(src/images/create_images)
 
 #' Plot WHO cholera cases
 #'

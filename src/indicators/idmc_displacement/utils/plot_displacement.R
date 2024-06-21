@@ -2,10 +2,10 @@ box::use(dplyr)
 box::use(gghdx)
 box::use(lubridate)
 
-box::use(../../../utils/formatters)
-box::use(../../../images/plots/plot_ts)
-box::use(../../../images/plots/caption)
-box::use(../../../images/create_images)
+box::use(src/utils/formatters)
+box::use(src/images/plots/plot_ts)
+box::use(src/images/plots/caption)
+box::use(src/images/create_images)
 
 #' Plot IDMC displacement
 #'

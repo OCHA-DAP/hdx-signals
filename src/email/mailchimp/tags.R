@@ -3,7 +3,7 @@ box::use(purrr)
 box::use(dplyr)
 
 # local modules
-box::use(./base_api)
+box::use(src/email/mailchimp/base_api)
 
 #' Get members with specific tag
 #'
