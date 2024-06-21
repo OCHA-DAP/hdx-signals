@@ -1,5 +1,10 @@
 # Changes
 
+## 0.1.2.1 (21 June 2024)
+
+### Documentation
+- Added documentation on static assets in Azure and new approach to versioning
+
 ## 0.1.2.0 (20 June 2024)
 
 ### Maps
