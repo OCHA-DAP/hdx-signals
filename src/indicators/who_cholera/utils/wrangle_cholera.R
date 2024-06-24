@@ -59,12 +59,12 @@ wrangle <- function(df_raw) {
       iso3
     ) |>
     dplyr$arrange(
-      start_date,
       date,
       .by_group = TRUE
     ) |>
     dplyr$mutate(
-      cholera_cases = zoo$na.approx(cholera_cases) # infill missing data
+      # TODO: data is missing due to scraping errors, CERF should fix
+      cholera_cases = zoo$na.approx(cholera_cases, na.rm = FALSE) # infill missing data
     ) |>
     dplyr$ungroup()
 }

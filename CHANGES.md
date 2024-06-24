@@ -1,5 +1,11 @@
 # Changes
 
+## 0.1.3.0 (24 June 2024)
+
+### who_cholera
+- Cholera monitoring script updated to run on the Mailchimp system, with a new
+automatic monitoring worfklow to match that for the other, subscribable datasets
+
 ## 0.1.2.0 (20 June 2024)
 
 ### Maps

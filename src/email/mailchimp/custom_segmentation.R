@@ -136,8 +136,8 @@ tag_emails <- function(interest_tag, geo_ids, dry_run) {
     .x = member_list,
     .f = \(member) {
       member_tags <- purrr$map_chr(member$tags, \(tag) tag$name)
-      tag_interest <- tag_interest %in% member_tags
-      if (tag_interest && (!dry_run || "hdx-signals-test" %in% member_tags)) {
+      interest_tag <- interest_tag %in% member_tags
+      if (interest_tag && (!dry_run || "hdx-signals-test" %in% member_tags)) {
         # only check for locations if they were interested in the indicator
         # returns email if they were signed up to any of the geographies signalled
         # otherwise it returns an empty character vector
