@@ -248,6 +248,11 @@ read_core_signals <- function() {
 #'
 #' @param df Data frame to save out
 save_core_signals_hdx <- function(df) {
+  # use indicator mapping to filter out the core dataset
+  # only those with `mc_interest` values are publicly subscribable
+  df_hdx_ind <- cs$read_az_file("input/indicator_mapping.parquet") |>
+    dplyr$filter(!is.na(mc_interest))
+
   df <- dplyr$select(
     df,
     iso3,
@@ -274,6 +279,8 @@ save_core_signals_hdx <- function(df) {
     campaign_url = campaign_url_archive,
     campaign_date,
     signals_version
+  ) |> dplyr$filter(
+    indicator_id %in% df_hdx_ind$indicator_id
   )
 
   cs$update_az_file(
