@@ -1,6 +1,7 @@
 box::use(./utils/raw_cholera)
 box::use(./utils/wrangle_cholera)
 box::use(./utils/alert_cholera)
+box::use(./utils/summary_cholera)
 box::use(./utils/plot_cholera)
 box::use(./utils/info_cholera)
 
@@ -17,5 +18,9 @@ generate_signals$generate_signals(
   indicator_id = "who_cholera",
   alert_fn = alert_cholera$alert,
   plot_fn = plot_cholera$plot,
-  info_fn = info_cholera$info
+  summary_fn = summary_cholera$summary,
+  info_fn = info_cholera$info,
+  first_run = FALSE,
+  dry_run = TRUE,
+  dry_run_filter = "ETH"
 )
