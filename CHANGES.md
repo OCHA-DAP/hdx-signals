@@ -1,6 +1,6 @@
 # Changes
 
-## 0.1.2.1 (21 June 2024)
+## 0.1.2.1 (24 June 2024)
 
 ### Documentation
 - Added documentation on static assets in Azure and new approach to versioning
