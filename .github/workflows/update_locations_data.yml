@@ -46,6 +46,10 @@ jobs:
               shell: bash
               run: Rscript ./src-static/update_hrp.R
 
+            - name: Update ISO3 map settings for all locations
+              shell: bash
+              run: Rscript ./src-static/update_iso3_map_settings.R
+
             - name: Update locations metadata after previous updates
               shell: bash
               run: Rscript ./src-static/update_locations_metadata.R
