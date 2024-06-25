@@ -1,0 +1,31 @@
+name: Update ACLED info
+
+on:
+    workflow_dispatch:
+      inputs:
+        HS_LOCAL:
+          required: true
+          type: choice
+          default: "FALSE"
+          options:
+            - "TRUE"
+            - "FALSE"
+
+jobs:
+    run:
+        runs-on: ubuntu-latest
+        env:
+          HS_LOCAL: ${{ inputs.HS_LOCAL || 'FALSE' }}
+          HS_HDX_BEARER: ${{ secrets.HS_HDX_BEARER }}
+          DSCI_AZ_SAS_DEV: ${{ secrets.DSCI_AZ_SAS_DEV }}
+          DSCI_AZ_SAS_PROD: ${{ secrets.DSCI_AZ_SAS_PROD }}
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v3
+
+            - name: Set up environment
+              uses: ocha-dap/hdx-signals-actions@v2
+
+            - name: Update ACLED info
+              shell: bash
+              run: Rscript ./src-static/update_acled_info.R
