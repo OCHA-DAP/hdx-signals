@@ -84,12 +84,18 @@ consistency.
 
 ### Versioning
 
-Update the version in `.signals-version`, following semantic versioning guidelines
+Update the version in `.signals-version`. We follow general semantic versioning
+guidelines with the following small adjustment. Beyond `major.minor.patch` we
+add a fourth level for small changes to the system that have no impact on runs:
+code cleanup, documentation, tools for code control like precommit, etc. This
+ensures we do not constantly iterate the `major.minor.patch` while we put together
+small changes, but still all changes to the codebase are reflected in versioning.
 
-*   Follow standard semantic versioning guidelines for `major.minor.patch`. Versioning
-should be incrementally updated regardless of whether or not there are any user-facing
-changes made.
-*   Version change needs to be reflected in the PR in `.signals-version`.
+So, for all PRs:
+
+* Use `major.minor.patch.micro`
+* Increment the version in `.signals-version`
+* Add a section in `CHANGES.md`
 
 ### Coding practices
 

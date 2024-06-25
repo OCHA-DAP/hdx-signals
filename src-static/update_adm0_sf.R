@@ -191,6 +191,12 @@ download_adm0_sf <- function(iso3) {
       iso3 = iso3,
       boundary_source = "Who's On First"
     )
+  } else if (iso3 == "BLM") {
+    download_shapefile$download_shapefile(
+      url = "https://data.humdata.org/dataset/41f80e67-f140-494b-9b34-7861c4951364/resource/93991ce2-fcc0-476a-9cd4-44e12c002f55/download/blm_adm0.zip", #nolint
+      layer = "BLM_adm0",
+      boundary_source = "HDX, OCHA"
+    )
   } else if (iso3 == "IOT") {
     download_shapefile$download_shapefile(
       url = "https://public.opendatasoft.com/api/explore/v2.1/catalog/datasets/world-administrative-boundaries/exports/geojson?lang=en&timezone=Europe%2FLondon", #nolint
@@ -255,7 +261,7 @@ get_un_geodata <- function(iso3) {
       stringr$str_wrap(
         paste0(
           iso3,
-          " data not available in the 'un_geodata.geojson' file. Add alternative ",
+          " data not available in the 'un_geodata_complex.geojson' file. Add alternative ",
           "method for accessing data to `get_adm0_sf()`."
         )
       ),
@@ -265,9 +271,9 @@ get_un_geodata <- function(iso3) {
 }
 
 #' Read in the data and just keep iso3 and boundary_source columns
-sf_world <- cs$read_az_file("input/un_geodata.geojson") |>
+sf_world <- cs$read_az_file("input/un_geodata_complex.geojson") |>
   dplyr$transmute(
-    iso3 = iso3cd,
+    iso3 = ISO3CD,
     boundary_source = "UN Geo Hub"
   )
 
