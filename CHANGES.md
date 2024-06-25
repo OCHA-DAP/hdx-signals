@@ -1,9 +1,14 @@
 # Changes
 
-## 0.1.3.0 (24 June 2024)
+## 0.1.3.0 (25 June 2024)
 
 ### Data
 - Data dictionary for Signals CSV created and added to HDX
+
+## 0.1.2.1 (24 June 2024)
+
+### Documentation
+- Added documentation on static assets in Azure and new approach to versioning
 
 ## 0.1.2.0 (20 June 2024)
 
