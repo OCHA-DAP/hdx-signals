@@ -69,10 +69,10 @@ df <- dplyr$bind_rows(
     mc_interest = "Market monitoring - WFP",
     mc_tag = NA_character_,
     mc_folder = "HDX Signals - WFP Markets",
-    indicator_subject = "Market monitoring",
+    indicator_subject = "Global Market Monitor",
     static_segment = 25113,
     banner_url = "https://mcusercontent.com/ea3f905d50ea939780139789d/images/91c6f44c-dcce-3982-406a-0316c1bd30ec.png", #nolint
-    data_source = "Market monitoring - WFP"
+    data_source = "Global Market Monitor - WFP"
   ),
   dplyr$tibble( # ACLED conflict
     indicator_id = "acled_conflict",
