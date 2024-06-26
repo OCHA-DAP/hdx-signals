@@ -10,7 +10,7 @@ info <- function(df_alerts, df_wrangled, df_raw) {
   df_alerts |>
     dplyr$transmute(
       hdx_url = "https://data.humdata.org/dataset/global-market-monitor",
-      source_url = "https://www.wfp.org/publications/market-monitor",
+      source_url = "https://dataviz.vam.wfp.org/reports?current_page=1&theme=8",
       other_urls = NA_character_,
       further_information = as.character(
         glue$glue(
