@@ -27,7 +27,8 @@ plot <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
           accuracy = 1,
           scale = 1
         )(value),
-        " increase in the cost of the food basket over the past month"
+        " increase in the cost of the food basket in ",
+        format(date, "%B %Y")
       )
     )
 
