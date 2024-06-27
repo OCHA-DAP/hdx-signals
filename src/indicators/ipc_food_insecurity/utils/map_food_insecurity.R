@@ -179,7 +179,7 @@ food_insecurity_map <- function(df_wrangled, df_raw, title, date) {
     gg$labs(
       x = "",
       y = "",
-      fill = "Phase",
+      fill = "Area phase",
       shape = "Settlement",
       title = title,
       subtitle = subtitle,
@@ -189,6 +189,9 @@ food_insecurity_map <- function(df_wrangled, df_raw, title, date) {
       iso3 = iso3,
       use_map_settings = TRUE,
       margin_location = "subtitle"
+    ) +
+    gg$guides(
+      fill = gg$guide_legend(override.aes = list(shape = NA))
     )
 }
 
