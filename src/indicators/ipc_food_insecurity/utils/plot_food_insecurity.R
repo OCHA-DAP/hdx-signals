@@ -194,5 +194,8 @@ food_insecurity_ts <- function(df_wrangled, df_raw, title, date) {
       title = title,
       subtitle = subtitle,
       caption = caption
+    ) +
+    gg$guides(
+      fill = gg$guide_legend(override.aes = list(shape = NA))
     )
 }
