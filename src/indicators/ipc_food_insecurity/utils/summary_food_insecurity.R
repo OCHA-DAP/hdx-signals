@@ -126,7 +126,7 @@ ipc_scraper <- function(url) {
 text_summarizer <- function(txt, org) {
   prompts <- get_prompts$get_prompts(
     indicator_id = "ipc_food_insecurity",
-    prompts = paste0(org, c("_recs", "_sit_rep"))
+    prompts = paste0(org, c("_sit_rep", "_recs"))
   )
 
   # feed these to the AI to get a summarization
