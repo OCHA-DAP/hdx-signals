@@ -15,8 +15,8 @@ info <- function(df_alerts, df_wrangled, df_raw) {
       further_information = as.character(
         glue$glue(
           'Access the data directly <a href="{hdx_url}">on HDX</a> ',
-          "and see the Global Market Monitor",
-          '<a href="{source_url}">reports explorer</a> to access the ',
+          "and visit the Global Market Monitor ",
+          '<a href="{source_url}">Reports Explorer</a> to access the ',
           "most recent information and analysis."
         )
       )
