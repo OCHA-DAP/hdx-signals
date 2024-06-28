@@ -1,12 +1,12 @@
 box::use(dplyr)
-box::use(logger[log_info])
+box::use(logger)
 
 box::use(cs = ../src/utils/cloud_storage)
 box::use(../src/utils/hs_logger)
 
 hs_logger$configure_logger()
 
-log_info("Updating indicator mapping...")
+logger$log_info("Updating indicator mapping...")
 
 ###########################
 #### STATIC GENERATION ####
