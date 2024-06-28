@@ -1,5 +1,12 @@
 # Changes
 
+## 0.1.3.0 (27 June 2024)
+
+### ipc_food_insecurity
+
+- Removed points from map legend for phases to avoid confusion
+- Improved `ch_sit_rep.txt` and `ipc_sit_rep.txt` summarization prompts
+
 ## 0.1.2.1 (24 June 2024)
 
 ### Documentation
