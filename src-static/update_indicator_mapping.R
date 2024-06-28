@@ -93,9 +93,9 @@ df <- dplyr$bind_rows(
     data_source = "Agricultural hotspots - JRC ASAP",
     closing_text = paste(
       '<a href="https://agricultural-production-hotspots.ec.europa.eu/index.php">',
-      "Anomaly Hotspots of Agricultural Production</a> is an online decision support",
+      "Anomaly Hotspots of Agricultural Production (ASAP)</a> is an online decision support",
       "system for early warning about hotspots of agricultural production anomaly",
-      "(crop and rangeland), developed by the Joint Research Centre for food security",
+      "(crop and rangeland), developed by the Joint Research Centre (JRC) for food security",
       "crises prevention and response planning."
     )
   ),
