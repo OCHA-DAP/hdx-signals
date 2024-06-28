@@ -4,6 +4,7 @@ box::use(gg = ggplot2)
 box::use(ripc)
 box::use(sf)
 box::use(logger)
+box::use(sf)
 
 box::use(src/utils/location_codes)
 box::use(src/utils/formatters)
@@ -128,6 +129,17 @@ food_insecurity_map <- function(df_wrangled, df_raw, title, date) {
     ) +
     geom_cities$geom_cities(iso3)
 
+  if (iso3 == "LAC") {
+    poly_labels <- lac_labels()
+
+    p <- p +
+      gg$geom_sf_text(
+        data = poly_labels,
+        gg$aes(label = poly_label),
+        size = 3
+      )
+  }
+
   # only map points if there are any, avoids warnings for missing scales
   if (nrow(sf_points) > 0) {
     p <- p +
@@ -168,7 +180,7 @@ food_insecurity_map <- function(df_wrangled, df_raw, title, date) {
     gg$labs(
       x = "",
       y = "",
-      fill = "Phase",
+      fill = "Area phase",
       shape = "Settlement",
       title = title,
       subtitle = subtitle,
@@ -178,5 +190,21 @@ food_insecurity_map <- function(df_wrangled, df_raw, title, date) {
       iso3 = iso3,
       use_map_settings = TRUE,
       margin_location = "subtitle"
+    ) +
+    gg$guides(
+      fill = gg$guide_legend(override.aes = list(shape = NA))
     )
+}
+
+
+
+
+lac_labels <- function() {
+  dplyr$tribble(
+    ~X,        ~Y,   ~poly_label,
+    -90.6285,  14.83991,   "Guatemala",
+    -88.773358, 13.679912, "El Salvador",
+    -87.215936, 14.565515,    "Honduras"
+  ) |>
+    sf$st_as_sf(coords = c("X", "Y"), crs = 4326)
 }

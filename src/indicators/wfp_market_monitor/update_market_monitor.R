@@ -12,7 +12,7 @@ box::use(src/utils/hs_logger)
 box::use(src/utils/update_coverage)
 
 first_run <- as.logical(Sys.getenv("FIRST_RUN", unset = FALSE))
-dry_run <- as.logical(Sys.getenv("HS_TEST", unset = TRUE))
+dry_run <- as.logical(Sys.getenv("HS_DRY_RUN", unset = TRUE))
 dry_run_filter <- if (dry_run) c("BDI", "SSD") else NULL
 indicator_id <- "wfp_market_monitor"
 
