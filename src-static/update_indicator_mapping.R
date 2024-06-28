@@ -60,8 +60,8 @@ df <- dplyr$bind_rows(
     banner_url = "https://mcusercontent.com/ea3f905d50ea939780139789d/images/acc34c0e-ad04-3e80-a1a0-1c9a4a664926.png", #nolint
     data_source = "Food insecurity - IPC/CH",
     closing_text = paste(
-      '<a href="http://cadreharmonise.org">Cadre Harmonisé</a> and',
-      '<a href=https://www.ipcinfo.org>Integrated Food Security Phase Classification</a>',
+      '<a href="http://cadreharmonise.org">Cadre Harmonisé (CH)</a> and',
+      '<a href="https://www.ipcinfo.org">Integrated Food Security Phase Classification (IPC)</a>',
       "are analytical frameworks which synthesize indicators of food and nutrition",
       "security outcomes and the inference of contributing factors into scales and",
       "figures representing the nature and severity of crisis and implications for",
