@@ -109,12 +109,13 @@ df <- dplyr$bind_rows(
     banner_url = "https://mcusercontent.com/ea3f905d50ea939780139789d/images/91c6f44c-dcce-3982-406a-0316c1bd30ec.png", #nolint
     data_source = "Global Market Monitor - WFP",
     closing_text = paste(
-      "The Global Market Monitor provides information on price changes for the most",
-      "commonly consumed staples and their potential impacts on the cost of a basic",
-      "food basket. Impacts of price changes on the cost of a basic food basket are",
-      "calculated using a standardized methodology for cross-country comparability,",
-      "so figures might differ from those presented in local market monitoring reports.",
-      "For more details, please refer to the",
+      "The World Food Programme (WFP)",
+      '<a href="https://www.wfp.org/publications/market-monitor">Global Market Monitor</a>',
+      "provides information on price changes for the most commonly consumed staples and their",
+      "potential impacts on the cost of a basic food basket. Impacts of price changes on the",
+      "cost of a basic food basket are calculated using a standardized methodology for",
+      "cross-country comparability, so figures might differ from those presented in local",
+      "market monitoring reports. For more details, please refer to the",
       '<a href="https://dataviz.vam.wfp.org/reports/global-coverage-global-market-monitor-mar-2024?_ga=2.216546710.1452952701.1719219215-2028703503.1710344334">', # nolint
       "Methodology & Data page</a>."
     )
