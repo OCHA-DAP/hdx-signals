@@ -114,9 +114,9 @@ df <- dplyr$bind_rows(
       "food basket. Impacts of price changes on the cost of a basic food basket are",
       "calculated using a standardized methodology for cross-country comparability,",
       "so figures might differ from those presented in local market monitoring reports.",
-      "For more details, please refer to the 'Methodology & Data' page at this",
+      "For more details, please refer to the",
       '<a href="https://dataviz.vam.wfp.org/reports/global-coverage-global-market-monitor-mar-2024?_ga=2.216546710.1452952701.1719219215-2028703503.1710344334">', # nolint
-      "link</a>."
+      "Methodology & Data page</a>."
     )
   ),
   dplyr$tibble( # ACLED conflict
