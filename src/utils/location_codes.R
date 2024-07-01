@@ -1,5 +1,7 @@
-box::use(countrycode)
-box::use(purrr)
+box::use(
+  countrycode,
+  purrr
+)
 
 box::use(cs = src/utils/cloud_storage)
 

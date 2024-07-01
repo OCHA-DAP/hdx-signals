@@ -1,5 +1,7 @@
-box::use(dplyr)
-box::use(stringr)
+box::use(
+  dplyr,
+  stringr
+)
 
 box::use(cs = src/utils/cloud_storage)
 

@@ -1,18 +1,21 @@
-box::use(dplyr)
-box::use(tidyr)
-box::use(scales)
-box::use(gg = ggplot2)
-box::use(gghdx)
-box::use(lubridate)
-box::use(readr)
-box::use(ggrepel)
-box::use(utils)
-box::use(glue)
-box::use(logger)
+box::use(
+  dplyr,
+  tidyr,
+  scales,
+  gg = ggplot2,
+  gghdx,
+  lubridate,
+  readr,
+  ggrepel,
+  utils,
+  glue
+)
 
-box::use(src/images/plots/theme_signals)
-box::use(src/images/plots/caption)
-box::use(src/images/create_images)
+box::use(
+  src/images/plots/theme_signals,
+  src/images/plots/caption,
+  src/images/create_images
+)
 
 #' Plot IPC food insecurity
 #'

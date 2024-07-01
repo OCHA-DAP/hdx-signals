@@ -1,6 +1,8 @@
-box::use(gg = ggplot2)
-box::use(ggrepel)
-box::use(sf)
+box::use(
+  gg = ggplot2,
+  ggrepel,
+  sf
+)
 
 box::use(src/utils/get_iso3_sf)
 

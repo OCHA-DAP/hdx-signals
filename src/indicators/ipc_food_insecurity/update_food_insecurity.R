@@ -1,15 +1,15 @@
-box::use(src/indicators/ipc_food_insecurity/utils/raw_food_insecurity)
-box::use(src/indicators/ipc_food_insecurity/utils/wrangle_food_insecurity)
-box::use(src/indicators/ipc_food_insecurity/utils/alert_food_insecurity)
-box::use(src/indicators/ipc_food_insecurity/utils/plot_food_insecurity)
-box::use(src/indicators/ipc_food_insecurity/utils/summary_food_insecurity)
-box::use(src/indicators/ipc_food_insecurity/utils/map_food_insecurity)
-box::use(src/indicators/ipc_food_insecurity/utils/info_food_insecurity)
-
-box::use(src/signals/generate_signals)
-
-box::use(src/utils/hs_logger)
-box::use(src/utils/update_coverage)
+box::use(
+  src/indicators/ipc_food_insecurity/utils/raw_food_insecurity,
+  src/indicators/ipc_food_insecurity/utils/wrangle_food_insecurity,
+  src/indicators/ipc_food_insecurity/utils/alert_food_insecurity,
+  src/indicators/ipc_food_insecurity/utils/plot_food_insecurity,
+  src/indicators/ipc_food_insecurity/utils/summary_food_insecurity,
+  src/indicators/ipc_food_insecurity/utils/map_food_insecurity,
+  src/indicators/ipc_food_insecurity/utils/info_food_insecurity,
+  src/signals/generate_signals,
+  src/utils/hs_logger,
+  src/utils/update_coverage
+)
 
 first_run <- as.logical(Sys.getenv("FIRST_RUN", unset = FALSE))
 dry_run <- as.logical(Sys.getenv("HS_DRY_RUN", unset = TRUE))
@@ -29,7 +29,7 @@ update_coverage$update_coverage(
 )
 
 # now generate signals
-df_ipc <- generate_signals$generate_signals(
+generate_signals$generate_signals(
   df_wrangled = df_wrangled,
   indicator_id = indicator_id,
   alert_fn = alert_food_insecurity$alert,

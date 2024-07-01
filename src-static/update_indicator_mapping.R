@@ -1,12 +1,16 @@
-box::use(dplyr)
-box::use(logger[log_info])
+box::use(
+  dplyr,
+  logger
+)
 
-box::use(cs = src/utils/cloud_storage)
-box::use(src/utils/hs_logger)
+box::use(
+  cs = src/utils/cloud_storage,
+  src/utils/hs_logger
+)
 
 hs_logger$configure_logger()
 
-log_info("Updating indicator mapping...")
+logger$log_info("Updating indicator mapping...")
 
 ###########################
 #### STATIC GENERATION ####
@@ -92,4 +96,4 @@ cs$update_az_file(
   name = fname
 )
 
-log_info(paste0("Successfully created indicator mapping and saved to ", fname))
+logger$log_info(paste0("Successfully created indicator mapping and saved to ", fname))

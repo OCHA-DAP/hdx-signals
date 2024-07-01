@@ -1,8 +1,8 @@
-box::use(dplyr)
-box::use(janitor)
-box::use(purrr)
-box::use(rlang[`!!`])
-box::use(rlang)
+box::use(
+  dplyr,
+  purrr,
+  rlang
+)
 
 box::use(src/images/save_image)
 

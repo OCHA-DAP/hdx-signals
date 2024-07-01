@@ -1,8 +1,10 @@
 box::use(glue)
 
-box::use(src/email/components/text_block)
-box::use(src/email/components/line_block)
-box::use(src/email/components/missing)
+box::use(
+  src/email/components/text_block,
+  src/email/components/line_block,
+  src/email/components/missing
+)
 
 #' Summary block
 #'

@@ -1,22 +1,24 @@
-box::use(dplyr)
-box::use(janitor)
-box::use(purrr)
-box::use(stringr)
-box::use(rlang)
-box::use(rlang[`!!`])
-box::use(logger[log_info])
+box::use(
+  dplyr,
+  janitor,
+  purrr,
+  stringr,
+  rlang,
+  logger
+)
 
-box::use(src/signals/filter_test_data[filter_test_data])
-box::use(src/signals/generate_campaign_content[generate_campaign_content])
-box::use(src/signals/create_campaigns[create_campaigns])
-box::use(src/signals/delete_campaign_content[delete_campaign_content])
-box::use(src/signals/generate_alerts[generate_alerts])
-box::use(src/signals/check_existing_signals[check_existing_signals])
-box::use(src/signals/template_data)
-
-box::use(cs = src/utils/cloud_storage)
-box::use(src/utils/hs_local)
-box::use(src/utils/hs_logger)
+box::use(
+  src/signals/filter_test_data,
+  src/signals/generate_campaign_content,
+  src/signals/create_campaigns,
+  src/signals/delete_campaign_content,
+  src/signals/generate_alerts,
+  src/signals/check_existing_signals,
+  src/signals/template_data,
+  cs = src/utils/cloud_storage,
+  src/utils/hs_local,
+  src/utils/hs_logger
+)
 
 hs_logger$configure_logger()
 
@@ -76,7 +78,7 @@ generate_signals <- function(
   # file name differs if testing or not
   fn_signals <- cs$signals_path(indicator_id, dry_run)
 
-  check_existing_signals(
+  check_existing_signals$check_existing_signals(
     indicator_id = indicator_id,
     first_run = first_run,
     fn_signals = fn_signals,
@@ -86,12 +88,12 @@ generate_signals <- function(
   # generate the new alerts that will receive a campaign
   # filter out the data before generating new alerts
   df_alerts <- df_wrangled |>
-    filter_test_data(
+    filter_test_data$filter_test_data(
       dry_run = dry_run,
       dry_run_filter = dry_run_filter
     ) |>
     alert_fn() |>
-    generate_alerts(
+    generate_alerts$generate_alerts(
       indicator_id = indicator_id,
       first_run = first_run,
       dry_run = dry_run
@@ -99,7 +101,7 @@ generate_signals <- function(
 
   # return empty data frame if alerts is empty
   if (nrow(df_alerts) == 0) {
-    log_info(paste0("No signals created for ", indicator_id))
+    logger$log_info(paste0("No signals created for ", indicator_id))
     return(
       template_data$signals_template
     )
@@ -107,7 +109,7 @@ generate_signals <- function(
 
 
   # get content for the campaign
-  df_campaign_content <- generate_campaign_content(
+  df_campaign_content <- generate_campaign_content$generate_campaign_content(
     df_alerts = df_alerts,
     df_wrangled = df_wrangled,
     df_raw = df_raw,
@@ -130,7 +132,7 @@ generate_signals <- function(
       dplyr$group_split() |>
       purrr$map(
         .f = \(df) {
-          create_campaigns(
+          create_campaigns$create_campaigns(
             df_campaign_content = df,
             indicator_id = indicator_id,
             first_run = first_run,
@@ -141,7 +143,7 @@ generate_signals <- function(
       dplyr$bind_rows()
   } else {
     # otherwise, all new alerts are put into the same campaign
-    df_campaigns <- create_campaigns(
+    df_campaigns <- create_campaigns$create_campaigns(
       df_campaign_content = df_campaign_content,
       indicator_id = indicator_id,
       first_run = first_run,
@@ -163,7 +165,14 @@ generate_signals <- function(
     fn_signals
   )
 
-  log_info(paste0("Monitoring completed. ", nrow(df_campaigns), " signals generated for ", indicator_id))
+  logger$log_info(
+    paste0(
+      "Monitoring completed. ",
+      nrow(df_campaigns),
+      " signals generated for ",
+      indicator_id
+    )
+  )
 
   df_campaigns
 }
@@ -180,8 +189,8 @@ validate_campaigns <- function(df_campaigns, df_campaign_content) {
   df_incorrect <- !janitor$compare_df_cols_same(df_campaigns, df_check, bind_method = "rbind")
   if (any_error || df_incorrect) {
     if (!hs_local$hs_local()) {
-      delete_campaign_content(df_campaign_content)
-      delete_campaign_content(df_campaigns)
+      delete_campaign_content$delete_campaign_content(df_campaign_content)
+      delete_campaign_content$delete_campaign_content(df_campaigns)
       rlang$abort(
         stringr$str_wrap(
           paste0(

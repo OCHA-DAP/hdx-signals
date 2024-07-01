@@ -1,13 +1,17 @@
-box::use(sf)
-box::use(dplyr)
-box::use(glue)
-box::use(purrr)
-box::use(logger)
+box::use(
+  sf,
+  dplyr,
+  glue,
+  purrr,
+  logger
+)
 
-box::use(src/utils/download_shapefile)
-box::use(src/utils/all_iso3_codes)
-box::use(cs = src/utils/cloud_storage)
-box::use(src/utils/hs_logger)
+box::use(
+  src/utils/download_shapefile,
+  src/utils/all_iso3_codes,
+  cs = src/utils/cloud_storage,
+  src/utils/hs_logger
+)
 
 hs_logger$configure_logger()
 

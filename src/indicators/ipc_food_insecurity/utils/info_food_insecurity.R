@@ -1,8 +1,7 @@
-box::use(dplyr)
-box::use(glue)
-box::use(stringr)
-
-box::use(cs = src/utils/cloud_storage)
+box::use(
+  dplyr,
+  glue
+)
 
 #' Add campaign info to cholera alerts
 #'

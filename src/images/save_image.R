@@ -1,10 +1,9 @@
 box::use(dplyr)
-box::use(rlang[`!!`])
 
-box::use(src/email/mailchimp/folders)
-box::use(src/email/mailchimp/images)
-
-box::use(cs = src/utils/cloud_storage)
+box::use(
+  src/email/mailchimp/images,
+  cs = src/utils/cloud_storage
+)
 
 #' Save image produced for HDX Signals
 #'

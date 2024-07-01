@@ -1,7 +1,9 @@
-box::use(glue)
-box::use(uuid)
+box::use(
+  glue,
+  uuid
+)
 
-box::use(src/email/components/missing[missing_text])
+box::use(src/email/components/missing)
 
 #' Add text block
 #'
@@ -29,9 +31,9 @@ add_text <- function(
     header_id <- paste0("a", uuid$UUIDgenerate()) # must start with letter
   }
 
-  text_missing <- missing_text(text)
-  header_missing <- missing_text(header)
-  pre_header_text_missing <- missing_text(pre_header_text)
+  text_missing <- missing$missing_text(text)
+  header_missing <- missing$missing_text(header)
+  pre_header_text_missing <- missing$missing_text(pre_header_text)
 
   if (text_missing && header_missing && pre_header_text_missing) {
     ""

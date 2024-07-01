@@ -1,9 +1,10 @@
-box::use(httr2)
-box::use(rlang)
-box::use(uuid)
-box::use(purrr)
+box::use(
+  httr2,
+  rlang,
+  uuid,
+  purrr
+)
 
-# local modules
 box::use(src/email/mailchimp/base_api)
 
 #' Create conditions list for groups

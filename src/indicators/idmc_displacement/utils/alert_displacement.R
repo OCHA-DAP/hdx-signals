@@ -1,5 +1,4 @@
 box::use(dplyr)
-box::use(rlang[`!!`])
 
 box::use(src/utils/alert_daily_ts)
 
@@ -11,6 +10,8 @@ box::use(src/utils/alert_daily_ts)
 #' @param df_wrangled Wrangled dataframe
 #'
 #' @returns Alerts dataset
+#'
+#' @export
 alert <- function(df_wrangled) {
   if (unique(df_wrangled$displacement_type) == "Conflict") {
     min_val <- 10000

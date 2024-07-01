@@ -1,18 +1,19 @@
-box::use(base64enc)
-box::use(httr2)
-box::use(ggplot2)
-box::use(purrr)
-box::use(png)
-box::use(grid)
-box::use(knitr)
-box::use(magick) # silent requirement for cropping file
+box::use(
+  base64enc,
+  httr2,
+  ggplot2,
+  png,
+  grid,
+  knitr,
+  magick # nolint silent requirement for cropping file
+)
 
-# local module
-box::use(src/email/mailchimp/base_api)
-box::use(src/email/mailchimp/folders)
-
-box::use(src/utils/hs_local)
-box::use(src/utils/temp_file)
+box::use(
+  src/email/mailchimp/base_api,
+  src/email/mailchimp/folders,
+  src/utils/hs_local,
+  src/utils/temp_file
+)
 
 #' Upload image to Mailchimp
 #'

@@ -1,16 +1,15 @@
-# indicator utilities
-box::use(src/indicators/acled_conflict/utils/raw_conflict)
-box::use(src/indicators/acled_conflict/utils/wrangle_conflict)
-box::use(src/indicators/acled_conflict/utils/alert_conflict)
-box::use(src/indicators/acled_conflict/utils/plot_conflict)
-box::use(src/indicators/acled_conflict/utils/map_conflict)
-box::use(src/indicators/acled_conflict/utils/info_conflict)
-box::use(src/indicators/acled_conflict/utils/summary_conflict)
-
-box::use(src/signals/generate_signals)
-
-box::use(src/utils/hs_logger)
-box::use(src/utils/update_coverage)
+box::use(
+  src/indicators/acled_conflict/utils/raw_conflict,
+  src/indicators/acled_conflict/utils/wrangle_conflict,
+  src/indicators/acled_conflict/utils/alert_conflict,
+  src/indicators/acled_conflict/utils/plot_conflict,
+  src/indicators/acled_conflict/utils/map_conflict,
+  src/indicators/acled_conflict/utils/info_conflict,
+  src/indicators/acled_conflict/utils/summary_conflict,
+  src/signals/generate_signals,
+  src/utils/hs_logger,
+  src/utils/update_coverage
+)
 
 first_run <- as.logical(Sys.getenv("FIRST_RUN", unset = FALSE))
 dry_run <- as.logical(Sys.getenv("HS_DRY_RUN", unset = TRUE))
@@ -31,7 +30,7 @@ update_coverage$update_coverage(
 )
 
 # now generate signals
-df_conflict <- generate_signals$generate_signals(
+df_conflict <- generate_signals$generate_signals( # nolint
   df_wrangled = df_wrangled,
   df_raw = df_raw,
   indicator_id = indicator_id,

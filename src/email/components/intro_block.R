@@ -1,8 +1,12 @@
-box::use(purrr)
-box::use(glue)
+box::use(
+  purrr,
+  glue
+)
 
-box::use(src/email/components/conditional_merge)
-box::use(src/email/components/text_block)
+box::use(
+  src/email/components/conditional_merge,
+  src/email/components/text_block
+)
 
 #' Create intro block
 #'

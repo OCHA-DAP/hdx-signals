@@ -1,10 +1,11 @@
-box::use(src/indicators/who_cholera/utils/raw_cholera)
-box::use(src/indicators/who_cholera/utils/wrangle_cholera)
-box::use(src/indicators/who_cholera/utils/alert_cholera)
-box::use(src/indicators/who_cholera/utils/plot_cholera)
-box::use(src/indicators/who_cholera/utils/info_cholera)
-
-box::use(src/signals/generate_signals)
+box::use(
+  src/indicators/who_cholera/utils/raw_cholera,
+  src/indicators/who_cholera/utils/wrangle_cholera,
+  src/indicators/who_cholera/utils/alert_cholera,
+  src/indicators/who_cholera/utils/plot_cholera,
+  src/indicators/who_cholera/utils/info_cholera,
+  src/signals/generate_signals
+)
 
 # get the raw and wrangled data. The wrangled data is passed
 # to generate up the new alerts and campaigns

@@ -1,14 +1,14 @@
-box::use(src/indicators/jrc_agricultural_hotspots/utils/raw_agricultural_hotspots)
-box::use(src/indicators/jrc_agricultural_hotspots/utils/wrangle_agricultural_hotspots)
-box::use(src/indicators/jrc_agricultural_hotspots/utils/alert_agricultural_hotspots)
-box::use(src/indicators/jrc_agricultural_hotspots/utils/summary_agricultural_hotspots)
-box::use(src/indicators/jrc_agricultural_hotspots/utils/info_agricultural_hotspots)
-box::use(src/indicators/jrc_agricultural_hotspots/utils/plot_agricultural_hotspots)
-
-box::use(src/signals/generate_signals)
-
-box::use(src/utils/hs_logger)
-box::use(src/utils/update_coverage)
+box::use(
+  src/indicators/jrc_agricultural_hotspots/utils/raw_agricultural_hotspots,
+  src/indicators/jrc_agricultural_hotspots/utils/wrangle_agricultural_hotspots,
+  src/indicators/jrc_agricultural_hotspots/utils/alert_agricultural_hotspots,
+  src/indicators/jrc_agricultural_hotspots/utils/summary_agricultural_hotspots,
+  src/indicators/jrc_agricultural_hotspots/utils/info_agricultural_hotspots,
+  src/indicators/jrc_agricultural_hotspots/utils/plot_agricultural_hotspots,
+  src/signals/generate_signals,
+  src/utils/hs_logger,
+  src/utils/update_coverage
+)
 
 first_run <- as.logical(Sys.getenv("FIRST_RUN", unset = FALSE))
 dry_run <- as.logical(Sys.getenv("HS_DRY_RUN", unset = TRUE))
@@ -28,7 +28,7 @@ update_coverage$update_coverage(
 )
 
 # now generate signals
-df_jrc <- generate_signals$generate_signals(
+generate_signals$generate_signals(
   df_wrangled = df_wrangled,
   indicator_id = indicator_id,
   alert_fn = alert_agricultural_hotspots$alert,

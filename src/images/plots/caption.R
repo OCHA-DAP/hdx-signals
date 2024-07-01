@@ -1,8 +1,10 @@
 box::use(glue)
 
-box::use(src/utils/location_codes)
-box::use(src/utils/formatters)
-box::use(cs = src/utils/cloud_storage)
+box::use(
+  src/utils/location_codes,
+  src/utils/formatters,
+  cs = src/utils/cloud_storage
+)
 
 #' Generate caption based on ISO3 code and dataset
 #'

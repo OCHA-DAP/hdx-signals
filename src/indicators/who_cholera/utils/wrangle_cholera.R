@@ -1,9 +1,11 @@
-box::use(dplyr)
-box::use(readr)
-box::use(lubridate)
-box::use(janitor)
-box::use(stringr)
-box::use(zoo)
+box::use(
+  dplyr,
+  readr,
+  lubridate,
+  janitor,
+  stringr,
+  zoo
+)
 
 box::use(src/utils/location_codes)
 

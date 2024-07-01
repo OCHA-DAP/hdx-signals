@@ -1,14 +1,16 @@
-box::use(dplyr)
-box::use(purrr)
-box::use(rlang[`!!`])
+box::use(
+  dplyr,
+  purrr
+)
 
 # local modules
-box::use(src/email/mailchimp/segments)
-box::use(src/email/mailchimp/audience)
-
-box::use(cs = src/utils/cloud_storage)
-box::use(src/utils/location_codes)
-box::use(src/utils/get_env[get_env])
+box::use(
+  src/email/mailchimp/segments,
+  src/email/mailchimp/audience,
+  src/utils/location_codes,
+  src/utils/get_env,
+  cs = src/utils/cloud_storage
+)
 
 #' Generate email segmentation
 #'
@@ -170,7 +172,7 @@ mc_archive_segment <- function() {
     segments$mc_update_static_segment(
       segment_id = 25085,
       segment_name = "hdx-signals-archive",
-      emails = list(get_env("HS_EMAIL"))
+      emails = list(get_env$get_env("HS_EMAIL"))
     )
   }
 

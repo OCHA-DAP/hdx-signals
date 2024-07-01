@@ -1,7 +1,9 @@
-box::use(gghdx)
-box::use(gg = ggplot2)
-box::use(showtext)
-box::use(rlang)
+box::use(
+  gghdx,
+  gg = ggplot2,
+  showtext,
+  rlang
+)
 
 gghdx$gghdx()
 

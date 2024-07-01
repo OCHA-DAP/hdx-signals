@@ -1,10 +1,13 @@
-box::use(gg = ggplot2)
-box::use(dplyr)
-box::use(rlang[`!!`])
+box::use(
+  gg = ggplot2,
+  dplyr
+)
 
-box::use(cs = src/utils/cloud_storage)
+box::use(
+  cs = src/utils/cloud_storage,
+  src/images/plots/theme_signals
+)
 
-box::use(src/images/plots/theme_signals)
 
 #' Produces theme changes specific to maps
 #'

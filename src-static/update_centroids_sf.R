@@ -1,15 +1,17 @@
-#' Script to update location boundaries and then their centroids
+box::use(
+  glue,
+  sf,
+  dplyr,
+  purrr,
+  logger
+)
 
-box::use(glue)
-box::use(sf)
-box::use(dplyr)
-box::use(purrr)
-box::use(logger)
-
-box::use(cs = src/utils/cloud_storage)
-box::use(src/utils/all_iso3_codes)
-box::use(src/utils/get_iso3_sf)
-box::use(src/utils/hs_logger)
+box::use(
+  cs = src/utils/cloud_storage,
+  src/utils/all_iso3_codes,
+  src/utils/get_iso3_sf,
+  src/utils/hs_logger
+)
 
 hs_logger$configure_logger()
 

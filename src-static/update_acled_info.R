@@ -1,14 +1,18 @@
 #' Script to get ACLED metadata on when location time series are complete. The
 #' information is stored on a PDF URL.
-box::use(dplyr)
-box::use(readxl)
-box::use(stringr)
-box::use(glue)
-box::use(logger)
+box::use(
+  dplyr,
+  readxl,
+  stringr,
+  glue,
+  logger
+)
 
-box::use(src/utils/location_codes)
-box::use(cs = src/utils/cloud_storage)
-box::use(src/utils/hs_logger)
+box::use(
+  src/utils/location_codes,
+  cs = src/utils/cloud_storage,
+  src/utils/hs_logger
+)
 
 hs_logger$configure_logger()
 

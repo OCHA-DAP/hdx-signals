@@ -1,14 +1,15 @@
-box::use(dplyr)
-box::use(purrr)
-box::use(lubridate)
-box::use(gghdx)
+box::use(
+  dplyr,
+  lubridate,
+  gghdx
+)
 
-box::use(src/utils/location_codes)
-box::use(src/utils/formatters)
-
-box::use(src/images/plots/plot_ts)
-box::use(src/images/plots/caption)
-box::use(src/images/create_images)
+box::use(
+  src/utils/formatters,
+  src/images/plots/plot_ts,
+  src/images/plots/caption,
+  src/images/create_images
+)
 
 #' Plot WHO cholera cases
 #'

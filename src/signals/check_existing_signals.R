@@ -1,8 +1,12 @@
-box::use(dplyr)
-box::use(stringr)
+box::use(
+  dplyr,
+  stringr
+)
 
-box::use(cs = src/utils/cloud_storage)
-box::use(src/utils/hs_local)
+box::use(
+  cs = src/utils/cloud_storage,
+  src/utils/hs_local
+)
 
 #' Check existing signals
 #'

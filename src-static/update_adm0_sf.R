@@ -1,16 +1,18 @@
-#' Script to update location boundaries
+box::use(
+  glue,
+  sf,
+  dplyr,
+  purrr,
+  stringr,
+  logger
+)
 
-box::use(glue)
-box::use(sf)
-box::use(dplyr)
-box::use(purrr)
-box::use(stringr)
-box::use(logger)
-
-box::use(cs = src/utils/cloud_storage)
-box::use(src/utils/download_shapefile)
-box::use(src/utils/all_iso3_codes)
-box::use(src/utils/hs_logger)
+box::use(
+  cs = src/utils/cloud_storage,
+  src/utils/download_shapefile,
+  src/utils/all_iso3_codes,
+  src/utils/hs_logger
+)
 
 hs_logger$configure_logger()
 

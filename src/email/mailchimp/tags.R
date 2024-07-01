@@ -1,8 +1,9 @@
-box::use(httr2)
-box::use(purrr)
-box::use(dplyr)
+box::use(
+  httr2,
+  purrr,
+  dplyr
+)
 
-# local modules
 box::use(src/email/mailchimp/base_api)
 
 #' Get members with specific tag

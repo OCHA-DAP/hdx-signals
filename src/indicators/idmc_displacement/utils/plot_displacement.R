@@ -1,11 +1,15 @@
-box::use(dplyr)
-box::use(gghdx)
-box::use(lubridate)
+box::use(
+  dplyr,
+  gghdx,
+  lubridate
+)
 
-box::use(src/utils/formatters)
-box::use(src/images/plots/plot_ts)
-box::use(src/images/plots/caption)
-box::use(src/images/create_images)
+box::use(
+  src/utils/formatters,
+  src/images/plots/plot_ts,
+  src/images/plots/caption,
+  src/images/create_images
+)
 
 #' Plot IDMC displacement
 #'
@@ -18,8 +22,6 @@ box::use(src/images/create_images)
 #'
 #' @export
 plot <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
-  displacement_cause <- tolower(unique(df_wrangled$displacement_type))
-
   df_plot <- df_alerts |>
     dplyr$mutate(
       title = paste0(

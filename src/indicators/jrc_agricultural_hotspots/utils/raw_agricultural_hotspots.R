@@ -1,6 +1,8 @@
-box::use(readr)
-box::use(utils)
-box::use(dplyr)
+box::use(
+  readr,
+  utils,
+  dplyr
+)
 
 box::use(src/utils/location_codes)
 

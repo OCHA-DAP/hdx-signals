@@ -1,6 +1,8 @@
-box::use(dplyr)
-box::use(glue)
-box::use(lubridate)
+box::use(
+  dplyr,
+  glue,
+  lubridate
+)
 
 box::use(cs = src/utils/cloud_storage)
 

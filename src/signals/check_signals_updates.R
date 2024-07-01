@@ -1,14 +1,17 @@
-box::use(jsonlite)
-box::use(httr2)
-box::use(purrr)
-box::use(logger)
-box::use(stringr)
-box::use(dplyr)
+box::use(
+  jsonlite,
+  httr2,
+  logger,
+  stringr,
+  dplyr
+)
 
-box::use(src/utils/get_env[get_env])
-box::use(src/utils/hs_logger)
-box::use(src/utils/formatters)
-box::use(cs = src/utils/cloud_storage)
+box::use(
+  src/utils/get_env,
+  src/utils/hs_logger,
+  src/utils/formatters,
+  cs = src/utils/cloud_storage
+)
 
 hs_logger$configure_logger()
 
@@ -22,7 +25,7 @@ hs_logger$configure_logger()
 #'
 #' @returns Nothing. Message is posted to slack and will log an error if not successful
 slack_post_message <- function(header_text, status_text, signals_text, dry_run) {
-  slack_url <- ifelse(dry_run, get_env("HS_SLACK_URL_TEST"), get_env("HS_SLACK_URL"))
+  slack_url <- ifelse(dry_run, get_env$get_env("HS_SLACK_URL_TEST"), get_env$get_env("HS_SLACK_URL"))
   # See https://app.slack.com/block-kit-builder for prototyping layouts in JSON
   msg <- list(
     blocks = list(
@@ -117,7 +120,7 @@ query_github <- function(indicator_id) {
       "runs"
     ) |>
     httr2$req_auth_bearer_token(
-      token = get_env("GH_TOKEN")
+      token = get_env$get_env("GH_TOKEN")
     ) |>
     httr2$req_perform() |>
     httr2$resp_body_string() |>
@@ -181,7 +184,7 @@ indicators <- ".github/workflows" |>
   list.files(
     pattern = "^monitor_"
   ) |>
-  stringr::str_remove_all(
+  stringr$str_remove_all(
     "^monitor_|\\.yaml$"
   )
 

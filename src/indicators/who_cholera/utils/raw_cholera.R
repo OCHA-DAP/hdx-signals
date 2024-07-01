@@ -1,5 +1,7 @@
-box::use(readr)
-box::use(utils)
+box::use(
+  readr,
+  utils
+)
 
 box::use(src/utils/get_env[get_env])
 

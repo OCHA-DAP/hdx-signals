@@ -1,11 +1,15 @@
-box::use(dplyr)
-box::use(countrycode)
-box::use(readxl)
-box::use(stringr)
-box::use(logger)
+box::use(
+  dplyr,
+  countrycode,
+  readxl,
+  stringr,
+  logger
+)
 
-box::use(cs = src/utils/cloud_storage)
-box::use(src/utils/hs_logger)
+box::use(
+  cs = src/utils/cloud_storage,
+  src/utils/hs_logger
+)
 
 hs_logger$configure_logger()
 

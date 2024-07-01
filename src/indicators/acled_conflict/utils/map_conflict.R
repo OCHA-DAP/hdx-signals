@@ -1,15 +1,16 @@
-box::use(dplyr)
-box::use(purrr)
-box::use(rlang[`!!`])
-box::use(lubridate)
-box::use(sf)
+box::use(
+  dplyr,
+  lubridate,
+  sf
+)
 
-box::use(src/utils/location_codes)
-box::use(src/utils/formatters)
-
-box::use(src/images/maps/map_points)
-box::use(src/images/plots/caption)
-box::use(src/images/create_images)
+box::use(
+  src/utils/location_codes,
+  src/utils/formatters,
+  src/images/maps/map_points,
+  src/images/plots/caption,
+  src/images/create_images
+)
 
 #' Map conflict events
 #'

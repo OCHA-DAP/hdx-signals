@@ -1,10 +1,10 @@
-box::use(dplyr)
-box::use(purrr)
-box::use(stringr)
-box::use(glue)
-box::use(rvest)
-
-box::use(src/utils/ai_summarizer)
+box::use(
+  dplyr,
+  purrr,
+  stringr,
+  glue,
+  rvest
+)
 
 #' Add campaign info to cholera alerts
 #'
