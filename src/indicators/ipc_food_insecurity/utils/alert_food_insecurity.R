@@ -1,8 +1,10 @@
-box::use(dplyr)
-box::use(readr)
-box::use(tidyr)
-box::use(stringr)
-box::use(rvest)
+box::use(
+  dplyr,
+  readr,
+  tidyr,
+  stringr,
+  rvest
+)
 
 #' Creates food insecurity alerts dataset
 #'
@@ -12,6 +14,8 @@ box::use(rvest)
 #' @param df_wrangled Wrangled dataframe
 #'
 #' @returns Alerts dataset
+#'
+#' @export
 alert <- function(df_wrangled) {
   # get general alerts
   df_alerts <- df_wrangled |>
@@ -36,7 +40,7 @@ alert <- function(df_wrangled) {
         any_p5
     ) |>
     dplyr$select(
-      -starts_with("plot_date")
+      -dplyr$starts_with("plot_date")
     ) |>
     dplyr$mutate(
       phase_level = readr$parse_number(phase)

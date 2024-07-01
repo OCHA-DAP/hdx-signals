@@ -1,4 +1,4 @@
-box::use(cs = ./cloud_storage)
+box::use(cs = src/utils/cloud_storage)
 
 #' Simple function that returns all ISO3 codes we want to use
 #'

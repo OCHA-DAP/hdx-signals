@@ -1,5 +1,7 @@
-box::use(dplyr)
-box::use(scales)
+box::use(
+  dplyr,
+  scales
+)
 
 #' Add campaign info to market monitor alerts
 #'

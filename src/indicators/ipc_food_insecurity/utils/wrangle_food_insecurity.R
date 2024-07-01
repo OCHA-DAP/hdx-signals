@@ -1,8 +1,10 @@
-box::use(dplyr)
-box::use(tidyr)
-box::use(stringr)
-box::use(readr)
-box::use(ripc)
+box::use(
+  dplyr,
+  tidyr,
+  stringr,
+  readr,
+  ripc
+)
 
 #' Wrangle food insecurity data
 #'
@@ -84,7 +86,7 @@ wrangle <- function(df_raw) {
       .by_group = TRUE
     ) |>
     tidyr$pivot_longer(
-      cols = ends_with("percentage"),
+      cols = dplyr$ends_with("percentage"),
       names_to = "phase",
       names_transform = \(x) stringr$str_remove(x, "_percentage"),
       values_to = "percentage"

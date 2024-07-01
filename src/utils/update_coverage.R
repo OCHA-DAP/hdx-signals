@@ -1,4 +1,4 @@
-box::use(cs = ./cloud_storage)
+box::use(cs = src/utils/cloud_storage)
 
 #' Update vector of ISO3 codes covered by dataset
 #'

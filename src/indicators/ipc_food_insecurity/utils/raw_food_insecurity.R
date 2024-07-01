@@ -1,7 +1,9 @@
-box::use(ripc)
-box::use(dplyr)
+box::use(
+  ripc,
+  dplyr
+)
 
-box::use(../../../../src/utils/location_codes)
+box::use(src/utils/location_codes)
 
 #' Download raw IPC food insecurity data
 #'

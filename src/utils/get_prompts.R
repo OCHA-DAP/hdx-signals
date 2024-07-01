@@ -1,6 +1,8 @@
-box::use(glue)
-box::use(purrr)
-box::use(stats)
+box::use(
+  glue,
+  purrr,
+  stats
+)
 
 #' Get prompts for `indicator_id`
 #'

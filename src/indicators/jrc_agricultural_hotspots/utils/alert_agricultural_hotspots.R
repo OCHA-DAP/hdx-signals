@@ -1,5 +1,6 @@
-box::use(dplyr)
-box::use(readr)
+box::use(
+  dplyr
+)
 
 #' Creates agricultural hotspots alerts dataset
 #'
@@ -9,6 +10,8 @@ box::use(readr)
 #' @param df_wrangled Wrangled dataframe
 #'
 #' @returns Alerts dataset
+#'
+#' @export
 alert <- function(df_wrangled) {
   df_wrangled |>
     dplyr$transmute(

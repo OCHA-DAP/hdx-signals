@@ -1,20 +1,20 @@
-box::use(dplyr)
-box::use(rlang[`!!`])
-box::use(purrr)
-box::use(glue)
-box::use(logger[log_error])
+box::use(
+  dplyr,
+  glue,
+  logger
+)
 
-box::use(cs = ../utils/cloud_storage)
-box::use(../email/components/email_body)
-box::use(../email/components/create_template)
-box::use(../email/mailchimp/templates)
-box::use(../email/mailchimp/campaigns)
-box::use(../email/mailchimp/custom_segmentation)
-box::use(../utils/formatters)
-box::use(../utils/get_signals_version)
-box::use(../email/mailchimp/delete)
-
-box::use(../utils/hs_logger)
+box::use(
+  src/email/components/email_body,
+  src/email/components/create_template,
+  src/email/mailchimp/templates,
+  src/email/mailchimp/campaigns,
+  src/email/mailchimp/custom_segmentation,
+  src/utils/formatters,
+  src/utils/get_signals_version,
+  src/utils/hs_logger,
+  cs = src/utils/cloud_storage
+)
 
 hs_logger$configure_logger()
 
@@ -188,7 +188,7 @@ create_campaign <- function(
       )
     },
     error = function(e) {
-      log_error(e$message)
+      logger$log_error(e$message)
       "ERROR"
     }
   )
@@ -221,7 +221,7 @@ create_campaign <- function(
         )
       },
       error = function(e) {
-        log_error(e$message)
+        logger$log_error(e$message)
         # template_id will be deleted in later cleanup
         list(id = "ERROR", url = "ERROR")
       }

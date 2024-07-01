@@ -1,6 +1,8 @@
-box::use(idmc)
-box::use(dplyr)
-box::use(zoo)
+box::use(
+  idmc,
+  dplyr,
+  zoo
+)
 
 #' Wrangle displacement data
 #'

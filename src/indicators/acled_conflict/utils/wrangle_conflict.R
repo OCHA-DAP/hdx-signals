@@ -1,10 +1,13 @@
-box::use(dplyr)
-box::use(tidyr)
-box::use(lubridate)
-box::use(zoo)
+box::use(
+  dplyr,
+  tidyr,
+  zoo
+)
 
-box::use(cs = ../../../../src/utils/cloud_storage)
-box::use(../../../../src/utils/location_codes)
+box::use(
+  cs = src/utils/cloud_storage,
+  src/utils/location_codes
+)
 
 #' Wrangle conflict data
 #'

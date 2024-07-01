@@ -1,7 +1,9 @@
 box::use(gg = ggplot2)
 
-box::use(./geom_adm0)
-box::use(../plots/theme_signals)
+box::use(
+  src/images/maps/geom_adm0,
+  src/images/plots/theme_signals
+)
 
 #' Create base map for location
 #'

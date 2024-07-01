@@ -1,6 +1,6 @@
 box::use(dplyr)
 
-box::use(../../../../src/utils/alert_daily_ts)
+box::use(src/utils/alert_daily_ts)
 
 #' Creates cholera alerts dataset
 #'
@@ -10,6 +10,8 @@ box::use(../../../../src/utils/alert_daily_ts)
 #' @param df_wrangled Wrangled dataframe
 #'
 #' @returns Alerts dataset
+#'
+#' @export
 alert <- function(df_wrangled) {
   alert_daily_ts$alert_daily_ts(
     df = df_wrangled,

@@ -1,6 +1,9 @@
-box::use(readr)
-box::use(utils)
-box::use(../../../utils/get_env[get_env])
+box::use(
+  readr,
+  utils
+)
+
+box::use(src/utils/get_env[get_env])
 
 #' Download raw cholera data
 #'

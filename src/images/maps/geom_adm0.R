@@ -1,9 +1,11 @@
-box::use(gg = ggplot2)
-box::use(purrr)
-box::use(sf)
-box::use(units)
+box::use(
+  gg = ggplot2,
+  purrr,
+  sf,
+  units
+)
 
-box::use(../../utils/get_iso3_sf)
+box::use(src/utils/get_iso3_sf)
 
 #' Geom for location boundaries
 #'

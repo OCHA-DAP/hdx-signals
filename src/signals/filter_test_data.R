@@ -1,5 +1,4 @@
 box::use(dplyr)
-box::use(rlang[`!!`])
 
 #' Filter data for signals testing
 #'

@@ -1,7 +1,9 @@
-box::use(countrycode)
-box::use(purrr)
+box::use(
+  countrycode,
+  purrr
+)
 
-box::use(cs = ./cloud_storage)
+box::use(cs = src/utils/cloud_storage)
 
 #' Get ISO3 code from location name
 #'

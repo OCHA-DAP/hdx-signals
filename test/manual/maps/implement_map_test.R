@@ -5,8 +5,10 @@
 # Implement map creation
 box::use(purrr)
 
-box::use(../../../src/utils/all_iso3_codes)
-box::use(./map_test)
+box::use(
+  src/utils/all_iso3_codes,
+  test/manual/maps/map_test
+)
 
 purrr$map(
   .x = all_iso3_codes$all_iso3_codes(),

@@ -1,7 +1,9 @@
-box::use(stringr)
-box::use(utils)
-box::use(tools)
-box::use(sf)
+box::use(
+  stringr,
+  utils,
+  tools,
+  sf
+)
 
 #' Download shapefile and read
 #'

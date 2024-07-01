@@ -1,9 +1,13 @@
-box::use(httr2)
-box::use(rlang)
-box::use(stringr)
+box::use(
+  httr2,
+  rlang,
+  stringr
+)
 
-box::use(./base_api)
-box::use(../../utils/hs_local)
+box::use(
+  src/email/mailchimp/base_api,
+  src/utils/hs_local
+)
 
 #' Delete Mailchimp object
 #'

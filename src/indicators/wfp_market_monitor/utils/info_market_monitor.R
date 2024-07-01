@@ -1,5 +1,7 @@
-box::use(dplyr)
-box::use(glue)
+box::use(
+  dplyr,
+  glue
+)
 
 #' Add campaign info to market monitor alerts
 #'
