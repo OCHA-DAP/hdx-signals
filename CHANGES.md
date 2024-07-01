@@ -1,5 +1,11 @@
 # Changes
 
+## 0.1.3.1 (1 July 2024)
+
+### System
+
+- Slack alerts for new signals now contain # of recipients for the signal
+
 ## 0.1.3.0 (27 June 2024)
 
 ### ipc_food_insecurity
