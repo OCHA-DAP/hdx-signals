@@ -84,3 +84,31 @@ mc_send_campaign <- function(campaign_id) {
     httr2$req_perform(req)
   }
 }
+
+#' Get Mailchimp campaign info
+#'
+#' Get info about a Mailchimp campaign
+#'
+#' @param campaign_id ID of campaign to send
+#'
+#' @returns List of campaign information returned from the Mailchimp API
+#'
+#' @export
+mc_campaign_info <- function(campaign_id) {
+  req <- base_api$mc_api(lists_api = FALSE) |>
+    httr2$req_url_path_append(
+      "campaigns",
+      campaign_id
+    ) |>
+    httr2$req_method("GET")
+
+  if (hs_local$hs_local()) {
+    log_debug(
+      "Since `hs_local()`, no campaign info retrieved, dry run returned."
+    )
+    httr2$req_dry_run(req)
+  } else {
+    httr2$req_perform(req) |>
+      httr2$resp_body_json()
+  }
+}
