@@ -1,6 +1,9 @@
 # Changes
 
-## 0.1.3.2 (2 July 2024)
+## 0.1.4.0 (2 July 2024)
+
+### Data
+- Data dictionary for Signals CSV created and added to HDX
 
 ### System
 
