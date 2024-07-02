@@ -5,6 +5,7 @@ box::use(logger)
 box::use(stringr)
 box::use(dplyr)
 
+box::use(../email/mailchimp/campaigns)
 box::use(../utils/get_env[get_env])
 box::use(../utils/hs_logger)
 box::use(../utils/formatters)
@@ -95,7 +96,9 @@ slack_build_alert <- function(indicator_id, df) {
     indicator_id,
     "* - ",
     nrow(df),
-    " location(s) impacted - <",
+    " location(s) impacted - ",
+    campaigns$mc_campaign_info(df$campaign_id_email[1])$recipients$recipient_count,
+    " recipients <",
     df$campaign_url_archive[1],
     " | See draft campaign>\n"
   )

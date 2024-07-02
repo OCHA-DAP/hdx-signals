@@ -1,6 +1,6 @@
 # Changes
 
-## 0.1.4.0 (28 June 2024)
+## 0.1.4.0 (3 July 2024)
 
 ### Email
 
@@ -13,6 +13,18 @@
 ### ipc_food_insecurity
 
 - Fixed links in the 'Further information' section
+
+## 0.1.3.2 (2 July 2024)
+
+### System
+
+- Turned off link tracking for new campaigns to prevent email quarantining
+
+## 0.1.3.1 (1 July 2024)
+
+### System
+
+- Slack alerts for new signals now contain # of recipients for the signal
 
 ## 0.1.3.0 (27 June 2024)
 
