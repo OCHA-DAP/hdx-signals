@@ -1,5 +1,11 @@
 # Changes
 
+## 0.1.3.2 (2 July 2024)
+
+### System
+
+- Turned off link tracking for new campaigns to prevent email quarantining
+
 ## 0.1.3.1 (1 July 2024)
 
 ### System
