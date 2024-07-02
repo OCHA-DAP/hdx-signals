@@ -1,5 +1,11 @@
 # Changes
 
+## 0.1.3.2 (2 July 2024)
+
+### System
+
+- Setup weekly backup of Mailchimp audience
+
 ## 0.1.3.1 (1 July 2024)
 
 ### System
