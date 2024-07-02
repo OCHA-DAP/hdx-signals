@@ -1,5 +1,19 @@
 # Changes
 
+## 0.1.4.0 (3 July 2024)
+
+### Email
+
+- Added organization/dataset description to the emails
+
+### wfp_market_monitor
+
+- Changed the email text based on comments from WFP
+
+### ipc_food_insecurity
+
+- Fixed links in the 'Further information' section
+
 ## 0.1.3.2 (2 July 2024)
 
 ### System
