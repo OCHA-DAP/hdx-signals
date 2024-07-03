@@ -12,4 +12,7 @@ are detected, an `output/{indicator_id}/signals.parquet` file is created that ca
 then be triaged into the overall Signals dataset.
 
 Methodologies for signalling for each dataset are specified in the public-facing
-Gitbook documentation.
+Gitbook documentation. The exceptions are for those indicators that are not
+publicly subscribable. These are documented in this repository:
+
+- [who_cholera](who_cholera/README.md)
