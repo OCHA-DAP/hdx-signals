@@ -18,8 +18,8 @@ generate_signals_wrapper <- function(df_wrangled) {
     summary_fn = summary_agricultural_hotspots$summary,
     info_fn = info_agricultural_hotspots$info,
     plot_fn = plot_agricultural_hotspots$plot,
-    test = FALSE,
-    test_filter = NULL
+    dry_run = FALSE,
+    dry_run_filter = NULL
   )
 }
 
@@ -28,5 +28,5 @@ testthat$test_that("the base case for JRC hotspots runs and doesn't create any s
     wrangle_agricultural_hotspots$wrangle() |>
     generate_signals_wrapper()
   testthat$expect_equal(nrow(df_jrc), 0)
-  testthat$expect_equal(ncol(df_jrc), 38)
+  testthat$expect_equal(ncol(df_jrc), 40)
 })

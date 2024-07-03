@@ -19,8 +19,8 @@ generate_signals_wrapper <- function(df_wrangled) {
     summary_fn = summary_food_insecurity$summary,
     map_fn = map_food_insecurity$map,
     info_fn = info_food_insecurity$info,
-    test = FALSE,
-    test_filter = NULL
+    dry_run = FALSE,
+    dry_run_filter = NULL
   )
 }
 
@@ -34,5 +34,5 @@ testthat$test_that("the base case for IPC food insecurity runs and doesn't creat
     wrangle_food_insecurity$wrangle() |>
     generate_signals_wrapper()
   testthat$expect_equal(nrow(df_ipc), 0)
-  testthat$expect_equal(ncol(df_ipc), 38)
+  testthat$expect_equal(ncol(df_ipc), 40)
 })
