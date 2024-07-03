@@ -1,10 +1,19 @@
 # Changes
 
-## 0.1.3.2 (2 July 2024)
+## 0.1.4.1 (3 July 2024)
 
 ### System
 
 - Setup weekly backup of Mailchimp audience
+
+## 0.1.4.0 (2 July 2024)
+
+### Data
+- Data dictionary for Signals CSV created and added to HDX
+
+### System
+
+- Turned off link tracking for new campaigns to prevent email quarantining
 
 ## 0.1.3.1 (1 July 2024)
 
