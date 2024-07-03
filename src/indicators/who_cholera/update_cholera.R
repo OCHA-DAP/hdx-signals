@@ -5,6 +5,7 @@ box::use(./utils/summary_cholera)
 box::use(./utils/plot_cholera)
 box::use(./utils/info_cholera)
 
+box::use(../../utils/hs_logger)
 box::use(../../signals/generate_signals)
 
 first_run <- as.logical(Sys.getenv("FIRST_RUN", unset = FALSE))
