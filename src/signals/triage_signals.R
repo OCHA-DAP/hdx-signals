@@ -5,6 +5,7 @@ box::use(dplyr)
 
 box::use(cs = ../utils/cloud_storage)
 box::use(./delete_campaign_content)
+box::use(./template_data)
 box::use(../email/mailchimp/campaigns)
 box::use(../utils/get_env)
 box::use(../utils/push_hdx)
@@ -45,17 +46,17 @@ box::use(../utils/push_hdx)
 #'      time. Defaults to `10`, which is fine for most runs, but if `first_run`
 #'      creates many at a time, you may need to be increase or decrease based
 #'      on your preference. If `0`, no signals are previewed.
-#' @param test Whether or not we are triaging test emails. Looks only for the
-#'      test emails file on Azure. You can still send test emails and delete
+#' @param dry_run Whether or not we are triaging dry run emails. Looks only for the
+#'      dry run emails file on Azure. You can still send dry run emails and delete
 #'      them in the same way as normal ones, but the signals file is not sent
 #'      to `output/signals.parquet`
 #'
 #' @export
-triage_signals <- function(indicator_id, n_campaigns = 10, test = FALSE) {
-  fn_signals <- cs$signals_path(indicator_id, test)
+triage_signals <- function(indicator_id, n_campaigns = 10, dry_run = FALSE) {
+  fn_signals <- cs$signals_path(indicator_id, dry_run)
   df <- get_signals_df(fn_signals)
   preview_signals(df = df, n_campaigns = n_campaigns)
-  approve_signals(df = df, fn_signals = fn_signals, test = test)
+  approve_signals(df = df, fn_signals = fn_signals, dry_run = dry_run)
 }
 
 #' Check the signals data frame
@@ -129,15 +130,15 @@ preview_campaign_urls <- function(campaign_urls) {
 #'
 #' @param df Signals data frame
 #' @param fn_signals File name to the signals data
-#' @param test Whether or not the signals were for testing.
-approve_signals <- function(df, fn_signals, test) {
+#' @param dry_run Whether or not the signals were for a dry run.
+approve_signals <- function(df, fn_signals, dry_run) {
   user_name <- get_env$get_env("HS_ADMIN_NAME")
 
   user_command <- readline(
     paste0(
       "Tell us what you want to do with the following commands:\n\n",
       "APPROVE: Send campaigns",
-      if (test) "\n" else " and add to `output/signals.parquet`\n",
+      if (dry_run) "\n" else " and add to `output/signals.parquet`\n",
       "DELETE: Delete the campaign content, so you can recreate later.\n",
       "Any other input: Do nothing, so you can decide later."
     )
@@ -146,7 +147,7 @@ approve_signals <- function(df, fn_signals, test) {
     send_signals(df)
 
     # if not testing, move everything to the core signals dataset
-    if (!test) {
+    if (!dry_run) {
       # add triage information to the data before joining to core
       df$triage_approver <- user_name
       df$triage_time <- Sys.time()
@@ -243,41 +244,14 @@ read_core_signals <- function() {
 #' This just drops a few columns, and
 #' renames some for the final output data CSV that goes onto HDX. The data is
 #' pushed first to the Azure blob store, and then triggers the HDX pipeline
-#' https://github.com/OCHA-DAP/hdx-signals-alerts to push the data to HDX. That
-#' is done use
+#' https://github.com/OCHA-DAP/hdx-signals-alerts to push the data to HDX.
+#'
+#' The columns used are defined in `src/signals/template_data`.
 #'
 #' @param df Data frame to save out
 save_core_signals_hdx <- function(df) {
-  df <- dplyr$select(
-    df,
-    iso3,
-    location,
-    region,
-    hrp_location,
-    indicator_name,
-    indicator_source,
-    indicator_id,
-    date,
-    alert_level,
-    value,
-    plot = plot_url,
-    map = map_url,
-    plot2 = plot2_url,
-    other_images = other_images_urls,
-    summary_long,
-    summary_short,
-    summary_source,
-    hdx_url,
-    source_url,
-    other_urls,
-    further_information,
-    campaign_url = campaign_url_archive,
-    campaign_date,
-    signals_version
-  )
-
   cs$update_az_file(
-    df = df,
+    df = df[, names(template_data$signals_hdx_template)],
     name = "output/signals.csv"
   )
 

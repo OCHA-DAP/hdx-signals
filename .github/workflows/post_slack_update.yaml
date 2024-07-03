@@ -12,13 +12,15 @@ jobs:
       GH_TOKEN: ${{ secrets.GH_TOKEN}}
       DSCI_AZ_SAS_PROD: ${{ secrets.DSCI_AZ_SAS_PROD }}
       HS_SLACK_URL: ${{ secrets.HS_SLACK_URL}}
-      HS_TEST: ${{ 'FALSE' }}
-    steps: 
+      MAILCHIMP_API_KEY: ${{ secrets.MAILCHIMP_API_KEY }}
+      HS_DRY_RUN: ${{ 'FALSE' }}
+      HS_LOCAL: ${{ 'FALSE' }}
+    steps:
         - name: Checkout repository
           uses: actions/checkout@v3
 
         - name: Set up environment
-          uses: ocha-dap/hdx-signals-actions@07b3181e914ef100bd9c8134f3c7a13383870b9d
+          uses: ocha-dap/hdx-signals-actions@v2
 
         - name: Create Slack message
           shell: bash

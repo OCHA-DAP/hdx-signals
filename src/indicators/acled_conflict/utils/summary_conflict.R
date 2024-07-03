@@ -27,7 +27,7 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
       df_event_info,
       by = "iso3"
     ) |>
-    dplyr$group_by(iso3, date) |>
+    dplyr$group_by(iso3, location, date) |>
     dplyr$filter(
       event_date >= date - lubridate$days(30),
       event_date <= date,
@@ -47,10 +47,13 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
       summary_short = ifelse(
         is.na(summary_long) | summary_long == "",
         plot_title,
-        purrr$map2_chr(
-          .x = prompts$short,
-          .y = summary_long,
-          .f = ai_summarizer$ai_summarizer
+        purrr$pmap_chr(
+          .l = list(
+            prompt = prompts$short,
+            info = summary_long,
+            location = location
+          ),
+          .f = ai_summarizer$ai_summarizer_without_location
         )
       ),
       summary_source = "ACLED reporting"
@@ -60,7 +63,7 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
   df_alerts |>
     dplyr$left_join(
       df_summary,
-      by = c("iso3", "date")
+      by = c("iso3", "location", "date")
     ) |>
     dplyr$select(
       summary_long,

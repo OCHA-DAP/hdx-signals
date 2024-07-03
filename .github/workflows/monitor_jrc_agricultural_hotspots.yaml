@@ -10,14 +10,14 @@ on:
           options:
             - "TRUE"
             - "FALSE"
-        HS_TEST:
+        HS_DRY_RUN:
           required: true
           type: choice
           default: "TRUE"
           options:
             - "TRUE"
             - "FALSE"
-        GMAS_TEST_RUN:
+        HS_LOCAL:
           required: true
           type: choice
           default: "TRUE"
@@ -42,12 +42,12 @@ jobs:
         env:
           HS_EMAIL: ${{ secrets.HS_EMAIL}}
           HS_SURVEY_LINK: ${{ secrets.HS_SURVEY_LINK}}
-          HS_TEST: ${{ inputs.HS_TEST || 'FALSE' }}
+          HS_DRY_RUN: ${{ inputs.HS_DRY_RUN || 'FALSE' }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           DSCI_AZ_SAS_DEV: ${{ secrets.DSCI_AZ_SAS_DEV }}
           DSCI_AZ_SAS_PROD: ${{ secrets.DSCI_AZ_SAS_PROD }}
           MAILCHIMP_API_KEY: ${{ secrets.MAILCHIMP_API_KEY }}
-          GMAS_TEST_RUN: ${{ inputs.GMAS_TEST_RUN || 'FALSE' }}
+          HS_LOCAL: ${{ inputs.HS_LOCAL || 'FALSE' }}
           FIRST_RUN: ${{ inputs.FIRST_RUN || 'FALSE' }}
           LOG_LEVEL: ${{ inputs.LOG_LEVEL || 'INFO'}}
         steps:
@@ -55,7 +55,7 @@ jobs:
               uses: actions/checkout@v3
 
             - name: Set up environment
-              uses: ocha-dap/hdx-signals-actions@07b3181e914ef100bd9c8134f3c7a13383870b9d
+              uses: ocha-dap/hdx-signals-actions@v2
 
             - name: Run R monitoring script
               shell: bash
