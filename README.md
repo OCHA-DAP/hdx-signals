@@ -14,7 +14,6 @@ documentation for details on datasets included and how signals are generated.
 
 The code is structured as below. Refer to the directories for specific details.
 
-- runs: Scripts for actual runs, called in `.github` workflows.
 - [src](src/README.md): All source code for scanning all datasets, generating signals content,
 sendin emails through Mailchimp, and interacting with the cloud store.
 - [src-static](src-static/README.md): Source code for generating static assets such as
@@ -22,7 +21,7 @@ metadata for locations covered in Signals, spatial files for use in maps, and ot
 resources utilized in [src](src/README.md).
 - [test](test/README.md): Unit testing utilities for code and manual testing to explore changes
 to visual design in the system.
-- [.github](.github/README.md): Workflows that automate data scanning and other processes.
+- .github: Workflows that automate data scanning and other processes.
 
 ### Environment
 
