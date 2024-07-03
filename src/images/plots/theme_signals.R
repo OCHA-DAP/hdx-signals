@@ -10,8 +10,14 @@ gghdx$gghdx()
 #' Creates the theme for HDX Signals. Based off of [gghdx::gghdx()] but adds
 #' adjustments to some of the text sizing and margins.
 #'
+#' @param margin_location Where to place the margins in the plot. Don't want to
+#' put margins after title if subtitle exists, because we would want to place
+#' the margins between subtitle and plot.
+#' @param axis_ticks Whether or not to place axis ticks on the x-axis. Used for
+#'     some time series.
+#'
 #' @export
-theme_signals <- function(margin_location = c("title", "subtitle")) {
+theme_signals <- function(margin_location = c("title", "subtitle"), x_axis_ticks = FALSE) {
   margin_location <- rlang$arg_match(margin_location)
   showtext$showtext_opts(dpi = 300)
 
@@ -27,7 +33,7 @@ theme_signals <- function(margin_location = c("title", "subtitle")) {
     )
   )
 
-  gghdx$theme_hdx() +
+  theme_obj <- gghdx$theme_hdx() +
     gg$theme(
       axis.text.x = gg$element_text(vjust = 1),
       axis.title = gg$element_text(size = 12),
@@ -40,4 +46,17 @@ theme_signals <- function(margin_location = c("title", "subtitle")) {
       plot.background = gg$element_rect(fill = "white", linewidth = 0),
     ) +
     theme_margins
+
+  if (x_axis_ticks) {
+    theme_obj <- theme_obj +
+      gg$theme(
+        axis.ticks.x.bottom = gg$element_line(
+          colour = gghdx$hdx_hex("gray-dark"),
+          linewidth = gg$rel(1)
+        ),
+        axis.ticks.length = gg$unit(-0.05, "in")
+      )
+  }
+
+  theme_obj
 }

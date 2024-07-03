@@ -70,7 +70,10 @@ plot_ts <- function(
   # determine where to place the margin
   margin_location <- if (inherits(subtitle, "waiver")) "title" else "subtitle"
   p +
-    theme_signals$theme_signals(margin_location) +
+    theme_signals$theme_signals(
+      margin_location = margin_location,
+      x_axis_ticks = TRUE
+    ) +
     gg$theme(
       axis.ticks.x.bottom = gg$element_line(
         colour = gghdx$hdx_hex("gray-dark"),
