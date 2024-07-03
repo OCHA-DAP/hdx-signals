@@ -13,6 +13,7 @@ then be triaged into the overall Signals dataset.
 
 Methodologies for signalling for each dataset are specified in the public-facing
 Gitbook documentation. The exceptions are for those indicators that are not
-publicly subscribable. These are documented in this repository:
+publicly subscribable. These are documented in their
+`src/indicators/{indicator_id}` folder:
 
 - [who_cholera](who_cholera/README.md)
