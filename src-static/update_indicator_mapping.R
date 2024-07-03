@@ -51,7 +51,7 @@ df <- dplyr$bind_rows(
     mc_folder = "HDX Signals - Cholera",
     indicator_subject = "Cholera",
     static_segment = 25105,
-    banner_url = NA_character_,
+    banner_url = "https://mcusercontent.com/ea3f905d50ea939780139789d/images/1e122c90-d5b7-94a3-153b-77834b8cc684.png",
     data_source = "Cholera data - WHO"
   ),
   dplyr$tibble( # JRC agricultural hotspots
