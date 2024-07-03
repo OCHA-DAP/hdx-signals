@@ -29,4 +29,4 @@ jobs:
 
             - name: Backup Mailchimp audience
               shell: bash
-              run: Rscript ./runs/backup_mailchimp.R
+              run: Rscript ./src/email/mailchimp/backup_mailchimp.R
