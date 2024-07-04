@@ -46,6 +46,7 @@ jobs:
           DSCI_AZ_SAS_DEV: ${{ secrets.DSCI_AZ_SAS_DEV }}
           DSCI_AZ_SAS_PROD: ${{ secrets.DSCI_AZ_SAS_PROD }}
           MAILCHIMP_API_KEY: ${{ secrets.MAILCHIMP_API_KEY }}
+          CERF_CHOLERA_DATA: ${{ secrets.CERF_CHOLERA_DATA }}
           HS_LOCAL: ${{ inputs.HS_LOCAL || 'FALSE' }}
           FIRST_RUN: ${{ inputs.FIRST_RUN || 'FALSE' }}
           LOG_LEVEL: ${{ inputs.LOG_LEVEL || 'INFO'}}
