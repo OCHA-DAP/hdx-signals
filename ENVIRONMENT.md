@@ -77,3 +77,6 @@ primarily to provide access to APIs.
 
 - `IPC_API_KEY`: IPC API key. Read more in [{ripc}](https://github.com/OCHA-DAP/ripc).
 
+### `who_cholera`
+
+- `CERF_CHOLERA_DATA`: link to cholera data scraped by CERF from WHO health bulletins
