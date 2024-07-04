@@ -16,12 +16,13 @@ indicator_id <- "who_cholera"
 hs_logger$configure_logger()
 hs_logger$monitoring_log_setup(indicator_id)
 
-df_wrangled <- raw_cholera$raw() |>
-  wrangle_cholera$wrangle()
+df_raw <- raw_cholera$raw()
+df_wrangled <- wrangle_cholera$wrangle(df_raw)
 
 # now generate signals
 generate_signals$generate_signals(
   df_wrangled = df_wrangled,
+  df_raw = df_raw,
   indicator_id = indicator_id,
   alert_fn = alert_cholera$alert,
   plot_fn = plot_cholera$plot,
