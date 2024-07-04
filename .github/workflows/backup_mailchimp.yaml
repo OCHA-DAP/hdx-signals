@@ -1,0 +1,32 @@
+name: Backup Mailchimp audience
+
+on:
+  workflow_dispatch:
+    inputs:
+      HS_LOCAL:
+        required: true
+        type: choice
+        default: "TRUE"
+        options:
+          - "TRUE"
+          - "FALSE"
+  schedule:
+    - cron: "0 8 * * 1" # mondays at 8AM UTC
+
+jobs:
+    run:
+        runs-on: ubuntu-latest
+        env:
+          HS_LOCAL: ${{ inputs.HS_LOCAL || 'FALSE' }}
+          DSCI_AZ_SAS_DEV: ${{ secrets.DSCI_AZ_SAS_DEV }}
+          DSCI_AZ_SAS_PROD: ${{ secrets.DSCI_AZ_SAS_PROD }}
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v3
+
+            - name: Set up environment
+              uses: ocha-dap/hdx-signals-actions@v2
+
+            - name: Backup Mailchimp audience
+              shell: bash
+              run: Rscript ./src/email/mailchimp/backup_mailchimp.R

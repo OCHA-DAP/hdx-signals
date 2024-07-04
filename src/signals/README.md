@@ -13,7 +13,7 @@ primary workhorse. The process that flows through the function roughly follows:
 2. If any new alerts, generate all the email content, from maps and plots to text
 3. Create Mailchimp templates and campaigns
 4. Store out all of this information, including URLs and Mailchimp IDs to campaign content and drafts
-are staged to `output/{indicator_id}/signals.parquet
+are staged to `output/{indicator_id}/signals.parquet`
 
 ### Approving signals
 
