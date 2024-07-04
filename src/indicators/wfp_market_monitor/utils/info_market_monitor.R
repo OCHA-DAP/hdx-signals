@@ -16,8 +16,8 @@ info <- function(df_alerts, df_wrangled, df_raw) {
         glue$glue(
           'Access the data directly <a href="{hdx_url}">on HDX</a> ',
           'and visit the <a href="{source_url}"> {location} overview</a> to find ',
-          "key price data and other insights and trends. The most recent reports ",
-          "and analyses are available on the Global Market Monitor ",
+          "key price data and other insights and trends. Current and past editions ",
+          "of the Global Market Monitor are available on the ",
           '<a href="{other_urls}">Reports Explorer</a>.'
         )
       )

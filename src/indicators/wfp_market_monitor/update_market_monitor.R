@@ -37,7 +37,7 @@ df_market_monitor <- generate_signals$generate_signals(
   plot_fn = plot_market_monitor$plot,
   info_fn = info_market_monitor$info,
   summary_fn = summary_market_monitor$summary,
-  dry_run = dry_run,
+  dry_run = FALSE,
   dry_run_filter = dry_run_filter,
   first_run = first_run
 )

@@ -109,13 +109,14 @@ df <- dplyr$bind_rows(
     banner_url = "https://mcusercontent.com/ea3f905d50ea939780139789d/images/91c6f44c-dcce-3982-406a-0316c1bd30ec.png", #nolint
     data_source = "Global Market Monitor - WFP",
     closing_text = paste(
-      "The World Food Programme (WFP)",
+      "Changes in the cost of food baskets in WFP's ",
       '<a href="https://www.wfp.org/publications/market-monitor">Global Market Monitor</a>',
-      "provides information on price changes for the most commonly consumed staples and their",
-      "potential impacts on the cost of a basic food basket. Impacts of price changes on the",
-      "cost of a basic food basket are calculated using a standardized methodology for",
-      "cross-country comparability, so figures might differ from those presented in local",
-      "market monitoring reports. For more details, please refer to the",
+      "are based on a standardized methodology for comparability across countries. These ",
+      "figures can therefore differ from what WFP country offices report in their market ",
+      "bulletions or from food basket cost changes shown on WFP's ",
+      '<a href="https://dataviz.vam.wfp.org/economic/inflation?current_page=1">Economic ',
+      "Explorer</a>, which are based on baskets defined individually by country offices. ",
+      "For more details, please refer to the ",
       '<a href="https://dataviz.vam.wfp.org/reports/global-coverage-global-market-monitor-mar-2024?_ga=2.216546710.1452952701.1719219215-2028703503.1710344334">', # nolint
       "Methodology & Data page</a>."
     )
@@ -147,4 +148,4 @@ cs$update_az_file(
   name = fname
 )
 
-log_info(paste0("Successfully created indicator mapping and saved to ", fname))
+logger$log_info(paste0("Successfully created indicator mapping and saved to ", fname))
