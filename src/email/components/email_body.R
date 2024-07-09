@@ -67,9 +67,6 @@ create_body <- function(
       collapse = "\n"
     ),
     text_block$add_text(
-      campaign_details$closing_text
-    ),
-    text_block$add_text(
       text = glue$glue(
         "Read more about Signals on HDX's <a href='https://data.humdata.org/signals'>",
         "website</a> and find all source code on ",

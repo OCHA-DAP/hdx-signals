@@ -259,7 +259,6 @@ get_campaign_details <- function(indicator_id, campaign_date, dry_run) {
       "{names_paste}" # for glue within create_campaign()
     ),
     folder = df_ind$mc_folder,
-    banner_url = df_ind$banner_url,
-    closing_text = df_ind$closing_text
+    banner_url = df_ind$banner_url
   )
 }
