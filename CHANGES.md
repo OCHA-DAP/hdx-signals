@@ -1,5 +1,15 @@
 # Changes
 
+## 0.1.6.0 (9 July 2024)
+
+### wfp_market_monitor
+
+- Changed the email text based on comments from WFP
+
+### ipc_food_insecurity
+
+- Fixed links in the 'Further information' section
+
 ## 0.1.5.0 (4 July 2024)
 
 ### who_cholera
