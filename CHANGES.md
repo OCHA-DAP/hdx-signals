@@ -6,6 +6,11 @@
 
 - Added single quotes ' to trimming rules from AI summary outputs
 
+### Visuals
+
+- Ensured that city labels on maps is less likely to overlap with city points
+- Added yearly breaks to time series plots if visual spans 3 or more years
+
 ### wfp_market_monitor
 
 - Changed the email text based on comments from WFP

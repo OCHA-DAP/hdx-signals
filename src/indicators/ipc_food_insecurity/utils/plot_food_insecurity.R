@@ -12,6 +12,7 @@ box::use(logger)
 
 box::use(../../../images/plots/theme_signals)
 box::use(../../../images/plots/caption)
+box::use(../../../images/plots/breaks_date)
 box::use(../../../images/create_images)
 
 #' Plot IPC food insecurity
@@ -162,13 +163,15 @@ food_insecurity_ts <- function(df_wrangled, df_raw, title, date) {
       data = df_phase_labels,
       mapping = gg$aes(
         label = label
-      )
+      ),
+      nudge_x = 1,
+      segment.color = NA
     ) +
     gghdx$scale_y_continuous_hdx(
       labels = scales$label_percent(accuracy = 1),
     ) +
     gg$scale_x_date(
-      breaks = scales$pretty_breaks(),
+      breaks = breaks_date$breaks_date,
       labels = scales$label_date_short()
     ) +
     gg$coord_cartesian(
@@ -177,7 +180,10 @@ food_insecurity_ts <- function(df_wrangled, df_raw, title, date) {
     gg$expand_limits(
       y = 0
     ) +
-    theme_signals$theme_signals("subtitle") +
+    theme_signals$theme_signals(
+      margin_location = "subtitle",
+      x_axis_ticks = TRUE
+    ) +
     gg$theme(
       legend.position = "none"
     ) +

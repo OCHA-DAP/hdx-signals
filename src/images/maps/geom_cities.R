@@ -37,7 +37,8 @@ geom_cities <- function(iso3) {
         fun.geometry = \(x) sf$st_centroid(x, of_largest_polygon = FALSE),
         min.segment.length = Inf,
         family = "Source Sans 3",
-        color = "black"
+        color = "black",
+        nudge_y = 0.5
       )
     )
   } else {
