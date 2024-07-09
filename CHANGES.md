@@ -2,10 +2,6 @@
 
 ## 0.1.6.0 (9 July 2024)
 
-### Email
-
-- Added organization/dataset description to the emails
-
 ### wfp_market_monitor
 
 - Changed the email text based on comments from WFP
