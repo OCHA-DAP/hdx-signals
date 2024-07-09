@@ -5,6 +5,7 @@ box::use(dplyr)
 
 box::use(cs = ../utils/cloud_storage)
 box::use(./delete_campaign_content)
+box::use(./template_data)
 box::use(../email/mailchimp/campaigns)
 box::use(../utils/get_env)
 box::use(../utils/push_hdx)
@@ -243,41 +244,29 @@ read_core_signals <- function() {
 #' This just drops a few columns, and
 #' renames some for the final output data CSV that goes onto HDX. The data is
 #' pushed first to the Azure blob store, and then triggers the HDX pipeline
-#' https://github.com/OCHA-DAP/hdx-signals-alerts to push the data to HDX. That
-#' is done use
+#' https://github.com/OCHA-DAP/hdx-signals-alerts to push the data to HDX.
+#'
+#' The columns used are defined in `src/signals/template_data`.
 #'
 #' @param df Data frame to save out
 save_core_signals_hdx <- function(df) {
-  df <- dplyr$select(
+  # use indicator mapping to filter out the core dataset
+  # only those with `mc_interest` values are publicly subscribable
+  df_hdx_ind <- cs$read_az_file("input/indicator_mapping.parquet") |>
+    dplyr$filter(!is.na(mc_interest))
+
+  # rename specific columns for use in HDX output
+  df <- dplyr$rename(
     df,
-    iso3,
-    location,
-    region,
-    hrp_location,
-    indicator_name,
-    indicator_source,
-    indicator_id,
-    date,
-    alert_level,
-    value,
     plot = plot_url,
     map = map_url,
     plot2 = plot2_url,
     other_images = other_images_urls,
-    summary_long,
-    summary_short,
-    summary_source,
-    hdx_url,
-    source_url,
-    other_urls,
-    further_information,
-    campaign_url = campaign_url_archive,
-    campaign_date,
-    signals_version
+    campaign_url = campaign_url_archive
   )
 
   cs$update_az_file(
-    df = df,
+    df = df[df$indicator_id %in% df_hdx_ind$indicator_id, names(template_data$signals_hdx_template)],
     name = "output/signals.csv"
   )
 
