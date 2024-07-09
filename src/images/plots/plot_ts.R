@@ -4,6 +4,7 @@ box::use(gghdx)
 box::use(dplyr)
 
 box::use(./theme_signals)
+box::use(./breaks_date)
 
 #' Plot time series data
 #'
@@ -27,10 +28,13 @@ plot_ts <- function(
     title,
     subtitle = gg$waiver(),
     caption = gg$waiver()) {
-  p <- df |>
+  # data frame for plotting that is filtered to only 5 years of data at most
+  plot_df <- df |>
     dplyr$filter(
       max(date, as.Date("1500-01-01")) - date <= 365 * 5
-    ) |>
+    )
+
+  p <- plot_df |>
     gg$ggplot(
       mapping = gg$aes(
         x = date,
@@ -50,7 +54,7 @@ plot_ts <- function(
       labels = gghdx$label_number_hdx(),
     ) +
     gg$scale_x_date(
-      breaks = scales$pretty_breaks(),
+      breaks = breaks_date$breaks_date,
       labels = scales$label_date_short()
     ) +
     gg$coord_cartesian(
