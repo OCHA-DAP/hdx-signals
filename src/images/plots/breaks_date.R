@@ -16,7 +16,7 @@ breaks_date <- function(x) {
   max_year <- lubridate$year(max(x))
   min_year <- lubridate$year(min(x))
   years_diff <- max_year - min_year
-  if (years_diff >= 3 & years_diff <= 9) {
+  if (years_diff >= 3 && years_diff <= 9) {
     scales$breaks_width(width = "1 year")(x)
   } else {
     scales$breaks_pretty()(x)
