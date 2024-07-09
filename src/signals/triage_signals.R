@@ -250,8 +250,23 @@ read_core_signals <- function() {
 #'
 #' @param df Data frame to save out
 save_core_signals_hdx <- function(df) {
+  # use indicator mapping to filter out the core dataset
+  # only those with `mc_interest` values are publicly subscribable
+  df_hdx_ind <- cs$read_az_file("input/indicator_mapping.parquet") |>
+    dplyr$filter(!is.na(mc_interest))
+
+  # rename specific columns for use in HDX output
+  df <- dplyr$rename(
+    df,
+    plot = plot_url,
+    map = map_url,
+    plot2 = plot2_url,
+    other_images = other_images_urls,
+    campaign_url = campaign_url_archive
+  )
+
   cs$update_az_file(
-    df = df[, names(template_data$signals_hdx_template)],
+    df = df[df$indicator_id %in% df_hdx_ind$indicator_id, names(template_data$signals_hdx_template)],
     name = "output/signals.csv"
   )
 

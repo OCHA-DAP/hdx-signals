@@ -155,21 +155,8 @@ create_campaign <- function(
     {
       # create the email template and add to Mailchimp
       body <- email_body$create_body(
-        title = campaign_details$title,
-        iso3 = df_campaign_content$iso3,
-        location = df_campaign_content$location,
-        plot_title = df_campaign_content$plot_title,
-        plot_url = df_campaign_content$plot_url,
-        map_title = df_campaign_content$map_title,
-        map_url = df_campaign_content$map_url,
-        plot2_title = df_campaign_content$plot2_title,
-        plot2_url = df_campaign_content$plot2_url,
-        other_images_urls = df_campaign_content$other_images_urls,
-        other_images_captions = df_campaign_content$other_images_captions,
-        summary_long = df_campaign_content$summary_long,
-        summary_short = df_campaign_content$summary_short,
-        summary_source = df_campaign_content$summary_source,
-        further_information = df_campaign_content$further_information,
+        campaign_details = campaign_details,
+        df_campaign_content = df_campaign_content,
         use_conditions = !archive
       )
 

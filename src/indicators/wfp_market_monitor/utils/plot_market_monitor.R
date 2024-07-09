@@ -27,7 +27,8 @@ plot <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
           accuracy = 1,
           scale = 1
         )(value),
-        " increase in the cost of the food basket over the past month"
+        " increase in the cost of the food basket in ",
+        format(date, "%B %Y")
       )
     )
 
@@ -54,7 +55,11 @@ plot <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
 food_basket_ts <- function(df_wrangled, df_raw, title, date) {
   caption <- caption$caption(
     indicator_id = "wfp_market_monitor",
-    iso3 = unique(df_wrangled$iso3)
+    iso3 = unique(df_wrangled$iso3),
+    extra_caption = paste(
+      "Global Market Monitor price change data is standardized for comparability",
+      "and may differ from country bulletins or reports."
+    )
   )
 
   df_plot <- df_wrangled |>

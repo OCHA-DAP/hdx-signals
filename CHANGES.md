@@ -1,5 +1,27 @@
 # Changes
 
+## 0.1.6.0 (9 July 2024)
+
+### wfp_market_monitor
+
+- Changed the email text based on comments from WFP
+
+### ipc_food_insecurity
+
+- Fixed links in the 'Further information' section
+
+## 0.1.5.0 (4 July 2024)
+
+### who_cholera
+- Cholera monitoring script updated to run on the Mailchimp system, with a new
+automatic monitoring worfklow to match that for the other, subscribable datasets
+
+## 0.1.4.1 (3 July 2024)
+
+### System
+
+- Setup weekly backup of Mailchimp audience
+
 ## 0.1.4.0 (2 July 2024)
 
 ### Data

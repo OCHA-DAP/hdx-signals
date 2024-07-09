@@ -1,12 +1,12 @@
 box::use(dplyr)
-box::use(logger[log_info])
+box::use(logger)
 
 box::use(cs = ../src/utils/cloud_storage)
 box::use(../src/utils/hs_logger)
 
 hs_logger$configure_logger()
 
-log_info("Updating indicator mapping...")
+logger$log_info("Updating indicator mapping...")
 
 ###########################
 #### STATIC GENERATION ####
@@ -51,7 +51,7 @@ df <- dplyr$bind_rows(
     mc_folder = "HDX Signals - Cholera",
     indicator_subject = "Cholera",
     static_segment = 25105,
-    banner_url = NA_character_,
+    banner_url = "https://mcusercontent.com/ea3f905d50ea939780139789d/images/1e122c90-d5b7-94a3-153b-77834b8cc684.png",
     data_source = "Cholera data - WHO"
   ),
   dplyr$tibble( # JRC agricultural hotspots
@@ -69,10 +69,10 @@ df <- dplyr$bind_rows(
     mc_interest = "Market monitoring - WFP",
     mc_tag = NA_character_,
     mc_folder = "HDX Signals - WFP Markets",
-    indicator_subject = "Market monitoring",
+    indicator_subject = "Global Market Monitor",
     static_segment = 25113,
     banner_url = "https://mcusercontent.com/ea3f905d50ea939780139789d/images/91c6f44c-dcce-3982-406a-0316c1bd30ec.png", #nolint
-    data_source = "Market monitoring - WFP"
+    data_source = "Global Market Monitor - WFP"
   ),
   dplyr$tibble( # ACLED conflict
     indicator_id = "acled_conflict",
@@ -92,4 +92,4 @@ cs$update_az_file(
   name = fname
 )
 
-log_info(paste0("Successfully created indicator mapping and saved to ", fname))
+logger$log_info(paste0("Successfully created indicator mapping and saved to ", fname))
