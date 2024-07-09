@@ -121,7 +121,7 @@ ai_summarizer <- function(prompt, info) {
   trimws(
     x = ai_summary,
     which = "both",
-    whitespace = '[ \t\r\n"]'
+    whitespace = "[ \t\r\n\"']"
   )
 }
 
