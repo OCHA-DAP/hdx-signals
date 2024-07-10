@@ -139,11 +139,28 @@ approve_signals <- function(df, fn_signals, dry_run) {
       "Tell us what you want to do with the following commands:\n\n",
       "APPROVE: Send campaigns",
       if (dry_run) "\n" else " and add to `output/signals.parquet`\n",
-      "DELETE: Delete the campaign content, so you can recreate later.\n",
+      "DELETE: Delete the campaign content and `output/{indicator}/signals.parquet`",
+      "file so you can recreate later.\n",
+      "ARCHIVE: Delete the email campaign, but move the alert to `output/signals.parquet`\n",
       "Any other input: Do nothing, so you can decide later."
     )
   )
-  if (user_command == "APPROVE") {
+  if (user_command %in% c("APPROVE", "ARCHIVE")) {
+    if (user_command == "ARCHIVE") {
+      # delete the email template and campaigns, but not the content
+      delete_campaign_content$delete_campaign_content(
+        df = dplyr$select(df, dplyr$ends_with("_email"))
+      )
+      # ensure the email columns are empty
+      df <- dplyr$mutate(
+        df,
+        dplyr$across(
+          .cols = dplyr$ends_with("_email"),
+          .fns = \(x) NA_character_
+        )
+      )
+    }
+
     send_signals(df)
 
     # if not testing, move everything to the core signals dataset

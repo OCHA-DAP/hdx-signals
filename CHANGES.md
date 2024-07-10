@@ -1,5 +1,12 @@
 # Changes
 
+## 0.1.6.1 (10 July 2024)
+
+### System
+
+- Added ability to archive signals without sending them in the rare case there is
+a decision not to send out a signal
+
 ## 0.1.6.0 (9 July 2024)
 
 ### System
