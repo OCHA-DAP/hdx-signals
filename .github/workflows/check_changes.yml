@@ -20,7 +20,7 @@ jobs:
 
           - name: Install dependencies
             shell: Rscript {0}
-            run: install.packages("stringr")
+            run: install.packages(c("box" "stringr"))
 
           - name: Check CHANGES.md
             shell: bash
