@@ -1,5 +1,12 @@
 # Changes
 
+## 0.1.7.0 (11 July 2024)
+
+### idmc_displacement
+
+- Moved to new version of [idmc](https://github.com/OCHA-DAP/idmc) that filters
+out potentially duplicated entries in the IDU
+
 ## 0.1.6.1 (10 July 2024)
 
 ### System
