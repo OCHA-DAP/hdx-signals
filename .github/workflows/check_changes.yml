@@ -1,0 +1,27 @@
+# this workflow checks the CHANGES.md file
+
+on:
+  pull_request:
+    branches: [main]
+
+name: Check CHANGES.md
+
+permissions: read-all
+
+jobs:
+  lint:
+      runs-on: ubuntu-latest
+      steps:
+          - name: Checkout repository
+            uses: actions/checkout@v4
+
+          - name: Install R
+            uses: r-lib/actions/setup-r@v2
+
+          - name: Install dependencies
+            shell: Rscript {0}
+            run: install.packages("stringr")
+
+          - name: Check CHANGES.md
+            shell: bash
+            run: Rscript ./src/repo/check_changes.R
