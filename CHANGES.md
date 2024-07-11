@@ -7,6 +7,11 @@
 - Moved to new version of [idmc](https://github.com/OCHA-DAP/idmc) that filters
 out potentially duplicated entries in the IDU
 
+### System
+
+- Added automatic checks to ensure the Signals version is incremented and recorded
+in this file
+
 ## 0.1.6.1 (10 July 2024)
 
 ### System
