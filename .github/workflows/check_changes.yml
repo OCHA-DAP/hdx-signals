@@ -9,7 +9,7 @@ name: Check CHANGES.md
 permissions: read-all
 
 jobs:
-  lint:
+  check-changes:
       runs-on: ubuntu-latest
       steps:
           - name: Checkout repository
