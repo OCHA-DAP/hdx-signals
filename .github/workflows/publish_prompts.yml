@@ -30,7 +30,7 @@ jobs:
           - name: Update PROMPTS.md
             if: steps.changes.outputs.src == 'true'
             shell: bash
-            run: ./src/repo/publish_prompts.R
+            run: Rscript ./src/repo/publish_prompts.R
 
           - name: Commit and push PROMPTS.md
             if: steps.changes.outputs.src == 'true'
