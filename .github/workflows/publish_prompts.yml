@@ -32,6 +32,8 @@ jobs:
 
           - name: Commit and push PROMPTS.md
             run: |
+              git config user.email "gha@gmail.com"
+              git config user.name "gha"
               git add docs/PROMPTS.md
               git commit -m "Publish PROMPTS.md"
               git push
