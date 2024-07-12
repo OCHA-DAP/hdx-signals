@@ -1,0 +1,38 @@
+# this workflow publishes PROMPTS.md
+
+on:
+  pull_request:
+    branches: [main]
+
+name: Publish PROMPTS.md when prompts added or changed
+
+permissions: read-all
+
+jobs:
+  check-changes:
+      runs-on: ubuntu-latest
+      steps:
+          - name: Checkout repository
+            uses: actions/checkout@v4
+
+          - name: Set up environment
+            uses: ocha-dap/hdx-signals-actions@v2
+
+          - name: Check that txt files for prompts have been changed
+            uses: dorny/paths-filter@v3
+            id: changes
+            with:
+              filters: |
+                src:
+                  - 'src/indicators/*/prompts/*.txt'
+
+          - if: steps.changes.outputs.src == 'true'
+            shell: bash
+            run: ./src/repo/publish_prompts.R
+
+          - name: Commit and push PROMPTS.md
+            run: |
+              git add docs/PROMPTS.md
+              git commit -m "Publish PROMPTS.md"
+              git push
+

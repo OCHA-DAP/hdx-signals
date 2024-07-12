@@ -1,5 +1,4 @@
 #' Extracts prompts from text files into documentation
-
 box::use(stringr)
 box::use(purrr)
 
