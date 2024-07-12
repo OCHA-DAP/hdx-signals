@@ -15,9 +15,6 @@ jobs:
           - name: Checkout repository
             uses: actions/checkout@v4
 
-          - name: Set up environment
-            uses: ocha-dap/hdx-signals-actions@v2
-
           - name: Check that txt files for prompts have been changed
             uses: dorny/paths-filter@v3
             id: changes
@@ -26,11 +23,17 @@ jobs:
                 src:
                   - 'src/indicators/*/prompts/*.txt'
 
-          - if: steps.changes.outputs.src == 'true'
+          - name: Set up environment
+            if: steps.changes.outputs.src == 'true'
+            uses: ocha-dap/hdx-signals-actions@v2
+
+          - name: Update PROMPTS.md
+            if: steps.changes.outputs.src == 'true'
             shell: bash
             run: ./src/repo/publish_prompts.R
 
           - name: Commit and push PROMPTS.md
+            if: steps.changes.outputs.src == 'true'
             run: |
               git config user.email "gha@gmail.com"
               git config user.name "gha"
