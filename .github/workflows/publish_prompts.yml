@@ -17,7 +17,7 @@ jobs:
           - name: Checkout repository
             uses: actions/checkout@v4
             with:
-              ref: ${{ github.event.pull_request.head.ref }} # ensures we can commit
+              ref: ${{ github.event.pull_request.head_ref }} # ensures we can commit
 
           - name: Check that txt files for prompts have been changed
             uses: dorny/paths-filter@v3
