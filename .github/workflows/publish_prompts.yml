@@ -20,24 +20,23 @@ jobs:
               ref: ${{ github.event.pull_request.head.ref }} # ensures we can commit
 
           - name: Check that txt files for prompts have been changed
-            uses: dorny/paths-filter@v3
+            uses: tj-actions/changed-files@v44
             id: changes
             with:
-              filters: |
-                src:
-                  - 'src/indicators/*/prompts/*.txt'
+              since_last_remote_commit: true
+              files: src/indicators/*/prompts/*.txt
 
           - name: Set up environment
-            if: steps.changes.outputs.src == 'true'
+            if: steps.changes.outputs.any_changed == 'true'
             uses: ocha-dap/hdx-signals-actions@v2
 
           - name: Update PROMPTS.md
-            if: steps.changes.outputs.src == 'true'
+            if: steps.changes.outputs.any_changed == 'true'
             shell: bash
             run: Rscript ./src/repo/publish_prompts.R
 
           - name: Commit PROMPTS.md
-            if: steps.changes.outputs.src == 'true'
+            if: steps.changes.outputs.any_changed == 'true'
             run: |
               git config user.email "gha@email.com"
               git config user.name "GHA"
@@ -45,7 +44,7 @@ jobs:
               git commit -m "Publish PROMPTS.md"
 
           - name: Push changes
-            if: steps.changes.outputs.src == 'true'
+            if: steps.changes.outputs.any_changed == 'true'
             uses: ad-m/github-push-action@master
             with:
               github_token: ${{ secrets.GH_TOKEN }}
