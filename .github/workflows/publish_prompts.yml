@@ -34,12 +34,17 @@ jobs:
             shell: bash
             run: Rscript ./src/repo/publish_prompts.R
 
-          - name: Commit and push PROMPTS.md
+          - name: Commit PROMPTS.md
             if: steps.changes.outputs.src == 'true'
             run: |
               git config user.email "gha@email.com"
               git config user.name "gha"
               git add docs/PROMPTS.md
               git commit -m "Publish PROMPTS.md"
-              git push
 
+          - name: Push changes
+            if: steps.changes.outputs.src == 'true'
+            uses: ad-m/github-push-action@master
+            with:
+              github_token: ${{ secrets.GITHUB_TOKEN }}
+              branch: ${{ github.ref }}
