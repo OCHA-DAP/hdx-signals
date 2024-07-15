@@ -161,9 +161,11 @@
 > (information)' and so forth. We are most interested in conditions in the
 > latest month presented, which will come last. Here are two rules:
 > 
-> - Please summarize the situation now, using information from previous months to contextualize the recent past in the country. 
+> - Please summarize the situation now, using information from previous months to
+> contextualize the recent past in the country.
 > - Only use the information provided to you. If the information is limited, keep
-> the summarization brief. 
+> the summarization brief.
+> - Do not include formatting in the output. Keep the output limited to one paragraph.
 > 
 > Here is the information for summarization -->
 
