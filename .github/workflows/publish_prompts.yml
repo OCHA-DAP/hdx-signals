@@ -9,10 +9,9 @@ name: Publish PROMPTS.md when prompts added or changed
 permissions: read-all
 
 jobs:
-  job-name:
-    permissions:
-      contents: write
   publish-prompts:
+      permissions:
+        contents: write
       runs-on: ubuntu-latest
       steps:
           - name: Checkout repository
