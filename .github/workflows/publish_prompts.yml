@@ -37,8 +37,8 @@ jobs:
           - name: Commit PROMPTS.md
             if: steps.changes.outputs.src == 'true'
             run: |
-              git config user.email "gha@email.com"
-              git config user.name "gha"
+              git config user.email "caldwellst@gmail.com"
+              git config user.name "Seth"
               git add docs/PROMPTS.md
               git commit -m "Publish PROMPTS.md"
 
