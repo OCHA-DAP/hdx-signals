@@ -9,7 +9,10 @@ name: Publish PROMPTS.md when prompts added or changed
 permissions: read-all
 
 jobs:
-  check-changes:
+  job-name:
+    permissions:
+      contents: write
+  publish-prompts:
       runs-on: ubuntu-latest
       steps:
           - name: Checkout repository
@@ -37,8 +40,8 @@ jobs:
           - name: Commit PROMPTS.md
             if: steps.changes.outputs.src == 'true'
             run: |
-              git config user.email "caldwellst@gmail.com"
-              git config user.name "Seth"
+              git config user.email "gha@email.com"
+              git config user.name "GHA"
               git add docs/PROMPTS.md
               git commit -m "Publish PROMPTS.md"
 
