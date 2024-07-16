@@ -2,6 +2,10 @@
 
 ## 0.1.8.0 (16 July 2024)
 
+### Documentation
+
+- Small documentation fix in `cloud_storage.R`
+
 ### jrc_agricultural_hotspots
 
 - Changed AI summarization prompt to ensure no formatting included in output
