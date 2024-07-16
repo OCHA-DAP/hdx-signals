@@ -32,7 +32,7 @@ map_theme <- function(iso3, use_map_settings = TRUE, margin_location = c("title"
     )
   }
 
-  theme_signals$theme_signals(margin_location = margin_location) +
+  theme_signals$theme_signals(margin_location = margin_location, x_axis_ticks = FALSE) +
     gg$theme(
       rect = gg$element_blank(),
       axis.ticks = gg$element_blank(),

@@ -106,3 +106,36 @@ signals_template <- dplyr$bind_cols(
   campaign_content_template,
   dplyr$select(campaign_template, -iso3, -date)
 )
+
+#' Signals HDX template
+#'
+#' Required columns and types for the signals dataset saved out to HDX. Used
+#' to select and validate the columns in `triage_signals()` before saving out
+#' to HDX.
+#'
+#' @export
+signals_hdx_template <- signals_template |>
+  dplyr$select(
+    iso3,
+    location,
+    region,
+    hrp_location,
+    indicator_id,
+    date,
+    alert_level,
+    value,
+    plot = plot_url,
+    map = map_url,
+    plot2 = plot2_url,
+    other_images = other_images_urls,
+    summary_long,
+    summary_short,
+    summary_source,
+    hdx_url,
+    source_url,
+    other_urls,
+    further_information,
+    campaign_url = campaign_url_archive,
+    campaign_date,
+    signals_version
+  )

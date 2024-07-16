@@ -8,7 +8,7 @@ box::use(cs = ../../../../src/utils/cloud_storage)
 raw <- function() {
   df <- cs$read_az_file(
     name = "BasketCostChange.csv",
-    blob = "wfp"
+    container = "wfp"
   )
 
   req_cols <- c(

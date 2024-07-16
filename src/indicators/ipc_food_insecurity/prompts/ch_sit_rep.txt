@@ -5,6 +5,7 @@ terminology and general context, but wants to know exactly what is happeningbas
 
 - There are a lot of random numbers in the text because the text was scraped
 from a PDF with tables, so please just focus on explanation, not figures.
+- Avoid discussing recommended actions, only discuss the overall situation.
 - Only use the information provided to you in the document.
 - The document is written about multiple countries, but I only want
 information about {location}. If there is limited

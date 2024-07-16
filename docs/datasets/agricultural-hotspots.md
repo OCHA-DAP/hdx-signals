@@ -1,4 +1,4 @@
-# Agricultural Hotspots
+# Agricultural hotspots
 
 Signals are sent when the hotspot classification for a location increases.
 
@@ -14,7 +14,7 @@ Access ASAP data directly on [HDX](https://data.humdata.org/dataset/asap-hotspot
 
 ## Signals detection
 
-Signals are sent when new agricultural hotspots are identified. This occurs when a location is classified as a `Hotspot` but was `No hotspot` in the previous month, or is now `Major hotspot` and was either `Hotspot` or `Hotspot` in the previous month.
+Signals are sent when new agricultural hotspots are identified. This occurs when a location is classified as a `Hotspot` but was `No hotspot` in the previous month, or is now `Major hotspot` and was either `Hotspot` or `No hotspot` in the previous month.
 
 #### Examples
 

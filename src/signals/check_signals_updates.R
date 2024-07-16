@@ -5,6 +5,7 @@ box::use(logger)
 box::use(stringr)
 box::use(dplyr)
 
+box::use(../email/mailchimp/campaigns)
 box::use(../utils/get_env[get_env])
 box::use(../utils/hs_logger)
 box::use(../utils/formatters)
@@ -18,11 +19,11 @@ hs_logger$configure_logger()
 #' @param header_text Text for the message header
 #' @param status_text Text for the GitHub actions status report
 #' @param signals_text Text for the signals status report
-#' @param test Whether to run in test mode or not. Will post to different slack channels
+#' @param dry_run Whether to run in dry run mode or not. Will post to different slack channels
 #'
 #' @returns Nothing. Message is posted to slack and will log an error if not successful
-slack_post_message <- function(header_text, status_text, signals_text, test) {
-  slack_url <- ifelse(test, get_env("HS_SLACK_URL_TEST"), get_env("HS_SLACK_URL"))
+slack_post_message <- function(header_text, status_text, signals_text, dry_run) {
+  slack_url <- ifelse(dry_run, get_env("HS_SLACK_URL_TEST"), get_env("HS_SLACK_URL"))
   # See https://app.slack.com/block-kit-builder for prototyping layouts in JSON
   msg <- list(
     blocks = list(
@@ -95,7 +96,9 @@ slack_build_alert <- function(indicator_id, df) {
     indicator_id,
     "* - ",
     nrow(df),
-    " location(s) impacted - <",
+    " location(s) impacted - ",
+    campaigns$mc_campaign_info(df$campaign_id_email[1])$recipients$recipient_count,
+    " recipients <",
     df$campaign_url_archive[1],
     " | See draft campaign>\n"
   )
@@ -189,7 +192,7 @@ full_status <- ""
 n_signals <- 0
 # Needs to have at least 1 character for the Slack API
 signals <- " "
-test <- Sys.getenv("HS_TEST", unset = TRUE)
+dry_run <- Sys.getenv("HS_DRY_RUN", unset = TRUE)
 
 for (ind in indicators) {
   logger$log_info(paste0("Checking GitHub Actions status for ", ind, "..."))
@@ -198,7 +201,7 @@ for (ind in indicators) {
   logger$log_info("Successfully checked")
 
   logger$log_info(paste0("Checking for signals: ", ind, "..."))
-  fn_signals <- cs$signals_path(ind, test)
+  fn_signals <- cs$signals_path(ind, dry_run)
   df <- cs$read_az_file(fn_signals)
   if (nrow(df) > 0) {
     logger$log_info(paste0("Found signal for ", ind))
@@ -210,5 +213,5 @@ for (ind in indicators) {
 logger$log_info(paste0("Found ", n_signals, " signals"))
 
 header <- slack_build_header(n_signals)
-slack_post_message(header, full_status, signals, test)
+slack_post_message(header, full_status, signals, dry_run)
 logger$log_info("Successfully posted message to Slack")
