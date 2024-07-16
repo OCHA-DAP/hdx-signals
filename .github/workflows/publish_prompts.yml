@@ -24,9 +24,11 @@ jobs:
             id: changes
             with:
               since_last_remote_commit: true
-              files:
-                - src/indicators/*/prompts/*.txt
-                - src/repo/publish_prompts.R
+              files_yaml: |
+                prompts:
+                  - src/indicators/*/prompts/*.txt
+                src:
+                  - src/repo/publish_prompts.R
 
           - name: Set up environment
             if: steps.changes.outputs.any_changed == 'true'
