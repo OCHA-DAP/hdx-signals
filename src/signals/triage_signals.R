@@ -41,10 +41,10 @@ box::use(../utils/push_hdx)
 #' all campaigns at one point in time and give a single command to `APPROVE` or
 #' `DELETE` the entire run of signals.
 #'
-#' `triage_signals()` accepts the explicit `dry_run` argument rather than looking
-#' for `HS_DRY_RUN` because the function is only intended for interactive use. Users
+#' `triage_signals()` accepts the explicit `test` argument rather than looking
+#' for `HS_DRY_RUN` because the function is intended for interactive use. Users
 #' may want to look to triage signals in `output/{indicator}/test/signals.parquet`,
-#' by setting `dry_run` to `TRUE`. However, they will need their own `HS_DRY_RUN`
+#' by setting `test` to `TRUE`. However, they will need their own `HS_DRY_RUN`
 #' env variable set to `FALSE` in order to `DELETE` or `APPROVE` these test signals.
 #'
 #' @param indicator_id Indicator ID mapped in `input/indicator_mapping.parquet`
@@ -52,17 +52,17 @@ box::use(../utils/push_hdx)
 #'      time. Defaults to `10`, which is fine for most runs, but if `HS_FIRST_RUN`
 #'      creates many at a time, you may need to be increase or decrease based
 #'      on your preference. If `0`, no signals are previewed.
-#' @param dry_run Whether or not we are triaging dry run emails. Looks only for the
-#'      dry run emails file on Azure generated when `HS_DRY_RUN` is `TRUE`. You
-#'      can still send dry run emails and delete them in the same way as normal ones,
-#'      but the signals file is not sent to `output/signals.parquet`
+#' @param test Whether or not we are triaging signals in the
+#'      `output/{indicator}/test/signals.parquet` files. You can still send dry
+#'      run emails and delete them in the same way as normal ones, but the signals
+#'      file is not sent to `output/signals.parquet`
 #'
 #' @export
-triage_signals <- function(indicator_id, n_campaigns = 10, dry_run = FALSE) {
-  fn_signals <- cs$signals_path(indicator_id, dry_run)
+triage_signals <- function(indicator_id, n_campaigns = 10, test = FALSE) {
+  fn_signals <- cs$signals_path(indicator_id, test)
   df <- get_signals_df(fn_signals)
   preview_signals(df = df, n_campaigns = n_campaigns)
-  approve_signals(df = df, fn_signals = fn_signals, dry_run = dry_run)
+  approve_signals(df = df, fn_signals = fn_signals, test = test)
 }
 
 #' Check the signals data frame
@@ -136,15 +136,15 @@ preview_campaign_urls <- function(campaign_urls) {
 #'
 #' @param df Signals data frame
 #' @param fn_signals File name to the signals data
-#' @param dry_run Whether or not the signals were for a dry run.
-approve_signals <- function(df, fn_signals, dry_run) {
+#' @param test Whether or not the signals were in the test folder.
+approve_signals <- function(df, fn_signals, test) {
   user_name <- get_env$get_env("HS_ADMIN_NAME")
 
   user_command <- readline(
     paste0(
       "Tell us what you want to do with the following commands:\n\n",
       "APPROVE: Send campaigns",
-      if (dry_run) "\n" else " and add to `output/signals.parquet`\n",
+      if (test) "\n" else " and add to `output/signals.parquet`\n",
       "DELETE: Delete the campaign content and `output/{indicator}/signals.parquet`",
       "file so you can recreate later.\n",
       "ARCHIVE: Delete the email campaign, but move the alert to `output/signals.parquet`\n",
@@ -170,7 +170,7 @@ approve_signals <- function(df, fn_signals, dry_run) {
     send_signals(df)
 
     # if not testing, move everything to the core signals dataset
-    if (!dry_run) {
+    if (!test) {
       # add triage information to the data before joining to core
       df$triage_approver <- user_name
       df$triage_time <- Sys.time()

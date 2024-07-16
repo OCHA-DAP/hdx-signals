@@ -8,6 +8,8 @@
 how `generate_signals()` and its helpers create signals
 - Use `HS_FIRST_RUN` to ensure that all plots in the first run are filtered to
 the date of the alert
+- Change `triage_signals()` to accept the `test` argument rather than `dry_run`
+to avoid confusion with the env variable
 
 ### jrc_agricultural_hotspots
 
