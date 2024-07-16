@@ -27,11 +27,10 @@ jobs:
               files_yaml: |
                 prompts:
                   - src/indicators/*/prompts/*.txt
-                src:
                   - src/repo/publish_prompts.R
 
           - name: Set up environment
-            if: steps.changes.outputs.any_changed == 'true'
+            if: steps.changes.prompts.any_changed == 'true'
             uses: ocha-dap/hdx-signals-actions@v2
 
           - name: Update PROMPTS.md
