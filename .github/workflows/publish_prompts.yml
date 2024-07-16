@@ -26,20 +26,20 @@ jobs:
               since_last_remote_commit: true
               files_yaml: |
                 prompts:
-                  - src/indicators/*/prompts/*.txt
-                  - src/repo/publish_prompts.R
+                  - 'src/indicators/*/prompts/*.txt'
+                  - 'src/repo/publish_prompts.R'
 
           - name: Set up environment
-            if: steps.changes.prompts_any_changed == 'true'
+            if: steps.changes.outputs.prompts_any_changed == 'true'
             uses: ocha-dap/hdx-signals-actions@v2
 
           - name: Update PROMPTS.md
-            if: steps.changes.prompts_any_changed == 'true'
+            if: steps.changes.outputs.prompts_any_changed == 'true'
             shell: bash
             run: Rscript ./src/repo/publish_prompts.R
 
           - name: Commit PROMPTS.md
-            if: steps.changes.prompts_any_changed == 'true'
+            if: steps.changes.outputs.prompts_any_changed == 'true'
             run: |
               git config user.email "gha@email.com"
               git config user.name "GHA"
@@ -47,7 +47,7 @@ jobs:
               git commit -m "Publish PROMPTS.md"
 
           - name: Push changes
-            if: steps.changes.prompts_any_changed== 'true'
+            if: steps.changes.outputs.prompts_any_changed== 'true'
             uses: ad-m/github-push-action@master
             with:
               github_token: ${{ secrets.GH_TOKEN }}
