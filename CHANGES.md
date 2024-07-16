@@ -1,6 +1,10 @@
 # Changes
 
-## 0.1.8.0 (15 July 2024)
+## 0.1.8.0 (16 July 2024)
+
+### jrc_agricultural_hotspots
+
+- Changed AI summarization prompt to ensure no formatting included in output
 
 ### Documentation
 
