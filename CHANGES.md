@@ -100,7 +100,6 @@ have COD boundaries, replacing the simplified boundaries used previously
 for patch changes that do not impact the signals, such as changes to documentation
 or changes like the above (adding ISO3 codes to internal files for our convenience)
 - Pass `HS_HDX_BEARER` env var to `update_assets.yaml` action
->>>>>>> 8a10fc96956854bf472e8287a4aff305638b0ebf
 
 ## 0.1.1 (11 June 2024)
 
