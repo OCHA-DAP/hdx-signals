@@ -6,6 +6,10 @@
 
 - Changed AI summarization prompt to ensure no formatting included in output
 
+### wfp_market_monitor
+
+- Changed caption to plot slightly to use the wording "food baskets"
+
 ## 0.1.7.0 (11 July 2024)
 
 ### idmc_displacement
