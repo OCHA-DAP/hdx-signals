@@ -13,8 +13,7 @@ box::use(../../../../src/utils/location_codes)
 #'
 #' * Creates an `iso3` column.
 #' * Fills in all dates from the beginning of coverage
-#'     (updated in `src-static/update_acled_start.R`). If not `first_run`,
-#'     only fills in to the start date of when the data was downloaded.
+#'     (updated in `src-static/update_acled_start.R`).
 #' * Summarize all location-date dyads to get sum of fatalities and paste together
 #'     all notes information.
 #'
@@ -23,7 +22,7 @@ box::use(../../../../src/utils/location_codes)
 #' @returns Wrangled data frame
 #'
 #' @export
-wrangle <- function(df_raw, first_run = FALSE) {
+wrangle <- function(df_raw) {
   df_info <- cs$read_az_file("input/acled_info.parquet")
 
   df_raw |>

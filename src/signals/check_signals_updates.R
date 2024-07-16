@@ -10,19 +10,22 @@ box::use(../utils/get_env[get_env])
 box::use(../utils/hs_logger)
 box::use(../utils/formatters)
 box::use(cs = ../utils/cloud_storage)
+box::use(../utils/hs_dry_run)
 
 hs_logger$configure_logger()
 
 #' Builds and posts a message to Slack, using incoming webhooks
 #' See API docs: https://api.slack.com/messaging/webhooks
 #'
+#' Posts to different Slack channels if `HS_DRY_RUN` is `TRUE` or `FALSE`.
+#'
 #' @param header_text Text for the message header
 #' @param status_text Text for the GitHub actions status report
 #' @param signals_text Text for the signals status report
-#' @param dry_run Whether to run in dry run mode or not. Will post to different slack channels
 #'
 #' @returns Nothing. Message is posted to slack and will log an error if not successful
-slack_post_message <- function(header_text, status_text, signals_text, dry_run) {
+slack_post_message <- function(header_text, status_text, signals_text) {
+  dry_run <- hs_dry_run$hs_dry_run()
   slack_url <- ifelse(dry_run, get_env("HS_SLACK_URL_TEST"), get_env("HS_SLACK_URL"))
   # See https://app.slack.com/block-kit-builder for prototyping layouts in JSON
   msg <- list(
@@ -213,5 +216,5 @@ for (ind in indicators) {
 logger$log_info(paste0("Found ", n_signals, " signals"))
 
 header <- slack_build_header(n_signals)
-slack_post_message(header, full_status, signals, dry_run)
+slack_post_message(header, full_status, signals)
 logger$log_info("Successfully posted message to Slack")

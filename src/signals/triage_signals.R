@@ -36,20 +36,26 @@ box::use(../utils/push_hdx)
 #' do this given how critical that decision is.
 #'
 #' During monitoring, signals are sent out as a single campaign. However, for
-#' `first_run` builds of historic campaign archives, campaigns are developed
+#' `HS_FIRST_RUN` builds of historic campaign archives, campaigns are developed
 #' individually based on the date. However, you still have to manually triage
 #' all campaigns at one point in time and give a single command to `APPROVE` or
 #' `DELETE` the entire run of signals.
 #'
+#' `triage_signals()` accepts the explicit `dry_run` argument rather than looking
+#' for `HS_DRY_RUN` because the function is only intended for interactive use. Users
+#' may want to look to triage signals in `output/{indicator}/test/signals.parquet`,
+#' by setting `dry_run` to `TRUE`. However, they will need their own `HS_DRY_RUN`
+#' env variable set to `FALSE` in order to `DELETE` or `APPROVE` these test signals.
+#'
 #' @param indicator_id Indicator ID mapped in `input/indicator_mapping.parquet`
 #' @param n_campaigns When previewing the campaigns, how many to open at one
-#'      time. Defaults to `10`, which is fine for most runs, but if `first_run`
+#'      time. Defaults to `10`, which is fine for most runs, but if `HS_FIRST_RUN`
 #'      creates many at a time, you may need to be increase or decrease based
 #'      on your preference. If `0`, no signals are previewed.
 #' @param dry_run Whether or not we are triaging dry run emails. Looks only for the
-#'      dry run emails file on Azure. You can still send dry run emails and delete
-#'      them in the same way as normal ones, but the signals file is not sent
-#'      to `output/signals.parquet`
+#'      dry run emails file on Azure generated when `HS_DRY_RUN` is `TRUE`. You
+#'      can still send dry run emails and delete them in the same way as normal ones,
+#'      but the signals file is not sent to `output/signals.parquet`
 #'
 #' @export
 triage_signals <- function(indicator_id, n_campaigns = 10, dry_run = FALSE) {

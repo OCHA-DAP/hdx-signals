@@ -2,6 +2,8 @@ box::use(dplyr)
 box::use(rlang[`!!`])
 
 box::use(cs = ../utils/cloud_storage)
+box::use(../utils/hs_dry_run)
+box::use(../utils/hs_first_run)
 
 #' Filters alerts only to new alerts
 #'
@@ -28,29 +30,30 @@ box::use(cs = ../utils/cloud_storage)
 #' This is to ensure that no accidental re-creation of campaign data is done until
 #' campaigns are explicitly removed.
 #'
+#' If `HS_FIRST_RUN` is `TRUE`, then first run is generated. You can do a dry run
+#' of the first run if you set `HS_DRY_RUN` to `TRUE`. If `HS_DRY_RUN` is `TRUE`
+#' and `HS_FIRST_RUN` is `FALSE`, then it does a monitoring dry run. Otherwise,
+#' it follows the monitoring ongoing alerts logic.
+#'
 #' @param df_alerts Data frame of alerts to be filtered.
 #' @param indicator_id ID of the indicator, matching the first column
 #'      in `input/indicator_mapping.parquet`.
-#' @param first_run Whether or not this is the first run of the campaign.
-#' @param dry_run Whether or not the alerts are being generated for a dry run. If so,
-#'      we simply take the latest alerts for any locations passed in, ignoring if
-#'      there were other recent alerts.
 #'
 #' @returns Data frame of new alerts matching the criteria above
 #'
 #' @export
-filter_alerts <- function(df_alerts, indicator_id, first_run = FALSE, dry_run = FALSE) {
+filter_alerts <- function(df_alerts, indicator_id) {
   # no need to do anything for empty data frame
   if (nrow(df_alerts) == 0) {
     return(df_alerts)
   }
 
-  if (dry_run) {
-    filter_alerts_test(df_alerts)
-  } else if (!first_run) {
-    filter_alerts_ongoing(df_alerts, indicator_id)
-  } else {
+  if (hs_first_run$hs_first_run()) {
     filter_alerts_first_run(df_alerts)
+  } else if (hs_dry_run$hs_dry_run()) {
+    filter_alerts_test(df_alerts)
+  } else {
+    filter_alerts_ongoing(df_alerts, indicator_id)
   }
 }
 

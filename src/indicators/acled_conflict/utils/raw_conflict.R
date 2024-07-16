@@ -31,10 +31,12 @@ hs_logger$configure_logger()
 #'      signals.
 #'
 #' @export
-raw <- function(first_run = FALSE) {
+raw <- function() {
   # first we check that we haven't already downloaded ACLED data today, and if we
-  # have, just use that raw data. Also checks that `first_run` values match
+  # have, just use that raw data. Also checks that `HS_FIRST_RUN` values match
   date_check <- cs$read_az_file("output/acled_conflict/download_date.parquet")
+  first_run <- hs_first_run$hs_first_run()
+
   if (date_check$acled_download_date == Sys.Date() && first_run == date_check$first_run) {
     log_debug("ACLED data already downloaded today. Using existing raw.parquet file on Azure")
     cs$read_az_file("output/acled_conflict/raw.parquet")
