@@ -2,6 +2,13 @@
 
 ## 0.1.8.0 (16 July 2024)
 
+### System
+
+- Implement `HS_DRY_RUN` and `HS_FIRST_RUN` environment variables to determine
+how `generate_signals()` and its helpers create signals
+- Use `HS_FIRST_RUN` to ensure that all plots in the first run are filtered to
+the date of the alert
+
 ### jrc_agricultural_hotspots
 
 - Changed AI summarization prompt to ensure no formatting included in output
