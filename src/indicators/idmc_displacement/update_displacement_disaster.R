@@ -39,5 +39,5 @@ df_disaster <- generate_signals$generate_signals(
   info_fn = info_displacement$info,
   summary_fn = summary_displacement$summary,
   map_fn = map_displacement$map,
-  dry_run_filter = NULL
+  dry_run_filter = dry_run_filter
 )
