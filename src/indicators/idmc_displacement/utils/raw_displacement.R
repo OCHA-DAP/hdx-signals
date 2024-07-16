@@ -1,5 +1,6 @@
 box::use(idmc)
-box::use(dplyr)
+
+box::use(../../../utils/get_env[get_env])
 
 #' Download raw displacement data
 #'
@@ -8,5 +9,6 @@ box::use(dplyr)
 #'
 #' @export
 raw <- function() {
+  get_env("IDMC_API", output = FALSE)
   idmc$idmc_get_data()
 }

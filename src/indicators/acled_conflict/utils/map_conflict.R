@@ -4,9 +4,10 @@ box::use(rlang[`!!`])
 box::use(lubridate)
 box::use(sf)
 
-box::use(../../../utils/country_codes)
+box::use(../../../utils/location_codes)
 box::use(../../../utils/formatters)
 box::use(../../../images/maps/map_points)
+box::use(../../../images/plots/caption)
 box::use(../../../images/create_images)
 
 #' Map conflict events
@@ -34,13 +35,15 @@ map <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
     df_raw = df_raw,
     image_fn = conflict_map,
     image_use = "map",
-    use_map_settings = TRUE
+    width = 6,
+    height = 4,
+    use_map_settings = FALSE
   )
 }
 
 #' Map ACLED conflict data
 #'
-#' Plots conflict data for a specific country, defined by an ISO3 code.
+#' Plots conflict data for a specific location, defined by an ISO3 code.
 #'
 #' @param df_wrangled Wrangled data frame for plotting.
 #' @param df_raw Raw data frame for plotting.
@@ -49,15 +52,14 @@ map <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
 #'
 #' @returns Plot of cholera for that wrangled data
 conflict_map <- function(df_wrangled, df_raw, title, date) {
-  caption <- paste(
-    "Data from the Armed Conflict Location & Event Data Project",
-    paste("Created", formatters$format_date(Sys.Date())),
-    country_codes$iso3_to_names(unique(df_wrangled$iso3)),
-    sep = "\n"
+  caption <- caption$caption(
+    indicator_id = "acled_conflict",
+    iso3 = unique(df_wrangled$iso3),
+    map = TRUE
   )
 
   iso3 <- unique(df_wrangled$iso3)
-  ison <- country_codes$iso3_to_ison(iso3)
+  ison <- location_codes$iso3_to_ison(iso3)
 
 
   # need to filter raw data and create sf
@@ -84,7 +86,7 @@ conflict_map <- function(df_wrangled, df_raw, title, date) {
     df = sf_raw,
     val_col = "fatalities",
     size = "Fatalities",
-    subtitle = title,
+    title = title,
     caption = caption,
     use_map_settings = TRUE
   )

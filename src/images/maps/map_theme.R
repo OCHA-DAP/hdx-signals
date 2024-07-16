@@ -3,6 +3,7 @@ box::use(dplyr)
 box::use(rlang[`!!`])
 
 box::use(cs = ../../utils/cloud_storage)
+box::use(../plots/theme_signals)
 
 #' Produces theme changes specific to maps
 #'
@@ -18,7 +19,7 @@ box::use(cs = ../../utils/cloud_storage)
 #' @returns ggplot theme object
 #'
 #' @export
-map_theme <- function(iso3, use_map_settings = TRUE) {
+map_theme <- function(iso3, use_map_settings = TRUE, margin_location = c("title", "subtitle")) {
   if (use_map_settings) {
     df_ms <- dplyr$filter(df_map_settings, iso3 == !!iso3)
   } else {
@@ -31,20 +32,20 @@ map_theme <- function(iso3, use_map_settings = TRUE) {
     )
   }
 
-  gg$theme(
-    rect = gg$element_blank(),
-    axis.ticks = gg$element_blank(),
-    axis.text.x = gg$element_blank(),
-    axis.text.y = gg$element_blank(),
-    panel.grid.major = gg$element_blank(),
-    panel.grid.minor = gg$element_blank(),
-    axis.line.x = gg$element_blank(),
-    plot.caption = gg$element_text(hjust = 1),
-    legend.position = df_ms$legend_position,
-    legend.direction = df_ms$direction,
-    legend.justification = unlist(df_ms$justification_numeric),
-    legend.location = df_ms$location
-  )
+  theme_signals$theme_signals(margin_location = margin_location, x_axis_ticks = FALSE) +
+    gg$theme(
+      rect = gg$element_blank(),
+      axis.ticks = gg$element_blank(),
+      axis.text.x = gg$element_blank(),
+      axis.text.y = gg$element_blank(),
+      panel.grid.major = gg$element_blank(),
+      panel.grid.minor = gg$element_blank(),
+      axis.line.x = gg$element_blank(),
+      legend.position = df_ms$legend_position,
+      legend.direction = df_ms$direction,
+      legend.justification = df_ms$justification,
+      legend.location = df_ms$location
+    )
 }
 
 df_map_settings <- cs$read_az_file("input/iso3_map_settings.json")

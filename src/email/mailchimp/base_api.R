@@ -1,4 +1,5 @@
 box::use(httr2)
+box::use(../../utils/get_env[get_env])
 
 #' Base API call for Mailchimp
 #'
@@ -14,10 +15,11 @@ mc_api <- function(lists_api = TRUE) {
     "https://us14.api.mailchimp.com/3.0"
   ) |>
     httr2$req_retry(
-      max_tries = 5
+      max_seconds = 300,
+      is_transient = \(resp) httr2$resp_status(resp) == 500
     ) |>
     httr2$req_auth_bearer_token(
-      token = Sys.getenv("MAILCHIMP_API_KEY")
+      token = get_env("MAILCHIMP_API_KEY")
     )
 
   if (lists_api) {

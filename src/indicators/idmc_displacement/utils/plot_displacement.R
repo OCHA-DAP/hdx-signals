@@ -1,17 +1,15 @@
 box::use(dplyr)
-box::use(purrr)
-box::use(rlang[`!!`])
-box::use(scales)
+box::use(gghdx)
 box::use(lubridate)
 
-box::use(../../../utils/country_codes)
 box::use(../../../utils/formatters)
 box::use(../../../images/plots/plot_ts)
+box::use(../../../images/plots/caption)
 box::use(../../../images/create_images)
 
-#' Plot WHO cholera cases
+#' Plot IDMC displacement
 #'
-#' Creates time series of cholera cases for each alerts
+#' Creates time series of IDMC displacement for each alerts
 #'
 #' @param df_alerts Data frame of alerts
 #' @param df_wrangled Wrangled data frame
@@ -25,10 +23,8 @@ plot <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
   df_plot <- df_alerts |>
     dplyr$mutate(
       title = paste0(
-        scales$label_comma()(round(value)),
-        " people displaced due to ",
-        displacement_cause,
-        " since ",
+        gghdx$format_number_hdx(round(value)),
+        " internal displacements since ",
         formatters$format_date(date - lubridate$days(30))
       )
     )
@@ -44,7 +40,7 @@ plot <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
 
 #' Plot IDMC displacement data
 #'
-#' Plots displacement data for a specific country, defined by an ISO3 code.
+#' Plots displacement data for a specific location, defined by an ISO3 code.
 #'
 #' @param df_wrangled Wrangled data frame for plotting.
 #' @param df_raw Raw data frame for plotting, not used to plot displacement time
@@ -54,11 +50,9 @@ plot <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
 #'
 #' @returns Plot of cholera for that wrangled data
 displacement_ts <- function(df_wrangled, df_raw, title, date) {
-  caption <- paste(
-    "Data from the IDMC, http://www.internal-displacement.org",
-    paste("Accessed", formatters$format_date(Sys.Date())),
-    country_codes$iso3_to_names(unique(df_wrangled$iso3)),
-    sep = "\n"
+  caption <- caption$caption(
+    indicator_id = "idmc_displacement_conflict", # same details as disaster
+    iso3 = unique(df_wrangled$iso3)
   )
 
   # filter displacement data to the latest day of the week, since we are plotting the
@@ -69,9 +63,9 @@ displacement_ts <- function(df_wrangled, df_raw, title, date) {
   plot_ts$plot_ts(
     df = dplyr$filter(df_plot, !is.na(displacement_30d)),
     val_col = "displacement_30d",
-    y_axis = "Displacement (monthly)",
+    y_axis = "Displacements (monthly)",
     title = title,
-    subtitle = "",
+    subtitle = paste0(unique(df_wrangled$displacement_type), "-driven displacements"),
     caption = caption
   )
 }

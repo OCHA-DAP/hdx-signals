@@ -2,9 +2,9 @@ box::use(sf)
 
 #' Shift longitude if necessary, based on ISO3
 #'
-#' Since countries spanning the prime meridian require shifting longitude to plot
+#' Since locations spanning the prime meridian require shifting longitude to plot
 #' correctly, so that the values range 0 to 360, we need to do this for basemap
-#' and any other shapes for those countries. We do this by just checking if it's
+#' and any other shapes for those locations. We do this by just checking if it's
 #' needed for that ISO3 code.
 #'
 #' @param sf_obj Shapefile

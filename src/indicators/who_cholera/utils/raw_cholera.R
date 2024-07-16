@@ -1,5 +1,6 @@
 box::use(readr)
 box::use(utils)
+box::use(../../../utils/get_env[get_env])
 
 #' Download raw cholera data
 #'
@@ -11,7 +12,7 @@ raw <- function() {
   # download from the GitHub scraping of CERF
   f <- tempfile(fileext = ".csv")
   utils$download.file(
-    url = Sys.getenv("CERF_CHOLERA_DATA"),
+    url = get_env("CERF_CHOLERA_DATA"),
     destfile = f,
     quiet = TRUE
   )

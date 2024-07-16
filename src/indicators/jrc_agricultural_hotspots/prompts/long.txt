@@ -1,0 +1,13 @@
+Below, we will provide you information on crop-related drought conditions
+over a period of time up to 6 months. Data is presented with the earliest
+information first, formatted as 'Month 1: (information)\n Month 2:
+(information)' and so forth. We are most interested in conditions in the
+latest month presented, which will come last. Here are two rules:
+
+- Please summarize the situation now, using information from previous months to
+contextualize the recent past in the country.
+- Only use the information provided to you. If the information is limited, keep
+the summarization brief.
+- Do not include formatting in the output. Keep the output limited to one paragraph.
+
+Here is the information for summarization -->

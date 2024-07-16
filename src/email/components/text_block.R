@@ -18,51 +18,76 @@ box::use(./missing[missing_text])
 #' @returns Full text block HTML
 #'
 #' @export
-add_text <- function(text = "", header = "", header_level = 2, header_id = NULL) {
+add_text <- function(
+    text = "",
+    header = "",
+    header_level = 2,
+    header_id = NULL,
+    pre_header_text = "",
+    background_color = "#ffffff") {
   if (is.null(header_id)) {
     header_id <- paste0("a", uuid$UUIDgenerate()) # must start with letter
   }
-  if (missing_text(text) && missing_text(header)) {
+
+  text_missing <- missing_text(text)
+  header_missing <- missing_text(header)
+  pre_header_text_missing <- missing_text(pre_header_text)
+
+  if (text_missing && header_missing && pre_header_text_missing) {
     ""
   } else {
+    # create all pieces of text to inject into the body
+    preheader <- conditional_text(
+      text = pre_header_text,
+      text_missing = pre_header_text_missing
+    )
+
+    preheader_sep <- conditional_sep(
+      a_missing = pre_header_text_missing,
+      b_missing = header_missing
+    )
+
+    header <- conditional_header(
+      header = header,
+      header_level = header_level,
+      header_id = header_id,
+      header_missing = header_missing
+    )
+
+    header_sep <- conditional_sep(
+      a_missing = header_missing,
+      b_missing = text_missing
+    )
+
+    text_body <- conditional_text(
+      text = text,
+      text_missing = text_missing
+    )
+
     glue$glue(
       # nolint start
-      '<table border="0" cellpadding="0" cellspacing="0" width="100%" class="mcnTextBlock" style="min-width:100%;">
-    <tbody class="mcnTextBlockOuter">
-        <tr>
-            <td valign="top" class="mcnTextBlockInner" style="padding-top:9px;">
-              	<!--[if mso]>
-				<table align="left" border="0" cellspacing="0" cellpadding="0" width="100%" style="width:100%;">
-				<tr>
-				<![endif]-->
-
-				<!--[if mso]>
-				<td valign="top" width="600" style="width:600px;">
-				<![endif]-->
-                <table align="left" border="0" cellpadding="0" cellspacing="0" style="max-width:100%; min-width:100%;" width="100%" class="mcnTextContentContainer">
-                    <tbody><tr>
-
-                        <td valign="top" class="mcnTextContent" style="padding: 0px 18px 9px; font-size: 16px; line-height: 150%;">
-
-                            {conditional_header(header, header_level, header_id)}
-
-                            {conditional_text(text)}
-
-                        </td>
-                    </tr>
-                </tbody></table>
-				<!--[if mso]>
-				</td>
-				<![endif]-->
-
-				<!--[if mso]>
-				</tr>
-				</table>
-				<![endif]-->
-            </td>
-        </tr>
-    </tbody>
-</table>'
+      '
+<tr>
+    <td style="padding-top:0;padding-bottom:0;padding-right:0;padding-left:0" valign="top">
+        <table width="100%" style="border:0;background-color:{background_color};border-collapse:separate">
+            <tbody>
+                <tr>
+                    <td style="padding-left:24px;padding-right:24px;padding-top:12px;padding-bottom:12px"
+                        class="mceTextBlockContainer">
+                        <div class="mceText" style="width:100%">
+                            {preheader}
+                            {preheader_sep}
+                            {header}
+                            {header_sep}
+                            {text_body}
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </td>
+</tr>
+      '
       # nolint end
     )
   }
@@ -72,19 +97,34 @@ add_text <- function(text = "", header = "", header_level = 2, header_id = NULL)
 #'
 #' For the header block, uses <a> and <h> blocks separately so that anchor blocks
 #' work across a wider range of browsers.
-conditional_header <- function(header, header_level, header_id) {
-  if (missing_text(header)) {
+conditional_header <- function(header, header_level, header_id, header_missing) {
+  if (header_missing) {
     ""
   } else {
-    glue$glue('<a name="{header_id}"></a><h{header_level} id="{header_id}">{header}</h{header_level}></h>')
+    glue$glue(
+      '
+      <a name="{header_id}"></a><h{header_level} id="{header_id}" ',
+      'class="last-child">{header}</h{header_level}>'
+    )
+  }
+}
+
+#' Add empty paragraph with line break
+#'
+#' Adds empty paragraph with line break if both a and b are present (not missing).
+conditional_sep <- function(a_missing, b_missing) {
+  if (!a_missing && !b_missing) {
+    "<p><br/></p>"
+  } else {
+    ""
   }
 }
 
 #' Drop text block if doesn't exist
-conditional_text <- function(text) {
-  if (missing_text(text)) {
+conditional_text <- function(text, text_missing) {
+  if (text_missing) {
     ""
   } else {
-    glue$glue("<div>{text}</div>")
+    glue$glue("<p>{text}</p>")
   }
 }

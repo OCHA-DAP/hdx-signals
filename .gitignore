@@ -150,7 +150,7 @@ src/email/figure/*
 *food_security_ipc.md
 
 # Don't commit any HTML files since .md files displayed directly
-/*.html
+*.html
 !src/email/components/html_signals_template.html
 
 # auth
@@ -160,3 +160,7 @@ hdx_signals_auth.json
 # Other R files
 .Rhistory
 .Rbuildignore
+.DS_Store
+
+# Temporary file folders
+.temp_dir

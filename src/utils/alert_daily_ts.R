@@ -4,13 +4,15 @@ box::use(janitor)
 box::use(zoo)
 box::use(rlang[`!!`])
 
-#' Creates the alert data frame
+#' Create alerts data frame from time series data
 #'
 #' Creates alerts from a data frame of daily time series data. Requires that
 #' `iso3`, `date`, and `value` columns are passed in with the correct type.
 #' As well, it checks that the `date` column is consecutive days.
 #'
-#' @param df Data frame of alerts with `iso3`, `date`, and `value` columns.
+#' @param df Data frame of alerts with `iso3`, `date` columns, as well as a value
+#'     column.
+#' @param val_col Name of the value columns.
 #' @param min_val Minimum value for the necessary alert.
 #' @param rs_days Number of days for the rolling sum, defaults to `30`.
 #'
@@ -44,7 +46,7 @@ alert_daily_ts <- function(df, val_col, min_val, rs_days = 30) {
       iso3, date
     ) |>
     dplyr$filter( # ensure we take the highest alert level each time we would generate one
-      alert_level_numeric == max(alert_level_numeric)
+      alert_level_numeric == max(alert_level_numeric, -Inf)
     ) |>
     dplyr$ungroup()
 }
@@ -87,7 +89,7 @@ validate_ts_df <- function(df, val_col) {
     )
   }
 
-  # throw an error if any of the dates not consecutive within a country
+  # throw an error if any of the dates not consecutive within a location
   date_check <- df |>
     dplyr$group_by(
       iso3

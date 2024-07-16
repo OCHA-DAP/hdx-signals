@@ -1,14 +1,15 @@
 box::use(gg = ggplot2)
 box::use(ggrepel)
+box::use(sf)
 
 box::use(../../utils/get_iso3_sf)
 
-#' Geom for cities in a country
+#' Geom for cities in a location
 #'
 #' Uses the Natural Earth populated places data to add cities to a map. Some
-#' countries have no cities, but often due to size, so we don't add them
+#' locations have no cities, but often due to size, so we don't add them
 #' where they do not exist since they are mainly useful to contextualize locations
-#' in larger countries.
+#' in larger locations.
 #'
 #' Adds in the geom for the points and the geom for the labels.
 #'
@@ -33,9 +34,11 @@ geom_cities <- function(iso3) {
           geometry = geometry
         ),
         stat = "sf_coordinates",
+        fun.geometry = \(x) sf$st_centroid(x, of_largest_polygon = FALSE),
         min.segment.length = Inf,
         family = "Source Sans 3",
-        color = "black"
+        color = "black",
+        nudge_y = 0.5
       )
     )
   } else {

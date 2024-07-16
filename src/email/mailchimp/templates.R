@@ -3,8 +3,9 @@ box::use(uuid)
 box::use(utils)
 
 box::use(./base_api)
-box::use(../../utils/gmas_test_run)
 box::use(./folders)
+box::use(../../utils/hs_local)
+box::use(../../utils/temp_file)
 
 #' Adds a template to Mailchimp
 #'
@@ -19,13 +20,14 @@ box::use(./folders)
 #'
 #' @export
 mc_add_template <- function(html, folder, preview) {
-  if (gmas_test_run$gmas_test_run()) {
+  if (hs_local$hs_local()) {
+    fp <- temp_file$temp_file(fileext = ".html")
     writeLines(
-      html,
-      tf <- tempfile(fileext = ".html")
+      text = html,
+      con = fp
     )
 
-    if (preview) utils$browseURL(paste0("file://", tf))
+    if (preview) utils$browseURL(paste0("file://", fp))
     "test-id"
   } else {
     response <- base_api$mc_api(lists_api = FALSE) |>

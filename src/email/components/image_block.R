@@ -21,24 +21,21 @@ add_image <- function(src, alt = "", caption = "") {
   } else {
     glue$glue(
       # nolint start
-      '<table border="0" cellpadding="0" cellspacing="0" width="100%" class="mcnImageBlock" style="min-width:100%;">
-    <tbody class="mcnImageBlockOuter">
-            <tr>
-                <td valign="top" style="padding:0px" class="mcnImageBlockInner">
-                    <table align="left" width="100%" border="0" cellpadding="0" cellspacing="0" class="mcnImageContentContainer" style="min-width:100%;">
-                        <tbody><tr>
-                            <td class="mcnImageContent" valign="top" style="padding-right: 0px; padding-left: 0px; padding-top: 0; padding-bottom: 0; text-align:center;">
-                                <figure>
-                                      <img align="center" alt="{alt}" src="{src}" width="600" style="max-width:100%; padding-bottom: 0; display: inline !important; vertical-align: bottom;" class="mcnImage">
-                                      <figcaption>{caption}</figcaption>
-                                </figure>
-                            </td>
-                        </tr>
-                    </tbody></table>
-                </td>
-            </tr>
-    </tbody>
-</table>'
+      '
+<tr>
+    <td style="padding-top:10px;padding-bottom:10px;padding-right:0;padding-left:0" class="mceBlockContainer" align="full" valign="top">
+        <span class="mceImageBorder" style="border:0;vertical-align:top;margin:0">
+            <img
+                width="660" height="auto"
+                style="width:660px;height:auto;max-width:1800px !important;display:block"
+                alt="{alt}"
+                src="{src}"
+                class="mceImage" />
+                <figcaption>{caption}</figcaption>
+        </span>
+    </td>
+</tr>
+      '
       # nolint end
     )
   }

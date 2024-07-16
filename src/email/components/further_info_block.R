@@ -15,7 +15,7 @@ add_further_info <- function(text) {
     text_block$add_text(
       header = "Further information",
       text = text,
-      header_level = 4
+      header_level = 3
     )
   }
 }

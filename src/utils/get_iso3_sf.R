@@ -5,18 +5,18 @@ box::use(sf)
 box::use(cs = ./cloud_storage)
 box::use(./iso3_shift_longitude)
 
-#' Get the ADM0 shapefile for a country
+#' Get the ADM0 shapefile for a location
 #'
-#' Takes in an `iso3` code, and reads the country data from Azure.
+#' Takes in an `iso3` code, and reads the location data from Azure.
 #'
 #' These files have already been processed. Boundaries and centroids are processed
 #' in `src-static/update_iso3_sf`. Cities are processed in `src-static/update_cities_sf.R`.
 #' If you need to update the data for a specific
-#' country, ensure the update is done in those scripts to update everything on Azure.
+#' location, ensure the update is done in those scripts to update everything on Azure.
 #'
 #' `NULL` is returned if the file is missing. The files for `adm0` and `centroids`
 #' are complete for `all_iso3_codes()`. However, some will be missing for `cities`
-#' because these are not necessary for smaller country maps.
+#' because these are not necessary for smaller location maps.
 #'
 #' @param iso3 ISO3 code
 #' @param file File to return, either adm0, centroids, or cities.
