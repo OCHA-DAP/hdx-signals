@@ -5,6 +5,8 @@
 ### System
 
 - Added custom location name handling for `C. African Rep.`
+- Implemented `input/asap_iso3.parquet` mapping of ASAP codes to ISO3 codes
+- Added `asap_to_iso3()` function `location_codes.R`
 
 ## 0.1.8.0 (16 July 2024)
 
