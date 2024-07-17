@@ -21,7 +21,7 @@ website. Updated in `update_centroids_sf.R`.
 and the web URL to the location page. Updated in `update_acled_info.R`.
 - `asap_iso3.parquet`: ASAP0 to ISO3 mapping file. Used in `location_codes.R`.
 - `gaul1_asap_FAO_Mapping_v8.csv`: CSV file provided directly by JRC to map
-ASAP0 IDs to GAUL codes, which can then map to ISO3. Used to created
+ASAP0 IDs to GAUL codes, which can then map to ISO3. Used to create
 `asap_iso3.parquet`.
 - `hrp_locations.parquet`: Vector of ISO3 codes for HRP locations. Script
 will need adjustment when new HRP locations are created. Updated in
