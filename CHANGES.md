@@ -7,8 +7,6 @@
 - Published the AI summarization prompts in the GitBook, and automated publishing
 whenever prompts are edited or added in `src/indicators`
 
-## 0.1.8.0 (16 July 2024)
-
 ### System
 
 - Implement `HS_DRY_RUN` and `HS_FIRST_RUN` environment variables to determine
@@ -17,6 +15,8 @@ how `generate_signals()` and its helpers create signals
 the date of the alert
 - Change `triage_signals()` to accept the `test` argument rather than `dry_run`
 to avoid confusion with the env variable
+
+## 0.1.8.0 (16 July 2024)
 
 ### jrc_agricultural_hotspots
 
