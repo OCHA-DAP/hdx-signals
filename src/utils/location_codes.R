@@ -14,7 +14,8 @@ names_to_iso3 <- function(location_names) {
     Micronesia = "FSM",
     `US Outlying Minor Islands` = "UMI",
     Kosovo = "XKX",
-    "Central Africa" = "CAF"
+    "Central Africa" = "CAF",
+    "C. African Rep." = "CAF"
   )
 
   # separate out names that need custom handling

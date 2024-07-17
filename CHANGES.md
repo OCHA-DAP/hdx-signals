@@ -1,5 +1,11 @@
 # Changes
 
+## 0.1.8.1 (17 July 2024)
+
+### System
+
+- Added custom location name handling for `C. African Rep.`
+
 ## 0.1.8.0 (16 July 2024)
 
 ### jrc_agricultural_hotspots
