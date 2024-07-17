@@ -17,7 +17,8 @@ occurs, but the outputs thus remain local to the running machine. Useful for tes
 and interactive development.
 - `HS_DRY_RUN`: if `TRUE`, `generate_signals()` does a dry run, which ensures
 existing signals or monitoring is not interrupted. Use this for testing and interactive
-development. With `HS_LOCAL` and `HS_DRY_RUN` set to `TRUE`, you can test changes
+development because `HS_DRY_RUN` ensures that signals are available for testing.
+With `HS_LOCAL` and `HS_DRY_RUN` set to `TRUE`, you can test changes
 to visuals, other email content, or just ensure that campaigns can still be generated
 with source code changes. With `HS_LOCAL` set to `FALSE`, you can generate test
 signals and load them to Azure and Mailchimp.
