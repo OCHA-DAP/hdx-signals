@@ -8,6 +8,10 @@
 whenever prompts are edited or added in `src/indicators`
 - Small documentation fix in `cloud_storage.R`
 
+### System
+
+- Add functionality to automatically read Excel files from cloud storage in `read_az_file()`
+
 ## 0.1.8.0 (16 July 2024)
 
 ### jrc_agricultural_hotspots
