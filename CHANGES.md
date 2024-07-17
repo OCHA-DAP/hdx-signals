@@ -11,6 +11,13 @@ whenever prompts are edited or added in `src/indicators`
 ### System
 
 - Add functionality to automatically read Excel files from cloud storage in `read_az_file()`
+- Added custom location name handling for `C. African Rep.`
+- Implemented `input/asap_iso3.parquet` mapping of ASAP codes to ISO3 codes
+- Added `asap_to_iso3()` function `location_codes.R`
+
+### jrc_agricultural_hotspots
+
+- Use `asap_to_iso3()` mapping instead of name mapping in `raw_agricultural_hotspots.R`
 
 ## 0.1.8.0 (16 July 2024)
 
