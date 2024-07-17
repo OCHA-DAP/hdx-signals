@@ -21,7 +21,7 @@ hs_logger$configure_logger()
 #'
 #' Reads a file from the `hdx-signals` container.
 #' The file is read based on its prefix in `name`. Currently, the only support is for
-#' Apache Parquet, CSV, GeoJSON and GeoJSON files, but other support can be added if necessary.
+#' Apache Parquet, CSV, GeoJSON and JSON files, but other support can be added if necessary.
 #'
 #' Function parsing is done based on file type:
 #'
@@ -76,7 +76,7 @@ read_az_file <- function(name, container = c("prod", "dev", "wfp")) {
 #' * Apache Parquet: [arrow::write_parquet()]
 #' * CSV: [readr::write_csv()]
 #' * GeoJSON: [sf::st_write()]
-#' * JSON: [jsonlite::write_json]
+#' * JSON: [jsonlite::write_json()]
 #'
 #' If `hs_local()`, the file is not uploaded to the container.
 #'
