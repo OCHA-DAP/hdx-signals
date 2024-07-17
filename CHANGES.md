@@ -1,5 +1,12 @@
 # Changes
 
+## 0.1.9.0 (17 July 2024)
+
+### Documentation
+
+- Published the AI summarization prompts in the GitBook, and automated publishing
+whenever prompts are edited or added in `src/indicators`
+
 ## 0.1.8.0 (16 July 2024)
 
 ### System
