@@ -1,15 +1,17 @@
 # Changes
 
-## 0.1.8.0 (16 July 2024)
-
-### jrc_agricultural_hotspots
-
-- Changed AI summarization prompt to ensure no formatting included in output
+## 0.1.9.0 (17 July 2024)
 
 ### Documentation
 
 - Published the AI summarization prompts in the GitBook, and automated publishing
 whenever prompts are edited or added in `src/indicators`
+
+## 0.1.8.0 (16 July 2024)
+
+### jrc_agricultural_hotspots
+
+- Changed AI summarization prompt to ensure no formatting included in output
 
 ## 0.1.7.0 (11 July 2024)
 
