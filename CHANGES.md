@@ -6,6 +6,7 @@
 
 - Published the AI summarization prompts in the GitBook, and automated publishing
 whenever prompts are edited or added in `src/indicators`
+- Small documentation fix in `cloud_storage.R`
 
 ## 0.1.8.0 (16 July 2024)
 
