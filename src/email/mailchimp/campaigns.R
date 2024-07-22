@@ -49,8 +49,8 @@ mc_add_campaign <- function(subject_line, preview_text, title, recipients, templ
           ),
           tracking = list(
             opens = TRUE,
-            html_clicks = FALSE,
-            text_clicks = FALSE
+            html_clicks = TRUE,
+            text_clicks = TRUE
           )
         )
       ) |>
