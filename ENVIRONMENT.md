@@ -5,6 +5,29 @@ the maintainers if you do not have them and feel you should be given access. The
 way to define them for use in R is in an `.Renviron` file, either global or local.
 You can directly do this in R with `usethis::edit_r_environ()`.
 
+## Generating signals
+
+Environment variables are used to determine how `generate_signals()` works. These
+are all logical variables that are read internally to determine how the underlying
+functions behave and the final output returned. The values should be `TRUE` or `FALSE`.
+
+- `HS_LOCAL`: if `TRUE`, prevents functions from writing to the Azure containers,
+sending emails with Mailchimp, or calling the OpenAI endpoint. All other functionality
+occurs, but the outputs thus remain local to the running machine. Useful for testing
+and interactive development.
+- `HS_DRY_RUN`: if `TRUE`, `generate_signals()` does a dry run, which ensures
+existing signals or monitoring is not interrupted. Use this for testing and interactive
+development because `HS_DRY_RUN` ensures that signals are available for testing.
+With `HS_LOCAL` and `HS_DRY_RUN` set to `TRUE`, you can test changes
+to visuals, other email content, or just ensure that campaigns can still be generated
+with source code changes. With `HS_LOCAL` set to `FALSE`, you can generate test
+signals and load them to Azure and Mailchimp.
+- `HS_FIRST_RUN`: if `TRUE`, generates the first run for an indicator that is the
+historical signals. `generate_signals()` will throw an error if you try to do a
+first run when data already exists, or if you try to monitor data without having
+done the first run. You can use in conjunction with `HS_DRY_RUN` to do test
+first runs.
+
 ## Reading and writing data
 
 Data is stored in Azure storage containers, and final output datasets are also

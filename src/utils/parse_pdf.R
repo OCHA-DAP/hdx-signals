@@ -15,7 +15,9 @@ box::use(pdftools)
 parse_pdf <- function(url) {
   tryCatch(
     {
-      pdftools$pdf_text(url) |>
+      suppressMessages(
+        pdftools$pdf_text(url)
+      ) |>
         paste(
           sep = "\n",
           collapse = "\n"
