@@ -1,5 +1,18 @@
 # Changes
 
+## 0.1.10.0 (22 July 2024)
+
+### idmc_displacement
+
+- Implemented new method to monitor with the update to `{idmc}` and adjusted signals
+thresholds for displacement
+- All signals re-generated with the new methods
+
+### System
+
+- Setup `HS_FIRST_RUN` and `HS_LOCAL` to be passed to `generate_signals()` as
+environment variables
+
 ## 0.1.9.0 (17 July 2024)
 
 ### Documentation
