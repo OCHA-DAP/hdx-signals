@@ -1,0 +1,30 @@
+name: Update ASAP code mapping
+
+on:
+    workflow_dispatch:
+      inputs:
+        HS_LOCAL:
+          required: true
+          type: choice
+          default: "FALSE"
+          options:
+            - "TRUE"
+            - "FALSE"
+
+jobs:
+    run:
+        runs-on: ubuntu-latest
+        env:
+          HS_LOCAL: ${{ inputs.HS_LOCAL || 'FALSE' }}
+          DSCI_AZ_SAS_DEV: ${{ secrets.DSCI_AZ_SAS_DEV }}
+          DSCI_AZ_SAS_PROD: ${{ secrets.DSCI_AZ_SAS_PROD }}
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v3
+
+            - name: Set up environment
+              uses: ocha-dap/hdx-signals-actions@v2
+
+            - name: Update ASAP ISO3 mapping
+              shell: bash
+              run: Rscript ./src-static/update_asap_codes.R

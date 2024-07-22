@@ -6,6 +6,18 @@
 
 - Published the AI summarization prompts in the GitBook, and automated publishing
 whenever prompts are edited or added in `src/indicators`
+- Small documentation fix in `cloud_storage.R`
+
+### System
+
+- Add functionality to automatically read Excel files from cloud storage in `read_az_file()`
+- Added custom location name handling for `C. African Rep.`
+- Implemented `input/asap_iso3.parquet` mapping of ASAP codes to ISO3 codes
+- Added `asap_to_iso3()` function `location_codes.R`
+
+### jrc_agricultural_hotspots
+
+- Use `asap_to_iso3()` mapping instead of name mapping in `raw_agricultural_hotspots.R`
 
 ### System
 
@@ -21,6 +33,10 @@ to avoid confusion with the env variable
 ### jrc_agricultural_hotspots
 
 - Changed AI summarization prompt to ensure no formatting included in output
+
+### wfp_market_monitor
+
+- Changed caption to plot slightly to use the wording "food baskets"
 
 ## 0.1.7.0 (11 July 2024)
 
