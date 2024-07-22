@@ -3,7 +3,7 @@ name: Monitor IDMC displacement conflict
 on:
     workflow_dispatch:
       inputs:
-        FIRST_RUN:
+        HS_FIRST_RUN:
           required: true
           type: choice
           default: "FALSE"

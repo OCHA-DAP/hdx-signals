@@ -3,7 +3,7 @@ name: Monitor JRC agricultural hotspots
 on:
     workflow_dispatch:
       inputs:
-        FIRST_RUN:
+        HS_FIRST_RUN:
           required: true
           type: choice
           default: "FALSE"

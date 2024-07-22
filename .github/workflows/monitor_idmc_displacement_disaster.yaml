@@ -3,7 +3,7 @@ name: Monitor IDMC displacement disaster
 on:
     workflow_dispatch:
       inputs:
-        FIRST_RUN:
+        HS_FIRST_RUN:
           required: true
           type: choice
           default: "FALSE"
@@ -51,7 +51,7 @@ jobs:
           FIRST_RUN: ${{ inputs.FIRST_RUN || 'FALSE' }}
           HS_DRY_RUN: ${{ inputs.HS_DRY_RUN || 'FALSE' }}
           LOG_LEVEL: ${{ inputs.LOG_LEVEL || 'INFO' }}
-        steps:   
+        steps:
             - name: Checkout repository
               uses: actions/checkout@v3
 
