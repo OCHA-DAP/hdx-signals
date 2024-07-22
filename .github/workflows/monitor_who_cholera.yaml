@@ -48,7 +48,7 @@ jobs:
           MAILCHIMP_API_KEY: ${{ secrets.MAILCHIMP_API_KEY }}
           CERF_CHOLERA_DATA: ${{ secrets.CERF_CHOLERA_DATA }}
           HS_LOCAL: ${{ inputs.HS_LOCAL || 'FALSE' }}
-          FIRST_RUN: ${{ inputs.FIRST_RUN || 'FALSE' }}
+          HS_FIRST_RUN: ${{ inputs.HS_FIRST_RUN || 'FALSE' }}
           LOG_LEVEL: ${{ inputs.LOG_LEVEL || 'INFO'}}
         steps:
             - name: Checkout repository
