@@ -9,7 +9,7 @@ box::use(../../signals/generate_signals)
 box::use(../../utils/hs_logger)
 box::use(../../utils/update_coverage)
 
-dry_run_filter <- if (dry_run) c("AFG", "SSD") else NULL
+dry_run_filter <- if (Sys.getenv("HS_DRY_RUN")) c("AFG", "SSD") else NULL
 indicator_id <- "jrc_agricultural_hotspots"
 
 hs_logger$configure_logger()
