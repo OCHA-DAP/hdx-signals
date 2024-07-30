@@ -13,9 +13,7 @@ box::use(../../signals/generate_signals)
 box::use(../../utils/hs_logger)
 box::use(../../utils/update_coverage)
 
-first_run <- as.logical(Sys.getenv("FIRST_RUN", unset = FALSE))
-dry_run <- as.logical(Sys.getenv("HS_DRY_RUN", unset = TRUE))
-dry_run_filter <- if (dry_run) c("AFG", "SSD") else NULL
+dry_run_filter <- c("AFG", "SSD")
 indicator_id <- "idmc_displacement_disaster"
 
 hs_logger$configure_logger()
@@ -41,7 +39,5 @@ df_disaster <- generate_signals$generate_signals(
   info_fn = info_displacement$info,
   summary_fn = summary_displacement$summary,
   map_fn = map_displacement$map,
-  dry_run = dry_run,
-  dry_run_filter = dry_run_filter,
-  first_run = first_run
+  dry_run_filter = NULL
 )

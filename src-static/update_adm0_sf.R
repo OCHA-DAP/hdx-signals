@@ -123,7 +123,7 @@ filter_adm0_sf <- function(sf_adm0, iso3) {
   } else if (iso3 == "PRT") {
     sf_adm0 <- st_crop_adj_bbox(sf_adm0, xmin = 20)
   } else if (iso3 == "USA") {
-    sf_adm0 <- st_crop_adj_bbox(sf_adm0, xmin = 30, ymax = -19)
+    sf_adm0 <- st_crop_adj_bbox(sf_adm0, xmax = -100, ymin = 3.4) # drop hawaii and guam
   } else if (iso3 == "VNM") {
     sf_adm0 <- st_crop_adj_bbox(sf_adm0, xmax = -8, ymin = 1)
   }

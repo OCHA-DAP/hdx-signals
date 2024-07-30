@@ -1,11 +1,24 @@
 # Changes
 
-## 0.1.9.1 (22 July 2024)
+## 0.1.10.1 (30 July 2024)
 
 ### System
 
 - Turned click tracking back on for new campaigns now that Mailchimp quarantine
 issue is likely resolved
+
+## 0.1.10.0 (22 July 2024)
+
+### idmc_displacement
+
+- Implemented new method to monitor with the update to `{idmc}` and adjusted signals
+thresholds for displacement
+- All signals re-generated with the new methods
+
+### System
+
+- Setup `HS_FIRST_RUN` and `HS_LOCAL` to be passed to `generate_signals()` as
+environment variables
 
 ## 0.1.9.0 (17 July 2024)
 
@@ -25,6 +38,15 @@ whenever prompts are edited or added in `src/indicators`
 ### jrc_agricultural_hotspots
 
 - Use `asap_to_iso3()` mapping instead of name mapping in `raw_agricultural_hotspots.R`
+
+### System
+
+- Implement `HS_DRY_RUN` and `HS_FIRST_RUN` environment variables to determine
+how `generate_signals()` and its helpers create signals
+- Use `HS_FIRST_RUN` to ensure that all plots in the first run are filtered to
+the date of the alert
+- Change `triage_signals()` to accept the `test` argument rather than `dry_run`
+to avoid confusion with the env variable
 
 ## 0.1.8.0 (16 July 2024)
 

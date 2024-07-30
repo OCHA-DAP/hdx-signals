@@ -5,6 +5,7 @@ box::use(rlang[`!!`])
 box::use(rlang)
 
 box::use(./save_image)
+box::use(../utils/hs_first_run)
 
 #' Overall workhorse to generate images
 #'
@@ -132,11 +133,12 @@ create_image_poss <- purrr$possibly(create_image, data.frame(id = "ERROR", url =
 #'
 #' Filters the data frame image generation. Takes in the `iso3` code
 #' and `date` of a signal, and filters the wrangled data frame to that location.
-#' If the `date` is older than 90 days, then the wrangled data frame is filtered
-#' to only have data up to the `date`.
+#' If doing the first run, then the wrangled data frame is filtered
+#' to only have data up to the `date` to ensure the visualizations match the
+#' historical signals.
 filter_plot_df <- function(iso3, date, df) {
   df_iso3 <- dplyr$filter(df, iso3 == !!iso3)
-  if (Sys.Date() - date > 90) {
+  if (hs_first_run$hs_first_run()) {
     df_iso3 <- dplyr$filter(df_iso3, date <= !!date)
   }
   df_iso3
