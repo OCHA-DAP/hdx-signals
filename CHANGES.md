@@ -6,6 +6,8 @@
 
 - Turned click tracking back on for new campaigns now that Mailchimp quarantine
 issue is likely resolved
+- Suppressed geometry warnings in `map_food_insecurity.R` when the data is
+for LAC
 
 ## 0.1.10.0 (22 July 2024)
 
