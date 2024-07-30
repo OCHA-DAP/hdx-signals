@@ -1,5 +1,12 @@
 # Changes
 
+## 0.1.10.1 (30 July 2024)
+
+### System
+
+- Turned click tracking back on for new campaigns now that Mailchimp quarantine
+issue is likely resolved
+
 ## 0.1.10.0 (22 July 2024)
 
 ### idmc_displacement
