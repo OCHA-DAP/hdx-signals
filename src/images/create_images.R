@@ -133,15 +133,15 @@ create_image_poss <- purrr$possibly(create_image, data.frame(id = "ERROR", url =
 #'
 #' Filters the data frame image generation. Takes in the `iso3` code
 #' and `date` of a signal, and filters the wrangled data frame to that location.
-#' If doing the first run, then the wrangled data frame is filtered
-#' to only have data up to the `date` to ensure the visualizations match the
-#' historical signals.
+#' The wrangled data frame is then filtered
+#' to only have data up to the `date` to ensure the visualizations clearly show
+#' the data that caused the signal to be generated.
 filter_plot_df <- function(iso3, date, df) {
-  df_iso3 <- dplyr$filter(df, iso3 == !!iso3)
-  if (hs_first_run$hs_first_run()) {
-    df_iso3 <- dplyr$filter(df_iso3, date <= !!date)
-  }
-  df_iso3
+  dplyr$filter(
+    df,
+    iso3 == !!iso3,
+    date <= !!date
+  )
 }
 
 
