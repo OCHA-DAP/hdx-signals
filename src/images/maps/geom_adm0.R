@@ -153,14 +153,18 @@ reduce_adm0 <- function(iso3, sf_adm0, additional_geoms) {
       alaska <- st_crop_adj_bbox$st_crop_adj_bbox(sf_obj = sf_adm0, ymin = 25)
       in_alaska <- purrr$map_lgl(
         .x = additional_geoms,
-        .f = \(x) suppressMessages(
-          sf$st_intersects(
-            x = x,
-            y = alaska,
-            sparse = FALSE
-          )
-        )|> any()
-      ) |> any() # TRUE if any geometry falls within Alaska
+        .f = \(x) {
+          suppressMessages(
+            sf$st_intersects(
+              x = x,
+              y = alaska,
+              sparse = FALSE
+            )
+          ) |>
+            any()
+        }
+      ) |>
+        any() # TRUE if any geometry falls within Alaska
 
       if (!in_alaska) {
         # drop alaska if not necessary
