@@ -53,12 +53,11 @@ conflict_ts <- function(df_wrangled, df_raw, title, date) {
   )
 
   # filter conflict data to the latest day of the week, since we are plotting the
-  # weekly rolling sum
-  day_of_month <- if (!all(is.na(df_wrangled$date))) lubridate$mday(max(df_wrangled$date)) else 0
+  # monthly rolling sum
   df_plot <- dplyr$filter(
     df_wrangled,
-    lubridate$mday(date) == day_of_month,
-    !is.na(fatalities_30d)
+    !is.na(fatalities_30d),
+    (as.numeric(date - !!date) %% 30) == 0 # every 30 days from date of signal
   )
 
   plot_ts$plot_ts(
