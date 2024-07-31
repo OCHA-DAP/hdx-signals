@@ -1,5 +1,13 @@
 # Changes
 
+## 0.1.11.0 (31 July 2024)
+
+### Maps
+
+- Added functionality to reduce the basemap for countries like the USA where certain
+geographies (e.g. Alaska) should be dropped if no data is falling within them
+- Reduced the cities plotted on the USA basemap as these cluttered the visualizations
+
 ## 0.1.10.1 (30 July 2024)
 
 ### System
