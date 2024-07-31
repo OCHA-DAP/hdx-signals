@@ -1,5 +1,15 @@
 # Changes
 
+## 0.1.11.0 (31 July 2024)
+
+### Time series plots
+
+- For `idmc_displacement_{driver}` and `acled_conflict`, time series plots are now
+filtered to only show data up until the date that a signal was generated
+- Plot data filtering for the same indicators is now done numerically to filter data
+every 30 days from the date of the signal, rather than based on day of the month,
+to ensure no overlap in rolling sums
+
 ## 0.1.10.1 (30 July 2024)
 
 ### System
