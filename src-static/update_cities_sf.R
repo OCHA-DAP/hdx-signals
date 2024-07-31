@@ -39,7 +39,7 @@ update_cities_sf <- function(iso3) {
       pop_sf,
       adm0_a3 == iso3,
       !(name %in% c("Laayoune", "Monaco", "Singapore", "Vatican City", "Manama",
-                    "Hong Kong", "Jerusalem"))
+                    "Hong Kong", "Jerusalem", "Atlanta", "Los Angeles", "Chicago"))
     )
   }
 
