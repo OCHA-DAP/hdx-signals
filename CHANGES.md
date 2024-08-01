@@ -1,6 +1,6 @@
 # Changes
 
-## 0.1.11.0 (31 July 2024)
+## 0.1.11.0 (1 August 2024)
 
 ### Time series plots
 
