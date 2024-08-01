@@ -42,7 +42,7 @@ geom_cities <- function(iso3) {
         min.segment.length = Inf,
         family = "Source Sans 3",
         color = "black",
-        nudge_y = 0.5
+        nudge_y = 0.2
       )
     )
   } else {
