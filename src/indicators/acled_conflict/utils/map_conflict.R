@@ -24,7 +24,7 @@ map <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
   df_map <- df_alerts |>
     dplyr$mutate(
       title = paste0(
-        "Conflict events since ",
+        "Reported events since ",
         formatters$format_date(date - lubridate$days(30))
       )
     )

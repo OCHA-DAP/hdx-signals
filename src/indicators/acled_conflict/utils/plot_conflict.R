@@ -23,7 +23,7 @@ plot <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
     dplyr$mutate(
       title = paste0(
         gghdx$format_number_hdx(value),
-        " conflict fatalities since ",
+        " fatalities since ",
         formatters$format_date(date - lubridate$days(30))
       )
     )
@@ -64,7 +64,7 @@ conflict_ts <- function(df_wrangled, df_raw, title, date) {
   plot_ts$plot_ts(
     df = df_plot,
     val_col = "fatalities_30d",
-    y_axis = "Conflict fatalities (monthly)",
+    y_axis = "Fatalities (monthly)",
     title = title,
     caption = caption
   )

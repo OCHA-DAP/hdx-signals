@@ -1,12 +1,14 @@
 # Changes
 
-## 0.1.11.0 (31 July 2024)
+## 0.1.11.0 (1 August 2024)
 
 ### acled_conflict
 
 - ACLED conflict monitoring scope has expanded to monitor fatalities from all
 events, including protests and riots, rather than simply specifically violent
 events
+- Changed plot and map titles to reflect expanded coverage of all event types,
+referring now to `X fatalities` and `Reported events` respectively
 
 ## 0.1.10.1 (30 July 2024)
 
