@@ -1,12 +1,4 @@
-box::use(logger[log_threshold, log_info, log_debug])
-
-#' Sets up the logging environment
-#'
-#' @export
-configure_logger <- function() {
-  log_level <- Sys.getenv("LOG_LEVEL", unset = "INFO")
-  log_threshold(log_level)
-}
+box::use(logger[log_info, log_debug])
 
 #' Reusable logging for monitoring script setup
 #'

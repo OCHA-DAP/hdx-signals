@@ -1,9 +1,9 @@
-box::use(src/utils/hs_logger)
-
 source("renv/activate.R")
+box::use(logger[log_threshold])
 
 if (!interactive()) {
   options(warn = 2)
 }
 
-hs_logger$configure_logger()
+log_level <- Sys.getenv("LOG_LEVEL", unset = "INFO")
+log_threshold(log_level)
