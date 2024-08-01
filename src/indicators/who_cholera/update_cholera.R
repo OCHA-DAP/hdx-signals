@@ -11,7 +11,6 @@ box::use(../../signals/generate_signals)
 dry_run_filter <- c("ETH", "SSD")
 indicator_id <- "who_cholera"
 
-hs_logger$configure_logger()
 hs_logger$monitoring_log_setup(indicator_id)
 
 df_raw <- raw_cholera$raw()

@@ -16,7 +16,6 @@ box::use(../../utils/update_coverage)
 dry_run_filter <- c("AFG", "SSD")
 indicator_id <- "idmc_displacement_conflict"
 
-hs_logger$configure_logger()
 hs_logger$monitoring_log_setup(indicator_id)
 
 df_raw <- raw_displacement$raw() |>

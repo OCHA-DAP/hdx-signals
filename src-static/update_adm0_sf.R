@@ -10,9 +10,7 @@ box::use(logger)
 box::use(cs = ../src/utils/cloud_storage)
 box::use(../src/utils/download_shapefile)
 box::use(../src/utils/all_iso3_codes)
-box::use(../src/utils/hs_logger)
 
-hs_logger$configure_logger()
 
 logger$log_info("Updating ADM0 data...")
 

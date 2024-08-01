@@ -13,7 +13,6 @@ box::use(../../utils/update_coverage)
 dry_run_filter <- c("SYR", "SSD")
 indicator_id <- "wfp_market_monitor"
 
-hs_logger$configure_logger()
 hs_logger$monitoring_log_setup(indicator_id)
 
 # get data

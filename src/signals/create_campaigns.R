@@ -14,11 +14,9 @@ box::use(../utils/formatters)
 box::use(../utils/get_signals_version)
 box::use(../email/mailchimp/delete)
 
-box::use(../utils/hs_logger)
 box::use(../utils/hs_dry_run)
 box::use(../utils/hs_first_run)
 
-hs_logger$configure_logger()
 
 #' Create campaigns
 #'

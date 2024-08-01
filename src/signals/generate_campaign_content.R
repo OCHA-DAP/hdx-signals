@@ -7,9 +7,6 @@ box::use(cs = ../utils/cloud_storage)
 box::use(./delete_campaign_content[delete_campaign_content])
 box::use(./template_data)
 
-box::use(../utils/hs_logger)
-
-hs_logger$configure_logger()
 
 #' Generate campaigns content data frame
 #'
