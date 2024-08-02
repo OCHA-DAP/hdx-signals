@@ -4,6 +4,7 @@ box::use(sf)
 box::use(units)
 
 box::use(../../utils/get_iso3_sf)
+box::use(../../utils/st_crop_adj_bbox)
 
 #' Geom for location boundaries
 #'
@@ -30,15 +31,47 @@ geom_adm0 <- function(iso3, ...) {
   }
 
   additional_geoms <- list(...)
-  if (length(additional_geoms) > 0) {
-    purrr$walk(
-      .x = additional_geoms,
-      .f = \(x) assert_covered_by(x, sf_adm0)
+
+  all_covered <- assert_covered_all(
+    x_list = additional_geoms,
+    y = sf_adm0
+  )
+
+  if (!all_covered) {
+    stop(
+      "Error: elements in x not contained within ", dist, "m of base map boundary.",
+      call. = FALSE
     )
   }
 
+  # also check if we need to reduce the administrative areas for some locations
+  sf_adm0 <- reduce_adm0(iso3 = iso3, sf_adm0 = sf_adm0, additional_geoms = additional_geoms)
+
+
   gg$geom_sf(data = sf_adm0)
 }
+
+#' Assert all covered
+#'
+#' Asserts that all geometries in `...` is contained within `y`. Maps
+#' `assert_covered_by` across all of `...`. Returns `TRUE` if no geoms passed in.
+#'
+#' @param x_list All geometries to check
+#' @param y sf class POLYGON/MULTIPOLYGON to use to check if all x falls within
+#' @param dist distance in meters (default = 1000)
+#'
+#' @return TRUE if all of `x_list` fall within `y`.
+assert_covered_all <- function(x_list, y) {
+  if (length(x_list) > 0) {
+    purrr$map_lgl(
+      .x = x_list,
+      .f = \(x) assert_covered_by(x = x, y = y)
+    ) |> all()
+  } else {
+    TRUE
+  }
+}
+
 
 #' Assert that `x` is contained within `y`.
 #'
@@ -47,7 +80,7 @@ geom_adm0 <- function(iso3, ...) {
 #'
 #' @param x sf class with geometry feature that is being validated against y polygon
 #' @param y sf class POLYGON/MULTIPOLYGON to use to check if all x falls within
-#' @param dist distance in meters (default = 10000)
+#' @param dist distance in meters (default = 1000)
 #'
 #' @return TRUE if all elements of x fall within `dist` distance of y.
 #'     Return error if any elements fall outside of distance
@@ -82,34 +115,62 @@ geom_adm0 <- function(iso3, ...) {
 #'    )
 #'  assert_covered_by(
 #'    x= pts_sampled_bbox,
-#'    y = alleghany_county,
-#'    dist = 1000
+#'    y = alleghany_county
 #'    )
 #'  clay <- filter(nc_counties, NAME == "Clay")
 #'  macon <- filter(nc_counties, NAME == "Macon")
-#'  assert_covered_by(clay, macon,dist=1000)
-
-assert_covered_by <- function(x, y, dist = 10000) {
-  y_buff <- sf$st_buffer(
-    y,
-    dist = units$set_units(dist, metres)
-  )
-  lgl_covers <- sf$st_covered_by(
-    x = x,
-    y = y_buff,
-    sparse = FALSE
-  )
-  not_within <- any(!lgl_covers)
-
-  if (not_within) {
-    idx_not_within <- which(!lgl_covers)
-
-    stop(
-      "Error: elements in x not contained within ", dist, "m of base map boundary:\n",
-      paste(idx_not_within, sep = "=", collapse = ", "),
-      "."
+#'  assert_covered_by(clay, macon)
+assert_covered_by <- function(x, y) {
+  all(
+    suppressMessages(
+      sf$st_covered_by(
+        x = x,
+        y = y,
+        sparse = FALSE
+      )
     )
-  } else {
-    return(TRUE)
+  )
+}
+
+#' Reduce admin boundaries if possible
+#'
+#' For specific locations, currently just the USA, our base admin file includes
+#' areas that are not necessary for every map. For the USA, for instance, this is
+#' Alaska. To drop areas when not unnecessary, we check if any of the geoms passed
+#' in as `...` intersect optional areas like Alaska. This will be implemented
+#' for additional locations as necessary.
+#'
+#' @param iso3 ISO3 code
+#' @param sf_adm0 Admin0 spatial data
+#' @param additional_geoms List of additional geometries to check if they intersect
+#'     with `sf_adm0`
+#'
+#' @returns `sf_adm0`, potentially reduced in size
+reduce_adm0 <- function(iso3, sf_adm0, additional_geoms) {
+  if (length(additional_geoms) > 0) {
+    if (iso3 == "USA") {
+      sf_adm0 <- sf$st_set_agr(sf_adm0, "constant")
+      alaska <- st_crop_adj_bbox$st_crop_adj_bbox(sf_obj = sf_adm0, ymin = 25)
+      in_alaska <- purrr$map_lgl(
+        .x = additional_geoms,
+        .f = \(x) {
+          suppressMessages(
+            sf$st_intersects(
+              x = x,
+              y = alaska,
+              sparse = FALSE
+            )
+          ) |>
+            any()
+        }
+      ) |>
+        any() # TRUE if any geometry falls within Alaska
+
+      if (!in_alaska) {
+        # drop alaska if not necessary
+        sf_adm0 <- st_crop_adj_bbox$st_crop_adj_bbox(sf_obj = sf_adm0, ymax = -20.2)
+      }
+    }
   }
+  sf_adm0
 }
