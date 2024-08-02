@@ -36,8 +36,8 @@ update_cities_sf <- function(iso3) {
     cities_sf <- dplyr$filter(
       pop_sf,
       adm0_a3 == iso3,
-      !(name %in% c("Laayoune", "Monaco", "Singapore", "Vatican City", "Manama",
-                    "Hong Kong", "Jerusalem"))
+      !(name %in% c("Laayoune", "Monaco", "Singapore", "Vatican City", "Manama", "Lobamba",
+                    "Hong Kong", "Jerusalem", "Atlanta", "Los Angeles", "Chicago"))
     )
   }
 
