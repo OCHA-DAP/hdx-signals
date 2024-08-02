@@ -14,7 +14,6 @@ box::use(../../utils/update_coverage)
 dry_run_filter <- c("AFG", "SSD")
 indicator_id <- "acled_conflict"
 
-hs_logger$configure_logger()
 hs_logger$monitoring_log_setup(indicator_id)
 
 # get data

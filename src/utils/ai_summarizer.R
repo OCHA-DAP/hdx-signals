@@ -5,9 +5,7 @@ box::use(logger[log_debug])
 
 box::use(../utils/hs_local[hs_local])
 box::use(../utils/get_env[get_env])
-box::use(../utils/hs_logger)
 
-hs_logger$configure_logger()
 
 #' AI summarizer without location name
 #'

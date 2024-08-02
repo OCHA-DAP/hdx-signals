@@ -6,9 +6,6 @@ box::use(logger)
 box::use(cs = ../src/utils/cloud_storage)
 box::use(../src/utils/hs_logger)
 
-hs_logger$configure_logger()
-
-log_info("Updating ASAP0 codes...")
 
 # update all the iso3 codes (and names and regions) for locations we want to potentially cover in HDX Signals
 df_asap_gaul <- cs$read_az_file("input/gaul1_asap_FAO_Mapping_v8.csv")

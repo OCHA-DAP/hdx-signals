@@ -1,5 +1,11 @@
 # Changes
 
+## 0.1.11.1 (2 August 2024)
+
+### System
+
+- Clean up `logger` config by consolidating all setup to `.Rprofile`
+
 ## 0.1.11.0 (1 August 2024)
 
 ### Maps

@@ -7,12 +7,10 @@ box::use(dplyr)
 
 box::use(../email/mailchimp/campaigns)
 box::use(../utils/get_env[get_env])
-box::use(../utils/hs_logger)
 box::use(../utils/formatters)
 box::use(cs = ../utils/cloud_storage)
 box::use(../utils/hs_dry_run)
 
-hs_logger$configure_logger()
 
 #' Builds and posts a message to Slack, using incoming webhooks
 #' See API docs: https://api.slack.com/messaging/webhooks

@@ -12,7 +12,6 @@ box::use(../../utils/update_coverage)
 dry_run_filter <- if (Sys.getenv("HS_DRY_RUN")) c("AFG", "SSD") else NULL
 indicator_id <- "jrc_agricultural_hotspots"
 
-hs_logger$configure_logger()
 hs_logger$monitoring_log_setup(indicator_id)
 
 df_raw <- raw_agricultural_hotspots$raw()
