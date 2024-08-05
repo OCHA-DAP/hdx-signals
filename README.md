@@ -14,7 +14,6 @@ documentation for details on datasets included and how signals are generated.
 
 The code is structured as below. Refer to the directories for specific details.
 
-- [repo]: Code to automate documentation and other repository checks
 - [src](src/README.md): All source code for scanning all datasets, generating signals content,
 sendin emails through Mailchimp, and interacting with the cloud store.
 - [src-static](src-static/README.md): Source code for generating static assets such as
