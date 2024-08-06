@@ -14,12 +14,12 @@
 
 #### long.txt
 
-> In three sentences or less, please summarize the main reasons and locations for armed conflict
-> reported in the following text. Here are two rules:
+> In three sentences or less, please summarize the main reasons and locations for the reported events of armed conflict, protests, or riots. Here are three rules:
 > 
 > - Avoid providing specific numbers or dates.
 > - Only use the information provided to you. If the information is limited, keep
 > the summarization brief.
+> - Focus on summarizing the reasons and locations.
 > 
 > Here is the information -->
 
@@ -31,8 +31,7 @@
 > 'Conflict between agropasturalists surges in the northwest' or
 > 'Military offensive in the south sees surge in fatalities'.
 > 
-> Do not include the country name in the output.
-> This output is invalid: 'Insecurity rises in Afghanistan, driven by separatist
+> Do not include the country name in the output. For example, this output is invalid: 'Insecurity rises in Afghanistan, driven by separatist
 > armed groups'
 > 
 > Expect the reader to have no context, but this is

@@ -42,13 +42,13 @@ raw <- function() {
         fields = paste(
           "iso",
           "event_date",
+          "event_type",
           "latitude",
           "longitude",
           "fatalities",
           "notes",
           sep = "|"
         ),
-        event_type = c("Battles:OR:event_type=Violence against civilians:OR:event_type=Explosions/Remote violence"),
         limit = 0 # much faster than using limits / pagination sadly
       ) |>
       httr2$req_perform() |>

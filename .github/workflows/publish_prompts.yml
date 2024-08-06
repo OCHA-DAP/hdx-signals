@@ -43,7 +43,7 @@ jobs:
             run: |
               git config user.email "gha@email.com"
               git config user.name "GHA"
-              git diff --quiet || (git add add docs/PROMPTS.md && git commit -m "Publish PROMPTS.md")
+              git diff --quiet || (git add docs/PROMPTS.md && git commit -m "Publish PROMPTS.md")
 
           - name: Push changes
             if: steps.changes.outputs.prompts_any_changed== 'true'
