@@ -1,5 +1,12 @@
 # Changes
 
+## 0.1.12.0 (6 August 2024)
+
+### System
+
+- Added buffering to administrative boundaries when checking if it covers other
+geometries, and simplified the geometries to check for speed
+
 ## 0.1.11.1 (2 August 2024)
 
 ### System
