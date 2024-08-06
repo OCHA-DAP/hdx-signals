@@ -1,6 +1,7 @@
 box::use(gg = ggplot2)
 box::use(purrr)
 box::use(sf)
+box::use(dplyr)
 
 box::use(../../utils/get_iso3_sf)
 box::use(../../utils/st_crop_adj_bbox)
@@ -126,7 +127,7 @@ assert_covered_all <- function(x_list, y) {
 #'  macon <- filter(nc_counties, NAME == "Macon")
 #'  assert_covered_by(clay, macon)
 assert_covered_by <- function(x, y) {
-  x <- suppressWarnings(
+  x <- suppressMessages(
     dplyr$summarise(x)
   ) # cast to a single multiline/polygon/point
 
