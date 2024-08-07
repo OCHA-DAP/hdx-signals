@@ -1,7 +1,7 @@
 box::use(gg = ggplot2)
 box::use(purrr)
 box::use(sf)
-box::use(units)
+box::use(dplyr)
 
 box::use(../../utils/get_iso3_sf)
 box::use(../../utils/st_crop_adj_bbox)
@@ -62,10 +62,16 @@ geom_adm0 <- function(iso3, ...) {
 #'
 #' @return TRUE if all of `x_list` fall within `y`.
 assert_covered_all <- function(x_list, y) {
+  y_buff <- suppressWarnings(
+    suppressMessages(
+      sf$st_buffer(x = y, dist = 0.1)
+    )
+  )
+
   if (length(x_list) > 0) {
     purrr$map_lgl(
       .x = x_list,
-      .f = \(x) assert_covered_by(x = x, y = y)
+      .f = \(x) assert_covered_by(x = x, y = y_buff)
     ) |> all()
   } else {
     TRUE
@@ -121,6 +127,10 @@ assert_covered_all <- function(x_list, y) {
 #'  macon <- filter(nc_counties, NAME == "Macon")
 #'  assert_covered_by(clay, macon)
 assert_covered_by <- function(x, y) {
+  x <- suppressMessages(
+    dplyr$summarise(x)
+  ) # cast to a single multiline/polygon/point
+
   all(
     suppressMessages(
       sf$st_covered_by(
