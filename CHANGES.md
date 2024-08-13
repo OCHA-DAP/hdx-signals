@@ -1,5 +1,12 @@
 # Changes
 
+## 0.1.12.1 (13 August 2024)
+
+### System
+
+- Extended buffer for checking if admin boundaries covered geometries to account
+for naval encounters when an issue was detected for ACLED in Cameroon
+
 ## 0.1.12.0 (6 August 2024)
 
 ### System
