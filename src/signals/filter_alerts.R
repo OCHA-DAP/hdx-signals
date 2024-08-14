@@ -12,17 +12,17 @@ box::use(../utils/hs_first_run)
 #' For ongoing alert monitoring, we only want to generate new alerts that have
 #' not seen recent alerts. The logic is that alerts are only generated:
 #'
-#' - If they have been generated in the past 90 days compared to `Sys.date()`
+#' - If they have been generated in the past 60 days compared to `Sys.date()`
 #' - If an alert of equal or higher level has not been seen in the past 180 days
 #'
-#' If there are multiple alerts within the past 90 days, the logic used in the
+#' If there are multiple alerts within the past 60 days, the logic used in the
 #' code always takes first the **highest priority** alerts and then the
 #' **latest**.
 #'
 #' *First run*
 #'
 #' When it's the first run for any alert, we generate all historic alerts, even
-#' if not in the past 90 days. Since we are not comparing it to an existing
+#' if not in the past 60 days. Since we are not comparing it to an existing
 #' campaigns file, recursive filtering is used to ensure that there are 180 days
 #' between alerts.
 #'
@@ -60,7 +60,7 @@ filter_alerts <- function(df_alerts, indicator_id) {
 #' Filter alerts for ongoing monitoring
 #'
 #' Used to filter alerts to find new ones, when a campaigns file already exists.
-#' Finds alerts in the past 90 days that have not seen previous alerts in the
+#' Finds alerts in the past 60 days that have not seen previous alerts in the
 #' past 180 days.
 #'
 #' Comparisons are done against the existing campaigns data because for some
@@ -77,13 +77,13 @@ filter_alerts_ongoing <- function(df_alerts, indicator_id) {
     )
 
   # first we get the highest priority and latest alerts from the new data frame
-  # that are found in the past 3 months
+  # that are found in the past 2 months
   df_new_alerts <- df_alerts |>
     dplyr$group_by(
       iso3
     ) |>
     dplyr$filter(
-      Sys.Date() - date <= 90
+      Sys.Date() - date <= 60
     ) |>
     dplyr$filter(
       alert_level == "High concern" | all(alert_level == "Medium concern")
