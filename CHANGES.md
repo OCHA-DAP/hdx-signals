@@ -1,6 +1,12 @@
 # Changes
 
-## 0.1.12.1 (13 August 2024)
+## 0.1.13.0 (14 August 2024)
+
+### Signals
+
+- Changed the signals detection logic to only look for new signals in the past 60
+days. Previously, looked at the past 90 days, but when reviewing a signal from
+around 80 days in the past, the team decided this was too old
 
 ### System
 
