@@ -31,5 +31,5 @@ Over 200 locations are monitored, with coverage varying depending on the dataset
 | Internal disaster-driven displacements | 199                 |
 | Market monitoring                      | 80                  |
 
-We use a thresholds approach to identify when a signal should be created in a given dataset. The specific methodology for each dataset is detailed in the "Datasets" section of this site. We only send a signal if it has been detected in the past three months and if no identical signal was detected in the past six months.&#x20;
+We use a thresholds approach to identify when a signal should be created in a given dataset. The specific methodology for each dataset is detailed in the "Datasets" section of this site. We only send a signal if it has been detected in the past sixty days and if no identical signal was detected in the past six months.&#x20;
 
