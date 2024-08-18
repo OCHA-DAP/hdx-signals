@@ -39,7 +39,7 @@ geom_adm0 <- function(iso3, ...) {
 
   if (!all_covered) {
     stop(
-      "Error: elements in x not contained within ", dist, "m of base map boundary.",
+      "Error: elements in x not contained within 0.3 degrees of base map boundary.",
       call. = FALSE
     )
   }
@@ -56,15 +56,16 @@ geom_adm0 <- function(iso3, ...) {
 #' Asserts that all geometries in `...` is contained within `y`. Maps
 #' `assert_covered_by` across all of `...`. Returns `TRUE` if no geoms passed in.
 #'
+#' Checks a buffered version of `y`, buffered by `0.3` degrees.
+#'
 #' @param x_list All geometries to check
 #' @param y sf class POLYGON/MULTIPOLYGON to use to check if all x falls within
-#' @param dist distance in meters (default = 1000)
 #'
 #' @return TRUE if all of `x_list` fall within `y`.
 assert_covered_all <- function(x_list, y) {
   y_buff <- suppressWarnings(
     suppressMessages(
-      sf$st_buffer(x = y, dist = 0.1)
+      sf$st_buffer(x = y, dist = 0.3)
     )
   )
 
@@ -81,15 +82,14 @@ assert_covered_all <- function(x_list, y) {
 
 #' Assert that `x` is contained within `y`.
 #'
-#' Applies a buffer of `dist` meters to polygon `y` and checks if all
+#' Checks if all
 #' elements of `x` are within buffered polygon `y`. If not, an error is returned.
 #'
 #' @param x sf class with geometry feature that is being validated against y polygon
 #' @param y sf class POLYGON/MULTIPOLYGON to use to check if all x falls within
-#' @param dist distance in meters (default = 1000)
 #'
-#' @return TRUE if all elements of x fall within `dist` distance of y.
-#'     Return error if any elements fall outside of distance
+#' @return TRUE if all elements of x fall within y.
+#'     Return error if any elements fall outside of y.
 #'
 #' @examples
 #' library(sf)
@@ -116,8 +116,7 @@ assert_covered_all <- function(x_list, y) {
 #'
 #'  assert_covered_by(
 #'    x = pts_sampled,
-#'    y =alleghany_county,
-#'    dist = 1000
+#'    y = alleghany_county,
 #'    )
 #'  assert_covered_by(
 #'    x= pts_sampled_bbox,
