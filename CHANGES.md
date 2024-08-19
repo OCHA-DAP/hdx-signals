@@ -1,5 +1,13 @@
 # Changes
 
+## 0.1.13.1 (19 August 2024)
+
+### System
+
+- Members call to retrieve the HDX Signals Mailchimp audience fixed to iterate
+if the audience is more than 1,000 subscribers, as the API limits returns to
+1,000 entries total
+
 ## 0.1.13.0 (14 August 2024)
 
 ### Signals
