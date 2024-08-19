@@ -139,18 +139,20 @@ preview_campaign_urls <- function(campaign_urls) {
 #' @param test Whether or not the signals were in the test folder.
 approve_signals <- function(df, fn_signals, test) {
   user_name <- get_env$get_env("HS_ADMIN_NAME")
-
-  user_command <- readline(
-    paste0(
-      "Tell us what you want to do with the following commands:\n\n",
-      "APPROVE: Send campaigns",
-      if (test) "\n" else " and add to `output/signals.parquet`\n",
-      "DELETE: Delete the campaign content and `output/{indicator}/signals.parquet`",
-      "file so you can recreate later.\n",
-      "ARCHIVE: Delete the email campaign, but move the alert to `output/signals.parquet`\n",
-      "Any other input: Do nothing, so you can decide later."
-    )
+  # send message to user
+  cat(
+    "Tell us what you want to do with the following commands:\n\n",
+    "APPROVE: Send campaigns",
+    if (test) "\n" else " and add to `output/signals.parquet`\n",
+    "DELETE: Delete the campaign content and `output/{indicator}/signals.parquet`",
+    "file so you can recreate later.\n",
+    "ARCHIVE: Delete the email campaign, but move the alert to `output/signals.parquet`\n",
+    "Any other input: Do nothing, so you can decide later.\n",
+    sep = ""
   )
+
+  user_command <- readline(prompt = "Your command: ")
+
   if (user_command %in% c("APPROVE", "ARCHIVE")) {
     if (user_command == "ARCHIVE") {
       # delete the email template and campaigns, but not the content

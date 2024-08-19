@@ -1,5 +1,12 @@
 # Changes
 
+## 0.1.13.1 (19 August 2024)
+
+### System
+
+- Triage setup fixed so that user input message is not cut off by the character
+limit in `readline()`
+
 ## 0.1.13.0 (14 August 2024)
 
 ### Signals
