@@ -8,6 +8,9 @@
 if the audience is more than 1,000 subscribers, as the API limits returns to
 1,000 entries total
 
+- Triage setup fixed so that user input message is not cut off by the character
+limit in `readline()`
+
 ## 0.1.13.0 (14 August 2024)
 
 ### Signals
