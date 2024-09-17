@@ -4,4 +4,8 @@ linters:
     object_name_linter(styles = c("snake_case", "symbols"), regexes = "^[{]"), # https://github.com/r-lib/lintr/issues/1926
     defaults = box.linters::box_default_linters
   )
+exclusions:
+  list(
+    "src/utils/box_linters.R"
+  )
 encoding: "UTF-8"
