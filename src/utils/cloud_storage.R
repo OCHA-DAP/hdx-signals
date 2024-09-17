@@ -15,22 +15,20 @@ box::use(
 
 box::use(
   src/utils/hs_local,
-  src/utils/get_env,
-  src/utils/hs_logger
+  src/utils/get_env
 )
-
-hs_logger$configure_logger()
 
 #' Read a Parquet file stored in Microsoft Azure Data Storage container
 #'
 #' Reads a file from the `hdx-signals` container.
 #' The file is read based on its prefix in `name`. Currently, the only support is for
-#' Apache Parquet, CSV, GeoJSON and GeoJSON files, but other support can be added if necessary.
+#' Apache Parquet, CSV, GeoJSON and JSON files, but other support can be added if necessary.
 #'
 #' Function parsing is done based on file type:
 #'
 #' * Apache Parquet: [arrow::write_parquet()].
 #' * CSV: [readr::read_csv()]
+#' * Excel: [readxl::read_excel()]
 #' * GeoJSON: [sf::st_read()]
 #' * JSON: [jsonlite::read_json()]
 #'
@@ -61,7 +59,9 @@ read_az_file <- function(name, container = c("prod", "dev", "wfp")) {
     parquet = arrow$read_parquet(tf),
     geojson = sf$st_read(tf, quiet = TRUE),
     json = dplyr$as_tibble(jsonlite$read_json(tf, simplifyVector = TRUE)),
-    csv = readr$read_csv(tf, col_types = readr$cols())
+    csv = readr$read_csv(tf, col_types = readr$cols(), guess_max = 10000),
+    xls = readxl$read_xls(tf, col_types = "guess"),
+    xlsx = readxl$read_xlsx(tf, col_types = "guess")
   )
 }
 
@@ -77,7 +77,7 @@ read_az_file <- function(name, container = c("prod", "dev", "wfp")) {
 #' * Apache Parquet: [arrow::write_parquet()]
 #' * CSV: [readr::write_csv()]
 #' * GeoJSON: [sf::st_write()]
-#' * JSON: [jsonlite::write_json]
+#' * JSON: [jsonlite::write_json()]
 #'
 #' If `hs_local()`, the file is not uploaded to the container.
 #'

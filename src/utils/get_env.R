@@ -1,9 +1,5 @@
 box::use(logger)
 
-box::use(src/utils/hs_logger)
-
-hs_logger$configure_logger()
-
 #' Gets an environment variable value, returning an error if it is not set
 #'
 #' @param env_var_name Name of environment variable

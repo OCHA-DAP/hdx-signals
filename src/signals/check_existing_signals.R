@@ -15,21 +15,22 @@ box::use(
 #' campaigns before generating any new alerts. Thus, an error is raised if it
 #' exists or has any rows.
 #'
-#' If `first_run` is `TRUE`, it also checks that there is no data for the indicator
+#' If `HS_FIRST_RUN` is `TRUE`, it also checks that there is no data for the indicator
 #' in `output/signals.parquet`, which is the overall dataset. If there is any data
-#' for the indicator in there, an error is generated since `first_run` should only
+#' for the indicator in there, an error is generated since `HS_FIRST_RUN` should only
 #' be used on the initial pass.
 #'
+#' If `HS_DRY_RUN` is `TRUE`, errors are not generated based on data being in or
+#' not in `output/signals.parquet` file. This allows easy interactive development
+#' and testing.
+#'
 #' @param indicator_id ID of the indicator
-#' @param first_run Whether or not this is the first run
 #' @param fn_signals File name of the Signals data
-#' @param dry_run Whether or not this is for testing signals development. If `TRUE`,
-#'     errors are not generated if data is in the overall `output/signals.parquet`
-#'     file, so we can test efficiently.
 #'
 #' @export
-check_existing_signals <- function(indicator_id, first_run, fn_signals, dry_run) {
-  if (hs_local$hs_local()) {
+check_existing_signals <- function(indicator_id, fn_signals) {
+  # if testing, don't run these checks
+  if (hs_dry_run$hs_dry_run()) {
     return(invisible(NULL))
   }
 
@@ -40,9 +41,7 @@ check_existing_signals <- function(indicator_id, first_run, fn_signals, dry_run)
 
   check_overall_signals(
     indicator_id = indicator_id,
-    first_run = first_run,
-    fn_signals = fn_signals,
-    dry_run = dry_run
+    fn_signals = fn_signals
   )
 }
 
@@ -80,16 +79,11 @@ check_ind_signals <- function(indicator_id, fn_signals) {
 #' Check overall signals
 #'
 #' Check overall signals file, `output/signals.parquet`, and throws an error
-#' if there is no rows for `indicator_id` in the file but `first_run` is `FALSE`,
-#' or if there are existing signals for `indicator_id` and `first_run` is `TRUE`.
+#' if there is no rows for `indicator_id` in the file but `HS_FIRST_RUN` is `FALSE`,
+#' or if there are existing signals for `indicator_id` and `HS_FIRST_RUN` is `TRUE`.
 #'
-#' These checks are not performed if `dry_run` is `TRUE`.
-check_overall_signals <- function(indicator_id, first_run, fn_signals, dry_run) {
-  # if testing, don't run these checks
-  if (dry_run) {
-    return(invisible(NULL))
-  }
-
+#' These checks are not performed if `HS_DRY_RUN` is `TRUE`.
+check_overall_signals <- function(indicator_id, fn_signals) {
   # check number of confirmed signals already, doesn't matter for testing
   # calculating at module level
   if ("output/signals.parquet" %in% az_files) {
@@ -102,6 +96,7 @@ check_overall_signals <- function(indicator_id, first_run, fn_signals, dry_run) 
     num_signals <- 0
   }
 
+  first_run <- hs_first_run$hs_first_run()
 
   # if it's first run, check there are no existing signals for this indicator_id
   # that are in the final `output/signals.parquet` file
@@ -111,7 +106,7 @@ check_overall_signals <- function(indicator_id, first_run, fn_signals, dry_run) 
         paste0(
           "There are existing signals for ",
           indicator_id,
-          ", so you cannot run `generate_signals()` with `first_run = TRUE`. ",
+          ", so you cannot run `generate_signals()` with `HS_FIRST_RUN = TRUE`. ",
           "If you want to completely re-create the data, you must first delete all ",
           "existing signals. However, please consider carefully before doing so."
         )
@@ -127,7 +122,7 @@ check_overall_signals <- function(indicator_id, first_run, fn_signals, dry_run) 
         paste0(
           "There are no existing signals for ",
           indicator_id,
-          ", so you cannot run `generate_signals()` with `first_run = FALSE`. ",
+          ", so you cannot run `generate_signals()` with `HS_FIRST_RUN = FALSE`. ",
           "You must first complete the first run of signals generation before you ",
           "can begin adding existing signals to the dataset."
         )
@@ -136,7 +131,6 @@ check_overall_signals <- function(indicator_id, first_run, fn_signals, dry_run) 
     )
   }
 }
-
 
 az_files <- cs$az_file_detect()
 if ("output/signals.parquet" %in% az_files) {

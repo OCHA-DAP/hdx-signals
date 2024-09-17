@@ -59,8 +59,10 @@ displacement_ts <- function(df_wrangled, df_raw, title, date) {
 
   # filter displacement data to the latest day of the week, since we are plotting the
   # weekly rolling sum
-  day_of_month <- lubridate$mday(max(df_wrangled$date))
-  df_plot <- dplyr$filter(df_wrangled, lubridate$mday(date) == day_of_month)
+  df_plot <- dplyr$filter(
+    df_wrangled,
+    (as.numeric(date - !!date) %% 30) == 0 # every 30 days from date of signal
+  )
 
   plot_ts$plot_ts(
     df = dplyr$filter(df_plot, !is.na(displacement_30d)),

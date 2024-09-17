@@ -4,6 +4,8 @@ box::use(
   utils
 )
 
+box::use(src/utils/formatters)
+
 #' Creates cholera alerts dataset
 #'
 #' Creates base alert dataset for cholera. Alerts are generated when
@@ -46,8 +48,12 @@ alert <- function(df_wrangled) {
       indicator_id = paste(indicator_source, indicator_name, sep = "_"),
       .after = iso3
     ) |>
-    dplyr$select(
-      -start_date
+    dplyr$mutate( # create title of plot and headline
+      title = paste0(
+        scales$label_comma()(value),
+        " cases of cholera reported since ",
+        formatters$format_date(start_date)
+      )
     )
 }
 

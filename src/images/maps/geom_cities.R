@@ -36,10 +36,15 @@ geom_cities <- function(iso3) {
           geometry = geometry
         ),
         stat = "sf_coordinates",
-        fun.geometry = \(x) sf$st_centroid(x, of_largest_polygon = FALSE),
+        fun.geometry = \(x) {
+          suppressWarnings( # suppress warnings
+            sf$st_point_on_surface(sf$st_zm(x))
+          )
+        },
         min.segment.length = Inf,
         family = "Source Sans 3",
-        color = "black"
+        color = "black",
+        nudge_y = 0.2
       )
     )
   } else {

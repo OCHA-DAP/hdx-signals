@@ -7,3 +7,4 @@
   * [Food insecurity](datasets/food-insecurity.md)
   * [Internal displacements](datasets/internal-displacement.md)
   * [Market monitoring](datasets/market-monitoring.md)
+* [Prompts](PROMPTS.md)

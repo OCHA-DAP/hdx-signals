@@ -14,8 +14,6 @@ box::use(
   src/utils/hs_logger
 )
 
-hs_logger$configure_logger()
-
 logger$log_info("Updating ADM0 data...")
 
 # prevent errors when unioning
@@ -105,55 +103,32 @@ simplify_adm0 <- function(sf_adm0) {
 #' @returns Filtered `sf_adm0`
 filter_adm0_sf <- function(sf_adm0, iso3) {
   if (iso3 == "CHL") {
-    sf_adm0 <- st_crop_adj_bbox(sf_adm0, xmin = 33.73339)
+    sf_adm0 <- st_crop_adj_bbox$st_crop_adj_bbox(sf_adm0, xmin = 33.73339)
   } else if (iso3 == "BMU") {
-    sf_adm0 <- st_crop_adj_bbox(sf_adm0, ymax = -0.05)
+    sf_adm0 <- st_crop_adj_bbox$st_crop_adj_bbox(sf_adm0, ymax = -0.05)
   } else if (iso3 == "CRI") {
-    sf_adm0 <- st_crop_adj_bbox(sf_adm0, ymin = 0.1)
+    sf_adm0 <- st_crop_adj_bbox$st_crop_adj_bbox(sf_adm0, ymin = 0.1)
   } else if (iso3 == "ECU") {
-    sf_adm0 <- st_crop_adj_bbox(sf_adm0, xmin = 3)
+    sf_adm0 <- st_crop_adj_bbox$st_crop_adj_bbox(sf_adm0, xmin = 3)
   } else if (iso3 == "ESP") {
-    sf_adm0 <- st_crop_adj_bbox(sf_adm0, ymin = 1.8)
+    sf_adm0 <- st_crop_adj_bbox$st_crop_adj_bbox(sf_adm0, ymin = 1.8)
   } else if (iso3 == "FJI") {
-    sf_adm0 <- st_crop_adj_bbox(sf_adm0, ymax = -0.05, ymin = 0.5)
+    sf_adm0 <- st_crop_adj_bbox$st_crop_adj_bbox(sf_adm0, ymax = -0.05, ymin = 0.5)
   } else if (iso3 == "GNQ") {
-    sf_adm0 <- st_crop_adj_bbox(sf_adm0, ymin = 0.5)
+    sf_adm0 <- st_crop_adj_bbox$st_crop_adj_bbox(sf_adm0, ymin = 0.5)
   } else if (iso3 == "JAM") {
-    sf_adm0 <- st_crop_adj_bbox(sf_adm0, ymin = 0.5)
+    sf_adm0 <- st_crop_adj_bbox$st_crop_adj_bbox(sf_adm0, ymin = 0.5)
   } else if (iso3 == "NZL") {
-    sf_adm0 <- st_crop_adj_bbox(sf_adm0, xmin = 1)
+    sf_adm0 <- st_crop_adj_bbox$st_crop_adj_bbox(sf_adm0, xmin = 1)
   } else if (iso3 == "PRT") {
-    sf_adm0 <- st_crop_adj_bbox(sf_adm0, xmin = 20)
+    sf_adm0 <- st_crop_adj_bbox$st_crop_adj_bbox(sf_adm0, xmin = 20)
   } else if (iso3 == "USA") {
-    sf_adm0 <- st_crop_adj_bbox(sf_adm0, xmin = 30, ymax = -19)
+    sf_adm0 <- st_crop_adj_bbox$st_crop_adj_bbox(sf_adm0, xmax = -100, ymin = 3.4) # drop hawaii and guam
   } else if (iso3 == "VNM") {
-    sf_adm0 <- st_crop_adj_bbox(sf_adm0, xmax = -8, ymin = 1)
+    sf_adm0 <- st_crop_adj_bbox$st_crop_adj_bbox(sf_adm0, xmax = -8, ymin = 1)
   }
 
   sf_adm0
-}
-
-#' Crop with adjusted bbox
-#'
-#' Gets the bbox for an `sf` object, and then adjusts it based on the parameters
-#' based in, then crops the `sf`.
-#'
-#' @param sf_obj Simple feature object
-#' @param xmin Amount to adjust xmin
-#' @param xmax Amount to adjust xmax
-#' @param ymin Amount to adjust ymin
-#' @param ymax Amount to adjust ymax
-#'
-#' @returns Cropped simple feature
-st_crop_adj_bbox <- function(sf_obj, xmin = 0, xmax = 0, ymin = 0, ymax = 0) {
-  old_bbox <- sf$st_bbox(sf_obj)
-  sf$st_crop(
-    sf_obj,
-    xmin = old_bbox[["xmin"]] + xmin,
-    xmax = old_bbox[["xmax"]] + xmax,
-    ymin = old_bbox[["ymin"]] + ymin,
-    ymax = old_bbox[["ymax"]] + ymax
-  )
 }
 
 #' Download ADM0 shapefile

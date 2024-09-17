@@ -1,0 +1,23 @@
+# this workflow checks the CHANGES.md file
+
+on:
+  pull_request:
+    branches: [main]
+
+name: Check CHANGES.md
+
+permissions: read-all
+
+jobs:
+  check-changes:
+      runs-on: ubuntu-latest
+      steps:
+          - name: Checkout repository
+            uses: actions/checkout@v4
+
+          - name: Set up environment
+            uses: ocha-dap/hdx-signals-actions@v2
+
+          - name: Check CHANGES.md
+            shell: bash
+            run: Rscript ./src/repo/check_changes.R

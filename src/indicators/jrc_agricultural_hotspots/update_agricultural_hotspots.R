@@ -10,12 +10,9 @@ box::use(
   src/utils/update_coverage
 )
 
-first_run <- as.logical(Sys.getenv("FIRST_RUN", unset = FALSE))
-dry_run <- as.logical(Sys.getenv("HS_DRY_RUN", unset = TRUE))
-dry_run_filter <- if (dry_run) c("AFG", "SSD") else NULL
+dry_run_filter <- if (Sys.getenv("HS_DRY_RUN")) c("AFG", "SSD") else NULL
 indicator_id <- "jrc_agricultural_hotspots"
 
-hs_logger$configure_logger()
 hs_logger$monitoring_log_setup(indicator_id)
 
 df_raw <- raw_agricultural_hotspots$raw()
@@ -35,7 +32,5 @@ generate_signals$generate_signals(
   summary_fn = summary_agricultural_hotspots$summary,
   info_fn = info_agricultural_hotspots$info,
   plot_fn = plot_agricultural_hotspots$plot,
-  dry_run = dry_run,
-  dry_run_filter = dry_run_filter,
-  first_run = first_run
+  dry_run_filter = dry_run_filter
 )

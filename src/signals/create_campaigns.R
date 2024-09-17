@@ -16,22 +16,20 @@ box::use(
   cs = src/utils/cloud_storage
 )
 
-hs_logger$configure_logger()
-
 #' Create campaigns
 #'
 #' Creates Mailchimp campaign(s). The way segmentation works,
 #' email campaigns are sent only to those subscribers who have subscribed to
 #' regions where any alert was detected and subscribed to this specific indicator.
 #'
+#' If `HS_FIRST_RUN`, no emails are sent, just archived campaigns are generated.
+#' If `HS_DRY_RUN` and `HS_LOCAL`, campaigns are previewed locally. When `HS_DRY_RUN`
+#' is `TRUE` but `HS_LOCAL` is `FALSE`, campaigns are generated in Mailchimp
+#' but only to internal emails tagged for testing.
+#'
 #' @param df_campaign_content Data frame with alerts information for generating the email.
 #' @param indicator_id ID of the indicator, used for segmentation. {provider}_{type}
 #'     is the standard format, such as `idmc_displacement`.
-#' @param first_run Whether or not this is the first run for an indicator. On the
-#'     first run, no alerts are sent, just archived campaigns are generated.
-#' @param dry_run Whether or not the campaigns are for testing. Campaigns only be
-#'     previewed if `dry_run` is `TRUE`, and any segmentation done is limited to
-#'     internal emails tagged for testing.
 #'
 #' @returns URL of the campaign. If two campaigns sent, then returns the URL
 #' for `Medium concern` since it will contain all alerts for that run.
@@ -39,9 +37,7 @@ hs_logger$configure_logger()
 #' @export
 create_campaigns <- function(
     df_campaign_content,
-    indicator_id,
-    first_run = FALSE,
-    dry_run = FALSE) {
+    indicator_id) {
   if (nrow(df_campaign_content) == 0) {
     # if the content data frame is empty, just return empty campaigns
     return(
@@ -58,6 +54,8 @@ create_campaigns <- function(
       )
     )
   }
+  first_run <- hs_first_run$hs_first_run()
+
   # create date for campaigns
   if (first_run) {
     campaign_date <- unique(df_campaign_content$date)
@@ -68,8 +66,7 @@ create_campaigns <- function(
   # get template folder, title, and subject header
   campaign_details <- get_campaign_details(
     indicator_id = indicator_id,
-    campaign_date = campaign_date,
-    dry_run = dry_run
+    campaign_date = campaign_date
   )
 
   # generate email campaign with no conditional logic for the archive
@@ -79,8 +76,7 @@ create_campaigns <- function(
     df_campaign_content = df_campaign_content,
     archive = TRUE,
     archive_url = "*|ARCHIVE|*",
-    names_paste = "_archive",
-    dry_run = dry_run
+    names_paste = "_archive"
   )
 
   if (!first_run) {
@@ -90,8 +86,7 @@ create_campaigns <- function(
       df_campaign_content = df_campaign_content,
       archive = FALSE,
       archive_url = unique(archive_df$campaign_url_archive),
-      names_paste = "_email",
-      dry_run = dry_run
+      names_paste = "_email"
     )
   } else {
     email_df <- dplyr$tibble(
@@ -126,6 +121,9 @@ create_campaigns <- function(
 #' if this is an historical campaign. Finally, a new campaign is created in
 #' Mailchimp and sent out.
 #'
+#' `HS_DRY_RUN` is used to determine if emails should be sent to wide audience
+#' or internally for testing, and previews are generated only if `TRUE`.
+#'
 #' @param indicator_id ID of the indicator, used for segmentation. {provider}_{type}
 #'     is the standard format, such as `idmc_displacement`.
 #' @param campaign_details Details for the campaign, such as the subject, title,
@@ -138,9 +136,6 @@ create_campaigns <- function(
 #' @param archive_url URL for the archive.
 #' @param names_paste String to paste on the end of the names, either `_archive`,
 #'     `_hc`, or `_all`.
-#' @param dry_run Whether or not this is a dry run campaign. Passed on to segmentation
-#'     to ensure emails only sent internally if for testing. Previews generated
-#'     only if `TRUE`.
 #'
 #' @returns URL of the campaign
 create_campaign <- function(
@@ -149,27 +144,13 @@ create_campaign <- function(
     df_campaign_content,
     archive,
     archive_url,
-    names_paste,
-    dry_run) {
+    names_paste) {
   template_id <- tryCatch(
     {
       # create the email template and add to Mailchimp
       body <- email_body$create_body(
-        title = campaign_details$title,
-        iso3 = df_campaign_content$iso3,
-        location = df_campaign_content$location,
-        plot_title = df_campaign_content$plot_title,
-        plot_url = df_campaign_content$plot_url,
-        map_title = df_campaign_content$map_title,
-        map_url = df_campaign_content$map_url,
-        plot2_title = df_campaign_content$plot2_title,
-        plot2_url = df_campaign_content$plot2_url,
-        other_images_urls = df_campaign_content$other_images_urls,
-        other_images_captions = df_campaign_content$other_images_captions,
-        summary_long = df_campaign_content$summary_long,
-        summary_short = df_campaign_content$summary_short,
-        summary_source = df_campaign_content$summary_source,
-        further_information = df_campaign_content$further_information,
+        campaign_details = campaign_details,
+        df_campaign_content = df_campaign_content,
         use_conditions = !archive
       )
 
@@ -184,7 +165,7 @@ create_campaign <- function(
         folder = campaign_details$folder,
         # only preview the archive template, not those with conditional logic
         # don't preview if running from within GitHub Actions
-        preview = archive && dry_run && interactive()
+        preview = archive && hs_dry_run$hs_dry_run() && interactive()
       )
     },
     error = function(e) {
@@ -201,8 +182,7 @@ create_campaign <- function(
         if (!archive) {
           segments <- custom_segmentation$mc_email_segment(
             indicator_id = indicator_id,
-            iso3 = df_campaign_content$iso3,
-            dry_run = dry_run
+            iso3 = df_campaign_content$iso3
           )
         } else {
           # assign to archive segment for historic campaigns so URL created but
@@ -249,11 +229,13 @@ create_campaign <- function(
 #' `New Signal: INDICATOR, DATE`.
 #' The titles are for the file system, and so are similar, except also use
 #' `name_paste` to differentiate between
-get_campaign_details <- function(indicator_id, campaign_date, dry_run) {
+get_campaign_details <- function(indicator_id, campaign_date) {
   df_ind <- cs$read_az_file("input/indicator_mapping.parquet") |>
     dplyr$filter(
       indicator_id == !!indicator_id
     )
+
+  dry_run <- hs_dry_run$hs_dry_run()
 
   list(
     title = df_ind$indicator_subject,

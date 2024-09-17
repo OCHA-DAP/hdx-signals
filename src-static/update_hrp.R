@@ -11,8 +11,6 @@ box::use(
   src/utils/hs_logger
 )
 
-hs_logger$configure_logger()
-
 logger$log_info("Updating HRP info...")
 
 # Download 2024 file from HDX

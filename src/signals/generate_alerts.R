@@ -22,25 +22,25 @@ box::use(
 #' - Filters alerts.
 #' - Uploads the alerts to Azure.
 #'
+#' If `HS_FIRST_RUN` is `TRUE`, the alerts are filtered differently to be
+#' spaced out as if they were generated through monitoring. If `HS_DRY_RUN`
+#' is `TRUE`, then the alerts are filtered to be the latest alert available
+#' for the locations, ignoring if there are other recent alerts. This ensures
+#' there are alerts available for testing.
+#'
 #' @param df Data frame of indicator alerts.
 #' @param indicator_id ID of the indicator
-#' @param first_run Whether or not this is the first run of an indicator. Used
-#'     to determine different filtering methods.
-#' @param dry_run Whether or not we are generating a dry run, in which case we
-#'     filter the alerts to the latest, ignoring if there have been recent alerts.
 #'
 #' @returns Nothing, alerts are uploaded to Azure
 #'
 #' @export
-generate_alerts <- function(df, indicator_id, first_run = FALSE, dry_run = FALSE) {
+generate_alerts <- function(df, indicator_id) {
   df |>
     validate_alerts() |>
     add_alert_level() |>
     add_locations_metadata$add_locations_metadata() |>
     filter_alerts$filter_alerts(
-      indicator_id = indicator_id,
-      first_run = first_run,
-      dry_run = dry_run
+      indicator_id = indicator_id
     )
 }
 

@@ -14,10 +14,10 @@ box::use(src/utils/alert_daily_ts)
 #' @export
 alert <- function(df_wrangled) {
   if (unique(df_wrangled$displacement_type) == "Conflict") {
-    min_val <- 10000
+    min_val <- 5000
     indicator_name <- "displacement_conflict"
   } else {
-    min_val <- 100000
+    min_val <- 50000
     indicator_name <- "displacement_disaster"
   }
 

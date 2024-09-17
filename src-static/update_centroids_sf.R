@@ -13,8 +13,6 @@ box::use(
   src/utils/hs_logger
 )
 
-hs_logger$configure_logger()
-
 logger$log_info("Updating centroids data...")
 
 # prevent errors when unioning

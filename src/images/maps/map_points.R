@@ -38,7 +38,7 @@ map_points <- function(
 
   num_unique_vals <- length(unique(df[[val_col]]))
 
-  gg_map$gg_map(iso3) +
+  gg_map$gg_map(iso3, df) +
     gg$geom_sf(
       data = df,
       mapping = gg$aes(

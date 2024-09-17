@@ -38,27 +38,33 @@ box::use(
 #' do this given how critical that decision is.
 #'
 #' During monitoring, signals are sent out as a single campaign. However, for
-#' `first_run` builds of historic campaign archives, campaigns are developed
+#' `HS_FIRST_RUN` builds of historic campaign archives, campaigns are developed
 #' individually based on the date. However, you still have to manually triage
 #' all campaigns at one point in time and give a single command to `APPROVE` or
 #' `DELETE` the entire run of signals.
 #'
+#' `triage_signals()` accepts the explicit `test` argument rather than looking
+#' for `HS_DRY_RUN` because the function is intended for interactive use. Users
+#' may want to look to triage signals in `output/{indicator}/test/signals.parquet`,
+#' by setting `test` to `TRUE`. However, they will need their own `HS_DRY_RUN`
+#' env variable set to `FALSE` in order to `DELETE` or `APPROVE` these test signals.
+#'
 #' @param indicator_id Indicator ID mapped in `input/indicator_mapping.parquet`
 #' @param n_campaigns When previewing the campaigns, how many to open at one
-#'      time. Defaults to `10`, which is fine for most runs, but if `first_run`
+#'      time. Defaults to `10`, which is fine for most runs, but if `HS_FIRST_RUN`
 #'      creates many at a time, you may need to be increase or decrease based
 #'      on your preference. If `0`, no signals are previewed.
-#' @param dry_run Whether or not we are triaging dry run emails. Looks only for the
-#'      dry run emails file on Azure. You can still send dry run emails and delete
-#'      them in the same way as normal ones, but the signals file is not sent
-#'      to `output/signals.parquet`
+#' @param test Whether or not we are triaging signals in the
+#'      `output/{indicator}/test/signals.parquet` files. You can still send dry
+#'      run emails and delete them in the same way as normal ones, but the signals
+#'      file is not sent to `output/signals.parquet`
 #'
 #' @export
-triage_signals <- function(indicator_id, n_campaigns = 10, dry_run = FALSE) {
-  fn_signals <- cs$signals_path(indicator_id, dry_run)
+triage_signals <- function(indicator_id, n_campaigns = 10, test = FALSE) {
+  fn_signals <- cs$signals_path(indicator_id, test)
   df <- get_signals_df(fn_signals)
   preview_signals(df = df, n_campaigns = n_campaigns)
-  approve_signals(df = df, fn_signals = fn_signals, dry_run = dry_run)
+  approve_signals(df = df, fn_signals = fn_signals, test = test)
 }
 
 #' Check the signals data frame
@@ -132,24 +138,43 @@ preview_campaign_urls <- function(campaign_urls) {
 #'
 #' @param df Signals data frame
 #' @param fn_signals File name to the signals data
-#' @param dry_run Whether or not the signals were for a dry run.
-approve_signals <- function(df, fn_signals, dry_run) {
+#' @param test Whether or not the signals were in the test folder.
+approve_signals <- function(df, fn_signals, test) {
   user_name <- get_env$get_env("HS_ADMIN_NAME")
-
-  user_command <- readline(
-    paste0(
-      "Tell us what you want to do with the following commands:\n\n",
-      "APPROVE: Send campaigns",
-      if (dry_run) "\n" else " and add to `output/signals.parquet`\n",
-      "DELETE: Delete the campaign content, so you can recreate later.\n",
-      "Any other input: Do nothing, so you can decide later."
-    )
+  # send message to user
+  cat(
+    "Tell us what you want to do with the following commands:\n\n",
+    "APPROVE: Send campaigns",
+    if (test) "\n" else " and add to `output/signals.parquet`\n",
+    "DELETE: Delete the campaign content and `output/{indicator}/signals.parquet`",
+    "file so you can recreate later.\n",
+    "ARCHIVE: Delete the email campaign, but move the alert to `output/signals.parquet`\n",
+    "Any other input: Do nothing, so you can decide later.\n",
+    sep = ""
   )
-  if (user_command == "APPROVE") {
+
+  user_command <- readline(prompt = "Your command: ")
+
+  if (user_command %in% c("APPROVE", "ARCHIVE")) {
+    if (user_command == "ARCHIVE") {
+      # delete the email template and campaigns, but not the content
+      delete_campaign_content$delete_campaign_content(
+        df = dplyr$select(df, dplyr$ends_with("_email"))
+      )
+      # ensure the email columns are empty
+      df <- dplyr$mutate(
+        df,
+        dplyr$across(
+          .cols = dplyr$ends_with("_email"),
+          .fns = \(x) NA_character_
+        )
+      )
+    }
+
     send_signals(df)
 
     # if not testing, move everything to the core signals dataset
-    if (!dry_run) {
+    if (!test) {
       # add triage information to the data before joining to core
       df$triage_approver <- user_name
       df$triage_time <- Sys.time()
@@ -246,41 +271,29 @@ read_core_signals <- function() {
 #' This just drops a few columns, and
 #' renames some for the final output data CSV that goes onto HDX. The data is
 #' pushed first to the Azure blob store, and then triggers the HDX pipeline
-#' https://github.com/OCHA-DAP/hdx-signals-alerts to push the data to HDX. That
-#' is done use
+#' https://github.com/OCHA-DAP/hdx-signals-alerts to push the data to HDX.
+#'
+#' The columns used are defined in `src/signals/template_data`.
 #'
 #' @param df Data frame to save out
 save_core_signals_hdx <- function(df) {
-  df <- dplyr$select(
+  # use indicator mapping to filter out the core dataset
+  # only those with `mc_interest` values are publicly subscribable
+  df_hdx_ind <- cs$read_az_file("input/indicator_mapping.parquet") |>
+    dplyr$filter(!is.na(mc_interest))
+
+  # rename specific columns for use in HDX output
+  df <- dplyr$rename(
     df,
-    iso3,
-    location,
-    region,
-    hrp_location,
-    indicator_name,
-    indicator_source,
-    indicator_id,
-    date,
-    alert_level,
-    value,
     plot = plot_url,
     map = map_url,
     plot2 = plot2_url,
     other_images = other_images_urls,
-    summary_long,
-    summary_short,
-    summary_source,
-    hdx_url,
-    source_url,
-    other_urls,
-    further_information,
-    campaign_url = campaign_url_archive,
-    campaign_date,
-    signals_version
+    campaign_url = campaign_url_archive
   )
 
   cs$update_az_file(
-    df = df,
+    df = df[df$indicator_id %in% df_hdx_ind$indicator_id, names(template_data$signals_hdx_template)],
     name = "output/signals.csv"
   )
 

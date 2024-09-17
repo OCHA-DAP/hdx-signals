@@ -15,8 +15,11 @@ info <- function(df_alerts, df_wrangled, df_raw) {
       source_url = link,
       source_url_text = ifelse(
         ch,
-        '<a href="{source_url}">CH report</a> for more information. Note that the report is in French',
-        '<a href="{source_url}">IPC webmap</a> for more information'
+        glue$glue(
+          '<a href="{source_url}">CH report</a> for more information. ',
+          "Note that the report is in French"
+        ),
+        glue$glue('<a href="{source_url}">IPC webmap</a> for more information')
       ),
       analysis_area_text = dplyr$case_when(
         is.na(analysis_area) ~ NA_character_,

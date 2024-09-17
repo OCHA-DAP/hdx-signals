@@ -10,8 +10,6 @@ box::use(
   src/utils/hs_logger
 )
 
-hs_logger$configure_logger()
-
 logger$log_info("Updating locations we cover...")
 
 # update all the iso3 codes (and names and regions) for locations we want to potentially cover in HDX Signals

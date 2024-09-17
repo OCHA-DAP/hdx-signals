@@ -13,7 +13,6 @@ box::use(
   src/utils/push_hdx
 )
 
-hs_logger$configure_logger()
 
 logger$log_info("Updating location info...")
 

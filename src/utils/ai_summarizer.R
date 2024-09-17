@@ -7,11 +7,9 @@ box::use(
 
 box::use(
   src/utils/hs_local,
-  src/utils/get_env,
-  src/utils/hs_logger
+  src/utils/get_env
 )
 
-hs_logger$configure_logger()
 
 #' AI summarizer without location name
 #'
@@ -125,7 +123,7 @@ ai_summarizer <- function(prompt, info) {
   trimws(
     x = ai_summary,
     which = "both",
-    whitespace = '[ \t\r\n"]'
+    whitespace = "[ \t\r\n\"']"
   )
 }
 

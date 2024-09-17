@@ -1,0 +1,62 @@
+name: Monitor WHO cholera
+
+on:
+    workflow_dispatch:
+      inputs:
+        HS_FIRST_RUN:
+          required: true
+          type: choice
+          default: "FALSE"
+          options:
+            - "TRUE"
+            - "FALSE"
+        HS_DRY_RUN:
+          required: true
+          type: choice
+          default: "TRUE"
+          options:
+            - "TRUE"
+            - "FALSE"
+        HS_LOCAL:
+          required: true
+          type: choice
+          default: "TRUE"
+          options:
+            - "TRUE"
+            - "FALSE"
+        LOG_LEVEL:
+          required: true
+          type: choice
+          default: "DEBUG"
+          options:
+            - "DEBUG"
+            - "INFO"
+            - "WARNING"
+            - "ERROR"
+    schedule:
+      - cron: "0 8 * * 1-5"
+
+jobs:
+    run:
+        runs-on: ubuntu-latest
+        env:
+          HS_EMAIL: ${{ secrets.HS_EMAIL}}
+          HS_SURVEY_LINK: ${{ secrets.HS_SURVEY_LINK}}
+          HS_DRY_RUN: ${{ inputs.HS_DRY_RUN || 'FALSE' }}
+          DSCI_AZ_SAS_DEV: ${{ secrets.DSCI_AZ_SAS_DEV }}
+          DSCI_AZ_SAS_PROD: ${{ secrets.DSCI_AZ_SAS_PROD }}
+          MAILCHIMP_API_KEY: ${{ secrets.MAILCHIMP_API_KEY }}
+          CERF_CHOLERA_DATA: ${{ secrets.CERF_CHOLERA_DATA }}
+          HS_LOCAL: ${{ inputs.HS_LOCAL || 'FALSE' }}
+          HS_FIRST_RUN: ${{ inputs.HS_FIRST_RUN || 'FALSE' }}
+          LOG_LEVEL: ${{ inputs.LOG_LEVEL || 'INFO'}}
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v3
+
+            - name: Set up environment
+              uses: ocha-dap/hdx-signals-actions@v2
+
+            - name: Run R monitoring script
+              shell: bash
+              run: Rscript ./src/indicators/who_cholera/update_cholera.R

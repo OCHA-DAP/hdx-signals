@@ -1,8 +1,8 @@
-In three sentences or less, please summarize the main reasons and locations for armed conflict
-Reported in the following text. Here are two rules:
+In three sentences or less, please summarize the main reasons and locations for the reported events of armed conflict, protests, or riots. Here are three rules:
 
 - Avoid providing specific numbers or dates.
 - Only use the information provided to you. If the information is limited, keep
-the summarization brief. 
+the summarization brief.
+- Focus on summarizing the reasons and locations.
 
 Here is the information -->

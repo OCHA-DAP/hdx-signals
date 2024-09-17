@@ -8,7 +8,7 @@ box::use(
 #' @returns Data frame with campaign information
 #'
 #' @export
-info <- function(df, df_wrangled) {
+info <- function(df, df_wrangled, df_raw) {
   dplyr$tibble(
     hdx_url = NA_character_,
     source_url = "https://www.afro.who.int/health-topics/disease-outbreaks/outbreaks-and-other-emergencies-updates",

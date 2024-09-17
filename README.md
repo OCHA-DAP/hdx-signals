@@ -21,7 +21,7 @@ metadata for locations covered in Signals, spatial files for use in maps, and ot
 resources utilized in [src](src/README.md).
 - [test](test/README.md): Unit testing utilities for code and manual testing to explore changes
 to visual design in the system.
-- [.github](.github/README.md): Workflows that automate data scanning and other processes.
+- .github: Workflows that automate data scanning and other processes.
 
 ### Environment
 

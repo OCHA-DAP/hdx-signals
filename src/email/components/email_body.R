@@ -36,47 +36,34 @@ box::use(
 #'
 #' @export
 create_body <- function(
-    title,
-    iso3,
-    location,
-    plot_title = "",
-    plot_url = "",
-    map_title = "",
-    map_url = "",
-    plot2_title = "",
-    plot2_url = "",
-    other_images_urls = "",
-    other_images_captions = "",
-    summary_long = "",
-    summary_short = "",
-    summary_source = "",
-    further_information = "",
+    campaign_details,
+    df_campaign_content,
     use_conditions = FALSE) {
   paste0(
     intro_block$add_intro(
-      title = title,
-      iso3 = iso3,
-      location = location,
-      summary_short = summary_short,
+      title = campaign_details$title,
+      iso3 = df_campaign_content$iso3,
+      location = df_campaign_content$location,
+      summary_short = df_campaign_content$summary_short,
       use_conditions = use_conditions
     ),
     line_block$add_line(),
     paste(
       purrr$pmap_chr(
         .l = list(
-          iso3 = iso3,
-          location = location,
-          plot_title = plot_title,
-          plot_url = plot_url,
-          map_title = map_title,
-          map_url = map_url,
-          plot2_title = plot2_title,
-          plot2_url = plot2_url,
-          other_images_urls = other_images_urls,
-          other_images_captions = other_images_captions,
-          summary_long = summary_long,
-          summary_source = summary_source,
-          further_information = further_information,
+          iso3 = df_campaign_content$iso3,
+          location = df_campaign_content$location,
+          plot_title = df_campaign_content$plot_title,
+          plot_url = df_campaign_content$plot_url,
+          map_title = df_campaign_content$map_title,
+          map_url = df_campaign_content$map_url,
+          plot2_title = df_campaign_content$plot2_title,
+          plot2_url = df_campaign_content$plot2_url,
+          other_images_urls = df_campaign_content$other_images_urls,
+          other_images_captions = df_campaign_content$other_images_captions,
+          summary_long = df_campaign_content$summary_long,
+          summary_source = df_campaign_content$summary_source,
+          further_information = df_campaign_content$further_information,
           use_conditions = use_conditions
         ),
         .f = location_block$add_location
@@ -91,7 +78,8 @@ create_body <- function(
         "feedback through our <a href='{Sys.getenv('HS_SURVEY_LINK')}'>",
         "user survey</a>, or reach out to <a href='mailto:{Sys.getenv('HS_EMAIL')}",
         "'>{Sys.getenv('HS_EMAIL')}</a> with any questions, comments, or other ",
-        "feedback."
+        "feedback. View all current and historical signals in ",
+        '<a href="https://data.humdata.org/visualization/signals/">this map</a>.'
       )
     )
   )

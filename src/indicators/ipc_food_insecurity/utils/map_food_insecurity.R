@@ -134,7 +134,12 @@ food_insecurity_map <- function(df_wrangled, df_raw, title, date) {
       gg$geom_sf_text(
         data = poly_labels,
         gg$aes(label = poly_label),
-        size = 3
+        size = 3,
+        fun.geometry = \(x) {
+          suppressWarnings( # suppress warnings
+            sf$st_point_on_surface(sf$st_zm(x))
+          )
+        }
       )
   }
 
@@ -194,9 +199,7 @@ food_insecurity_map <- function(df_wrangled, df_raw, title, date) {
     )
 }
 
-
-
-
+#' Produce labels for the LAC product
 lac_labels <- function() {
   dplyr$tribble(
     ~X,        ~Y,   ~poly_label,

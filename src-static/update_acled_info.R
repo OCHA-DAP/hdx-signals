@@ -14,8 +14,6 @@ box::use(
   src/utils/hs_logger
 )
 
-hs_logger$configure_logger()
-
 # TODO: Remove once this passes from GH runner
 if (interactive()) {
   logger$log_info("Updating ACLED info...")

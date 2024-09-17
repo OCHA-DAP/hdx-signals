@@ -1,0 +1,53 @@
+# this workflow publishes PROMPTS.md
+
+on:
+  pull_request:
+    branches: [main]
+
+name: Publish PROMPTS.md when prompts added or changed
+
+permissions: read-all
+
+jobs:
+  publish-prompts:
+      permissions:
+        contents: write
+      runs-on: ubuntu-latest
+      steps:
+          - name: Checkout repository
+            uses: actions/checkout@v4
+            with:
+              ref: ${{ github.event.pull_request.head.ref }} # ensures we can commit
+
+          - name: Check that txt files for prompts have been changed
+            uses: tj-actions/changed-files@v44
+            id: changes
+            with:
+              since_last_remote_commit: true
+              files_yaml: |
+                prompts:
+                  - 'src/indicators/*/prompts/*.txt'
+                  - 'src/repo/publish_prompts.R'
+
+          - name: Set up environment
+            if: steps.changes.outputs.prompts_any_changed == 'true'
+            uses: ocha-dap/hdx-signals-actions@v2
+
+          - name: Update PROMPTS.md
+            if: steps.changes.outputs.prompts_any_changed == 'true'
+            shell: bash
+            run: Rscript ./src/repo/publish_prompts.R
+
+          - name: Commit PROMPTS.md
+            if: steps.changes.outputs.prompts_any_changed == 'true'
+            run: |
+              git config user.email "gha@email.com"
+              git config user.name "GHA"
+              git diff --quiet || (git add docs/PROMPTS.md && git commit -m "Publish PROMPTS.md")
+
+          - name: Push changes
+            if: steps.changes.outputs.prompts_any_changed== 'true'
+            uses: ad-m/github-push-action@master
+            with:
+              github_token: ${{ secrets.GH_TOKEN }}
+              branch: ${{ github.head_ref }}

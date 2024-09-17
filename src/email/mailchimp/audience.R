@@ -12,7 +12,8 @@ box::use(
 #' Get members information
 #'
 #' Get full data on members from Mailchimp. Used to then manually filter
-#' Mailchimp members.
+#' Mailchimp members. Calls `mc_member_req()` multiple times as the API limits
+#' returned values to 1,000 each call.
 #'
 #' @returns List of Mailchimp members information
 #'
@@ -23,7 +24,7 @@ mc_members <- function() {
   offset <- 1000
   resp_members <- resp$members
   while (total_items > offset) {
-    resp_members <- purrr$list_c(resp_members, mc_member_req(offset = offset)$members)
+    resp_members <- c(resp_members, mc_member_req(offset = offset)$members)
     offset <- offset + 1000
   }
   resp_members
@@ -36,7 +37,8 @@ mc_member_req <- function(offset = 0) {
       "members"
     ) |>
     httr2$req_url_query(
-      count = 1000
+      count = 1000,
+      offset = offset
     ) |>
     httr2$req_perform() |>
     httr2$resp_body_json()

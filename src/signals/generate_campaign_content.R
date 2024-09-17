@@ -8,10 +8,7 @@ box::use(
 box::use(
   src/signals/delete_campaign_content,
   src/signals/template_data,
-  src/utils/hs_logger
 )
-
-hs_logger$configure_logger()
 
 #' Generate campaigns content data frame
 #'

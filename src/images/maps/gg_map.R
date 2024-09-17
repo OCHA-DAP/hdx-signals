@@ -15,8 +15,8 @@ box::use(
 #' @returns ggplot object
 #'
 #' @export
-gg_map <- function(iso3) {
+gg_map <- function(iso3, ...) {
   gg$ggplot() +
-    geom_adm0$geom_adm0(iso3) +
+    geom_adm0$geom_adm0(iso3, ...) +
     theme_signals$theme_signals()
 }
