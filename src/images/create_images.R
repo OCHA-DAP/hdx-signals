@@ -12,6 +12,12 @@ box::use(../utils/hs_first_run)
 #' Generates images from a data frame of alerts and a wrangled data frame. Requires
 #' an image generation function to be passed in.
 #'
+#' In general, if an error function is thrown by `image_fn`, then the error
+#' is caught. All content is deleted and then error thrown through
+#' `generate_signals()`. If you want `image_fn` to throw an error but simply
+#' not return an `image`, then return `NULL` from `image_fn`. This will ensure
+#' an empty data frame is returned from `create_images()`.
+#'
 #' @param df_alerts Data frame of alerts, with an additional `title` column added
 #'     in that will be used to title the image.
 #' @param df_wrangled Data frame of wrangled data for use in plotting.
@@ -95,7 +101,7 @@ create_image <- function(
 
   p <- image_fn(df_wrangled, df_raw, title, date)
 
-  # allow `image_fn` to return NA if some maps can fail to generate without error
+  # allow `image_fn` to return NULL if some maps can fail to generate without error
   if (is.null(p)) {
     return(
       data.frame(
