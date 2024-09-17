@@ -1,12 +1,14 @@
-box::use(dplyr)
-box::use(janitor)
-box::use(rlang)
-box::use(logger[log_debug])
+box::use(
+  dplyr,
+  janitor,
+  rlang,
+  logger
+)
 
-box::use(cs = ../utils/cloud_storage)
-box::use(./delete_campaign_content[delete_campaign_content])
-box::use(./template_data)
-
+box::use(
+  src/signals/delete_campaign_content,
+  src/signals/template_data,
+)
 
 #' Generate campaigns content data frame
 #'
@@ -224,8 +226,8 @@ generate_section <- function(
   # if we error out, ensure previously generated content is deleted from Mailchimp
 
   if (any(section == "ERROR", na.rm = TRUE)) {
-    delete_campaign_content(df_alerts)
-    delete_campaign_content(section)
+    delete_campaign_content$delete_campaign_content(df_alerts)
+    delete_campaign_content$delete_campaign_content(section)
     stop(
       "Errors generated in ",
       fn_name,
@@ -234,7 +236,7 @@ generate_section <- function(
     )
   }
 
-  log_debug(
+  logger$log_debug(
     "Campaign content generation completed with ",
     fn_name,
     "()."
@@ -262,7 +264,7 @@ validate_campaign_content <- function(df_campaigns_content) {
   )
 
   if (!janitor$compare_df_cols_same(df_campaigns_content[, names(df_check)], df_check, bind_method = "rbind")) {
-    delete_campaign_content(df_campaigns_content)
+    delete_campaign_content$delete_campaign_content(df_campaigns_content)
     stop(
       "Campaign data frame does not have the required columns and column types, ",
       "please check how it was generated.",

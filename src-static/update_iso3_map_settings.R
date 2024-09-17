@@ -4,18 +4,21 @@
 #' when saved. Aim is to have plot somewhere around 3 inches minimum, 5 inches
 #' maximum. Currently only working on `height` and `width`.
 
-box::use(dplyr)
-box::use(purrr)
-box::use(tidyr)
-box::use(sf)
-box::use(logger[log_info])
+box::use(
+  dplyr,
+  purrr,
+  sf,
+  logger
+)
 
-box::use(../src/utils/get_iso3_sf)
-box::use(../src/utils/all_iso3_codes)
-box::use(cs = ../src/utils/cloud_storage)
+box::use(
+  src/utils/get_iso3_sf,
+  src/utils/all_iso3_codes,
+  cs = src/utils/cloud_storage
+)
 
 
-log_info("Updating map settings...")
+logger$log_info("Updating map settings...")
 
 #' Gets width to height ratio for base adm0 of iso3
 iso3_map_ratio <- function(iso3) {
@@ -69,4 +72,4 @@ cs$update_az_file(
   name = fname
 )
 
-log_info(paste0("Successfully downloaded map settings and saved to ", fname))
+logger$log_info(paste0("Successfully downloaded map settings and saved to ", fname))

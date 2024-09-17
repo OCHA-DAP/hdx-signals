@@ -1,13 +1,16 @@
-box::use(dplyr)
-box::use(purrr)
-box::use(rvest)
-box::use(stringr)
-box::use(glue)
-box::use(pdftools)
+box::use(
+  dplyr,
+  purrr,
+  rvest,
+  stringr,
+  glue
+)
 
-box::use(../../../../src/utils/ai_summarizer)
-box::use(../../../../src/utils/get_prompts)
-box::use(../../../../src/utils/parse_pdf)
+box::use(
+  src/utils/ai_summarizer,
+  src/utils/get_prompts,
+  src/utils/parse_pdf
+)
 
 #' Generate summary for food insecurity alerts
 #'

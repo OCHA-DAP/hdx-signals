@@ -1,20 +1,19 @@
-box::use(dplyr)
-box::use(stringr)
-box::use(gg = ggplot2)
-box::use(ripc)
-box::use(sf)
-box::use(logger)
-box::use(sf)
+box::use(
+  dplyr,
+  stringr,
+  gg = ggplot2,
+  ripc,
+  sf,
+  sf
+)
 
-box::use(../../../utils/location_codes)
-box::use(../../../utils/formatters)
-box::use(../../../images/create_images)
-box::use(../../../images/plots/caption)
-
-box::use(../../../images/maps/map_points)
-box::use(../../../images/maps/gg_map)
-box::use(../../../images/maps/geom_cities)
-box::use(../../../images/maps/map_theme)
+box::use(
+  src/images/create_images,
+  src/images/plots/caption,
+  src/images/maps/gg_map,
+  src/images/maps/geom_cities,
+  src/images/maps/map_theme
+)
 
 #' Map food insecurity
 #'

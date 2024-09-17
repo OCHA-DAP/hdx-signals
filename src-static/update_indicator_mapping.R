@@ -1,8 +1,11 @@
-box::use(dplyr)
-box::use(logger)
+box::use(
+  dplyr,
+  logger
+)
 
-box::use(cs = ../src/utils/cloud_storage)
-
+box::use(
+  cs = src/utils/cloud_storage
+)
 
 logger$log_info("Updating indicator mapping...")
 

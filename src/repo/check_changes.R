@@ -2,7 +2,7 @@
 #' reflected in CHANGES.md
 box::use(stringr)
 
-box::use(../utils/get_signals_version)
+box::use(src/utils/get_signals_version)
 
 main_version <- "https://raw.githubusercontent.com/OCHA-DAP/hdx-signals/main/.signals-version" |>
   readLines() |>

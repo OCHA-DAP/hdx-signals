@@ -1,5 +1,12 @@
 # Changes
 
+## 0.1.13.2 (17 September 2024)
+
+### System
+
+- Moved to `{box.linters}` package to allow comprehensive linting of a project
+using `{box}` for module management
+
 ## 0.1.13.1 (19 August 2024)
 
 ### System

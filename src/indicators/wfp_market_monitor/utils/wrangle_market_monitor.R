@@ -1,6 +1,6 @@
 box::use(dplyr)
 
-box::use(../../../utils/location_codes)
+box::use(src/utils/location_codes)
 
 #' Download raw market monitoring data
 #'

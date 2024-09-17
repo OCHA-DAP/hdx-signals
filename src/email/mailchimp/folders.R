@@ -1,11 +1,12 @@
-box::use(httr2)
-box::use(purrr)
-box::use(dplyr)
-box::use(rlang[`!!`])
+box::use(
+  httr2,
+  purrr,
+  dplyr
+)
 
-# local imports
-box::use(./base_api)
-box::use(cs = ../../utils/cloud_storage)
+box::use(
+  src/email/mailchimp/base_api
+)
 
 #' Get id for Mailchimp template folder
 #'

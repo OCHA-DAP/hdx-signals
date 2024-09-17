@@ -1,8 +1,9 @@
-box::use(dplyr)
-box::use(tidyr)
-box::use(janitor)
-box::use(zoo)
-box::use(rlang[`!!`])
+box::use(
+  dplyr,
+  tidyr,
+  janitor,
+  zoo
+)
 
 #' Create alerts data frame from time series data
 #'

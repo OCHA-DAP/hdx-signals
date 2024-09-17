@@ -1,15 +1,15 @@
-# indicator utilities
-box::use(./utils/raw_conflict)
-box::use(./utils/wrangle_conflict)
-box::use(./utils/alert_conflict)
-box::use(./utils/plot_conflict)
-box::use(./utils/map_conflict)
-box::use(./utils/info_conflict)
-box::use(./utils/summary_conflict)
-
-box::use(../../signals/generate_signals)
-box::use(../../utils/hs_logger)
-box::use(../../utils/update_coverage)
+box::use(
+  src/indicators/acled_conflict/utils/raw_conflict,
+  src/indicators/acled_conflict/utils/wrangle_conflict,
+  src/indicators/acled_conflict/utils/alert_conflict,
+  src/indicators/acled_conflict/utils/plot_conflict,
+  src/indicators/acled_conflict/utils/map_conflict,
+  src/indicators/acled_conflict/utils/info_conflict,
+  src/indicators/acled_conflict/utils/summary_conflict,
+  src/signals/generate_signals,
+  src/utils/hs_logger,
+  src/utils/update_coverage
+)
 
 dry_run_filter <- c("AFG", "SSD")
 indicator_id <- "acled_conflict"
@@ -27,7 +27,7 @@ update_coverage$update_coverage(
 )
 
 # now generate signals
-df_conflict <- generate_signals$generate_signals(
+df_conflict <- generate_signals$generate_signals( # nolint
   df_wrangled = df_wrangled,
   df_raw = df_raw,
   indicator_id = indicator_id,

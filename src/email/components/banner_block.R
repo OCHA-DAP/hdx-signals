@@ -1,6 +1,6 @@
 box::use(glue)
 
-box::use(./missing[missing_text])
+box::use(src/email/components/missing)
 
 #' Add banner block
 #'
@@ -11,7 +11,7 @@ box::use(./missing[missing_text])
 #'
 #' @export
 add_banner <- function(src) {
-  if (missing_text(src)) {
+  if (missing$missing_text(src)) {
     ""
   } else {
     glue$glue(

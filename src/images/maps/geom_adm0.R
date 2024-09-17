@@ -1,10 +1,10 @@
-box::use(gg = ggplot2)
-box::use(purrr)
-box::use(sf)
-box::use(dplyr)
+box::use(
+  gg = ggplot2,
+  purrr,
+  sf
+)
 
-box::use(../../utils/get_iso3_sf)
-box::use(../../utils/st_crop_adj_bbox)
+box::use(src/utils/get_iso3_sf)
 
 #' Geom for location boundaries
 #'

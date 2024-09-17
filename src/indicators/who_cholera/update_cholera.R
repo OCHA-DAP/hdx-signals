@@ -1,12 +1,11 @@
-box::use(./utils/raw_cholera)
-box::use(./utils/wrangle_cholera)
-box::use(./utils/alert_cholera)
-box::use(./utils/summary_cholera)
-box::use(./utils/plot_cholera)
-box::use(./utils/info_cholera)
-
-box::use(../../utils/hs_logger)
-box::use(../../signals/generate_signals)
+box::use(
+  src/indicators/who_cholera/utils/raw_cholera,
+  src/indicators/who_cholera/utils/wrangle_cholera,
+  src/indicators/who_cholera/utils/alert_cholera,
+  src/indicators/who_cholera/utils/plot_cholera,
+  src/indicators/who_cholera/utils/info_cholera,
+  src/signals/generate_signals
+)
 
 dry_run_filter <- c("ETH", "SSD")
 indicator_id <- "who_cholera"

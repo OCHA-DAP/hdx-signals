@@ -1,11 +1,14 @@
-box::use(httr2)
-box::use(logger[log_info, log_debug])
+box::use(
+  httr2,
+  logger
+)
 
-box::use(./base_api)
-box::use(../../utils/hs_local)
-box::use(../../utils/get_env[get_env])
-box::use(./folders)
-
+box::use(
+  src/email/mailchimp/base_api,
+  src/email/mailchimp/folders,
+  src/utils/hs_local,
+  src/utils/get_env
+)
 
 #' Adds a campaign to Mailchimp
 #'
@@ -23,7 +26,7 @@ box::use(./folders)
 #' @export
 mc_add_campaign <- function(subject_line, preview_text, title, recipients, template_id, folder) {
   if (hs_local$hs_local()) {
-    log_debug(
+    logger$log_debug(
       "Since `hs_local()`, no campaign added to Mailchimp."
     )
     list(id = "test-id", url = "test-url")
@@ -41,7 +44,7 @@ mc_add_campaign <- function(subject_line, preview_text, title, recipients, templ
             subject_line = subject_line,
             preview_text = preview_text,
             from_name = "HDX Signals",
-            reply_to = get_env("HS_EMAIL"),
+            reply_to = get_env$get_env("HS_EMAIL"),
             template_id = as.numeric(template_id),
             folder_id = folders$mc_campaign_folder_id(folder)
           ),
@@ -79,7 +82,7 @@ mc_send_campaign <- function(campaign_id) {
     httr2$req_method("POST")
 
   if (hs_local$hs_local()) {
-    log_debug(
+    logger$log_debug(
       "Since `hs_local()`, no campaign sent, dry run returned."
     )
     httr2$req_dry_run(req)
@@ -106,7 +109,7 @@ mc_campaign_info <- function(campaign_id) {
     httr2$req_method("GET")
 
   if (hs_local$hs_local()) {
-    log_debug(
+    logger$log_debug(
       "Since `hs_local()`, no campaign info retrieved, dry run returned."
     )
     httr2$req_dry_run(req)

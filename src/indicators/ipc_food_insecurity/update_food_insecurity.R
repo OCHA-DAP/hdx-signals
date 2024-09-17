@@ -1,14 +1,15 @@
-box::use(./utils/raw_food_insecurity)
-box::use(./utils/wrangle_food_insecurity)
-box::use(./utils/alert_food_insecurity)
-box::use(./utils/plot_food_insecurity)
-box::use(./utils/summary_food_insecurity)
-box::use(./utils/map_food_insecurity)
-box::use(./utils/info_food_insecurity)
-
-box::use(../../signals/generate_signals)
-box::use(../../utils/hs_logger)
-box::use(../../utils/update_coverage)
+box::use(
+  src/indicators/ipc_food_insecurity/utils/raw_food_insecurity,
+  src/indicators/ipc_food_insecurity/utils/wrangle_food_insecurity,
+  src/indicators/ipc_food_insecurity/utils/alert_food_insecurity,
+  src/indicators/ipc_food_insecurity/utils/plot_food_insecurity,
+  src/indicators/ipc_food_insecurity/utils/summary_food_insecurity,
+  src/indicators/ipc_food_insecurity/utils/map_food_insecurity,
+  src/indicators/ipc_food_insecurity/utils/info_food_insecurity,
+  src/signals/generate_signals,
+  src/utils/hs_logger,
+  src/utils/update_coverage
+)
 
 dry_run_filter <- c("AFG", "SSD")
 indicator_id <- "ipc_food_insecurity"
@@ -25,7 +26,7 @@ update_coverage$update_coverage(
 )
 
 # now generate signals
-df_ipc <- generate_signals$generate_signals(
+generate_signals$generate_signals(
   df_wrangled = df_wrangled,
   indicator_id = indicator_id,
   alert_fn = alert_food_insecurity$alert,

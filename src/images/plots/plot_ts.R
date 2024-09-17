@@ -1,10 +1,11 @@
-box::use(gg = ggplot2)
-box::use(scales)
-box::use(gghdx)
-box::use(dplyr)
+box::use(
+  gg = ggplot2,
+  scales,
+  gghdx,
+  dplyr
+)
 
-box::use(./theme_signals)
-box::use(./breaks_date)
+box::use(src/images/plots/theme_signals)
 
 #' Plot time series data
 #'

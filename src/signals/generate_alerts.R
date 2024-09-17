@@ -1,9 +1,13 @@
-box::use(dplyr)
-box::use(janitor)
+box::use(
+  dplyr,
+  janitor
+)
 
-box::use(./filter_alerts)
-box::use(./template_data)
-box::use(../utils/add_locations_metadata)
+box::use(
+  src/signals/filter_alerts,
+  src/signals/template_data,
+  src/utils/add_locations_metadata
+)
 
 #' Generate and upload alerts data frame
 #'

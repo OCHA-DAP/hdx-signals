@@ -1,9 +1,13 @@
-box::use(glue)
-box::use(rlang)
-box::use(sf)
+box::use(
+  glue,
+  rlang,
+  sf
+)
 
-box::use(cs = ./cloud_storage)
-box::use(./iso3_shift_longitude)
+box::use(
+  cs = src/utils/cloud_storage,
+  src/utils/iso3_shift_longitude
+)
 
 #' Get the ADM0 shapefile for a location
 #'

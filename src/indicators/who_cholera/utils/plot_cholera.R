@@ -1,11 +1,7 @@
-box::use(dplyr)
-box::use(purrr)
-box::use(rlang[`!!`])
-box::use(scales)
-
-box::use(../../../utils/formatters)
-box::use(../../../images/plots/plot_ts)
-box::use(../../../images/create_images)
+box::use(
+  src/images/plots/plot_ts,
+  src/images/create_images
+)
 
 #' Plot WHO cholera cases
 #'

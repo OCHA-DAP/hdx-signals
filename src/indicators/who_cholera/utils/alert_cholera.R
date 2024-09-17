@@ -1,10 +1,10 @@
-# external packages
-box::use(dplyr)
-box::use(tidyr)
-box::use(scales)
-box::use(utils)
+box::use(
+  dplyr,
+  tidyr,
+  utils
+)
 
-box::use(../../../utils/formatters)
+box::use(src/utils/formatters)
 
 #' Creates cholera alerts dataset
 #'
@@ -14,6 +14,8 @@ box::use(../../../utils/formatters)
 #' @param df_wrangled Wrangled dataframe
 #'
 #' @returns Alerts dataset
+#'
+#' @export
 alert <- function(df_wrangled) {
   df_wrangled |>
     dplyr$group_by(iso3) |>

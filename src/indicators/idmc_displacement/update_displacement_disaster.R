@@ -1,17 +1,17 @@
 box::use(dplyr)
 
-# indicator utilities
-box::use(./utils/raw_displacement)
-box::use(./utils/wrangle_displacement)
-box::use(./utils/alert_displacement)
-box::use(./utils/plot_displacement)
-box::use(./utils/info_displacement)
-box::use(./utils/summary_displacement)
-box::use(./utils/map_displacement)
-
-box::use(../../signals/generate_signals)
-box::use(../../utils/hs_logger)
-box::use(../../utils/update_coverage)
+box::use(
+  src/indicators/idmc_displacement/utils/raw_displacement,
+  src/indicators/idmc_displacement/utils/wrangle_displacement,
+  src/indicators/idmc_displacement/utils/alert_displacement,
+  src/indicators/idmc_displacement/utils/plot_displacement,
+  src/indicators/idmc_displacement/utils/info_displacement,
+  src/indicators/idmc_displacement/utils/summary_displacement,
+  src/indicators/idmc_displacement/utils/map_displacement,
+  src/signals/generate_signals,
+  src/utils/hs_logger,
+  src/utils/update_coverage
+)
 
 dry_run_filter <- c("AFG", "SSD")
 indicator_id <- "idmc_displacement_disaster"
@@ -29,7 +29,7 @@ update_coverage$update_coverage(
   iso3 = df_wrangled$iso3
 )
 
-df_disaster <- generate_signals$generate_signals(
+generate_signals$generate_signals(
   df_wrangled = df_wrangled,
   df_raw = df_raw,
   indicator_id = indicator_id,

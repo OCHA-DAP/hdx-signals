@@ -1,10 +1,14 @@
-box::use(purrr)
-box::use(openai)
-box::use(stringr)
-box::use(logger[log_debug])
+box::use(
+  purrr,
+  openai,
+  stringr,
+  logger
+)
 
-box::use(../utils/hs_local[hs_local])
-box::use(../utils/get_env[get_env])
+box::use(
+  src/utils/hs_local,
+  src/utils/get_env
+)
 
 
 #' AI summarizer without location name
@@ -131,8 +135,8 @@ ai_summarizer <- function(prompt, info) {
 #' is returned, otherwise it returns the summarization from the API.
 insistent_ai <- purrr$insistently(
   \(prompt, info) {
-    if (hs_local()) {
-      log_debug(
+    if (hs_local$hs_local()) {
+      logger$log_debug(
         "`ai_summarizer()` returning static output as `hs_local()` is `TRUE`. ",
         "Set `HS_LOCAL` env variable to `FALSE` if you want `ai_summarizer()` ",
         "to ping the OpenAI API, but be wary of saving data and emailing."
@@ -140,7 +144,7 @@ insistent_ai <- purrr$insistently(
 
       "Test output."
     } else {
-      get_env("OPENAI_API_KEY", output = FALSE)
+      get_env$get_env("OPENAI_API_KEY", output = FALSE)
 
       # suppress warnings because warnings are generated inside the openai
       # package if calls need to be retried, which we don't want to create failures

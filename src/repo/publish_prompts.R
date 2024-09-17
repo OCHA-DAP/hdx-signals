@@ -33,7 +33,6 @@ intro <- paste(
 )
 
 # get list of indicators that includes links to anchors generated later
-n <- length(indicators_unique)
 indicators_list <- paste0(
   paste0(
     "- [",

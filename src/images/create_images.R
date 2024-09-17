@@ -1,11 +1,10 @@
-box::use(dplyr)
-box::use(janitor)
-box::use(purrr)
-box::use(rlang[`!!`])
-box::use(rlang)
+box::use(
+  dplyr,
+  purrr,
+  rlang
+)
 
-box::use(./save_image)
-box::use(../utils/hs_first_run)
+box::use(src/images/save_image)
 
 #' Overall workhorse to generate images
 #'

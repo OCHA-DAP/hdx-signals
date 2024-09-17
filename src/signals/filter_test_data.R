@@ -1,8 +1,9 @@
 box::use(dplyr)
-box::use(rlang[`!!`])
 
-box::use(../utils/hs_dry_run)
-box::use(../utils/hs_first_run)
+box::use(
+  src/utils/hs_dry_run,
+  src/utils/hs_first_run
+)
 
 #' Filter data for signals testing
 #'

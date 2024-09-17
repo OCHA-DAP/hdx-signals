@@ -1,13 +1,13 @@
-box::use(httr2)
-box::use(purrr)
-box::use(dplyr)
-box::use(tidyr)
-box::use(rlang)
+box::use(
+  httr2,
+  purrr,
+  dplyr,
+  tidyr
+)
 
-# local modules
-box::use(./base_api)
-box::use(cs = ../../utils/cloud_storage)
-box::use(../../utils/location_codes)
+box::use(
+  src/email/mailchimp/base_api
+)
 
 #' Get members information
 #'

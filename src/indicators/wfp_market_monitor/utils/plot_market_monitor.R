@@ -1,13 +1,15 @@
-box::use(dplyr)
-box::use(scales)
-box::use(gg = ggplot2)
-box::use(gghdx)
+box::use(
+  dplyr,
+  scales,
+  gg = ggplot2,
+  gghdx
+)
 
-box::use(../../../utils/location_codes)
-box::use(../../../utils/formatters)
-box::use(../../../images/create_images)
-box::use(../../../images/plots/theme_signals)
-box::use(../../../images/plots/caption)
+box::use(
+  src/images/create_images,
+  src/images/plots/theme_signals,
+  src/images/plots/caption
+)
 
 #' Plot WFP market monitor food basket price changes
 #'

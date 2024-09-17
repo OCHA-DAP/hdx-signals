@@ -1,5 +1,7 @@
-box::use(./audience)
-box::use(cs = ../../utils/cloud_storage)
+box::use(
+  src/email/mailchimp/audience,
+  cs = src/utils/cloud_storage
+)
 
 # simply directly backup the Mailchimp audience as a JSON file to Azure container
 

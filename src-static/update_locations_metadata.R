@@ -1,13 +1,16 @@
-box::use(dplyr)
-box::use(purrr)
-box::use(sf)
-box::use(stringr)
-box::use(logger)
-box::use(glue)
+box::use(
+  dplyr,
+  purrr,
+  sf,
+  stringr,
+  logger,
+  glue
+)
 
-box::use(../src/utils/get_iso3_sf)
-box::use(cs = ../src/utils/cloud_storage)
-box::use(../src/utils/push_hdx)
+box::use(
+  cs = src/utils/cloud_storage,
+  src/utils/push_hdx
+)
 
 
 logger$log_info("Updating location info...")

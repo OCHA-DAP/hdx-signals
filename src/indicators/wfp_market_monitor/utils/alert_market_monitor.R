@@ -1,7 +1,4 @@
 box::use(dplyr)
-box::use(rlang[`!!`])
-
-box::use(../../../../src/utils/alert_daily_ts)
 
 #' Creates displacement alerts dataset
 #'
@@ -11,6 +8,8 @@ box::use(../../../../src/utils/alert_daily_ts)
 #' @param df_wrangled Wrangled dataframe
 #'
 #' @returns Alerts dataset
+#'
+#' @export
 alert <- function(df_wrangled) {
   df_wrangled |>
     dplyr$mutate(

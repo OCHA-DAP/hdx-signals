@@ -1,13 +1,15 @@
-box::use(httr2)
-box::use(lubridate)
-box::use(dplyr)
-box::use(purrr)
-box::use(readr)
-box::use(logger[log_info, log_debug, log_error])
+box::use(
+  httr2,
+  dplyr,
+  purrr,
+  readr,
+  logger
+)
 
-box::use(cs = ../../../../src/utils/cloud_storage)
-box::use(../../../utils/get_env[get_env])
-
+box::use(
+  src/utils/get_env,
+  cs = src/utils/cloud_storage
+)
 
 #' Download raw conflict data
 #'
@@ -29,16 +31,16 @@ raw <- function() {
   date_check <- cs$read_az_file("output/acled_conflict/download_date.parquet")
 
   if (date_check$acled_download_date == Sys.Date()) {
-    log_debug("ACLED data already downloaded today. Using existing raw.parquet file on Azure")
+    logger$log_debug("ACLED data already downloaded today. Using existing raw.parquet file on Azure")
     cs$read_az_file("output/acled_conflict/raw.parquet")
   } else {
-    log_debug("Downloading ACLED data")
+    logger$log_debug("Downloading ACLED data")
     df_acled <- httr2$request(
       "https://api.acleddata.com/acled/read"
     ) |>
       httr2$req_url_query(
-        key = get_env("ACLED_ACCESS_KEY"),
-        email = get_env("ACLED_EMAIL_ADDRESS"),
+        key = get_env$get_env("ACLED_ACCESS_KEY"),
+        email = get_env$get_env("ACLED_EMAIL_ADDRESS"),
         fields = paste(
           "iso",
           "event_date",

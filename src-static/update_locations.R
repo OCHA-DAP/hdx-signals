@@ -1,12 +1,15 @@
-box::use(readr)
-box::use(dplyr)
-box::use(countrycode)
-box::use(logger[log_info])
+box::use(
+  readr,
+  dplyr,
+  countrycode,
+  logger
+)
 
-box::use(cs = ../src/utils/cloud_storage)
+box::use(
+  cs = src/utils/cloud_storage
+)
 
-
-log_info("Updating locations we cover...")
+logger$log_info("Updating locations we cover...")
 
 # update all the iso3 codes (and names and regions) for locations we want to potentially cover in HDX Signals
 df_taxonomy <- readr$read_csv(
@@ -129,5 +132,5 @@ if (any(is.na(dplyr$select(df_locations, -location_note)))) {
     df = df_locations,
     name = fname
   )
-  log_info(paste0("Successfully created locations date and saved to ", fname))
+  logger$log_info(paste0("Successfully created locations date and saved to ", fname))
 }

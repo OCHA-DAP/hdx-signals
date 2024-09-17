@@ -1,5 +1,6 @@
 box::use(httr2)
-box::use(../../utils/get_env[get_env])
+
+box::use(src/utils/get_env[get_env])
 
 #' Base API call for Mailchimp
 #'

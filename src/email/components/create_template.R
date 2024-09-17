@@ -1,7 +1,5 @@
 box::use(glue)
 
-box::use(./email_body)
-
 #' Create template HTML from body
 #'
 #' Creates template HTML for uploading to Mailchimp from body text. Just reads in
@@ -19,6 +17,8 @@ box::use(./email_body)
 #'     Defaults to the Mailchimp language that will link to the emails own
 #'     archive.
 #' @returns String of the new HTML template
+#'
+#' @export
 create_template <- function(body, banner_url, archive_url = "*|ARCHIVE|*") {
   template <- readLines("src/email/components/hdx_signals_template.html", warn = FALSE) |>
     paste(

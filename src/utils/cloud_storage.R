@@ -1,19 +1,22 @@
-box::use(stringr)
-box::use(arrow)
-box::use(az = AzureStor)
-box::use(glue)
-box::use(rlang)
-box::use(utils)
-box::use(sf)
-box::use(tools)
-box::use(readr)
-box::use(jsonlite)
-box::use(dplyr)
-box::use(logger[log_debug])
+box::use(
+  stringr,
+  arrow,
+  az = AzureStor,
+  glue,
+  rlang,
+  utils,
+  sf,
+  tools,
+  readr,
+  jsonlite,
+  dplyr,
+  logger
+)
 
-box::use(../utils/hs_local[hs_local])
-box::use(../utils/get_env[get_env])
-
+box::use(
+  src/utils/hs_local,
+  src/utils/get_env
+)
 
 #' Read a Parquet file stored in Microsoft Azure Data Storage container
 #'
@@ -98,8 +101,8 @@ update_az_file <- function(df, name, container = c("prod", "dev", "wfp")) {
     geojson = sf$st_write(obj = df, dsn = tf, quiet = TRUE)
   )
 
-  if (hs_local()) {
-    log_debug(
+  if (hs_local$hs_local()) {
+    logger$log_debug(
       "`update_az_file()` not saving data as `hs_local()` is `TRUE`. ",
       "Set `HS_LOCAL` env variable to `FALSE` if you want the data to be ",
       "saved, but be careful of sending emails or calling the OpenAI API."
@@ -202,7 +205,7 @@ signals_path <- function(indicator_id, dry_run) {
 container_prod <- function() {
   container_endpoint_prod <- az$blob_endpoint(
     endpoint = azure_endpoint_url("blob", "prod"),
-    sas = get_env("DSCI_AZ_SAS_PROD")
+    sas = get_env$get_env("DSCI_AZ_SAS_PROD")
   )
   az$blob_container(
     endpoint = container_endpoint_prod,
@@ -216,7 +219,7 @@ container_prod <- function() {
 container_dev <- function() {
   container_endpoint_dev <- az$blob_endpoint(
     endpoint = azure_endpoint_url("blob", "dev"),
-    sas = get_env("DSCI_AZ_SAS_DEV")
+    sas = get_env$get_env("DSCI_AZ_SAS_DEV")
   )
   az$blob_container(
     endpoint = container_endpoint_dev,
@@ -232,7 +235,7 @@ container_dev <- function() {
 container_wfp <- function() {
   container_endpoint_dev <- az$blob_endpoint(
     endpoint = azure_endpoint_url("blob", "dev"),
-    sas = get_env("DSCI_AZ_SAS_DEV")
+    sas = get_env$get_env("DSCI_AZ_SAS_DEV")
   )
   az$blob_container(
     endpoint = container_endpoint_dev,

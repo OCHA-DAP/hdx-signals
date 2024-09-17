@@ -1,11 +1,15 @@
-box::use(httr2)
-box::use(uuid)
-box::use(utils)
+box::use(
+  httr2,
+  uuid,
+  utils
+)
 
-box::use(./base_api)
-box::use(./folders)
-box::use(../../utils/hs_local)
-box::use(../../utils/temp_file)
+box::use(
+  src/email/mailchimp/base_api,
+  src/email/mailchimp/folders,
+  src/utils/hs_local,
+  src/utils/temp_file
+)
 
 #' Adds a template to Mailchimp
 #'

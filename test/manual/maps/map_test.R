@@ -1,19 +1,13 @@
-box::use(gg = ggplot2)
-box::use(scales)
-box::use(gghdx)
-box::use(sf)
-box::use(dplyr)
+box::use(
+  gg = ggplot2,
+  sf
+)
 
-box::use(../../../src/images/plots/caption)
-
-box::use(../../../src/images/maps/gg_map)
-box::use(../../../src/images/maps/geom_cities)
-box::use(../../../src/images/maps/geom_centroids)
-box::use(../../../src/images/maps/map_points)
-box::use(../../../src/utils/get_iso3_sf)
-box::use(cs = ../../../src/utils/cloud_storage)
-
-df_map_settings <- cs$read_az_file("input/iso3_map_settings.json")
+box::use(
+  src/images/plots/caption,
+  src/images/maps/map_points,
+  src/utils/get_iso3_sf
+)
 
 #' Create and save plots with randomly sampled values over admin zone of interest
 #' files will be saved in the directory specified with syntax: "{iso3}_map.png"
@@ -28,23 +22,19 @@ df_map_settings <- cs$read_az_file("input/iso3_map_settings.json")
 #' @param use_bbox `logical` if TRUE (default) samples will be drawn from the bounding box
 #'    of the polygon, if FALSE sampled withing the polygon. It's mainly a feature to
 #'    ease development as sampling withing bbox is much faster
-#' @param map_settings json file containing map specifications (default = "input/iso3_map_settings.json")
 #' @param out_dir `character` directory to output sample maps. If NULL (default) no image written.
 #'    and no image written
 #'
 #' @return ggplot image
+#'
 #' @export
 map_test <- function(
   iso3,
   sample_n = 1:20,
   sample_values = 1:20000,
   use_bbox = TRUE,
-  map_settings = df_map_settings,
   out_dir = NULL
 ) {
-
-  # filter map settings for dimensions
-  df_ms <- dplyr$filter(df_map_settings, iso3 == !!iso3)
 
   # make plot
   p <- map_with_points_test(

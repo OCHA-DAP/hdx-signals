@@ -1,14 +1,14 @@
-# indicator utilities
-box::use(./utils/raw_market_monitor)
-box::use(./utils/wrangle_market_monitor)
-box::use(./utils/alert_market_monitor)
-box::use(./utils/plot_market_monitor)
-box::use(./utils/info_market_monitor)
-box::use(./utils/summary_market_monitor)
-
-box::use(../../signals/generate_signals)
-box::use(../../utils/hs_logger)
-box::use(../../utils/update_coverage)
+box::use(
+  src/indicators/wfp_market_monitor/utils/raw_market_monitor,
+  src/indicators/wfp_market_monitor/utils/wrangle_market_monitor,
+  src/indicators/wfp_market_monitor/utils/alert_market_monitor,
+  src/indicators/wfp_market_monitor/utils/plot_market_monitor,
+  src/indicators/wfp_market_monitor/utils/info_market_monitor,
+  src/indicators/wfp_market_monitor/utils/summary_market_monitor,
+  src/signals/generate_signals,
+  src/utils/hs_logger,
+  src/utils/update_coverage
+)
 
 dry_run_filter <- c("SYR", "SSD")
 indicator_id <- "wfp_market_monitor"
@@ -26,7 +26,7 @@ update_coverage$update_coverage(
 )
 
 # now generate signals
-df_market_monitor <- generate_signals$generate_signals(
+generate_signals$generate_signals(
   df_wrangled = df_wrangled,
   df_raw = df_raw,
   indicator_id = "wfp_market_monitor",

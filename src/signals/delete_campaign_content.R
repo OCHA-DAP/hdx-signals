@@ -1,9 +1,11 @@
-box::use(dplyr)
-box::use(tidyr)
-box::use(stringr)
+box::use(
+  dplyr,
+  tidyr,
+)
 
-box::use(../email/mailchimp/delete)
-box::use(./template_data)
+box::use(
+  src/email/mailchimp/delete
+)
 
 #' Deletes campaign content from data frame
 #'
