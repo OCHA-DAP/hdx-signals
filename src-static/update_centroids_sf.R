@@ -9,8 +9,7 @@ box::use(
 box::use(
   cs = src/utils/cloud_storage,
   src/utils/all_iso3_codes,
-  src/utils/get_iso3_sf,
-  src/utils/hs_logger
+  src/utils/get_iso3_sf
 )
 
 logger$log_info("Updating centroids data...")

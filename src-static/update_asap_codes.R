@@ -1,10 +1,13 @@
 #' Update JRC ASAP code mapping to GAUL and ISO3 codes
-box::use(dplyr)
-box::use(countrycode)
-box::use(logger)
+box::use(
+  dplyr,
+  countrycode,
+  logger
+)
 
-box::use(cs = ../src/utils/cloud_storage)
-box::use(../src/utils/hs_logger)
+box::use(
+  cs = src/utils/cloud_storage
+)
 
 
 # update all the iso3 codes (and names and regions) for locations we want to potentially cover in HDX Signals

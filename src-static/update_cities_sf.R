@@ -9,8 +9,7 @@ box::use(
 box::use(
   src/utils/download_shapefile,
   src/utils/all_iso3_codes,
-  cs = src/utils/cloud_storage,
-  src/utils/hs_logger
+  cs = src/utils/cloud_storage
 )
 
 ###################

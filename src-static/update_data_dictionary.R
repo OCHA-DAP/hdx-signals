@@ -1,8 +1,9 @@
 box::use(dplyr)
 
-box::use(../src/signals/template_data)
-box::use(cs = ../src/utils/cloud_storage)
-box::use(../src/utils/push_hdx)
+box::use(
+  cs = src/utils/cloud_storage,
+  src/utils/push_hdx
+)
 
 df_dictionary <- dplyr$tribble(
   ~column, ~description,

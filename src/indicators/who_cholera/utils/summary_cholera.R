@@ -1,5 +1,4 @@
 box::use(dplyr)
-box::use(glue)
 
 #' Add summary to cholera alerts
 #'

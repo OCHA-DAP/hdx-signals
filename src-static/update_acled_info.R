@@ -10,8 +10,7 @@ box::use(
 
 box::use(
   src/utils/location_codes,
-  cs = src/utils/cloud_storage,
-  src/utils/hs_logger
+  cs = src/utils/cloud_storage
 )
 
 # TODO: Remove once this passes from GH runner

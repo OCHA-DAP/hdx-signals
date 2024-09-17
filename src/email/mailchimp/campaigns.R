@@ -7,8 +7,7 @@ box::use(
   src/email/mailchimp/base_api,
   src/email/mailchimp/folders,
   src/utils/hs_local,
-  src/utils/get_env,
-  src/utils/hs_logger
+  src/utils/get_env
 )
 
 #' Adds a campaign to Mailchimp
@@ -110,7 +109,7 @@ mc_campaign_info <- function(campaign_id) {
     httr2$req_method("GET")
 
   if (hs_local$hs_local()) {
-    log_debug(
+    logger$log_debug(
       "Since `hs_local()`, no campaign info retrieved, dry run returned."
     )
     httr2$req_dry_run(req)

@@ -8,7 +8,6 @@ box::use(
 
 box::use(
   src/utils/get_env,
-  src/utils/hs_logger,
   src/utils/hs_dry_run,
   src/utils/formatters,
   cs = src/utils/cloud_storage

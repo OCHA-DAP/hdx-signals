@@ -1,10 +1,4 @@
 box::use(
-  dplyr,
-  scales
-)
-
-box::use(
-  src/utils/formatters,
   src/images/plots/plot_ts,
   src/images/create_images
 )

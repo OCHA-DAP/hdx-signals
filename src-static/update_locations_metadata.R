@@ -9,7 +9,6 @@ box::use(
 
 box::use(
   cs = src/utils/cloud_storage,
-  src/utils/hs_logger,
   src/utils/push_hdx
 )
 

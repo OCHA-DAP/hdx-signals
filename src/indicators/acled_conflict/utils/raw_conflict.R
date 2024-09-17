@@ -7,7 +7,6 @@ box::use(
 )
 
 box::use(
-  src/utils/hs_logger,
   src/utils/get_env,
   cs = src/utils/cloud_storage
 )

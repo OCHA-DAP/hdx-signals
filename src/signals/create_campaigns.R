@@ -12,7 +12,6 @@ box::use(
   src/email/mailchimp/custom_segmentation,
   src/utils/formatters,
   src/utils/get_signals_version,
-  src/utils/hs_logger,
   cs = src/utils/cloud_storage
 )
 

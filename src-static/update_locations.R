@@ -6,8 +6,7 @@ box::use(
 )
 
 box::use(
-  cs = src/utils/cloud_storage,
-  src/utils/hs_logger
+  cs = src/utils/cloud_storage
 )
 
 logger$log_info("Updating locations we cover...")

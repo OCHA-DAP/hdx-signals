@@ -1,8 +1,7 @@
 box::use(
   gg = ggplot2,
   purrr,
-  sf,
-  units
+  sf
 )
 
 box::use(src/utils/get_iso3_sf)

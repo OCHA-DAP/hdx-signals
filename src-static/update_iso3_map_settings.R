@@ -14,8 +14,7 @@ box::use(
 box::use(
   src/utils/get_iso3_sf,
   src/utils/all_iso3_codes,
-  cs = src/utils/cloud_storage,
-  src/utils/hs_logger
+  cs = src/utils/cloud_storage
 )
 
 
