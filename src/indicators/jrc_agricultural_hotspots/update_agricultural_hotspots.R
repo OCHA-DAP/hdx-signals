@@ -7,10 +7,11 @@ box::use(
   src/indicators/jrc_agricultural_hotspots/utils/plot_agricultural_hotspots,
   src/signals/generate_signals,
   src/utils/hs_logger,
-  src/utils/update_coverage
+  src/utils/update_coverage,
+  src/utils/hs_dry_run
 )
 
-dry_run_filter <- if (Sys.getenv("HS_DRY_RUN")) c("AFG", "SSD") else NULL
+dry_run_filter <- if (hs_dry_run$hs_dry_run()) c("AFG", "SSD") else NULL
 indicator_id <- "jrc_agricultural_hotspots"
 
 hs_logger$monitoring_log_setup(indicator_id)

@@ -4,7 +4,8 @@ box::use(
 )
 
 box::use(
-  cs = src/utils/cloud_storage
+  cs = src/utils/cloud_storage,
+  src/utils/hs_dry_run
 )
 
 #' Check existing signals

@@ -16,7 +16,8 @@ box::use(
   src/signals/check_existing_signals,
   src/signals/template_data,
   cs = src/utils/cloud_storage,
-  src/utils/hs_local
+  src/utils/hs_local,
+  src/utils/hs_dry_run
 )
 
 #' Generate campaigns for any indicator
