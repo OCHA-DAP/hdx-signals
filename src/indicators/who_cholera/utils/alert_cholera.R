@@ -1,5 +1,6 @@
 box::use(
   dplyr,
+  scales,
   tidyr,
   utils
 )

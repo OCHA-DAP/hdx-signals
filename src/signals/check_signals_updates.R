@@ -7,6 +7,7 @@ box::use(
 )
 
 box::use(
+  src/email/mailchimp/campaigns,
   src/utils/get_env,
   src/utils/hs_dry_run,
   src/utils/formatters,

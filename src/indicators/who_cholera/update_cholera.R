@@ -4,7 +4,9 @@ box::use(
   src/indicators/who_cholera/utils/alert_cholera,
   src/indicators/who_cholera/utils/plot_cholera,
   src/indicators/who_cholera/utils/info_cholera,
-  src/signals/generate_signals
+  src/indicators/who_cholera/utils/summary_cholera,
+  src/signals/generate_signals,
+  src/utils/hs_logger
 )
 
 dry_run_filter <- c("ETH", "SSD")
