@@ -8,7 +8,8 @@ box::use(
   src/email/mailchimp/audience,
   src/utils/location_codes,
   src/utils/get_env,
-  cs = src/utils/cloud_storage
+  cs = src/utils/cloud_storage,
+  src/utils/hs_dry_run
 )
 
 #' Generate email segmentation

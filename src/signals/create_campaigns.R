@@ -12,7 +12,9 @@ box::use(
   src/email/mailchimp/custom_segmentation,
   src/utils/formatters,
   src/utils/get_signals_version,
-  cs = src/utils/cloud_storage
+  cs = src/utils/cloud_storage,
+  src/utils/hs_dry_run,
+  src/utils/hs_first_run
 )
 
 #' Create campaigns

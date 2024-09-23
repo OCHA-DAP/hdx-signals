@@ -1,5 +1,7 @@
-box::use(lubridate)
-box::use(scales)
+box::use(
+  lubridate,
+  scales
+)
 
 #' Generate breaks for date axis
 #'

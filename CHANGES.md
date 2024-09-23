@@ -1,5 +1,11 @@
 # Changes
 
+## 0.1.13.3 (23 September 2024)
+
+### System
+
+- Ensured env variables were properly imported across modules
+
 ## 0.1.13.2 (17 September 2024)
 
 ### System

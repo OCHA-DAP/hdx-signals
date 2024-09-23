@@ -5,7 +5,10 @@ box::use(
   dplyr
 )
 
-box::use(src/images/plots/theme_signals)
+box::use(
+  src/images/plots/theme_signals,
+  src/images/plots/breaks_date
+)
 
 #' Plot time series data
 #'
