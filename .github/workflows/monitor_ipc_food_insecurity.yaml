@@ -20,7 +20,7 @@ on:
         HS_LOCAL:
           required: true
           type: choice
-          default: "FALSE"
+          default: "TRUE"
           options:
             - "TRUE"
             - "FALSE"
