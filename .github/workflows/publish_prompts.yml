@@ -31,7 +31,7 @@ jobs:
 
           - name: Set up environment
             if: steps.changes.outputs.prompts_any_changed == 'true'
-            uses: ocha-dap/hdx-signals-actions@v2
+            uses: ocha-dap/hdx-signals-actions@v3
 
           - name: Update PROMPTS.md
             if: steps.changes.outputs.prompts_any_changed == 'true'
