@@ -569,9 +569,14 @@
     },
     "gghdx": {
       "Package": "gghdx",
-      "Version": "0.1.3",
-      "Source": "Repository",
-      "Repository": "CRAN",
+      "Version": "0.1.4",
+      "Source": "GitHub",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteUsername": "OCHA-DAP",
+      "RemoteRepo": "gghdx",
+      "RemoteRef": "main",
+      "RemoteSha": "d47f50ae03bf681d11c792c8677be738de28a0fe",
       "Requirements": [
         "R",
         "dplyr",
@@ -585,7 +590,7 @@
         "sysfonts",
         "tibble"
       ],
-      "Hash": "6ce7b2809a82a978e5de8728334268e7"
+      "Hash": "5d295279bd1c9369da2111feca6c2797"
     },
     "ggplot2": {
       "Package": "ggplot2",
@@ -746,9 +751,14 @@
     },
     "idmc": {
       "Package": "idmc",
-      "Version": "0.3.0",
-      "Source": "Repository",
-      "Repository": "CRAN",
+      "Version": "0.3.1",
+      "Source": "GitHub",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteUsername": "OCHA-DAP",
+      "RemoteRepo": "idmc",
+      "RemoteRef": "main",
+      "RemoteSha": "24ca9db622faba53b2e295801a85f9b4a8eabfc5",
       "Requirements": [
         "R",
         "dplyr",
@@ -759,7 +769,7 @@
         "stringr",
         "tidyr"
       ],
-      "Hash": "24558d6c54cba097c2f16fcf94c233d5"
+      "Hash": "ba5046140343d60353759c2effaa72c3"
     },
     "isoband": {
       "Package": "isoband",
