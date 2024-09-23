@@ -9,8 +9,8 @@ box::use(
 box::use(
   src/email/mailchimp/campaigns,
   src/utils/get_env,
-  src/utils/hs_dry_run,
   src/utils/formatters,
+  src/utils/hs_dry_run,
   cs = src/utils/cloud_storage
 )
 
@@ -68,6 +68,8 @@ slack_post_message <- function(header_text, status_text, signals_text) {
     stop("Error posting Slack message")
   }
 }
+
+
 
 #' Builds the header text, depending on how many signals are reported
 #'
@@ -196,7 +198,7 @@ full_status <- ""
 n_signals <- 0
 # Needs to have at least 1 character for the Slack API
 signals <- " "
-dry_run <- Sys.getenv("HS_DRY_RUN", unset = TRUE)
+dry_run <- hs_dry_run$hs_dry_run()
 
 for (ind in indicators) {
   logger$log_info(paste0("Checking GitHub Actions status for ", ind, "..."))
