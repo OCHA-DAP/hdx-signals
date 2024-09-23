@@ -14,6 +14,7 @@ box::use(
 box::use(
   src/images/plots/theme_signals,
   src/images/plots/caption,
+  src/images/plots/breaks_date,
   src/images/create_images
 )
 
