@@ -5,6 +5,9 @@
 ### System
 
 - Ensured env variables were properly imported across modules
+- Upgraded R version to 4.4.1, upgrading packages to use new `{Matrix}` package
+with breaking changes
+- Updated all packages in `{renv}` lock file
 
 ## 0.1.13.2 (17 September 2024)
 
