@@ -23,7 +23,7 @@ jobs:
               uses: actions/checkout@v3
 
             - name: Set up environment
-              uses: ocha-dap/hdx-signals-actions@v2
+              uses: ocha-dap/hdx-signals-actions@v3
 
             - name: Update ASAP ISO3 mapping
               shell: bash
