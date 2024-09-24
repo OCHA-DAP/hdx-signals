@@ -31,9 +31,6 @@ box::use(
 #' @export
 wrangle <- function(df_raw) {
   df_raw |>
-    dplyr$filter(
-      displacement_type %in% c("Conflict", "Disaster") # other is no longer used by IDMC
-    ) |>
     dplyr$group_by(
       displacement_type, iso3
     ) |>
@@ -43,7 +40,7 @@ wrangle <- function(df_raw) {
       displacement_type, iso3
     ) |>
     dplyr$filter(
-      cumsum(dplyr$displacement_daily) > 0 |
+      cumsum(displacement_daily) > 0 |
         !hrp_location | # only filter HRP countries
         displacement_type == "Disaster" # only filter conflict-driven displacement
     ) |>

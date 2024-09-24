@@ -1,4 +1,7 @@
-box::use(idmc)
+box::use(
+  dplyr,
+  idmc
+)
 
 box::use(src/utils/get_env[get_env])
 
@@ -10,5 +13,8 @@ box::use(src/utils/get_env[get_env])
 #' @export
 raw <- function() {
   get_env("IDMC_API", output = FALSE)
-  idmc$idmc_get_data()
+  idmc$idmc_get_data() |>
+    dplyr$filter(
+      iso3 != "ATA"
+    )
 }
