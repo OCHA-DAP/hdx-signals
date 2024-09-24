@@ -30,7 +30,7 @@ box::use(
 #'
 #' @export
 wrangle <- function(df_raw) {
-  df_wrangled <- df_raw |>
+  df_raw |>
     dplyr$filter(
       displacement_type %in% c("Conflict", "Disaster") # other is no longer used by IDMC
     ) |>
@@ -38,13 +38,20 @@ wrangle <- function(df_raw) {
       displacement_type, iso3
     ) |>
     idmc$idmc_transform_daily() |>
+    add_locations_metadata$add_locations_metadata() |>
     dplyr$group_by(
       displacement_type, iso3
+    ) |>
+    dplyr$filter(
+      cumsum(dplyr$displacement_daily) > 0 |
+        !hrp_location | # only filter HRP countries
+        displacement_type == "Disaster" # only filter conflict-driven displacement
     ) |>
     dplyr$mutate(
       displacement_7d = zoo$rollsumr(displacement_daily, k = 7, fill = NA),
       displacement_30d = zoo$rollsumr(displacement_daily, k = 30, fill = NA)
     ) |>
+    dplyr$ungroup() |>
     dplyr$select(
       iso3,
       displacement_type,
@@ -52,27 +59,5 @@ wrangle <- function(df_raw) {
       displacement_daily,
       displacement_7d,
       displacement_30d
-    ) |>
-    dplyr$ungroup()
-
-  # temporary filtering to fix IDMC issues
-  if (unique(df_wrangled$displacement_type) == "Conflict") {
-    df_wrangled <- df_wrangled |>
-      add_locations_metadata$add_locations_metadata() |>
-      dplyr$group_by(
-        iso3
-      ) |>
-      dplyr$filter(
-        cumsum(dplyr$displacement_daily) > 0 | !hrp_location # only do the filtering for HRP countries
-      ) |>
-      dplyr$ungroup() |>
-      dplyr$select(
-        iso3,
-        displacement_type,
-        date,
-        displacement_daily,
-        displacement_7d,
-        displacement_30d
-      )
-  }
+    )
 }
