@@ -10,6 +10,8 @@ We monitor the [Internal Displacement Monitoring Centre's (IDMC) ](https://www.i
 
 We first remove duplicated event databased on event ID. If multiple entries for a single event ID, then only the recommended figures are kept if available. If unavailable, then the latest data updated into the IDU is kept based on the `created_at` date. We then transform this IDMC event data into a time series and calculate monthly displacements as the rolling sum of displacements across the past 30 days.
 
+For HRP countries and conflict-driven displacement, we only consider the time series to start from the first reported displacement event. This is because the IDMC IDU has uncertain temporal coverage. This temporary fix will be removed once the IDMC provides metadata indicating the start date for coverage for each country.
+
 Signals are generated whenever monthly displacements reach levels not seen in the past one or three years. Given the significant differences in conflict and natural disaster displacement, signals are generated separately for each type. Signals are not generated if monthly fatalities are below the minimum threshold of 5,000 (conflict-driven) and 50,000 (disaster-driven).
 
 #### Examples
