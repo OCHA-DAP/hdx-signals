@@ -63,7 +63,7 @@ wrangle <- function(df_raw) {
         iso3
       ) |>
       dplyr$filter(
-        cumsum(dplyr$displacement_daily) > 0 | !hrp # only do the filtering for HRP countries
+        cumsum(dplyr$displacement_daily) > 0 | !hrp_location # only do the filtering for HRP countries
       ) |>
       dplyr$ungroup() |>
       dplyr$select(
