@@ -5,7 +5,7 @@ box::use(
 )
 
 box::use(
-  src/images/maps/gg_map,
+  src/images/maps/sf_adm0,
   src/images/maps/geom_cities,
   src/images/maps/map_theme
 )
@@ -18,6 +18,7 @@ box::use(
 #' @param df Points sf to plot
 #' @param val_col Values column to use for size
 #' @param size Title for the size legend
+#' @param action Passed to `sf_adm0::sf_adm0()`
 #' @param subtitle Subtitle for the plot, no title used
 #' @param caption Caption for the plot
 #' @param use_map_settings Whether or not to use map settings in `input/iso3_map_settings.json`
@@ -28,19 +29,27 @@ box::use(
 #' @export
 map_points <- function(
     iso3,
-    df,
+    sf_points,
     val_col,
     size,
     title,
+    action = c("error", "filter", "nothing"),
     subtitle = gg$waiver(),
     caption = gg$waiver(),
     use_map_settings = TRUE) {
 
-  num_unique_vals <- length(unique(df[[val_col]]))
+  num_unique_vals <- length(unique(sf_points[[val_col]]))
+  sf_list <- sf_adm0$sf_adm0(
+    iso3 = iso3,
+    action = action
+  )
 
-  gg_map$gg_map(iso3, df) +
+  gg$ggplot() +
     gg$geom_sf(
-      data = df,
+      data = sf_list$sf_adm0
+    ) +
+    gg$geom_sf(
+      data = sf_list$additional_geoms[[1]],
       mapping = gg$aes(
         size = .data[[val_col]]
       ),

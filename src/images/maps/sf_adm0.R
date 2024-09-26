@@ -2,24 +2,35 @@ box::use(
   dplyr,
   gg = ggplot2,
   purrr,
+  rlang,
   sf
 )
 
 box::use(src/utils/get_iso3_sf)
 
-#' Geom for location boundaries
+#' Load location boundaries data
 #'
-#' Adds location boundaries for ISO3 code. Since `get_adm0_sf()` looks for custom
-#' basemaps, then OCHA CODs, then UN Geodata services by filtering, we throw
-#' an error if the returned data is `NULL` or a 0 row data frame.
+#' Loads location boundaries for ISO3 code. Since `get_adm0_sf()` looks for custom
+#' basemaps, then OCHA CODs, then UN Geodata services by filtering. We throw an
+#' error if the returned data is `NULL` or a 0 row data frame.
+#'
+#' If you pass in additional geometries, these are checked against the admin
+#' boundaries. By default, an `error` is thrown if the additional geometries fall
+#' outside a buffer of the admin area. You can also choose instead to `filter` the
+#' geometries, so that anything outside those buffers is removed from the map.
+#' This is used for instance, for ACLED, where naval conflicts are occassionally
+#' reported but we do not map.
 #'
 #' @param iso3 ISO3 code
+#' @param action What to do when the additional boundaries fall outside the admin
+#'     area
 #' @param ... Additional sf class objects with geometry
 #'
-#' @returns Geom for the location boundaries
+#' @returns Named list with `sf_adm0` and `additional_geoms` from `...`
 #'
 #' @export
-geom_adm0 <- function(iso3, ...) {
+sf_adm0 <- function(iso3, action = c("error", "filter", "nothing"), ...) {
+  action <- rlang$arg_match(action)
   sf_adm0 <- get_iso3_sf$get_iso3_sf(iso3, "adm0")
 
   if (is.null(sf_adm0) || nrow(sf_adm0) == 0) {
@@ -32,24 +43,32 @@ geom_adm0 <- function(iso3, ...) {
   }
 
   additional_geoms <- list(...)
-
-  all_covered <- assert_covered_all(
-    x_list = additional_geoms,
-    y = sf_adm0
-  )
-
-  if (!all_covered) {
-    stop(
-      "Error: elements in x not contained within 0.3 degrees of base map boundary.",
-      call. = FALSE
+  if (length(additional_geoms) > 0 && action != "nothing") {
+    sf_adm0_buff <- suppressWarnings(
+      suppressMessages(
+        sf$st_buffer(x = sf_adm0, dist = 0.2)
+      )
     )
+    if (action == "error") {
+      assert_covered_all(
+        x_list = additional_geoms,
+        y = sf_adm0_buff
+      )
+    } else if (action == "filter") {
+      additional_geoms <- intersect_all(
+        x_list = additional_geoms,
+        y = sf_adm0_buff
+      )
+    }
   }
 
   # also check if we need to reduce the administrative areas for some locations
   sf_adm0 <- reduce_adm0(iso3 = iso3, sf_adm0 = sf_adm0, additional_geoms = additional_geoms)
 
-
-  gg$geom_sf(data = sf_adm0)
+  list(
+    sf_adm0 = sf_adm0,
+    additional_geoms = additional_geoms
+  )
 }
 
 #' Assert all covered
@@ -57,27 +76,40 @@ geom_adm0 <- function(iso3, ...) {
 #' Asserts that all geometries in `...` is contained within `y`. Maps
 #' `assert_covered_by` across all of `...`. Returns `TRUE` if no geoms passed in.
 #'
-#' Checks a buffered version of `y`, buffered by `0.3` degrees.
-#'
 #' @param x_list All geometries to check
 #' @param y sf class POLYGON/MULTIPOLYGON to use to check if all x falls within
 #'
 #' @return TRUE if all of `x_list` fall within `y`.
 assert_covered_all <- function(x_list, y) {
-  y_buff <- suppressWarnings(
-    suppressMessages(
-      sf$st_buffer(x = y, dist = 0.3)
-    )
-  )
+  all_covered <- purrr$map_lgl(
+    .x = x_list,
+    .f = \(x) assert_covered_by(x = x, y = y)
+  ) |>
+    all()
 
-  if (length(x_list) > 0) {
-    purrr$map_lgl(
-      .x = x_list,
-      .f = \(x) assert_covered_by(x = x, y = y_buff)
-    ) |> all()
-  } else {
-    TRUE
+  if (!all_covered) {
+    stop(
+      "Error: elements in x not contained within 0.2 degrees of base map boundary.",
+      call. = FALSE
+    )
   }
+}
+
+#' Intersect all of `x_list` with `y`
+#'
+#' Runs `sf::st_intersection()` on each element of `x`, so that it only keeps
+#' those elements intersecting `y`.
+#'
+#' @param x_list All geometries to intersect with `y`
+#' @param y sf class POLYGON/MULTIPOLYGON, typically admin boundaries, for
+#'     intersection
+#'
+#' @returns `x_list` where all elements have been intersected with `y`
+intersect_all <- function(x_list, y) {
+  purrr$map(
+    .x = x_list,
+    .y = \(x) sf$st_intersection(x = x, y = y)
+  )
 }
 
 
