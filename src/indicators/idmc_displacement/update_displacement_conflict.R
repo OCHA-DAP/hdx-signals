@@ -22,6 +22,7 @@ df_raw <- raw_displacement$raw() |>
   dplyr$filter(
     displacement_type == "Conflict"
   )
+
 df_wrangled <- wrangle_displacement$wrangle(df_raw)
 
 # update coverage data to ensure locations_metadata up to date
