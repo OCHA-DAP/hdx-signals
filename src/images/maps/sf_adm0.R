@@ -1,6 +1,5 @@
 box::use(
   dplyr,
-  gg = ggplot2,
   purrr,
   rlang,
   sf

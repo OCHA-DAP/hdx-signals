@@ -15,7 +15,7 @@ box::use(
 #' Maps points data.
 #'
 #' @param iso3 ISO3 code used to get base plot and cities
-#' @param df Points sf to plot
+#' @param sf_points Points sf to plot
 #' @param val_col Values column to use for size
 #' @param size Title for the size legend
 #' @param action Passed to `sf_adm0::sf_adm0()`
@@ -41,7 +41,8 @@ map_points <- function(
   num_unique_vals <- length(unique(sf_points[[val_col]]))
   sf_list <- sf_adm0$sf_adm0(
     iso3 = iso3,
-    action = action
+    action = action,
+    sf_points
   )
 
   gg$ggplot() +
@@ -57,7 +58,7 @@ map_points <- function(
       alpha = 0.6
     ) +
     gg$geom_sf(
-      data = df,
+      data = sf_list$additional_geoms[[1]],
       mapping = gg$aes(
         size = .data[[val_col]]
       ),

@@ -88,7 +88,7 @@ conflict_map <- function(df_wrangled, df_raw, title, date) {
 
   map_points$map_points(
     iso3 = iso3,
-    df = sf_raw,
+    sf_points = sf_raw,
     val_col = "fatalities",
     size = "Fatalities",
     action = "filter",
