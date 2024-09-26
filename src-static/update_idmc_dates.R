@@ -4,6 +4,7 @@
 box::use(
   dplyr,
   knitr,
+  logger,
   stringr
 )
 
