@@ -1,5 +1,12 @@
 # Changes
 
+## 0.1.14.0 (26 September 2024)
+
+### Mapping
+
+- Maps for `acled_conflict` changed to filter out points lying outside the base
+administrative boundaries
+
 ## 0.1.13.3 (23 September 2024)
 
 ### System
