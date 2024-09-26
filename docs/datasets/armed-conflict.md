@@ -10,6 +10,10 @@ We monitor [Armed Conflict Location & Event Data Project (ACLED)](https://acledd
 
 We transform ACLED event datasets into a time series of armed conflict and fatalities, and calculate monthly fatalities as the rolling sum of fatalities across the past 30 days. Signals are generated whenever monthly fatalities reaches levels not seen in the past one or three years. Signals are not generated if monthly fatalities are below the minimum threshold of 100.
 
+## Mapping
+
+ACLED occasionally reports conflicts at sea, which would require more detailed maps to visualize, including neighboring countries and bodies of water. To keep the visualizations clear and simple, points lying outside the base administrative boundary map are removed during the mapping process.
+
 #### Examples
 
 Below are historical examples that show how signals are generated with ACLED data.

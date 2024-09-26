@@ -1,15 +1,16 @@
 # Changes
 
-## 0.1.14.0 (24 September 2024)
+## 0.1.14.0 (26 September 2024)
+
+### Mapping
+
+- Maps for `acled_conflict` changed to filter out points lying outside the base
+administrative boundaries
 
 ### idmc_displacement_conflict
 
-- Added filtering for HRP countries to only analyze the time series after the
-first reported displacement. This is because the IDMC IDU has limited coverage
-for certain coverage, but is not yet clearly reported, so we assume coverage
-starts after the first reported displacement in priority humanitarian countries.
-This will be removed once the IDMC provides a clear dataset on when country coverage
-begins.
+- Created custom filtering for IDMC data to ensure time series for countries
+are only analyzed after consistent coverage begins
 
 ## 0.1.13.3 (23 September 2024)
 

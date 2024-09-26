@@ -92,7 +92,7 @@ map_with_points_test  <- function(
 
   map_points$map_points(
     iso3 = iso3,
-    df = gdf_sample_pts,
+    sf_points = gdf_sample_pts,
     val_col = "value",
     size = "Test bubble",
     title = iso3,
