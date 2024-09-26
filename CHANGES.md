@@ -7,6 +7,12 @@
 - Maps for `acled_conflict` changed to filter out points lying outside the base
 administrative boundaries
 
+### idmc_displacement_conflict
+
+- Created custom filtering for IDMC data to ensure time series for countries
+are only analyzed after consistent coverage begins, contained in
+`input/idmc_dates.parquet`
+
 ## 0.1.13.3 (23 September 2024)
 
 ### System

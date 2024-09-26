@@ -97,5 +97,8 @@ paste(
   sep = "\n"
 ) |>
   writeLines(
-    "docs/PROMPTS.md"
+    file.path(
+      "docs",
+      "PROMPTS.md"
+    )
   )
