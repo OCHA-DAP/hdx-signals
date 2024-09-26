@@ -5,7 +5,7 @@ box::use(
 )
 
 box::use(
-  src/utils/add_locations_metadata
+  cs = src/utils/cloud_storage
 )
 
 #' Wrangle displacement data
@@ -19,10 +19,8 @@ box::use(
 #'
 #' If the dataset is on conflict, the IDMC IDU currently has issues where only
 #' very recent years, maybe 2022 or 2023 onward, has reliable data for certain countries.
-#' To fix this, we currently filter the data for any HRP country to drop the beginning
-#' of the time series if there is no reported displacement. This should be removed
-#' once the IDMC is able to fix their system to match more what ACLED is able to
-#' provide.
+#' To fix this, we currently filter the data based on start dates stored in
+#' `input/idmc_dates.parquet`.
 #'
 #' @param df_raw Raw conflict data frame
 #'
@@ -35,14 +33,15 @@ wrangle <- function(df_raw) {
       displacement_type, iso3
     ) |>
     idmc$idmc_transform_daily() |>
-    add_locations_metadata$add_locations_metadata() |>
-    dplyr$group_by(
-      displacement_type, iso3
+    dplyr$left_join(
+      y = cs$read_az_file("input/idmc_dates.parquet"),
+      by = c("iso3", "displacement_type")
     ) |>
     dplyr$filter(
-      cumsum(displacement_daily) > 0 |
-        !hrp_location | # only filter HRP countries
-        displacement_type == "Disaster" # only filter conflict-driven displacement
+      is.na(start_date) | date >= start_date # filter to consistent time series
+    ) |>
+    dplyr$group_by(
+      displacement_type, iso3
     ) |>
     dplyr$mutate(
       displacement_7d = zoo$rollsumr(displacement_daily, k = 7, fill = NA),
