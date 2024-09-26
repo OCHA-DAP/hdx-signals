@@ -10,7 +10,7 @@ box::use(
 box::use(
   src/images/create_images,
   src/images/plots/caption,
-  src/images/maps/gg_map,
+  src/images/maps/sf_adm0,
   src/images/maps/geom_cities,
   src/images/maps/map_theme
 )
@@ -116,7 +116,12 @@ food_insecurity_map <- function(df_wrangled, df_raw, title, date) {
   sf_points <- dplyr$filter(sf_ipc, geom_type == "POINT")
   sf_areas <- dplyr$filter(sf_ipc, geom_type != "POINT")
 
-  p <- gg_map$gg_map(iso3) +
+  sf_list <- sf_adm0$sf_adm0(iso3 = iso3)
+
+  p <- gg$ggplot() +
+    gg$geom_sf(
+      data = sf_list$sf_adm0
+    ) +
     gg$geom_sf(
       data = sf_areas,
       mapping = gg$aes(

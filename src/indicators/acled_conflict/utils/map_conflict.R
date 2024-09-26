@@ -14,7 +14,7 @@ box::use(
 
 #' Map conflict events
 #'
-#' Creates map of conflict events
+#' Creates map of conflict events.
 #'
 #' @param df_alerts Data frame of alerts
 #' @param df_wrangled Wrangled data frame
@@ -46,6 +46,9 @@ map <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
 #' Map ACLED conflict data
 #'
 #' Plots conflict data for a specific location, defined by an ISO3 code.
+#' Since ACLED events sometimes are recorded as
+#' naval battles, we exclude these from mapping as our maps currently exclude
+#' national boundaries, water, and other details.
 #'
 #' @param df_wrangled Wrangled data frame for plotting.
 #' @param df_raw Raw data frame for plotting.
@@ -85,9 +88,10 @@ conflict_map <- function(df_wrangled, df_raw, title, date) {
 
   map_points$map_points(
     iso3 = iso3,
-    df = sf_raw,
+    sf_points = sf_raw,
     val_col = "fatalities",
     size = "Fatalities",
+    action = "filter",
     title = title,
     caption = caption,
     use_map_settings = TRUE

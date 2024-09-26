@@ -45,6 +45,9 @@ map <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
 #' Map IDMC displacement data
 #'
 #' Plots displacement data for a specific location, defined by an ISO3 code.
+#' Since the IDMC data is often erroneously placed in other countries or the
+#' middle of open water, we generate errors if the points don't overlap the
+#' admin boundaries.
 #'
 #' @param df_wrangled Wrangled data frame for plotting.
 #' @param df_raw Raw data frame for plotting.
@@ -82,9 +85,10 @@ displacement_map <- function(df_wrangled, df_raw, title, date) {
 
   map_points$map_points(
     iso3 = iso3,
-    df = sf_raw,
+    sf_points = sf_raw,
     val_col = "figure",
     size = "Displacements",
+    action = "error",
     title = title,
     caption = caption
   )
