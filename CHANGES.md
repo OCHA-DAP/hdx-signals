@@ -5,6 +5,7 @@
 ### System
 
 - Properly imported `template_data` in `triage_signals.R`
+- Fix the admin-0 loading
 
 ## 0.1.14.0 (26 September 2024)
 

@@ -107,7 +107,7 @@ assert_covered_all <- function(x_list, y) {
 intersect_all <- function(x_list, y) {
   purrr$map(
     .x = x_list,
-    .y = \(x) sf$st_intersection(x = x, y = y)
+    .f = \(x) sf$st_intersection(x = x, y = y)
   )
 }
 
