@@ -1,5 +1,11 @@
 # Changes
 
+## 0.1.14.1 (1 October 2024)
+
+### System
+
+- Properly imported `template_data` in `triage_signals.R`
+
 ## 0.1.14.0 (26 September 2024)
 
 ### Mapping

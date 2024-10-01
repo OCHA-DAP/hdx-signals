@@ -6,6 +6,7 @@ box::use(
 
 box::use(
   src/signals/delete_campaign_content,
+  src/signals/template_data,
   src/email/mailchimp/campaigns,
   cs = src/utils/cloud_storage,
   src/utils/get_env,
