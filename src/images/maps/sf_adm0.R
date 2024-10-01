@@ -105,9 +105,11 @@ assert_covered_all <- function(x_list, y) {
 #'
 #' @returns `x_list` where all elements have been intersected with `y`
 intersect_all <- function(x_list, y) {
-  purrr$map(
-    .x = x_list,
-    .y = \(x) sf$st_intersection(x = x, y = y)
+  suppressWarnings(
+    purrr$map(
+      .x = x_list,
+      .f = \(x) sf$st_intersection(x = x, y = y)
+    )
   )
 }
 
