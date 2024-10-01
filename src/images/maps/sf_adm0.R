@@ -5,7 +5,10 @@ box::use(
   sf
 )
 
-box::use(src/utils/get_iso3_sf)
+box::use(
+  src/utils/get_iso3_sf,
+  src/utils/st_crop_adj_bbox
+)
 
 #' Load location boundaries data
 #'
