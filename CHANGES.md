@@ -1,5 +1,12 @@
 # Changes
 
+## 0.1.14.2 (2 October 2024)
+
+### Runs
+
+- Move `acled_conflict` and `idmc_displacement_...` runs to be daily rather than
+only on Tuesdays
+
 ## 0.1.14.1 (1 October 2024)
 
 ### System
