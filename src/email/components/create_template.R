@@ -1,4 +1,7 @@
-box::use(glue)
+box::use(
+  box,
+  glue
+)
 
 #' Create template HTML from body
 #'
@@ -20,7 +23,7 @@ box::use(glue)
 #'
 #' @export
 create_template <- function(body, banner_url, archive_url = "*|ARCHIVE|*") {
-  template <- readLines("src/email/components/hdx_signals_template.html", warn = FALSE) |>
+  template <- readLines(box$file("hdx_signals_template.html"), warn = FALSE) |>
     paste(
       collapse = "\n"
     )
