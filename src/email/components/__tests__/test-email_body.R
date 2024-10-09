@@ -1,6 +1,5 @@
 box::use(
-  here,
-  withr[local_dir]
+  here
 )
 
 test_that("Runs and returns single string", {

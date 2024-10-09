@@ -1,7 +1,5 @@
 box::use(
-  here,
-  mockery[stub],
-  withr[local_dir]
+  here
 )
 
 test_that("Runs and returns single string", {

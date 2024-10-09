@@ -47,7 +47,7 @@ box::use(
 #' `triage_signals()` accepts the explicit `test` argument rather than looking
 #' for `HS_DRY_RUN` because the function is intended for interactive use. Users
 #' may want to look to triage signals in `output/{indicator}/test/signals.parquet`,
-#' by setting `test` to `TRUE`. However, they will need their own `HS_DRY_RUN`
+#' by setting `test` to `TRUE`. However, they will need their own `HS_LOCAL`
 #' env variable set to `FALSE` in order to `DELETE` or `APPROVE` these test signals.
 #'
 #' @param indicator_id Indicator ID mapped in `input/indicator_mapping.parquet`

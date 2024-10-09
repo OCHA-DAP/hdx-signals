@@ -1,6 +1,5 @@
 box::use(
-  stringr,
-  mockery[stub]
+  stringr
 )
 
 stub(conditional_merge, "location_codes$iso3_to_regions", "Region A")
