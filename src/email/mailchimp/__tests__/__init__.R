@@ -1,8 +1,5 @@
 box::use(
-  testthat[...],
-  mockery[...],
-  httptest2[...],
-  withr[...]
+  testthat[...]
 )
 
 .on_load <- function (ns) {
