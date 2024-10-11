@@ -30,8 +30,13 @@ box::use(
 #' delete all campaign content from Mailchimp and then delete all of the rows
 #' from `output/{indicator_id}/signals.parquet`.
 #'
-#' - `Any other user input`: Do nothing, in which you can decide later manually what to do, and use
+#' - `DO_NOTHING` Do nothing, in which you can decide later manually what to do, and use
 #' `delete_campaign_content()` or `send_signals()` yourself manually.
+#'
+#' - `Any other user input`: the user will be asked again what's the desired action to be taken.
+#'
+#' The`APPROVE` and `DELETE` command will require a double confirmation given the criticality of the action.
+#' To confirm the user needs to type `I CONFIRM`
 #'
 #' There is no way to completely delete the alerts, which would essentially
 #' determine that we do not want to send an alert at all. This would mean changing
@@ -140,8 +145,9 @@ preview_campaign_urls <- function(campaign_urls) {
 #' @param df Signals data frame
 #' @param fn_signals File name to the signals data
 #' @param test Whether or not the signals were in the test folder.
-approve_signals <- function(df, fn_signals, test) {
+approve_signals <- function(df, fn_signals, test, user_command='init'){
   user_name <- get_env$get_env("HS_ADMIN_NAME")
+  while (!(user_command %in% c('APPROVE', 'DELETE', 'ARCHIVE', 'DO_NOTHING'))){
   # send message to user
   cat(
     "Tell us what you want to do with the following commands:\n\n",
@@ -150,11 +156,27 @@ approve_signals <- function(df, fn_signals, test) {
     "DELETE: Delete the campaign content and `output/{indicator}/signals.parquet`",
     "file so you can recreate later.\n",
     "ARCHIVE: Delete the email campaign, but move the alert to `output/signals.parquet`\n",
-    "Any other input: Do nothing, so you can decide later.\n",
+    "DO_NOTHING: Do nothing, so you can decide later.\n",
     sep = ""
   )
 
-  user_command <- readline(prompt = "Your command: ")
+  user_command <- readline(prompt = "Your command: ")}
+  if (user_command %in% c("APPROVE", "DELETE")) {
+    # send message to user
+    cat(
+      "You typed the command: ", user_command, "\n",
+      "Given the criticality of the action please type I CONFIRM to proceed with the action selected",
+      sep = ""
+    )
+
+    user_command_confirmation <- readline(prompt = "Your command: ")
+    if (user_command_confirmation != "I CONFIRM"){
+      stop(
+        "The process was not confirmed and it was aborted."
+      )
+    }}
+
+
 
   if (user_command %in% c("APPROVE", "ARCHIVE")) {
     if (user_command == "ARCHIVE") {
@@ -224,6 +246,7 @@ approve_signals <- function(df, fn_signals, test) {
 }
 
 
+
 #' Sends the signals in the indicator data frame
 #'
 #' Sends the signals in the data frame. The signals that actually need sending
@@ -231,6 +254,7 @@ approve_signals <- function(df, fn_signals, test) {
 #' are never sent out as they have empty segments.
 #'
 #' @param df Indicator signals data frame
+#'
 send_signals <- function(df) {
   # first send out the archive campaigns to activate the URLs
   send_signals_email(df, "campaign_id_archive")
