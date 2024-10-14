@@ -35,7 +35,7 @@ box::use(
 #'
 #' - `Any other user input`: the user will be asked again what's the desired action to be taken.
 #'
-#' The`APPROVE` and `DELETE` command will require a double confirmation given the criticality of the action.
+#' The`APPROVE`, `DELETE` and `APPROVE` command will require a double confirmation given the criticality of the action.
 #' To confirm the user needs to type `I CONFIRM`
 #'
 #' There is no way to completely delete the alerts, which would essentially
@@ -161,7 +161,7 @@ approve_signals <- function(df, fn_signals, test, user_command='init'){
   )
 
   user_command <- readline(prompt = "Your command: ")}
-  if (user_command %in% c("APPROVE", "DELETE")) {
+  if (user_command %in% c("APPROVE", "DELETE", "ARCHIVE")) {
     # send message to user
     cat(
       "You typed the command: ", user_command, "\n",
@@ -171,8 +171,8 @@ approve_signals <- function(df, fn_signals, test, user_command='init'){
 
     user_command_confirmation <- readline(prompt = "Your command: ")
     if (user_command_confirmation != "I CONFIRM"){
-      stop(
-        "The process was not confirmed and it was aborted."
+      stop(glue$glue("The process was not confirmed, you will need to re-run `triage_signals()` to {user_command} the signal and then confirm it."),
+ call. = FALSE
       )
     }}
 
