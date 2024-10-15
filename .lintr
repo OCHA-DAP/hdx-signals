@@ -6,6 +6,8 @@ linters:
   )
 exclusions:
   list(
-    "src/utils/box_linters.R"
+    "src/utils/box_linters.R",
+    "src/email/components/__tests__",
+    "src/email/components/__init__.R"
   )
 encoding: "UTF-8"

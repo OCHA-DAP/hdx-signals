@@ -85,7 +85,7 @@ mc_send_campaign <- function(campaign_id) {
     logger$log_debug(
       "Since `hs_local()`, no campaign sent, dry run returned."
     )
-    httr2$req_dry_run(req)
+    httr2$req_dry_run(req, quiet = TRUE)
   } else {
     httr2$req_perform(req)
   }
@@ -112,7 +112,7 @@ mc_campaign_info <- function(campaign_id) {
     logger$log_debug(
       "Since `hs_local()`, no campaign info retrieved, dry run returned."
     )
-    httr2$req_dry_run(req)
+    httr2$req_dry_run(req, quiet = TRUE)
   } else {
     httr2$req_perform(req) |>
       httr2$resp_body_json()

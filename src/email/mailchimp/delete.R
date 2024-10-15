@@ -48,6 +48,7 @@ mc_delete_object <- function(id, object_type = c("file", "template", "campaign")
     )
   } else {
     # delete the template
+
     httr2$req_perform(req)
   }
   return(invisible(NULL))
