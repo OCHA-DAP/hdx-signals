@@ -1,7 +1,8 @@
 box::use(
   stringr,
   purrr,
-  dplyr
+  dplyr,
+  glue
 )
 
 box::use(
@@ -30,8 +31,13 @@ box::use(
 #' delete all campaign content from Mailchimp and then delete all of the rows
 #' from `output/{indicator_id}/signals.parquet`.
 #'
-#' - `Any other user input`: Do nothing, in which you can decide later manually what to do, and use
+#' - `DO_NOTHING` Do nothing, in which you can decide later manually what to do, and use
 #' `delete_campaign_content()` or `send_signals()` yourself manually.
+#'
+#' - `Any other user input`: the user will be asked again what's the desired action to be taken.
+#'
+#' The`APPROVE`, `DELETE` and `APPROVE` command will require a double confirmation given the criticality of the action.
+#' To confirm the user needs to type `I CONFIRM`
 #'
 #' There is no way to completely delete the alerts, which would essentially
 #' determine that we do not want to send an alert at all. This would mean changing
@@ -140,21 +146,38 @@ preview_campaign_urls <- function(campaign_urls) {
 #' @param df Signals data frame
 #' @param fn_signals File name to the signals data
 #' @param test Whether or not the signals were in the test folder.
-approve_signals <- function(df, fn_signals, test) {
+approve_signals <- function(df, fn_signals, test, user_command = "init") {
   user_name <- get_env$get_env("HS_ADMIN_NAME")
-  # send message to user
-  cat(
-    "Tell us what you want to do with the following commands:\n\n",
-    "APPROVE: Send campaigns",
-    if (test) "\n" else " and add to `output/signals.parquet`\n",
-    "DELETE: Delete the campaign content and `output/{indicator}/signals.parquet`",
-    "file so you can recreate later.\n",
-    "ARCHIVE: Delete the email campaign, but move the alert to `output/signals.parquet`\n",
-    "Any other input: Do nothing, so you can decide later.\n",
-    sep = ""
-  )
+  while (!(user_command %in% c("APPROVE", "DELETE", "ARCHIVE", "DO_NOTHING"))) {
+    # send message to user
+    cat("Tell us what you want to do with the following commands:\n\n",
+      "APPROVE: Send campaigns",
+      if (test) "\n" else " and add to `output/signals.parquet`\n",
+      "DELETE: Delete the campaign content and `output/{indicator}/signals.parquet`",
+      "file so you can recreate later.\n",
+      "ARCHIVE: Delete the email campaign, but move the alert to `output/signals.parquet`\n",
+      "DO_NOTHING: Do nothing, so you can decide later.\n",
+      sep = ""
+    )
 
-  user_command <- readline(prompt = "Your command: ")
+    user_command <- readline(prompt = "Your command: ")
+  }
+  if (user_command %in% c("APPROVE", "DELETE", "ARCHIVE")) {
+    # send message to user
+    cat(
+      "You typed the command: ", user_command, "\n",
+      "Given the criticality of the action please type I CONFIRM to proceed with the action selected",
+      sep = ""
+    )
+
+    user_command_confirmation <- readline(prompt = "Your command: ")
+    if (user_command_confirmation != "I CONFIRM") {
+      stop(glue$glue("The process was not confirmed, you will need to re-run `triage_signals()` to {user_command} the
+                     signal and then confirm it."),
+        call. = FALSE
+      )
+    }
+  }
 
   if (user_command %in% c("APPROVE", "ARCHIVE")) {
     if (user_command == "ARCHIVE") {
@@ -191,17 +214,21 @@ approve_signals <- function(df, fn_signals, test) {
       save_core_signals_hdx(df_core_signals)
       cs$update_az_file(df[0, ], fn_signals)
     } else {
+      if (user_command == "ARCHIVE") {
+        action_selected <= "archived"
+      } else {
+        action_selected <- "sent"
+      }
       new_input <- readline(
-        paste0(
-          "You have sent your test campaigns. If you want to delete the\n",
-          "test campaigns file ",
-          fn_signals,
-          " and its content from Mailchimp, type DELETE."
-        )
+        paste0(glue$glue("You have {action_selected} your test campaigns. If you want to delete the\n"),
+               "test campaigns file ",
+               fn_signals,
+               " and its content from Mailchimp, type DELETE.")
       )
       if (new_input == "DELETE") {
         df_deleted <- delete_campaign_content$delete_campaign_content(df)
         cs$update_az_file(df_deleted, fn_signals)
+        message("The campaigns file have been succesfully deleted.")
       } else {
         message(
           "You have not deleted the content in ",

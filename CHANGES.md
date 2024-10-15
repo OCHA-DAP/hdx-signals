@@ -1,5 +1,12 @@
 # Changes
 
+## 0.1.14.3 (15 October 2024)
+
+### System
+
+- Add DO_NOTHING command and a double confirmation for critical actions when
+triaging a signal.
+
 ## 0.1.14.2 (2 October 2024)
 
 ### Runs
