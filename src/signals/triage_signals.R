@@ -1,7 +1,8 @@
 box::use(
   stringr,
   purrr,
-  dplyr
+  dplyr,
+  glue
 )
 
 box::use(
@@ -213,9 +214,12 @@ approve_signals <- function(df, fn_signals, test, user_command='init'){
       save_core_signals_hdx(df_core_signals)
       cs$update_az_file(df[0, ], fn_signals)
     } else {
+      if (user_command == "ARCHIVE") {
+        action_selected = 'archived'}
+      else {action_selected = 'sent2'}
       new_input <- readline(
-        paste0(
-          "You have sent your test campaigns. If you want to delete the\n",
+        paste0(glue$glue(
+          "You have {action_selected} your test campaigns. If you want to delete the\n"),
           "test campaigns file ",
           fn_signals,
           " and its content from Mailchimp, type DELETE."
@@ -224,6 +228,7 @@ approve_signals <- function(df, fn_signals, test, user_command='init'){
       if (new_input == "DELETE") {
         df_deleted <- delete_campaign_content$delete_campaign_content(df)
         cs$update_az_file(df_deleted, fn_signals)
+        message("The campaigns file have been succesfully deleted.")
       } else {
         message(
           "You have not deleted the content in ",
