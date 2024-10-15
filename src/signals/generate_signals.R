@@ -60,7 +60,6 @@ box::use(
 #'     locations are used for testing.
 #'
 #' @export
-
 generate_signals <- function(
     df_wrangled,
     df_raw,

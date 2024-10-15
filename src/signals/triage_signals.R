@@ -251,7 +251,6 @@ approve_signals <- function(df, fn_signals, test, user_command = "init") {
 }
 
 
-
 #' Sends the signals in the indicator data frame
 #'
 #' Sends the signals in the data frame. The signals that actually need sending
@@ -259,7 +258,6 @@ approve_signals <- function(df, fn_signals, test, user_command = "init") {
 #' are never sent out as they have empty segments.
 #'
 #' @param df Indicator signals data frame
-#'
 send_signals <- function(df) {
   # first send out the archive campaigns to activate the URLs
   send_signals_email(df, "campaign_id_archive")
