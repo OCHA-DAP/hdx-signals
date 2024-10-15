@@ -1,5 +1,5 @@
 box::use(dplyr)
-box::use(../folders)
+box::use(src/email/mailchimp/folders)
 
 impl = attr(folders, 'namespace')
 

@@ -1,4 +1,4 @@
-box::use(../images)
+box::use(src/email/mailchimp/images)
 
 mock_encode_image <- mock("abc", cycle = TRUE)
 mock_mc_test_image_view <- mock("https://example.com/image-mock", cycle = TRUE)

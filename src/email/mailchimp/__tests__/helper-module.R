@@ -1,4 +1,4 @@
-box::use(../../mailchimp[...])
+box::use(src/email/mailchimp[...])
 
 box::use(
   httptest2[...],
