@@ -1,1 +1,1 @@
-box::use(../../components[...])
+box::use(src/email/components[...])
