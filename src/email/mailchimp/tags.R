@@ -1,3 +1,6 @@
+# Useful tools for exploring tags in our setup. However, not used actively in any
+# of the runs, so not tested.
+
 box::use(
   httr2,
   purrr,
