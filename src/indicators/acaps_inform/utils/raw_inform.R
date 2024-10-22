@@ -4,7 +4,6 @@ box::use(
   purrr,
   readr,
   logger,
-  jsonlite
 )
 
 box::use(
@@ -43,7 +42,7 @@ raw <- function() {
     date_api=format(Sys.Date(), format = '%b%Y')
     ## Wait to avoid throttling
 
-    f <- data.frame()
+    df <- data.frame()
     request_url <- paste0("https://api.acaps.org/api/v1/inform-severity-index/",date_api)
     last_request_time <- Sys.time()
 
@@ -56,22 +55,26 @@ raw <- function() {
 
       # Make the request with verbose logging
       response <- httr2$request(request_url) |>
-        httr2$req_auth_bearer_token(auth_token) |>
-        httr2$req_verbose() |>
-        httr2$req_perform()
+        httr2$req_headers(
+          Authorization = paste("Token", auth_token)
+        ) |>
+        httr2$req_perform() |>
+        httr2$resp_body_json()
 
       last_request_time <- Sys.time()
 
       # Extract the data and convert any list-type columns to strings
-      df_results <- httr2$resp_body_json(response)$results |>
-        mutate(
-          country = sapply(country, toString),
-          iso3 = sapply(iso3, toString),
-          regions = sapply(regions, toString)
-        )
+      df_results <- dplyr$tibble(
+        iso3 = sapply(response$results, `[[`, "iso3"),
+        country = sapply(response$results, `[[`, "country"),
+        regions = sapply(response$results, `[[`, "regions"),
+        crisis_id = sapply(response$results, `[[`, "crisis_id"),
+        crisis_name = sapply(response$results, `[[`, "crisis_name"),
+        inform_severity_index = sapply(response$results, `[[`, "INFORM Severity Index")
+      )
 
       # Append to the main dataframe
-      f <- rbind(f, df_results)
+      f <- rbind(df, df_results)
 
       # Loop to the next page; if we are on the last page, break the loop
       next_url <- resp_body_json(response)["next"]
