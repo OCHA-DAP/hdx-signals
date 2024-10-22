@@ -129,41 +129,47 @@ ai_summarizer <- function(prompt, info) {
 
 #' Call to the OpenAI API
 #'
+#' If `hs_local()` returns `TRUE`, the API is not called and `"Test output"`
+#' is returned, otherwise it returns the summarization from the API.
+get_ai_summary <- function(prompt, info) {
+  if (hs_local$hs_local()) {
+    logger$log_debug(
+      "`ai_summarizer()` returning static output as `hs_local()` is `TRUE`. ",
+      "Set `HS_LOCAL` env variable to `FALSE` if you want `ai_summarizer()` ",
+      "to ping the OpenAI API, but be wary of saving data and emailing."
+    )
+
+    "Test output."
+  } else {
+    get_env$get_env("OPENAI_API_KEY", output = FALSE)
+
+    # suppress warnings because warnings are generated inside the openai
+    # package if calls need to be retried, which we don't want to create failures
+    suppressWarnings(
+      openai$create_chat_completion(
+        model = "gpt-4o",
+        messages = list(
+          list(
+            "role" = "user",
+            "content" = prompt
+          ),
+          list(
+            "role" = "user",
+            "content" = info
+          )
+        )
+      )$choices$message.content
+    )
+  }
+}
+
+#' Call to the OpenAI API
+#'
 #' Function that insistently calls the OpenAI API in case of failure
 #' utilizing the GPT-4o 128,000 token model which allows for loads of context. If
 #' `hs_local()` returns `TRUE`, the API is not called and `"Test output"`
 #' is returned, otherwise it returns the summarization from the API.
 insistent_ai <- purrr$insistently(
-  \(prompt, info) {
-    if (hs_local$hs_local()) {
-      logger$log_debug(
-        "`ai_summarizer()` returning static output as `hs_local()` is `TRUE`. ",
-        "Set `HS_LOCAL` env variable to `FALSE` if you want `ai_summarizer()` ",
-        "to ping the OpenAI API, but be wary of saving data and emailing."
-      )
-
-      "Test output."
-    } else {
-      get_env$get_env("OPENAI_API_KEY", output = FALSE)
-
-      # suppress warnings because warnings are generated inside the openai
-      # package if calls need to be retried, which we don't want to create failures
-      suppressWarnings(
-        openai$create_chat_completion(
-          model = "gpt-4o",
-          messages = list(
-            list(
-              "role" = "user",
-              "content" = prompt
-            ),
-            list(
-              "role" = "user",
-              "content" = info
-            )
-          )
-        )$choices$message.content
-      )
-    }
-  },
+  f = get_ai_summary,
   rate = purrr$rate_delay(pause = 1, max_times = 25)
 )
