@@ -11,17 +11,20 @@ box::use(
 #' `iso3`, `date`, and `value` columns are passed in with the correct type.
 #' As well, it checks that the `date` column is consecutive days.
 #'
+#' It works by comparing the time series values and generating alerts when they
+#' are higher than seen in the past 1 year or 3 years, as well as above the minimum
+#' value.
+#'
 #' @param df Data frame of alerts with `iso3`, `date` columns, as well as a value
 #'     column.
 #' @param val_col Name of the value columns.
 #' @param min_val Minimum value for the necessary alert.
-#' @param rs_days Number of days for the rolling sum, defaults to `30`.
 #'
 #' @returns Alerts data frame with columns `iso3`, `date`, `value`, and
 #'     `alert_level_numeric`.
 #'
 #' @export
-alert_daily_ts <- function(df, val_col, min_val, rs_days = 30) {
+alert_daily_ts <- function(df, val_col, min_val) {
   validate_ts_df(df, val_col)
   df |>
     dplyr$group_by(

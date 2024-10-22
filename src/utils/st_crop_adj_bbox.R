@@ -1,6 +1,9 @@
 box::use(sf)
 
-sf$sf_use_s2(FALSE)
+suppressMessages(
+  sf$sf_use_s2(FALSE)
+)
+
 
 #' Crop with adjusted bbox
 #'
