@@ -43,7 +43,9 @@ box::use(
 #'
 #' @export
 mc_email_segment <- function(indicator_id, iso3) {
-  df_ind <- dplyr$filter(df_ind, indicator_id == !!indicator_id)
+  df_ind <- cs$read_az_file("input/indicator_mapping.parquet") |>
+    dplyr$filter(indicator_id == !!indicator_id)
+
   emails <- mc_subscriber_emails(
     df_ind = df_ind,
     iso3 = iso3
@@ -78,6 +80,8 @@ mc_email_segment <- function(indicator_id, iso3) {
 #' or location The `df_ind` passed in must already be filtered to a specific
 #' indicator ID.
 mc_subscriber_emails <- function(df_ind, iso3) {
+  df_interests <- audience$mc_groups()
+
   # first we get the list of interest ids based on the iso3 codes
   regions <- unique(location_codes$iso3_to_regions(iso3))
   locations <- location_codes$iso3_to_names(iso3)
@@ -110,6 +114,9 @@ mc_subscriber_emails <- function(df_ind, iso3) {
 #'
 #' Gets emails for interest and geo_ids.
 interest_emails <- function(interest, geo_ids) {
+  df_interests <- audience$mc_groups()
+  member_list <- audience$mc_members()
+
   interest_id <- df_interests$interest_id[match(interest, df_interests$name)]
   dry_run <- hs_dry_run$hs_dry_run()
 
@@ -138,6 +145,8 @@ interest_emails <- function(interest, geo_ids) {
 #'
 #' Gets emails for indicator tags based on the tag, geo_ids, and dry_run
 tag_emails <- function(interest_tag, geo_ids) {
+  member_list <- audience$mc_members()
+
   purrr$map_chr(
     .x = member_list,
     .f = \(member) {
@@ -186,7 +195,3 @@ mc_archive_segment <- function() {
     )
   )
 }
-
-df_interests <- audience$mc_groups()
-member_list <- audience$mc_members()
-df_ind <- cs$read_az_file("input/indicator_mapping.parquet")
