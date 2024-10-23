@@ -72,7 +72,7 @@ triage_signals <- function(indicator_id, n_campaigns = 10, test = FALSE) {
   df <- get_signals_df(fn_signals)
   preview_signals(df = df, n_campaigns = n_campaigns)
   user_input <- approve_signals(df = df, fn_signals = fn_signals, test = test, indicator_id = indicator_id)
-  dispatch_signals(df = df, fn_signals = fn_signals, test = test, user_input = user_input)
+  dispatch_signals(df = df, fn_signals = fn_signals, test = test, user_command = user_input)
 }
 
 #' Check the signals data frame
@@ -160,7 +160,7 @@ approve_signals <- function(df, fn_signals, test, indicator_id) {
                       so you can recreate later.
                       ARCHIVE: Delete the email campaign, but move the alert to `output/signals.parquet`
                       DO_NOTHING: Do nothing, so you can decide later.")
-    print(msg, quote = FALSE)
+    print(msg)
     user_command <- readline(prompt = "Your command: ")
   }
   if (user_command %in% c("APPROVE", "DELETE", "ARCHIVE")) {
