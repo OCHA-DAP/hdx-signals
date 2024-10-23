@@ -72,7 +72,7 @@ triage_signals <- function(indicator_id, n_campaigns = 10, test = FALSE) {
   df <- get_signals_df(fn_signals)
   preview_signals(df = df, n_campaigns = n_campaigns)
   user_input <- approve_signals(df = df, fn_signals = fn_signals, test = test, indicator_id = indicator_id)
-  dispatch_signals(df, fn_signals, test, user_input)
+  dispatch_signals(df = df, fn_signals = fn_signals, test = test, user_input = user_input)
 }
 
 #' Check the signals data frame
@@ -153,13 +153,13 @@ approve_signals <- function(df, fn_signals, test, indicator_id) {
   while (!(user_command %in% c("APPROVE", "DELETE", "ARCHIVE", "DO_NOTHING"))) {
     # send message to user
     msg <- glue$glue(
-      "Tell us what you want to do with the following commands:
+    "Tell us what you want to do with the following commands:
 
     APPROVE: Send campaigns{if (test) '' else ' and add to `output/signals.parquet`'}
     DELETE: Delete the campaign content and `output/{indicator_id}/signals.parquet` file so you can recreate later.
     ARCHIVE: Delete the email campaign, but move the alert to `output/signals.parquet`
     DO_NOTHING: Do nothing, so you can decide later.")
-
+    print(msg, quote = FALSE)
     user_command <- readline(prompt = "Your command: ")
   }
   if (user_command %in% c("APPROVE", "DELETE", "ARCHIVE")) {
@@ -187,7 +187,7 @@ approve_signals <- function(df, fn_signals, test, indicator_id) {
 #' @param fn_signals File name to the signals data
 #' @param test Whether or not the signals were in the test folder.
 #' @param user_command command provided by the user
-dispatch_signals <- function(df, fn_signals, test, user_command){
+dispatch_signals <- function(df, fn_signals, test, user_command) {
   if (user_command %in% c("APPROVE", "ARCHIVE")) {
     if (user_command == "ARCHIVE") {
       # delete the email template and campaigns, but not the content
