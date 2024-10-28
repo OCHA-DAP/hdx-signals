@@ -32,6 +32,7 @@ get_iso3_sf <- function(iso3, file = c("adm0", "centroids", "cities")) {
   file <- rlang$arg_match(file)
   fileext <- if (file == "centroids") "parquet" else "geojson"
   fn <- glue$glue("input/{file}/{iso3}.{fileext}")
+  azure_files <- cs$az_file_detect()
   if (!(fn %in% azure_files)) {
     return(NULL)
   }
@@ -51,6 +52,3 @@ get_iso3_sf <- function(iso3, file = c("adm0", "centroids", "cities")) {
     iso3_shift_longitude$iso3_shift_longitude(df, iso3)
   }
 }
-
-
-azure_files <- cs$az_file_detect()
