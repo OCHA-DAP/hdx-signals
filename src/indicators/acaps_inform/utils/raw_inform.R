@@ -1,10 +1,7 @@
 box::use(
   httr2,
   dplyr,
-  purrr,
-  readr,
-  logger,
-  tidyr
+  purrr
 )
 
 box::use(
@@ -16,96 +13,107 @@ box::use(
 #' Download raw INFORM severity index data
 #'
 #' Downloads raw conflict data from the ACAPS API. Uses the ACAPS credentials,
-#' which requires the `ACAPS_EMAIL_ADDRESS` and `ACAPS_PWD` environment
-#' variables.
+#' which requires the `ACAPS_TOKEN` environment variables.
 #'
 #' The downloaded data is stored on the Azure blob so we don't have to make multiple calls to
 #' the ACAPS API in a single day. .
 #'
 #' @export
 raw <- function() {
-  start_date=as.Date("2019-01-01")
-  # first we check that we haven't already downloaded ACAPS data today, and if we
-  # have, just use that raw data. Also checks that `HS_FIRST_RUN` values match
   date_check <- cs$read_az_file("output/acaps_inform/download_date.parquet")
+  if (Sys.Date() > date_check$acaps_download_date) {
+    df <- get_acaps_severity()
 
-  # if (date_check$acaps_download_date == Sys.Date()) {
-  #    logger$log_debug("ACAPS data already downloaded today. Using existing raw.parquet file on Azure")
-  #    cs$read_az_file("output/acaps_inform/raw.parquet")
-  # } else {
-  credentials <- list(username=get_env$get_env("ACAPS_EMAIL_ADDRESS"), password=get_env$get_env("ACAPS_PWD"))
-  auth_token_response <- httr2$request("https://api.acaps.org/api/v1/token-auth/") |>
-    httr2$req_body_json(credentials) |>
-    httr2$req_perform()
-
-  auth_token <- httr2$resp_body_json(auth_token_response)$token
-
-  #Get current month and year
-  end_date=Sys.Date()
-  #Get all months-year combinations to be downloaded
-  date_seq <- seq(from = start_date, to = end_date, by = "month")
-  # Format the dates in 'MMM YYYY' format
-  formatted_dates <- format(date_seq, "%b%Y")
-
-  ## Wait to avoid throttling
-  df <- data.frame()
-  last_request_time <- Sys.time()
-
-  for (date_api in formatted_dates){
-    request_url <- paste0("https://api.acaps.org/api/v1/inform-severity-index/",date_api,"/?country_level=Yes")
-    # # Wait to avoid throttling
-    # while (as.numeric(Sys.time() - last_request_time) < 1) {
-    #   Sys.sleep(0.1)
-    # }
-
-    # Make the request with verbose logging
-    response <- httr2$request(request_url) |>
-      httr2$req_headers(
-        Authorization = paste("Token", auth_token)
-      ) |>
-      httr2$req_perform() |>
-      httr2$resp_body_json()
-
-    last_request_time <- Sys.time()
-
-    # Extract the data and convert any list-type columns to strings
-    df_results <- dplyr$tibble(
-      iso3 = sapply(response$results, `[[`, "iso3"),
-      country = sapply(response$results, `[[`, "country"),
-      regions = sapply(response$results, `[[`, "regions"),
-      crisis_id = sapply(response$results, `[[`, "crisis_id"),
-      crisis_name = sapply(response$results, `[[`, "crisis_name"),
-      inform_severity_index = sapply(response$results, `[[`, "INFORM Severity Index"),
-      impact_crisis = sapply(response$results, `[[`,"Impact of the crisis"),
-      people_condition = sapply(response$results, `[[`,"Conditions of affected people"),
-      complexity = sapply(response$results, `[[`,"Complexity"),
-      drivers = sapply(response$results, `[[`, "drivers"),
-      date = sapply(response$results, `[[`, "_internal_filter_date")
-    )
-
-    # Append to the main dataframe
-    df <- rbind(df, df_results)
-  }
-  df |>
-    dplyr::mutate(
-      drivers = purrr.map_chr(
-        .x = drivers,
-        .f = \(x) paste(unlist(x), collapse = ", ")
-      )
+    # update download date
+    dplyr$tibble(
+      acaps_download_date = Sys.Date()
     ) |>
-    tidyr.unnest(
-      cols = dplyr.where(is.list)
-    )
+      cs$update_az_file("output/acaps_inform/download_date.parquet")
 
-  # Add download date
-  dplyr$tibble(
-  acaps_download_date = Sys.Date()
-  ) |>
-  cs$update_az_file("output/acaps_inform/download_date.parquet")
-
-  cs$update_az_file(df, "output/acaps_inform/raw.parquet")
+    # upload full data frmae to cloud
+    cs$update_az_file(df, "output/acaps_inform/raw.parquet")
+  } else {
+    df <- cs$read_az_file("output/acaps_inform/raw.parquet")
+  }
   df
-  # }
 }
 
-raw()
+
+#' Gets ACAPS severity data for a specific date
+#'
+#' Requests ACAPS severity data for the specific `formatted_date`. The API is
+#' called using the `ACAPS_TOKEN` env variable which should be your personal
+#' usage token for ACAPS. Requests are retried 5 times maximum, backing off slightly
+#' longer each tyr to avoid throttling.
+#'
+#' Only specific portions of the response are returned in a formatted data frame.
+#' Amend that portion of the code to extract additional portions of the returned
+#' JSON file.
+#'
+#' If the API returns an error for the latest month, then we assume that the data
+#' is not yet available, and silently return an empty data frame. If the error
+#' is generated for any previous month, then the function fails.
+#'
+#' @param formatted_date Date formatted as `MonYYYY`, such as `Jan2020`.
+get_acaps_severity_date <- function(formatted_date) {
+  httr2$request("https://api.acaps.org/api/v1/inform-severity-index/") |>
+    httr2$req_url_path_append(
+      formatted_date
+    ) |>
+    httr2$req_url_query(
+      country_level = "Yes"
+    ) |>
+    httr2$req_headers(
+      Authorization = paste("Token", get_env$get_env("ACAPS_TOKEN"))
+    ) |>
+    httr2$req_retry(
+      max_tries = 5,
+      backoff = \(x) x / 10
+    ) |>
+    httr2$req_error( # only return an error if not in the latest month
+      is_error = \(resp) if (format(Sys.Date(), "%b%Y") == formatted_date || !httr2$resp_is_error(resp)) FALSE else TRUE
+    ) |>
+    httr2$req_perform() |>
+    httr2$resp_body_json() |>
+    purrr$pluck(
+      "results"
+    ) |>
+    purrr$map(
+      .f = \(x) {
+        dplyr$tibble(
+          iso3 = unlist(x$iso3),
+          country = unlist(x$country),
+          regions = unlist(x$regions),
+          crisis_id = x$crisis_id,
+          crisis_name = x$crisis_name,
+          inform_severity_index = x$`INFORM Severity Index`,
+          impact_crisis = x$`Impact of the crisis`,
+          people_condition = x$`Conditions of affected people`,
+          complexity = x$Complexity,
+          drivers = paste(x$drivers, collapse = ", "),
+          date = as.Date(x$`_internal_filter_date`)
+        )
+      }
+    ) |>
+    purrr$list_rbind()
+}
+
+#' Get ACAPS severity data
+#'
+#' Gets ACAPS severity data from all of the specific date endpoints from January 2019
+#' to today's date. Pulls the resulting data into a single data frame arranged by
+#' ISO3 and date.
+get_acaps_severity <- function() {
+  formatted_dates <- seq.Date(from = as.Date("2019-01-01"), to = Sys.Date(), by = "month") |>
+    format("%b%Y")
+
+  purrr$map(
+    .x = formatted_dates,
+    .f = get_acaps_severity_date
+  ) |>
+    purrr$list_rbind() |>
+    dplyr$arrange(
+      iso3,
+      date
+    )
+}
