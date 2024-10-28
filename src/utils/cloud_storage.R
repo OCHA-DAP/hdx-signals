@@ -10,7 +10,8 @@ box::use(
   readr,
   jsonlite,
   dplyr,
-  logger
+  logger,
+  memoise
 )
 
 box::use(
@@ -64,6 +65,11 @@ read_az_file <- function(name, container = c("prod", "dev", "wfp")) {
     xlsx = readxl$read_xlsx(tf, col_types = "guess")
   )
 }
+
+#' Cached version
+#'
+#' @export
+read_az_file_cached <- memoise$memoise(read_az_file)
 
 #' Write data frame to Microsoft Azure Data Storage container
 #'
@@ -143,6 +149,11 @@ az_file_detect <- function(pattern = NULL, container = c("prod", "dev", "wfp")) 
   }
   file_names
 }
+
+#' Cached version
+#'
+#' @export
+az_file_detect_cached <- memoise$memoise(az_file_detect)
 
 #########################
 #### SETUP CONTAINER ####

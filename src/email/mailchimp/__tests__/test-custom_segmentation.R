@@ -5,7 +5,7 @@ box::use(purrr)
 impl = attr(custom_segmentation, 'namespace')
 
 test_that("mc_email_segment works correctly", {
-  stub(mc_email_segment, "cs$read_az_file", data.frame(indicator_id = letters[1:3], static_segment = LETTERS[1:3]))
+  stub(mc_email_segment, "cs$read_az_file_cached", data.frame(indicator_id = letters[1:3], static_segment = LETTERS[1:3]))
   stub(mc_email_segment, "mc_subscriber_emails", c("a@email.com", "b@email.com"))
   mock_mc_update_static_segment <- mock()
   stub(mc_email_segment, "segments$mc_update_static_segment", mock_mc_update_static_segment)

@@ -43,7 +43,7 @@ box::use(
 #'
 #' @export
 mc_email_segment <- function(indicator_id, iso3) {
-  df_ind <- cs$read_az_file("input/indicator_mapping.parquet") |>
+  df_ind <- cs$read_az_file_cached("input/indicator_mapping.parquet") |>
     dplyr$filter(indicator_id == !!indicator_id)
 
   emails <- mc_subscriber_emails(

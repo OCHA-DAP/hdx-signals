@@ -32,7 +32,7 @@ get_iso3_sf <- function(iso3, file = c("adm0", "centroids", "cities")) {
   file <- rlang$arg_match(file)
   fileext <- if (file == "centroids") "parquet" else "geojson"
   fn <- glue$glue("input/{file}/{iso3}.{fileext}")
-  azure_files <- cs$az_file_detect()
+  azure_files <- cs$az_file_detect_cached()
   if (!(fn %in% azure_files)) {
     return(NULL)
   }

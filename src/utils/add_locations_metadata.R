@@ -17,7 +17,7 @@ box::use(cs = src/utils/cloud_storage)
 #'
 #' @export
 add_locations_metadata <- function(df) {
-  df_metadata <- cs$read_az_file("input/locations_metadata.parquet") |>
+  df_metadata <- cs$read_az_file_cached("input/locations_metadata.parquet") |>
     dplyr$select(
       iso3, location, region, hrp_location, boundary_source, lat, lon
     )
