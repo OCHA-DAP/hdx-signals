@@ -4,6 +4,7 @@ box::use(
   purrr,
   readr,
   logger,
+  tidyr
 )
 
 box::use(
@@ -23,82 +24,88 @@ box::use(
 #'
 #' @export
 raw <- function() {
+  start_date=as.Date("2019-01-01")
   # first we check that we haven't already downloaded ACAPS data today, and if we
   # have, just use that raw data. Also checks that `HS_FIRST_RUN` values match
   date_check <- cs$read_az_file("output/acaps_inform/download_date.parquet")
 
-  if (date_check$acaps_download_date == Sys.Date()) {
-     logger$log_debug("ACAPS data already downloaded today. Using existing raw.parquet file on Azure")
-     cs$read_az_file("output/acaps_inform/raw.parquet")
-  } else {
-    credentials <- list(username=get_env$get_env("ACAPS_EMAIL_ADDRESS"), password=get_env$get_env("ACAPS_PWD"))
-    auth_token_response <- httr2$request("https://api.acaps.org/api/v1/token-auth/") |>
-      httr2$req_body_json(credentials) |>
-      httr2$req_perform()
+  # if (date_check$acaps_download_date == Sys.Date()) {
+  #    logger$log_debug("ACAPS data already downloaded today. Using existing raw.parquet file on Azure")
+  #    cs$read_az_file("output/acaps_inform/raw.parquet")
+  # } else {
+  credentials <- list(username=get_env$get_env("ACAPS_EMAIL_ADDRESS"), password=get_env$get_env("ACAPS_PWD"))
+  auth_token_response <- httr2$request("https://api.acaps.org/api/v1/token-auth/") |>
+    httr2$req_body_json(credentials) |>
+    httr2$req_perform()
 
-    auth_token <- httr2$resp_body_json(auth_token_response)$token
+  auth_token <- httr2$resp_body_json(auth_token_response)$token
 
-    #Get current month and year
-    date_api=format(Sys.Date(), format = '%b%Y')
-    ## Wait to avoid throttling
+  #Get current month and year
+  end_date=Sys.Date()
+  #Get all months-year combinations to be downloaded
+  date_seq <- seq(from = start_date, to = end_date, by = "month")
+  # Format the dates in 'MMM YYYY' format
+  formatted_dates <- format(date_seq, "%b%Y")
 
-    df <- data.frame()
-    request_url <- paste0("https://api.acaps.org/api/v1/inform-severity-index/",date_api)
+  ## Wait to avoid throttling
+  df <- data.frame()
+  last_request_time <- Sys.time()
+
+  for (date_api in formatted_dates){
+    request_url <- paste0("https://api.acaps.org/api/v1/inform-severity-index/",date_api,"/?country_level=Yes")
+    # # Wait to avoid throttling
+    # while (as.numeric(Sys.time() - last_request_time) < 1) {
+    #   Sys.sleep(0.1)
+    # }
+
+    # Make the request with verbose logging
+    response <- httr2$request(request_url) |>
+      httr2$req_headers(
+        Authorization = paste("Token", auth_token)
+      ) |>
+      httr2$req_perform() |>
+      httr2$resp_body_json()
+
     last_request_time <- Sys.time()
 
-    while (TRUE) {
+    # Extract the data and convert any list-type columns to strings
+    df_results <- dplyr$tibble(
+      iso3 = sapply(response$results, `[[`, "iso3"),
+      country = sapply(response$results, `[[`, "country"),
+      regions = sapply(response$results, `[[`, "regions"),
+      crisis_id = sapply(response$results, `[[`, "crisis_id"),
+      crisis_name = sapply(response$results, `[[`, "crisis_name"),
+      inform_severity_index = sapply(response$results, `[[`, "INFORM Severity Index"),
+      impact_crisis = sapply(response$results, `[[`,"Impact of the crisis"),
+      people_condition = sapply(response$results, `[[`,"Conditions of affected people"),
+      complexity = sapply(response$results, `[[`,"Complexity"),
+      drivers = sapply(response$results, `[[`, "drivers"),
+      date = sapply(response$results, `[[`, "_internal_filter_date")
+    )
 
-      # Wait to avoid throttling
-      while (as.numeric(Sys.time() - last_request_time) < 1) {
-        Sys.sleep(0.1)
-      }
-
-      # Make the request with verbose logging
-      response <- httr2$request(request_url) |>
-        httr2$req_headers(
-          Authorization = paste("Token", auth_token)
-        ) |>
-        httr2$req_perform() |>
-        httr2$resp_body_json()
-
-      last_request_time <- Sys.time()
-
-      # Extract the data and convert any list-type columns to strings
-      df_results <- dplyr$tibble(
-        iso3 = sapply(response$results, `[[`, "iso3"),
-        country = sapply(response$results, `[[`, "country"),
-        regions = sapply(response$results, `[[`, "regions"),
-        crisis_id = sapply(response$results, `[[`, "crisis_id"),
-        crisis_name = sapply(response$results, `[[`, "crisis_name"),
-        inform_severity_index = sapply(response$results, `[[`, "INFORM Severity Index")
-      )
-
-      # Append to the main dataframe
-      f <- rbind(df, df_results)
-
-      # Loop to the next page; if we are on the last page, break the loop
-      next_url <- resp_body_json(response)["next"]
-      if (!is.null(next_url)) {
-        request_url <- next_url
-      } else {
-        break
-      }
-    }
-    purrr$pluck("data") |>
-    purrr$map(dplyr$as_tibble) |>
-    purrr$list_rbind() |>
-    readr$type_convert(
-      col_types = readr$cols())
-
-    # Add download date
-    dplyr$tibble(
-    acaps_download_date = Sys.Date()
-    ) |>
-    cs$update_az_file("output/acaps_inform/download_date.parquet")
-
-    cs$update_az_file(df_inform, "output/acaps_inform/raw.parquet")
-    df_inform
+    # Append to the main dataframe
+    df <- rbind(df, df_results)
   }
+  df |>
+    dplyr::mutate(
+      drivers = purrr.map_chr(
+        .x = drivers,
+        .f = \(x) paste(unlist(x), collapse = ", ")
+      )
+    ) |>
+    tidyr.unnest(
+      cols = dplyr.where(is.list)
+    )
+
+  # Add download date
+  dplyr$tibble(
+  acaps_download_date = Sys.Date()
+  ) |>
+  cs$update_az_file("output/acaps_inform/download_date.parquet")
+
+  cs$update_az_file(df, "output/acaps_inform/raw.parquet")
+  df
+  # }
 }
 
 raw()
