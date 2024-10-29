@@ -26,6 +26,8 @@ temp_file <- function(fileext = "") {
 }
 
 # ensure directory is created and empty when this module is loaded
-temp_dir <- here$here(".temp_dir")
-dir.create(temp_dir, showWarnings = FALSE)
-unlink(paste0(temp_dir, "/*"), recursive = TRUE)
+.on_load <- function(ns) {
+  temp_dir <- here$here(".temp_dir")
+  dir.create(temp_dir, showWarnings = FALSE)
+  unlink(paste0(temp_dir, "/*"), recursive = TRUE)
+}
