@@ -172,6 +172,9 @@ mc_find_segment <- function(segment_name) {
     httr2$req_url_path_append(
       "segments"
     ) |>
+    httr2$req_url_query(
+      count = 1000
+    ) |>
     httr2$req_perform() |>
     httr2$resp_body_json() |>
     purrr$pluck("segments") |>
