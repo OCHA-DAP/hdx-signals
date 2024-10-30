@@ -83,10 +83,10 @@ generate_signals <- function(
   # generate the new alerts that will receive a campaign
   # filter out the data before generating new alerts
   df_alerts <- df_wrangled |>
+    alert_fn() |>
     filter_test_data$filter_test_data(
       dry_run_filter = dry_run_filter
     ) |>
-    alert_fn() |>
     generate_alerts$generate_alerts(
       indicator_id = indicator_id
     )
