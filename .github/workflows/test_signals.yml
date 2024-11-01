@@ -1,6 +1,7 @@
 # this workflow checks the CHANGES.md file
 
 on:
+  workflow_dispatch:
   pull_request:
     branches: [main]
 
