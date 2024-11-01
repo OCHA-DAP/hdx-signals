@@ -9,6 +9,13 @@ to setup testing for other modules
 - Implemented new module structure for indicators that streamlines the process of
 passing indicators to `generate_signals()`, to mirror OOP class/method approaches
 
+## 0.1.14.3 (29 October 2024)
+
+### System
+
+- Add DO_NOTHING command and a double confirmation for critical actions when
+triaging a signal.
+
 ## 0.1.14.2 (2 October 2024)
 
 ### Runs
