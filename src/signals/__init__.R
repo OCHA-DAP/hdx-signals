@@ -10,7 +10,3 @@ box::use(
   src/signals/generate_signals[...],
   src/signals/triage_signals[...]
 )
-
-if (is.null(box::name())) {
-  box::use(src/signals/`__tests__`)
-}

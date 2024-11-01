@@ -61,7 +61,7 @@ variables dynamically, and ensure we don't call APIs during testing.
 
 ## Coverage
 
-Currently, the tests cover the `src/email`, `src/signals`, and `src/utils` directories.
-The `src/images` and `src/repo` directories need testing, as do the individual
+Currently, the tests cover the `src/email` and `src/utils` directories.
+The `src/images`, `src/signals` and `src/repo` directories need testing, as do the individual
 `src/indicators`. Testing coverage could be setup using `{covr}`, but is unclear if it
 is possible using `{box}`.
