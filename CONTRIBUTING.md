@@ -20,7 +20,7 @@ See the Tidyverse guide on [how to create a great issue](https://code-review.tid
 Before you start, follow these steps to setup the repository for development:
 
 1. Clone GitHub repository.
-2. Install R version 4.3.3. You might find the R installation manager [rig](https://github.com/r-lib/rig) helpful in managing your installation versions.
+2. Install R version 4.4.1. You might find the R installation manager [rig](https://github.com/r-lib/rig) helpful in managing your installation versions.
 3. Install `{renv}` with `install.packages("renv").
 4. Install project dependencies using `renv::init()`.
 5. Ensure you have the necessary environment variables defined. See [ENVIRONMENT.md](ENVIRONMENT.md) for more details.
