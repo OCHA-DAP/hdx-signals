@@ -26,7 +26,7 @@ test_that("mc_add_template works correctly with local TRUE", {
 
 test_that("mc_add_template works correctly with local FALSE", {
   with_envvar(
-    new = c(HS_LOCAL = FALSE),{
+    new = c(HS_LOCAL = FALSE, MAILCHIMP_API_KEY = "ABC"),{
       stub(mc_add_template, "folders$mc_template_folder_id", 1)
       stub(mc_add_template, "uuid$UUIDgenerate", 123)
 

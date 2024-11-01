@@ -7,7 +7,7 @@ test_that("mc_upload_image works properly", {
   stub(mc_upload_image, "encode_image", mock_encode_image)
   stub(mc_upload_image, "folders$mc_file_folder_id", 1)
 
-  with_envvar(new = c(HS_LOCAL = FALSE),{
+  with_envvar(new = c(HS_LOCAL = FALSE, MAILCHIMP_API_KEY = "ABC"),{
     with_mock_api({
       result <- mc_upload_image(fp = "folder-path", name = "name", folder = "1")
       expect_equal(result, data.frame(id = "1", url = "https://example.com/image"))
