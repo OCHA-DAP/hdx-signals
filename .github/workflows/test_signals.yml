@@ -16,7 +16,7 @@ jobs:
             test-scripts: [
               "src/email/components/__init__.R",
               "src/email/mailchimp/__init__.R",
-              "src/email/utils/__init__.R"
+              "src/utils/__init__.R"
             ]
       steps:
           - name: Checkout repository
