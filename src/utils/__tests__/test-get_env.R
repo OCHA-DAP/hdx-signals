@@ -10,6 +10,6 @@ test_that("get_env works correctly", {
     logger$log_threshold("FATAL")
     expect_error(get_env("GHI"))
     # reset logging after running tests
-    logger$log_threshold(cur_threshold)
+    logger$log_threshold(original_threshold)
   })
 })

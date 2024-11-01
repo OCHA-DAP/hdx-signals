@@ -1,4 +1,4 @@
-stub(add_locations_metadata, "cs$read_az_file", data.frame(
+stub(add_locations_metadata, "cs$read_az_file_cached", data.frame(
   iso3 = c("AAA", "BBB", "CCC", "DDD"),
   location = letters[1:4],
   region = LETTERS[1:4],

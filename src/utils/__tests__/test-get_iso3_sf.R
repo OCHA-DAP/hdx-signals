@@ -1,5 +1,5 @@
 test_that("get_iso3_sf works correctly", {
-  stub(get_iso3_sf, "cs$az_file_detect", c(
+  stub(get_iso3_sf, "cs$az_file_detect_cached", c(
     "input/adm0/a.geojson",
     "input/adm0/b.geojson",
     "input/cities/a.geojson",

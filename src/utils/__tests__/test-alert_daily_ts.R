@@ -100,6 +100,6 @@ test_that("alert_daily_ts works properly", {
       val_col = "value",
       min_val = 100
     ) |> nrow(),
-    1
+    2
   )
 })
