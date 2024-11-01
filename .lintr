@@ -15,6 +15,12 @@ exclusions:
     "src/utils/__tests__",
     "src/signals/__init__.R",
     "src/signals/__tests__",
-    "src/indicators/wfp_market_monitor/__init__.R"
+    "src/indicators/wfp_market_monitor/__init__.R",
+    "src/indicators/jrc_agricultural_hotspots/__init__.R",
+    "src/indicators/ipc_food_insecurity/__init__.R",
+    "src/indicators/acled_conflict/__init__.R",
+    "src/indicators/who_cholera/__init__.R",
+    "src/indicators/idmc_displacement/disaster/__init__.R",
+    "src/indicators/idmc_displacement/conflict/__init__.R"
   )
 encoding: "UTF-8"
