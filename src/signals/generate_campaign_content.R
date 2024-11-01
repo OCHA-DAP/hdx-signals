@@ -34,20 +34,15 @@ generate_campaign_content <- function(
     df_alerts,
     df_wrangled,
     df_raw,
-    plot_fn = NULL,
-    map_fn = NULL,
-    plot2_fn = NULL,
-    other_images_fn = NULL,
-    summary_fn = NULL,
-    info_fn = NULL,
+    ind_module,
     empty = FALSE) {
   df_alerts |>
-    generate_images(df_wrangled, df_raw, plot_fn, "plot", empty) |>
-    generate_images(df_wrangled, df_raw, map_fn, "map", empty) |>
-    generate_images(df_wrangled, df_raw, plot2_fn, "plot2", empty) |>
-    generate_other_images(df_wrangled, df_raw, other_images_fn, empty) |>
-    generate_summary(df_wrangled, df_raw, summary_fn, empty) |>
-    generate_info(df_wrangled, df_raw, info_fn, empty) |>
+    generate_images(df_wrangled, df_raw, ind_module, "plot", empty) |>
+    generate_images(df_wrangled, df_raw, ind_module, "map", empty) |>
+    generate_images(df_wrangled, df_raw, ind_module, "plot2", empty) |>
+    generate_other_images(df_wrangled, df_raw, ind_module, empty) |>
+    generate_summary(df_wrangled, df_raw, ind_module, empty) |>
+    generate_info(df_wrangled, df_raw, ind_module, empty) |>
     validate_campaign_content()
 }
 
@@ -62,7 +57,7 @@ generate_campaign_content <- function(
 #' @param df_alerts Alerts data frame
 #' @param df_wrangled Wrangled data frame
 #' @param df_raw Raw data frame
-#' @param fn Plotting function
+#' @param ind_module Indicator module
 #' @param image_name Name of the image to generate, either a `plot`, `map`, or `plot2`,
 #'     corresponding with the final columns in a campaigns data frame.
 #' @param empty Whether or not to return an empty data frame if `fn` is `NULL`.
@@ -72,7 +67,7 @@ generate_images <- function(
     df_alerts,
     df_wrangled,
     df_raw,
-    fn = NULL,
+    ind_module,
     image_name = c("plot", "map", "plot2"),
     empty = FALSE) {
   image_name <- rlang$arg_match(image_name)
@@ -80,8 +75,8 @@ generate_images <- function(
     df_alerts = df_alerts,
     df_wrangled = df_wrangled,
     df_raw = df_raw,
-    fn = fn,
-    fn_name = deparse(substitute(fn)),
+    fn = ind_module[[image_name]],
+    fn_name = image_name,
     null_return = dplyr$tibble(
       "{image_name}_title" := NA_character_,
       "{image_name}_id" := NA_character_,
@@ -101,20 +96,20 @@ generate_images <- function(
 #'
 #' @param df Alerts data frame
 #' @param df_wrangled Wrangled data frame
-#' @param fn Function to generate the linkages to other images
+#' @param ind_module Indicator module
 #' @param empty Whether or not to return an empty data frame if `fn` is `NULL`.
 generate_other_images <- function(
     df_alerts,
     df_wrangled,
     df_raw,
-    fn = NULL,
+    ind_module,
     empty = FALSE) {
   generate_section(
     df_alerts = df_alerts,
     df_wrangled = df_wrangled,
     df_raw = df_raw,
-    fn = fn,
-    fn_name = deparse(substitute(fn)),
+    fn = ind_module[["other_images"]],
+    fn_name = "other_images",
     null_return = dplyr$tibble(
       other_images_ids = NA_character_,
       other_images_urls = NA_character_,
@@ -131,20 +126,20 @@ generate_other_images <- function(
 #'
 #' @param df Alerts data frame
 #' @param df_wrangled Wrangled data frame
-#' @param fn Function to generate the linkages to other images
+#' @param ind_module Indicator module
 #' @param empty Whether or not to return an empty data frame if `fn` is `NULL`.
 generate_summary <- function(
     df_alerts,
     df_wrangled,
     df_raw,
-    fn = NULL,
+    ind_module,
     empty = FALSE) {
   generate_section(
     df_alerts = df_alerts,
     df_wrangled = df_wrangled,
     df_raw = df_raw,
-    fn = fn,
-    fn_name = deparse(substitute(fn)),
+    fn = ind_module[["summary"]],
+    fn_name = "summary",
     null_return = dplyr$tibble(
       summary_long = NA_character_,
       summary_short = NA_character_,
@@ -162,20 +157,20 @@ generate_summary <- function(
 #'
 #' @param df Alerts data frame
 #' @param df_wrangled Wrangled data frame
-#' @param fn Content generating function
+#' @param ind_module Indicator module
 #' @param empty Whether or not to return an empty data frame
 generate_info <- function(
     df_alerts,
     df_wrangled,
     df_raw,
-    fn = NULL,
+    ind_module,
     empty = FALSE) {
   generate_section(
     df_alerts = df_alerts,
     df_wrangled = df_wrangled,
     df_raw = df_raw,
-    fn = fn,
-    fn_name = deparse(substitute(fn)),
+    fn = ind_module[["info"]],
+    fn_name = "info",
     null_return = dplyr$tibble(
       hdx_url = NA_character_,
       source_url = NA_character_,
