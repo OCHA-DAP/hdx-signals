@@ -12,6 +12,7 @@ box::use(
   purrr
 )
 
+# get all campaigns as a list
 campaigns <- base_api$mc_api(
   lists_api = FALSE
 ) |>
@@ -25,9 +26,10 @@ campaigns <- base_api$mc_api(
   httr2$req_perform() |>
   httr2$resp_body_json()
 
+# get dataframe of signals so we can filter out campaigns only to those sent and stored here
 df_signals <- cs$read_az_file("output/signals.parquet")
 
-
+# retrieve campaigns as a dataframe
 df_all_campaigns <- purrr$map(
   .x = campaigns$campaigns,
   .f = \(x) {
@@ -46,6 +48,7 @@ df_all_campaigns <- purrr$map(
 ) |>
   purrr$list_rbind()
 
+# gets campaign stats by filtering against things in df_signals
 df_campaign_stats <- df_all_campaigns |>
   dplyr$filter(
     recipients > 1
@@ -61,7 +64,7 @@ df_campaign_stats <- df_all_campaigns |>
     by = "id"
   ) |>
   dplyr$filter(
-    !is.na(indicator_id)
+    !is.na(indicator_id) # filters out emails not in df_signals
   )
 
 # general open rates
