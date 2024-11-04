@@ -61,7 +61,7 @@ mc_email_count_req <- function(member_id, offset = 0) {
     length()
 }
 
-
+# get information on members
 df_members <- purrr$map(
   .x = member_list,
   .f = \(x) {
