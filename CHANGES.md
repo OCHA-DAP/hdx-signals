@@ -1,5 +1,12 @@
 # Changes
 
+## 0.1.14.4 (30 October 2024)
+
+### System
+
+- Small fix to `triage_signals()` to check for environment variable presence prior
+to sending emails
+
 ## 0.1.14.3 (29 October 2024)
 
 ### System
