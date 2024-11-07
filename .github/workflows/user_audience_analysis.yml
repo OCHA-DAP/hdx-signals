@@ -1,0 +1,34 @@
+name: Run user-analytics
+
+on:
+    workflow_dispatch:
+      inputs:
+        HS_LOCAL:
+          required: true
+          type: choice
+          default: "TRUE"
+          options:
+            - "TRUE"
+            - "FALSE"
+  # schedule:
+  #   - cron: '0 8 * * 1' # run 8 am once a week
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GH_TOKEN}}
+      DSCI_AZ_SAS_PROD: ${{ secrets.DSCI_AZ_SAS_PROD }}
+      MAILCHIMP_API_KEY: ${{ secrets.MAILCHIMP_API_KEY }}
+      # HS_DRY_RUN: ${{ 'FALSE' }}
+      HS_LOCAL: ${{ inputs.HS_LOCAL || 'FALSE' }}
+    steps:
+        - name: Checkout repository
+          uses: actions/checkout@v3
+
+        - name: Set up environment
+          uses: ocha-dap/hdx-signals-actions@v3
+
+        # - name: R - create user analytics dataset
+        #   shell: bash
+        #   run: Rscript ./src/email/mailchimp/create_user_analytics_dataset.R
