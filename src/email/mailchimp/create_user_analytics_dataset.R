@@ -128,10 +128,9 @@ df_members <- purrr$map(
     name != "" # HDX Signals email
   )
 
-
 cs$update_az_file(
   df = df_members,
-  name =  "outputs/user_analytics/user_analytics_data.csv",
+  name =  "output/user_analytics/user_analytics_data.csv",
   container = "dev"
   )
 
