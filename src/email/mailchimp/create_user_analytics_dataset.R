@@ -1,4 +1,12 @@
-# create user analytics data set
+"
+Create user analytics data set.
+
+Script queries mailchimp API to get user analytics data and then combines it
+into a tidy data.frame.
+
+This will be run on a GitHub Action (.github/workflows/user_audience_analysis.yml)
+Weekly.
+"
 
 box::use(
   src/email/mailchimp/audience,
@@ -123,124 +131,7 @@ df_members <- purrr$map(
 
 cs$update_az_file(
   df = df_members,
-  name =  "user_data.parquet",
+  name =  "outputs/user_analytics/user_analytics_data.csv",
   container = "dev"
   )
 
-# all scrap below
-
-# # Here the data is summarised w/ some metrics deemed to be important
-# df_members_distinct <- df_members |>
-#   dplyr$group_by(
-#     name, email, status, subscription_date, organisation, iso2, open_rate, click_rate, email_count, group
-#   ) |>
-#   # this sumarise basically gets us down unique groups based on user/email + group combo..
-#   # so basically per group stats?
-#   dplyr$summarize(
-#     all_locations = any(interest == "All locations in the region" & interested),
-#     interest_num = sum(interested[interest != "All locations in the region"]),
-#     .groups = "drop_last"
-#   ) |>
-#   # then we summarise down to 1 row per user
-#   dplyr$summarize(
-#     # number of different data sets the user has selected as interested in
-#     num_datasets = interest_num[group == "Datasets of interest"],
-#     # did they select all datasets available (6)
-#     all_datasets = num_datasets == 6,
-#
-#     num_all_locations = sum(all_locations),
-#     all_locations = all(all_locations[group != "Datasets of interest"]),
-#     everything = all_datasets && all_locations,
-#     .groups = "drop"
-#   )
-#
-# # what is open rate & click_rate
-# df_members |>
-#   gg$ggplot(
-#     gg$aes(x= open_rate)
-#   )+
-#   gg$geom_histogram()
-#
-# df_members |>
-#   dplyr$group_by(email,group) |>
-#   dplyr$summarise(
-#     click_rate = mean(click_rate),
-#     .groups = "drop_last"
-#   ) |>
-#   dplyr$summarise(
-#     click_rate_var = var(click_rate)
-#   ) |>
-#   dplyr$distinct(click_rate_var)
-#
-# df_members |>
-#   gg$ggplot(
-#     gg$aes(x= click_rate)
-#   )+
-#   gg$geom_histogram()
-#
-# df_members |>
-#   dplyr$distinct(open_rate)
-# df_members |>
-#   tidyr$pivot_longer(cols = open_rate:email_count)
-#
-# df_members |>
-#   dplyr$select(name, email, status,organisation,interested, interest,group, subscription_date) |>
-#   dplyr$count(status)
-#
-# df_ck <- df_members |>
-#
-#   dplyr$group_by(
-#     name,
-#     email,
-#     status,
-#     subscription_date = lubridate$as_datetime(subscription_date),
-#     organisation,
-#     iso2,
-#     open_rate,
-#     click_rate,
-#     email_count,
-#     group
-#
-#   ) |>
-#   # this sumarise basically gets us down unique groups based on user/email + group combo..
-#   # so basically per group stats?
-#   dplyr$summarize(
-#     all_locations = any(interest == "All locations in the region" & interested),
-#     interest_num = sum(interested[interest != "All locations in the region"]),
-#     .groups = "drop_last"
-#   ) |>
-#   dplyr$group_by(
-#     name,
-#     email,
-#     status,
-#     subscription_date,
-#     subscription_month = lubridate$as_date(lubridate$floor_date(subscription_date,"month")),
-#     organisation,
-#     iso2,
-#     open_rate,
-#     click_rate,
-#     email_count
-#
-#
-#   ) |>
-#   # then we summarise down to 1 row per user
-#   dplyr$summarize(
-#     # number of different data sets the user has selected as interested in
-#     num_datasets = interest_num[group == "Datasets of interest"],
-#     # did they select all datasets available (6)
-#     all_datasets = num_datasets == 6,
-#
-#     num_all_locations = sum(all_locations),
-#     all_locations = all(all_locations[group != "Datasets of interest"]),
-#     everything = all_datasets && all_locations,
-#     .groups = "drop"
-#   )
-#
-# df_ck |>
-#   gg$ggplot(
-#     gg$aes(x= num_datasets)
-#   ) +
-#   gg$geom_histogram()+
-#   gg$facet_wrap(~subscription_month)
-#   # dplyr$glimpse()
-#   dplyr$group_by(subscription_month,)
