@@ -10,8 +10,8 @@ on:
           options:
             - "TRUE"
             - "FALSE"
-  schedule:
-    - cron: '0 8 * * 1' # run 8 am once a week
+    schedule:
+      - cron: '0 8 * * 1' # run 8 am once a week
 
 jobs:
   run:
