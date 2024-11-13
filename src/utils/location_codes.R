@@ -37,17 +37,17 @@ names_to_iso3 <- function(location_names) {
 #'
 #' @export
 ison_to_iso3 <- function(ison) {
-    # list of numerical iso codes used from data provider but not officially recognized
-    # 2 is used by ACLED for the areas of Akrotiri and Dhekelia (British overseas territories in Cyprus)
-    not_recognized_ison <- c(2)
-    iso3 <- character(length(ison))
-    iso3[ison == 0] <- "XKX"
-    iso3[! ison %in% c(not_recognized_ison,0)] <- countrycode$countrycode(
-      sourcevar = ison[! ison %in% c(not_recognized_ison,0)],
-      origin = "iso3n",
-      destination = "iso3c"
-    )
-    iso3
+  # list of numerical iso codes used from data provider but not officially recognized
+  # 2 is used by ACLED for the areas of Akrotiri and Dhekelia (British overseas territories in Cyprus)
+  not_recognized_ison <- c(2)
+  iso3 <- character(length(ison))
+  iso3[ison == 0] <- "XKX"
+  iso3[! ison %in% c(not_recognized_ison, 0)] <- countrycode$countrycode(
+    sourcevar = ison[! ison %in% c(not_recognized_ison, 0)],
+    origin = "iso3n",
+    destination = "iso3c"
+  )
+  iso3
 }
 
 #' Get ISOn code from ISO numeric codes

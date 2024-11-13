@@ -35,8 +35,8 @@ wrangle <- function(df_raw) {
     ) |>
     # filter out not assigned iso3
     dplyr$filter(
-      iso3!=""
-    )|>
+      iso3 != ""
+    ) |>
     dplyr$group_by(
       iso3, date = event_date
     ) |>
