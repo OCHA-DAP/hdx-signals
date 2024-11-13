@@ -1,5 +1,11 @@
 # Changes
 
+## 0.1.14.5 (13 November 2024)
+
+### System
+
+- Add numerical iso codes to be ignored
+
 ## 0.1.14.4 (30 October 2024)
 
 ### System
