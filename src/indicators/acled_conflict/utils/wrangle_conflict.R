@@ -33,6 +33,10 @@ wrangle <- function(df_raw) {
       iso3 = location_codes$ison_to_iso3(as.numeric(iso)),
       fatalities = as.numeric(fatalities)
     ) |>
+    # filter out not assigned iso3
+    dplyr$filter(
+      iso3!=""
+    )|>
     dplyr$group_by(
       iso3, date = event_date
     ) |>
