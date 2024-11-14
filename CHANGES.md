@@ -4,7 +4,7 @@
 
 ### System
 
-- Add numerical iso codes to be ignored
+- Add numerical iso codes to be ignored in `location_codes$ison_to_iso3()`
 
 ## 0.1.14.4 (30 October 2024)
 
