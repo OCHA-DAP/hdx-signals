@@ -29,6 +29,10 @@ jobs:
         - name: Set up environment
           uses: ocha-dap/hdx-signals-actions@v3
 
-        - name: R - create user analytics dataset
+        - name: R - create USER analytics dataset
           shell: bash
           run: Rscript ./src/email/mailchimp/create_user_analytics_dataset.R
+
+        - name: R - create CAMPAIGN analytics dataset
+          shell: bash
+          run: Rscript ./src/email/mailchimp/create_campaign_analytics_dataset.R

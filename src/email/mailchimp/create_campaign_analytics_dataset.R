@@ -9,7 +9,8 @@ box::use(
   gg = ggplot2,
   gghdx,
   httr2,
-  purrr
+  purrr,
+  lubridate
 )
 
 # get all campaigns as a list
@@ -67,65 +68,8 @@ df_campaign_stats <- df_all_campaigns |>
     !is.na(indicator_id) # filters out emails not in df_signals
   )
 
-# general open rates
-
-df_campaign_stats |>
-  dplyr$mutate(
-    indicator_id = forcats$fct_reorder(
-      .f = factor(indicator_id),
-      .x = open_rate
-    )
-  ) |>
-  gg$ggplot(
-    mapping = gg$aes(
-      x = open_rate,
-      y = indicator_id
-    )
-  ) +
-  gg$geom_boxplot(
-    fill = "white",
-    outliers = FALSE
-  ) +
-  gg$geom_point(
-    alpha = 0.2
-  ) +
-  gg$scale_x_continuous(
-    labels = scales$label_percent()
-  ) +
-  gg$labs(
-    x = "Open rate",
-    y = "",
-    title = "Open rate by indicator"
-  )
-
-# open rate by time
-
-df_campaign_stats |>
-  gg$ggplot(
-    mapping = gg$aes(
-      x = date,
-      y = open_rate
-    )
-  ) +
-  gg$geom_point() +
-  gg$labs(
-    x = "",
-    y = "Open rate",
-    title = "Open rate across time"
-  ) +
-  gg$scale_y_continuous(
-    labels = scales$label_percent(),
-    limits = c(.05, NA)
-  )
-
-# now look at open rate vs email count
-df_campaign_stats |>
-  dplyr$left_join(
-    dplyr$select(
-      df_all_campaigns,
-      share_id = id,
-      share_clicks = clicks,
-      share_opens = opens,
-      share_unique_opens = unique_opens
-    )
-  )
+cs$update_az_file(
+  df = df_campaign_stats,
+  name =  "output/user_analytics/campaing_analytics_data.csv",
+  container = "dev"
+)
