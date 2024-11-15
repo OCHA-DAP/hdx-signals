@@ -8,6 +8,12 @@ This will be run on a GitHub Action (.github/workflows/user_audience_analysis.ym
 Weekly.
 "
 
+# putting this up here so that we can change to PROD later and only need
+# to update here rather than multiple places.
+FP_COMPILED_USER_DATA <-  "output/user_research/user_analytics_data.csv"
+FP_USER_CONTACT <- "output/user_research/hdx_signals_user_contact.csv"
+STORAGE_ACCOUNT <- "dev"
+
 box::use(
   src/email/mailchimp/audience,
   src/email/mailchimp/base_api,
@@ -24,9 +30,32 @@ box::use(
   scales,
   sf,
   stringr,
-  tidyr
+  tidyr,
+  AzureStor
 )
 
+RUN_DATE <- Sys.Date()
+
+#' compiled_data_exists
+#' @description
+#' helper function to determine if it's the first run and data set should
+#' be written straight from API or wrangled and appended to data already
+#' on blob
+#'
+#' @param file_path  file path to compile data set on blob
+#' @param storage_account which storage_account container is on (dev, prod)
+#'
+#' @return `logical` TRUE or FALSE
+
+compiled_data_exists <-  function(file_path, storage_account){
+  blob_str <- cs$az_file_detect(
+    pattern = file_path,
+    container = storage_account
+  )
+  ifelse(length(blob_str)>0, TRUE, FALSE)
+}
+
+dataset_on_blob <- compiled_data_exists(file_path = FP_COMPILED_USER_DATA, storage_account = STORAGE_ACCOUNT)
 
 # script-specific custom functions ----------------------------------------
 
@@ -128,9 +157,76 @@ df_members <- purrr$map(
     name != "" # HDX Signals email
   )
 
-cs$update_az_file(
-  df = df_members,
-  name =  "output/user_analytics/user_analytics_data.csv",
-  container = "dev"
+
+df_members_new <- df_members |>
+  dplyr$mutate(
+    subscription_date = lubridate$as_date(subscription_date),
+    iso2 = ifelse(iso2=="",NA_character_,iso2),
+    extraction_date= lubridate$as_date(Sys.Date())
+  ) |>
+  dplyr$select(
+    -dplyr$all_of(c("name","email"))
   )
 
+df_contact <-  df_members |>
+  dplyr$distinct(name, email)
+
+
+cs$update_az_file(
+  df = df_contact,
+  name =  FP_USER_CONTACT,
+  container = STORAGE_ACCOUNT
+)
+
+
+if(!dataset_on_blob){
+  cs$update_az_file(
+    df = df_members_new,
+    name =  FP_COMPILED_USER_DATA,
+    container = STORAGE_ACCOUNT
+  )
+}
+
+if(dataset_on_blob){
+  df_members_prev <- cs$read_az_file(
+    name =  FP_COMPILED_USER_DATA,
+    container = STORAGE_ACCOUNT
+  )
+
+  df_members_prev <- df_members_prev |>
+    dplyr$mutate(
+      subscription_date = lubridate$as_date(subscription_date),
+      extraction_date = lubridate$as_date(extraction_date),
+    )
+
+  # return all rows from new data set that do not have matching rows in old data
+  df_diff <- dplyr$anti_join(
+    dplyr$select(df_members_new,-extraction_date),
+    dplyr$select(df_members_prev,-extraction_date)
+  )
+
+  # bind new records to previous records
+  df_merged_long <- dplyr$bind_rows(
+    df_members_prev,
+    df_diff |>
+      dplyr$mutate(
+        date_update = lubridate$as_date(Sys.Date())
+      )
+  )
+  # update file
+  # **note:** to replicate analysis in adhoc/audience analysis from this
+  # file rather than file loaded fresh from mail chimp you would need to first:
+  # grab the latest data for each subscriber like this:
+  # df_merged_long |>
+  #   dplyr$group_by(
+  #     id
+  #   ) |>
+  #   dplyr$filter(extraction_date == max(extraction_date)) |>
+  #   dplyr$ungroup()
+
+  cs$update_az_file(
+    df = df_merged_long,
+    name =  FP_COMPILED_USER_DATA,
+    container = STORAGE_ACCOUNT
+  )
+}
