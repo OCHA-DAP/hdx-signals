@@ -36,26 +36,12 @@ box::use(
 
 RUN_DATE <- Sys.Date()
 
-#' compiled_data_exists
-#' @description
-#' helper function to determine if it's the first run and data set should
-#' be written straight from API or wrangled and appended to data already
-#' on blob
-#'
-#' @param file_path  file path to compile data set on blob
-#' @param storage_account which storage_account container is on (dev, prod)
-#'
-#' @return `logical` TRUE or FALSE
+blob_detected <- cs$az_file_detect(
+  pattern = FP_COMPILED_USER_DATA,
+  container = STORAGE_ACCOUNT
+)
+dataset_on_blob <-  ifelse(length(blob_detected)>0, TRUE, FALSE)
 
-compiled_data_exists <-  function(file_path, storage_account){
-  blob_str <- cs$az_file_detect(
-    pattern = file_path,
-    container = storage_account
-  )
-  ifelse(length(blob_str)>0, TRUE, FALSE)
-}
-
-dataset_on_blob <- compiled_data_exists(file_path = FP_COMPILED_USER_DATA, storage_account = STORAGE_ACCOUNT)
 
 # script-specific custom functions ----------------------------------------
 
@@ -210,7 +196,7 @@ if(dataset_on_blob){
     df_members_prev,
     df_diff |>
       dplyr$mutate(
-        extraction_date = lubridate$as_date(Sys.Date())
+        extraction_date = lubridate$as_date(RUN_DATE)
       )
   )
   # update file
