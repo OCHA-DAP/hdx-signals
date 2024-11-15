@@ -210,7 +210,7 @@ if(dataset_on_blob){
     df_members_prev,
     df_diff |>
       dplyr$mutate(
-        date_update = lubridate$as_date(Sys.Date())
+        extraction_date = lubridate$as_date(Sys.Date())
       )
   )
   # update file
