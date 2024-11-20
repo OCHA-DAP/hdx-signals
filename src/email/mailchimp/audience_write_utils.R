@@ -18,7 +18,9 @@ box::use(
 write_appended_data <- function(
     df,
     storage_account,
-    file_path ){
+    file_path ,
+    run_date
+    ){
 
   on_blob <- is_on_blob(file_path, storage_account = storage_account)
 
@@ -40,19 +42,25 @@ write_appended_data <- function(
     )
     df_prev <- df_prev |>
       dplyr$mutate(
-        subscription_date = lubridate$as_date(subscription_date),
-        extraction_date = lubridate$as_date(extraction_date),
+        dplyr$across(
+          .cols = dplyr$contains("_date"),
+          .fns = \(x) lubridate$as_date(x)
+
+        )
+
+        # subscription_date = lubridate$as_date(subscription_date),
+        # extraction_date = lubridate$as_date(extraction_date),
       )
     df_diff <- dplyr$anti_join(
-      dplyr$select(df,-extraction_date),
-      dplyr$select(df_prev,-extraction_date)
+      dplyr$select(df,-dplyr$any_of(c("extraction_date"))),
+      dplyr$select(df_prev,-dplyr$any_of(c("extraction_date")))
     )
 
     df_merged_long <- dplyr$bind_rows(
       df_prev,
       df_diff |>
         dplyr$mutate(
-          extraction_date = lubridate$as_date(RUN_DATE)
+          extraction_date = lubridate$as_date(run_date)
         )
     )
     cs$update_az_file(

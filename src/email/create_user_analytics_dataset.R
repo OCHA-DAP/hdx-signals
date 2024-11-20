@@ -10,9 +10,9 @@ Weekly.
 
 # putting this up here so that we can change to PROD later and only need
 # to update here rather than multiple places.
-FP_USER_INTERESTS = "output/user_research/hdx_signals_user_interest_data.csv"
-FP_USER_INTERACTIONS = "output/user_research/hdx_signals_user_interactions_data.csv"
-FP_USER_CONTACTS <- "output/user_research/hdx_signals_user_interest_data.csv"
+FP_USER_INTERESTS = "output/user_research/hdx_signals_user_contacts.csv"
+FP_USER_INTERACTIONS = "output/user_research/hdx_signals_user_interactions.csv"
+FP_USER_CONTACTS <- "output/user_research/hdx_signals_user_interests.csv"
 
 STORAGE_ACCOUNT <- "dev"
 
@@ -174,13 +174,15 @@ cs$update_az_file(
 audience_write_utils$write_appended_data(
   df = df_member_interactions_new,
   file_path = FP_USER_INTERACTIONS,
-  storage_account = STORAGE_ACCOUNT
+  storage_account = STORAGE_ACCOUNT,
+  run_date = RUN_DATE
   )
 
 audience_write_utils$write_appended_data(
   df = df_members_new,
   file_path = FP_USER_INTERESTS,
-  storage_account = STORAGE_ACCOUNT
+  storage_account = STORAGE_ACCOUNT,
+  run_date = RUN_DATE
   )
 
 
