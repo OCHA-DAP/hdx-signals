@@ -59,6 +59,14 @@ libraries or code you want for testing. For instance, we frequently use `{mocker
 `{withr}`, and `{httptest2}` to enhance our ability to mock functions, set environment
 variables dynamically, and ensure we don't call APIs during testing.
 
+## Run Tests
+Tests are automatically run via a GHA (`.github/workflows/test_signals.yml`) on every merge to main.
+To run the tests locally the `__init__.R` file of the parent directory of the `__tests__/`folder should be run.
+To run the tests in an interactive mode, to be able to debug them, we can manually run the `helper-module.R` file
+and then the `_init_.R` file in that same directory as the `helper-module.R` file and the environment will be loaded
+for testing so that we can walk through tests.
+To debug a test also the `browser()` function can be used as describer [here](https://stackoverflow.com/a/31799091)
+
 ## Coverage
 
 Currently, the tests cover the `src/email` and `src/utils` directories.
