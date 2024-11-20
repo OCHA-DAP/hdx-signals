@@ -10,11 +10,8 @@ Weekly.
 
 # putting this up here so that we can change to PROD later and only need
 # to update here rather than multiple places.
-lfp_users <-  list(
-  FP_USER_INTERESTS = "output/user_research/hdx_signals_user_interest_data.csv",
-  FP_USER_INTERACTIONS = "output/user_research/hdx_signals_user_interactions_data.csv"
-)
-
+FP_USER_INTERESTS = "output/user_research/hdx_signals_user_interest_data.csv"
+FP_USER_INTERACTIONS = "output/user_research/hdx_signals_user_interactions_data.csv"
 FP_USER_CONTACTS <- "output/user_research/hdx_signals_user_interest_data.csv"
 
 STORAGE_ACCOUNT <- "dev"
@@ -42,18 +39,6 @@ box::use(
 )
 
 RUN_DATE <- Sys.Date()
-
-# is_on_blob <- purrr$map(
-#   lfp_users,\(tfp){
-#     blob_detected <- cs$az_file_detect(
-#       pattern = tfp,
-#       container = STORAGE_ACCOUNT
-#     )
-#     ifelse(length(blob_detected)>0, TRUE, FALSE)
-#   }
-# )
-
-
 
 # script-specific custom functions ----------------------------------------
 
