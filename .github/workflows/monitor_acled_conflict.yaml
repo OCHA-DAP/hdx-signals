@@ -63,6 +63,7 @@ jobs:
               uses: nick-fields/retry@v3
               with:
                 max_attempts: 2
+                timeout_minutes: 2
                 retry_on: error
                 shell: bash
                 command: Rscript ./src/indicators/acled_conflict/update_conflict.R
