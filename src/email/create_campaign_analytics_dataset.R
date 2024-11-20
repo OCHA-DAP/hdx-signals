@@ -1,6 +1,7 @@
 
 FP_CAMPAIGN_DATA <- "output/user_research/campaign_analytics_data.csv"
 STORAGE_ACCOUNT <- "dev"
+MC_SIGNALS_LIST_ID <- "e908cb9d48"
 
 box::use(
   src/email/mailchimp/base_api,
@@ -32,7 +33,7 @@ campaigns <- base_api$mc_api(
     "campaigns"
   ) |>
   httr2$req_url_query(
-    list_id = "e908cb9d48",
+    list_id = MC_SIGNALS_LIST_ID,
     count = 1000
   ) |>
   httr2$req_perform() |>
