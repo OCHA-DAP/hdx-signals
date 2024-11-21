@@ -1,5 +1,5 @@
 
-FP_CAMPAIGN_DATA <- "output/user_research/hdx_signals_campaign_analytics_data"
+FP_CAMPAIGN_DATA <- "output/user_research/hdx_signals_campaign_analytics_data.csv"
 STORAGE_ACCOUNT <- "dev"
 MC_SIGNALS_LIST_ID <- "e908cb9d48"
 
