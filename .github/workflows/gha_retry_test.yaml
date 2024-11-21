@@ -4,21 +4,20 @@ on: [workflow_dispatch]
 
 jobs:
   test-retry:
-  runs-on: ubuntu-latest
-  env:
-    GH_TOKEN: ${{secrets.GH_TOKEN}}
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{secrets.GH_TOKEN}}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-  steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+      - name: Set up environment
+        uses: ocha-dap/hdx-signals-actions@v3
 
-    - name: Set up environment
-      uses: ocha-dap/hdx-signals-actions@v3
-
-    - name: Run Retry Test
-      uses: nick-fields/retry@v3
-      with:
-        max_attempts: 2
-        retry_on: error
-        shell: bash
-        command: Rscript ./test/manual/gha_retry_example.R
+      - name: Run Retry Test
+        uses: nick-fields/retry@v3
+        with:
+          max_attempts: 2
+          retry_on: error
+          shell: bash
+          command: Rscript ./test/manual/gha_retry_example.R
