@@ -5,9 +5,9 @@ box::use(
   cs = src/utils/cloud_storage
 )
 
-
 #' @description
-#' Check if file/data is present (on blob). If present append on new rows and overwrite.
+#' Check if file/data is present (on blob). If present append on new rows and
+#' overwrite.
 #' If file is not on blob write out file
 #'
 #' @param df data.frame created from mailchimp api call + wrangling
@@ -71,8 +71,6 @@ write_appended_data <- function(
   }
 }
 
-
-
 #' is_on_blob
 #'
 #' @param file_path `character` filepath
@@ -86,4 +84,3 @@ is_on_blob <-  function(file_path, storage_account){
   )
   ifelse(length(blob_detected)>0, TRUE, FALSE)
 }
-

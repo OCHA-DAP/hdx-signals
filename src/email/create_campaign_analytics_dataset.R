@@ -1,11 +1,10 @@
-
 FP_CAMPAIGN_DATA <- "output/user_research/hdx_signals_campaign_analytics_data.csv"
 STORAGE_ACCOUNT <- "prod"
 MC_SIGNALS_LIST_ID <- "e908cb9d48"
 
 box::use(
-  src/email/mailchimp/base_api,
-  cs = src/utils/cloud_storage
+  src / email / mailchimp / base_api,
+  cs = src / utils / cloud_storage
 )
 
 box::use(
@@ -23,7 +22,7 @@ blob_detected <- cs$az_file_detect(
   pattern = FP_CAMPAIGN_DATA,
   container = STORAGE_ACCOUNT
 )
-dataset_on_blob <-  ifelse(length(blob_detected)>0, TRUE, FALSE)
+dataset_on_blob <- ifelse(length(blob_detected) > 0, TRUE, FALSE)
 
 # get all campaigns as a list
 campaigns <- base_api$mc_api(
@@ -84,17 +83,17 @@ df_campaign_stats <- df_all_campaigns |>
     extraction_date = lubridate$as_date(RUN_DATE)
   )
 
-if(!dataset_on_blob){
+if (!dataset_on_blob) {
   cs$update_az_file(
     df = df_campaign_stats,
-    name =  FP_CAMPAIGN_DATA,
+    name = FP_CAMPAIGN_DATA,
     container = STORAGE_ACCOUNT
   )
 }
 
-if(dataset_on_blob){
+if (dataset_on_blob) {
   df_campaign_prev <- cs$read_az_file(
-    name =  FP_CAMPAIGN_DATA,
+    name = FP_CAMPAIGN_DATA,
     container = STORAGE_ACCOUNT
   )
 
@@ -106,8 +105,8 @@ if(dataset_on_blob){
 
   # return all rows from new data set that do not have matching rows in old data
   df_diff <- dplyr$anti_join(
-    dplyr$select(df_campaign_stats,-extraction_date),
-    dplyr$select(df_campaign_prev,-extraction_date)
+    dplyr$select(df_campaign_stats, -extraction_date),
+    dplyr$select(df_campaign_prev, -extraction_date)
   )
 
   # bind new records to previous records
@@ -131,8 +130,7 @@ if(dataset_on_blob){
 
   cs$update_az_file(
     df = df_merged_long,
-    name =  FP_CAMPAIGN_DATA,
+    name = FP_CAMPAIGN_DATA,
     container = STORAGE_ACCOUNT
   )
 }
-

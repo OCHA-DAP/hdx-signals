@@ -1,4 +1,3 @@
-
 #' Create user analytics data set.
 #'
 #' Script queries mailchimp API to get user analytics data and then combines it
@@ -10,17 +9,17 @@
 
 # putting this up here so that we can change to PROD later and only need
 # to update here rather than multiple places.
-FP_USER_INTERESTS = "output/user_research/hdx_signals_user_interests.csv"
-FP_USER_INTERACTIONS = "output/user_research/hdx_signals_user_interactions.csv"
+FP_USER_INTERESTS <- "output/user_research/hdx_signals_user_interests.csv"
+FP_USER_INTERACTIONS <- "output/user_research/hdx_signals_user_interactions.csv"
 FP_USER_CONTACTS <- "output/user_research/hdx_signals_user_contacts.csv"
 
 STORAGE_ACCOUNT <- "prod"
 
 box::use(
-  src/email/mailchimp/audience,
-  src/email/mailchimp/base_api,
-  src/email/mailchimp/audience_write_utils,
-  cs = src/utils/cloud_storage,
+  src / email / mailchimp / audience,
+  src / email / mailchimp / base_api,
+  src / email / mailchimp / audience_write_utils,
+  cs = src / utils / cloud_storage,
 )
 
 box::use(
@@ -144,29 +143,29 @@ df_members <- purrr$map(
 df_members_new <- df_members |>
   dplyr$mutate(
     subscription_date = lubridate$as_date(subscription_date),
-    iso2 = ifelse(iso2=="",NA_character_,iso2),
-    extraction_date= lubridate$as_date(Sys.Date())
+    iso2 = ifelse(iso2 == "", NA_character_, iso2),
+    extraction_date = lubridate$as_date(Sys.Date())
   ) |>
   dplyr$select(
-    -dplyr$all_of(c("name","email"))
+    -dplyr$all_of(c("name", "email"))
   )
 
 df_member_interactions_new <- df_members_new |>
   dplyr$group_by(id) |>
-  dplyr$distinct(open_rate,click_rate,email_count) |>
+  dplyr$distinct(open_rate, click_rate, email_count) |>
   dplyr$ungroup() |>
   dplyr$mutate(
     extraction_date = lubridate$as_date(Sys.Date())
   )
 
 
-df_contact <-  df_members |>
-  dplyr$distinct(id,name, email)
+df_contact <- df_members |>
+  dplyr$distinct(id, name, email)
 
 # we can just write this each time to keep active members
 cs$update_az_file(
   df = df_contact,
-  name =  FP_USER_CONTACTS,
+  name = FP_USER_CONTACTS,
   container = STORAGE_ACCOUNT
 )
 
@@ -176,11 +175,11 @@ audience_write_utils$write_appended_data(
   file_path = FP_USER_INTERACTIONS,
   storage_account = STORAGE_ACCOUNT,
   run_date = RUN_DATE
-  )
+)
 
 audience_write_utils$write_appended_data(
   df = df_members_new,
   file_path = FP_USER_INTERESTS,
   storage_account = STORAGE_ACCOUNT,
   run_date = RUN_DATE
-  )
+)
