@@ -7,6 +7,7 @@ jobs:
   runs-on: ubuntu-latest
   env:
     GH_TOKEN: ${{secrets.GH_TOKEN}}
+    GITHUB_RUN_ATTEMPT: #
 
   steps:
     - name: Checkout repository
@@ -19,7 +20,6 @@ jobs:
       uses: nick-fields/retry@v3
       with:
         max_attempts: 2
-        timeout_minutes: 2
         retry_on: error
         shell: bash
-        command: Rscript ./example_failure_script.R
+        command: Rscript ./test/manual/gha_retry_example.R
