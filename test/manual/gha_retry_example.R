@@ -1,6 +1,6 @@
 get_external_data <- function() {
   # Get the GitHub run attempt number
-  run_attempt <- as.numeric(Sys.getenv("GH_RUN_ATTEMPT", unset = "1"))
+  run_attempt <- as.numeric(Sys.getenv("GH_RUN_ATTEMPT"))#, unset = "1"))
   run_number <- as.numeric(Sys.getenv("GH_RUN_NUMBER", unset = "0"))
 
   # Debugging output
