@@ -1,10 +1,31 @@
 # Changes
 
-## 0.1.14.3 (20 November 2024)
+## 0.1.14.6 (20 November 2024)
 
 ### Runs
 
 - Add `Run user analytics` GitHub Action (run every Monday) to store and compile data for user research/analytics initiative
+
+## 0.1.14.5 (13 November 2024)
+
+### System
+
+- Add numerical iso codes to be ignored in `location_codes$ison_to_iso3()`
+
+## 0.1.14.4 (30 October 2024)
+
+### System
+
+- Small fix to `triage_signals()` to check for environment variable presence prior
+to sending emails
+
+## 0.1.14.3 (29 October 2024)
+
+### System
+
+- Add DO_NOTHING command and a double confirmation for critical actions when
+triaging a signal.
+
 
 ## 0.1.14.2 (2 October 2024)
 
