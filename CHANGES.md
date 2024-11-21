@@ -1,5 +1,11 @@
 # Changes
 
+## 0.1.14.6 (20 November 2024)
+
+### Runs
+
+- Add `Run user analytics` GitHub Action (run every Monday) to store and compile data for user research/analytics initiative
+
 ## 0.1.14.5 (13 November 2024)
 
 ### System
@@ -19,6 +25,7 @@ to sending emails
 
 - Add DO_NOTHING command and a double confirmation for critical actions when
 triaging a signal.
+
 
 ## 0.1.14.2 (2 October 2024)
 
