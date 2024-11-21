@@ -1,4 +1,5 @@
 #nolint start
+RUN_DATE <- Sys.Date()
 FP_CAMPAIGN_DATA <- "output/user_research/hdx_signals_campaign_analytics_data.csv"
 STORAGE_ACCOUNT <- "prod"
 MC_SIGNALS_LIST_ID <- "e908cb9d48"
@@ -11,14 +12,10 @@ box::use(
 
 box::use(
   dplyr,
-  forcats,
-  gg = ggplot2,
-  gghdx,
   httr2,
   purrr,
   lubridate
 )
-RUN_DATE <- Sys.Date() #nolint
 
 blob_detected <- cs$az_file_detect(
   pattern = FP_CAMPAIGN_DATA,

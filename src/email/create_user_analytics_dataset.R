@@ -27,17 +27,10 @@ box::use(
 
 box::use(
   dplyr,
-  gg = ggplot2,
-  gghdx,
   httr2,
   lubridate,
   purrr,
-  scales,
-  sf,
-  stringr,
-  tidyr,
-  AzureStor,
-  logger
+  tidyr
 )
 
 # script-specific custom functions ----------------------------------------

@@ -1,3 +1,4 @@
+#nolint start
 box::use(
   src/email/mailchimp/audience,
   src/email/mailchimp/base_api
@@ -561,3 +562,4 @@ df_subscribed |>
   dplyr$select(
     name, organisation, open_rate, click_rate, email_count
   )
+#nolint end

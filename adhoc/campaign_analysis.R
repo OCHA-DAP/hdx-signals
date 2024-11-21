@@ -12,6 +12,7 @@ box::use(
   purrr,
   lubridate
 )
+gghdx$gghdx()
 
 # get all campaigns as a list
 campaigns <- base_api$mc_api(
