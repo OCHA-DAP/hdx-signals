@@ -16,9 +16,6 @@ jobs:
 
       - name: Run Retry Test
         uses: nick-fields/retry@v3
-        env:
-          GH_RUN_ATTEMPT: ${{ github.run_attempt }}
-          GH_RUN_NUMBER: ${{ github.run_number }}
         with:
           max_attempts: 2
           timeout_minutes: 2
