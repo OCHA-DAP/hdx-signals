@@ -1,23 +1,19 @@
-
-# Function to check retry state
 get_external_data <- function() {
-  # Use GITHUB_RUN_ATTEMPT environment variable
-  # This is a built-in GitHub Actions variable that increments on retries
-  retry_attempt <- as.numeric(Sys.getenv("GITHUB_RUN_ATTEMPT", unset = "1"))
+  # Get the GitHub run attempt number
+  run_attempt <- as.numeric(Sys.getenv("GH_RUN_ATTEMPT", unset = "1"))
+  run_number <- as.numeric(Sys.getenv("GH_RUN_NUMBER", unset = "0"))
 
   # Debugging output
-  cat("Current attempt:", retry_attempt, "\n")
+  cat("Current run attempt:", run_attempt, "\n")
+  cat("Current run number:", run_number, "\n")
 
-  if (retry_attempt == 1) {
+  if (run_attempt == 1) {
     # First attempt - always fail
     stop("First attempt always fails")
-  } else if (retry_attempt == 2) {
-    # First retry - succeed
+  } else {
+    # Retry attempt - succeed
     return("Data retrieved successfully")
   }
-
-  # Any subsequent attempts fail
-  stop("Unexpected retry attempt")
 }
 
 # Main function with error handling
