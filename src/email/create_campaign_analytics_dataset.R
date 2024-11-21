@@ -1,6 +1,8 @@
+#nolint start
 FP_CAMPAIGN_DATA <- "output/user_research/hdx_signals_campaign_analytics_data.csv"
 STORAGE_ACCOUNT <- "prod"
 MC_SIGNALS_LIST_ID <- "e908cb9d48"
+#nolint end
 
 box::use(
   src / email / mailchimp / base_api,
@@ -16,7 +18,7 @@ box::use(
   purrr,
   lubridate
 )
-RUN_DATE <- Sys.Date()
+RUN_DATE <- Sys.Date() #nolint
 
 blob_detected <- cs$az_file_detect(
   pattern = FP_CAMPAIGN_DATA,
@@ -38,7 +40,9 @@ campaigns <- base_api$mc_api(
   httr2$req_perform() |>
   httr2$resp_body_json()
 
-# get dataframe of signals so we can filter out campaigns only to those sent and stored here
+# get dataframe of signals so we can filter out campaigns only to those sent
+# and stored here
+
 df_signals <- cs$read_az_file("output/signals.parquet")
 
 # retrieve campaigns as a dataframe
@@ -117,16 +121,6 @@ if (dataset_on_blob) {
         extraction_date = lubridate$as_date(RUN_DATE)
       )
   )
-  # update file
-  # **note:** to replicate analysis in adhoc/audience analysis from this
-  # file rather than file loaded fresh from mail chimp you would need to first:
-  # grab the latest data for each subscriber like this:
-  # df_merged_long |>
-  #   dplyr$group_by(
-  #     id
-  #   ) |>
-  #   dplyr$filter(extraction_date == max(extraction_date)) |>
-  #   dplyr$ungroup()
 
   cs$update_az_file(
     df = df_merged_long,

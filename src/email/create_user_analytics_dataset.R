@@ -3,17 +3,20 @@
 #' Script queries mailchimp API to get user analytics data and then combines it
 #' into a tidy data.frame.
 #'
-#' This will be run on a GitHub Action (.github/workflows/user_audience_analysis.yml)
-#' Weekly.
+#' This will be run on a GitHub Action weekly.
+#'(.github/workflows/user_audience_analysis.yml)
 
 
 # putting this up here so that we can change to PROD later and only need
 # to update here rather than multiple places.
+
+#nolint start
+RUN_DATE <- Sys.Date()
 FP_USER_INTERESTS <- "output/user_research/hdx_signals_user_interests.csv"
 FP_USER_INTERACTIONS <- "output/user_research/hdx_signals_user_interactions.csv"
 FP_USER_CONTACTS <- "output/user_research/hdx_signals_user_contacts.csv"
-
 STORAGE_ACCOUNT <- "prod"
+#nolint end
 
 box::use(
   src / email / mailchimp / audience,
@@ -37,14 +40,13 @@ box::use(
   logger
 )
 
-RUN_DATE <- Sys.Date()
-
 # script-specific custom functions ----------------------------------------
 
 
 #' Get number of emails sent to subscriber
 #'
-#' Provided a `member_id` (subscriber_hash in the Mailchimp documentation sometimes),
+#' Provided a `member_id` (subscriber_hash in the Mailchimp documentation
+#' sometimes),
 #' we pull in the number of mailings they have been sent.
 #'
 #' @export
@@ -53,7 +55,10 @@ mc_email_count <- function(member_id) {
 
   offset <- 1000
   while (email_count == offset) {
-    email_count <- email_count + mc_email_count_req(member_id = member_id, offset = offset)
+    email_count <- email_count + mc_email_count_req(
+      member_id = member_id,
+      offset = offset
+    )
     offset <- offset + 1000
   }
   email_count
@@ -108,7 +113,7 @@ df_members <- purrr$map(
       status = x$status,
       open_rate = x$stats$avg_open_rate,
       click_rate = x$stats$avg_click_rate,
-      interests = dplyr$as_tibble(x$interests) # this is an interesting /non-conventional move... should run some experiments
+      interests = dplyr$as_tibble(x$interests)
     )
   }
 ) |>
