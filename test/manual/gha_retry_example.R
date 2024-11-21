@@ -6,7 +6,7 @@
 dummy_file <- tempfile(fileext = ".txt")
 
 # Check if the flag file exists
-if (file.exists(flag_file)) {
+if (file.exists(dummy_file)) {
   message("Success on retry!") # this should happen on try 2
   # Simulate success
 } else {
