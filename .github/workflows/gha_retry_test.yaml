@@ -7,7 +7,6 @@ jobs:
   runs-on: ubuntu-latest
   env:
     GH_TOKEN: ${{secrets.GH_TOKEN}}
-    GITHUB_RUN_ATTEMPT: #
 
   steps:
     - name: Checkout repository
