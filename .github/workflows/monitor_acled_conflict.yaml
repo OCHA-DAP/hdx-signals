@@ -60,10 +60,5 @@ jobs:
               uses: ocha-dap/hdx-signals-actions@v3
 
             - name: Run R monitoring script
-              uses: nick-fields/retry@v3
-              with:
-                max_attempts: 2
-                timeout_minutes: 2
-                retry_on: error
-                shell: bash
-                command: Rscript ./src/indicators/acled_conflict/update_conflict.R
+              shell: bash
+              run: Rscript ./src/indicators/acled_conflict/update_conflict.R
