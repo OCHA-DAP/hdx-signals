@@ -1,6 +1,6 @@
 
 FP_CAMPAIGN_DATA <- "output/user_research/hdx_signals_campaign_analytics_data.csv"
-STORAGE_ACCOUNT <- "dev"
+STORAGE_ACCOUNT <- "prod"
 MC_SIGNALS_LIST_ID <- "e908cb9d48"
 
 box::use(

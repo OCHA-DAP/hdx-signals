@@ -1,12 +1,12 @@
-"
-Create user analytics data set.
 
-Script queries mailchimp API to get user analytics data and then combines it
-into a tidy data.frame.
+#' Create user analytics data set.
+#'
+#' Script queries mailchimp API to get user analytics data and then combines it
+#' into a tidy data.frame.
+#'
+#' This will be run on a GitHub Action (.github/workflows/user_audience_analysis.yml)
+#' Weekly.
 
-This will be run on a GitHub Action (.github/workflows/user_audience_analysis.yml)
-Weekly.
-"
 
 # putting this up here so that we can change to PROD later and only need
 # to update here rather than multiple places.
@@ -14,7 +14,7 @@ FP_USER_INTERESTS = "output/user_research/hdx_signals_user_interests.csv"
 FP_USER_INTERACTIONS = "output/user_research/hdx_signals_user_interactions.csv"
 FP_USER_CONTACTS <- "output/user_research/hdx_signals_user_contacts.csv"
 
-STORAGE_ACCOUNT <- "dev"
+STORAGE_ACCOUNT <- "prod"
 
 box::use(
   src/email/mailchimp/audience,
