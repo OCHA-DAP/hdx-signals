@@ -10,9 +10,9 @@ Weekly.
 
 # putting this up here so that we can change to PROD later and only need
 # to update here rather than multiple places.
-FP_USER_INTERESTS = "output/user_research/hdx_signals_user_contacts.csv"
+FP_USER_INTERESTS = "output/user_research/hdx_signals_user_interests.csv"
 FP_USER_INTERACTIONS = "output/user_research/hdx_signals_user_interactions.csv"
-FP_USER_CONTACTS <- "output/user_research/hdx_signals_user_interests.csv"
+FP_USER_CONTACTS <- "output/user_research/hdx_signals_user_contacts.csv"
 
 STORAGE_ACCOUNT <- "dev"
 
@@ -184,120 +184,3 @@ audience_write_utils$write_appended_data(
   storage_account = STORAGE_ACCOUNT,
   run_date = RUN_DATE
   )
-
-
-
-#
-#
-# # User Interests ----------------------------------------------------------
-#
-# if(!is_on_blob$FP_USER_INTERESTS){
-#   cs$update_az_file(
-#     df = df_members_new,
-#     name =  FP_USER_INTERESTS,
-#     container = STORAGE_ACCOUNT
-#   )
-# }
-#
-# is_on_blob <-  function(file_path, storage_account){
-#   blob_detected <- cs$az_file_detect(
-#     pattern = file_path,
-#     container = storage_account
-#   )
-#   ifelse(length(blob_detected)>0, TRUE, FALSE)
-# }
-#
-#
-# write_appended_data <- function(df=df_members_new,file_path){
-#   if(!is_on_blob(file_path)){
-#     logger$log_info("No file detected: writing file")
-#
-#     cs$update_az_file(
-#       df = df_members_new,
-#       name =  FP_USER_INTERESTS,
-#       container = STORAGE_ACCOUNT
-#     )
-#
-#   if(is_on_blob(file_path)){
-#     logger$log_info("File detected: updating new records")
-#
-#     df_prev <- cs$read_az_file(
-#       name =  filepath,
-#       container = STORAGE_ACCOUNT
-#     )
-#     df_prev <- df_prev |>
-#       dplyr$mutate(
-#         subscription_date = lubridate$as_date(subscription_date),
-#         extraction_date = lubridate$as_date(extraction_date),
-#       )
-#     df_diff <- dplyr$anti_join(
-#       dplyr$select(df,-extraction_date),
-#       dplyr$select(df_prev,-extraction_date)
-#     )
-#
-#     df_merged_long <- dplyr$bind_rows(
-#       df_prev,
-#       df_diff |>
-#         dplyr$mutate(
-#           extraction_date = lubridate$as_date(RUN_DATE)
-#         )
-#     )
-#     cs$update_az_file(
-#       df = df_merged_long,
-#       name =  file_path,
-#       container = STORAGE_ACCOUNT
-#     )
-#   }
-#
-#   }
-# }
-#
-#
-# if(is_on_blob$FP_USER_INTERESTS){
-#   df_members_prev <- cs$read_az_file(
-#     name =  FP_USER_INTERESTS,
-#     container = STORAGE_ACCOUNT
-#   )
-#
-#   df_members_prev <- df_members_prev |>
-#     dplyr$mutate(
-#       subscription_date = lubridate$as_date(subscription_date),
-#       extraction_date = lubridate$as_date(extraction_date),
-#     )
-#
-#   # return all rows from new data set that do not have matching rows in old data
-#   df_diff <- dplyr$anti_join(
-#     dplyr$select(df_members_new,-extraction_date),
-#     dplyr$select(df_members_prev,-extraction_date)
-#   )
-#
-#   # bind new records to previous records
-#   df_merged_long <- dplyr$bind_rows(
-#     df_members_prev,
-#     df_diff |>
-#       dplyr$mutate(
-#         extraction_date = lubridate$as_date(RUN_DATE)
-#       )
-#   )
-#   # update file
-#   # **note:** to replicate analysis in adhoc/audience analysis from this
-#   # file rather than file loaded fresh from mail chimp you would need to first:
-#   # grab the latest data for each subscriber like this:
-#   # df_merged_long |>
-#   #   dplyr$group_by(
-#   #     id
-#   #   ) |>
-#   #   dplyr$filter(extraction_date == max(extraction_date)) |>
-#   #   dplyr$ungroup()
-#
-#   cs$update_az_file(
-#     df = df_merged_long,
-#     name =  FP_COMPILED_USER_DATA,
-#     container = STORAGE_ACCOUNT
-#   )
-# }
-#
-# # User Interactions -------------------------------------------------------
-#
-#
-#
