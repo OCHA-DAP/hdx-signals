@@ -3,7 +3,7 @@
 
 
 # dummy file - not present on first
-dummy_file <- tempfile(fileext = ".txt")
+dummy_file <- "dummy_file.txt"
 
 # Check if the flag file exists
 if (file.exists(dummy_file)) {
