@@ -59,4 +59,4 @@ jobs:
 
             - name: Run R monitoring script
               shell: bash
-              run: Rscript ./src/indicators/jrc_agricultural_hotspots/update_agricultural_hotspots.R
+              run: Rscript ./src/indicators/jrc_agricultural_hotspots/__init__.R

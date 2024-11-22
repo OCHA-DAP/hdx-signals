@@ -59,4 +59,4 @@ jobs:
 
             - name: Run R monitoring script
               shell: bash
-              run: Rscript ./src/indicators/wfp_market_monitor/update_market_monitor.R
+              run: Rscript ./src/indicators/wfp_market_monitor/__init__.R

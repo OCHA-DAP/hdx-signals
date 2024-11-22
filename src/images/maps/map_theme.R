@@ -25,7 +25,8 @@ box::use(
 #' @export
 map_theme <- function(iso3, use_map_settings = TRUE, margin_location = c("title", "subtitle")) {
   if (use_map_settings) {
-    df_ms <- dplyr$filter(df_map_settings, iso3 == !!iso3)
+    df_ms <- cs$read_az_file_cached("input/iso3_map_settings.json") |>
+      dplyr$filter(iso3 == !!iso3)
   } else {
     # default values
     df_ms <- data.frame(
@@ -51,5 +52,3 @@ map_theme <- function(iso3, use_map_settings = TRUE, margin_location = c("title"
       legend.location = df_ms$location
     )
 }
-
-df_map_settings <- cs$read_az_file("input/iso3_map_settings.json")

@@ -1,5 +1,14 @@
 # Changes
 
+## 0.2.0.0 (22 November 2024)
+
+### System
+
+- Setup testing for `email` and `utils` folders, as well as documentation on how
+to setup testing for other modules
+- Implemented new module structure for indicators that streamlines the process of
+passing indicators to `generate_signals()`, to mirror OOP class/method approaches
+
 ## 0.1.14.6 (20 November 2024)
 
 ### Runs
@@ -18,6 +27,7 @@
 
 - Small fix to `triage_signals()` to check for environment variable presence prior
 to sending emails
+>>>>>>> 5973d675e2be9aa37935a347bb7e5b7163373a99
 
 ## 0.1.14.3 (29 October 2024)
 

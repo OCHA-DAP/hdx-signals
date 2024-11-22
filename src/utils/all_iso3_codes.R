@@ -9,5 +9,5 @@ box::use(cs = src/utils/cloud_storage)
 #'
 #' @export
 all_iso3_codes <- function() {
-  cs$read_az_file("input/locations.parquet")$iso3
+  cs$read_az_file_cached("input/locations.parquet")$iso3
 }

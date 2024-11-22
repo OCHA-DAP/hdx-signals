@@ -9,7 +9,7 @@ box::use(
   src/utils/iso3_shift_longitude
 )
 
-#' Get the ADM0 shapefile for a location
+#' Get a shapefile for a location
 #'
 #' Takes in an `iso3` code, and reads the location data from Azure.
 #'
@@ -22,8 +22,8 @@ box::use(
 #' are complete for `all_iso3_codes()`. However, some will be missing for `cities`
 #' because these are not necessary for smaller location maps.
 #'
-#' @param iso3 ISO3 code
-#' @param file File to return, either adm0, centroids, or cities.
+#' @param iso3 ISO3 code.
+#' @param file File to return, either `adm0`, `centroids`, or `cities`.
 #'
 #' @returns Shapefile, unless missing, in which case `NULL` is returned.
 #'
@@ -32,6 +32,7 @@ get_iso3_sf <- function(iso3, file = c("adm0", "centroids", "cities")) {
   file <- rlang$arg_match(file)
   fileext <- if (file == "centroids") "parquet" else "geojson"
   fn <- glue$glue("input/{file}/{iso3}.{fileext}")
+  azure_files <- cs$az_file_detect_cached()
   if (!(fn %in% azure_files)) {
     return(NULL)
   }
@@ -51,6 +52,3 @@ get_iso3_sf <- function(iso3, file = c("adm0", "centroids", "cities")) {
     iso3_shift_longitude$iso3_shift_longitude(df, iso3)
   }
 }
-
-
-azure_files <- cs$az_file_detect()

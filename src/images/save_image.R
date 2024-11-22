@@ -27,7 +27,7 @@ save_image <- function(p, iso3, indicator_id, date, width, height, crop = FALSE,
   name <- paste(tolower(iso3), indicator_id, format(date, "%Y_%m_%b.png"), sep = "_")
 
   # get the folder name for the indicator ID
-  folder <- df_folders |>
+  folder <- cs$read_az_file_cached("input/indicator_mapping.parquet") |>
     dplyr$filter(
       indicator_id == !!indicator_id
     ) |>
@@ -63,7 +63,8 @@ save_image <- function(p, iso3, indicator_id, date, width, height, crop = FALSE,
 save_map <- function(p, iso3, indicator_id, date, crop = FALSE) {
 
   # get the width and height
-  df_ms <- dplyr$filter(df_map_settings, iso3 == !!iso3)
+  df_ms <- cs$read_az_file_cached("input/iso3_map_settings.json") |>
+    dplyr$filter(iso3 == !!iso3)
 
   save_image(
     p = p,
@@ -75,6 +76,3 @@ save_map <- function(p, iso3, indicator_id, date, crop = FALSE) {
     crop = crop
   )
 }
-
-df_folders <- cs$read_az_file("input/indicator_mapping.parquet")
-df_map_settings <- cs$read_az_file("input/iso3_map_settings.json")

@@ -57,4 +57,4 @@ jobs:
 
             - name: Run R monitoring script
               shell: bash
-              run: Rscript ./src/indicators/who_cholera/update_cholera.R
+              run: Rscript ./src/indicators/who_cholera/__init__.R

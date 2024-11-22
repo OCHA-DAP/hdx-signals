@@ -6,7 +6,7 @@ workflow for converting indicator alerts into a signals dataset and emails.
 
 ### Generating signals
 
-For each indicator `update_{...}.R` script, `generate_signals()` is the
+For each indicator `indicators/{indicator_id}/__init__.R` script, `generate_signals()` is the
 primary workhorse. The process that flows through the function roughly follows:
 
 1. Create an alerts dataset from the wrangled data

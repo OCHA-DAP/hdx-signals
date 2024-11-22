@@ -60,4 +60,4 @@ jobs:
 
             - name: Run R monitoring script
               shell: bash
-              run: Rscript ./src/indicators/ipc_food_insecurity/update_food_insecurity.R
+              run: Rscript ./src/indicators/ipc_food_insecurity/__init__.R
