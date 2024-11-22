@@ -149,7 +149,6 @@ preview_campaign_urls <- function(campaign_urls) {
 #' @param test Whether or not the signals were in the test folder.
 approve_signals <- function(df, fn_signals, test, indicator_id) {
   user_command  <- "init"
-  user_name <- get_env$get_env("HS_ADMIN_NAME")
   while (!(user_command %in% c("APPROVE", "DELETE", "ARCHIVE", "DO_NOTHING"))) {
     # send message to user
     msg <- glue$glue(
@@ -205,18 +204,20 @@ dispatch_signals <- function(df, fn_signals, test, user_command) {
       )
     }
 
+    # add triage information to the data before joining to core
+    # do this now so we test this process when `test = TRUE`
+    df$triage_approver <- get_env$get_env("HS_ADMIN_NAME")
+    df$triage_time <- Sys.time()
+
+    df_core_signals <- dplyr$bind_rows(
+      read_core_signals(),
+      df
+    )
+
     send_signals(df)
 
     # if not testing, move everything to the core signals dataset
     if (!test) {
-      # add triage information to the data before joining to core
-      df$triage_approver <- user_name
-      df$triage_time <- Sys.time()
-
-      df_core_signals <- dplyr$bind_rows(
-        read_core_signals(),
-        df
-      )
       # adds the indicator signals data to the core file
       # saves a reduced version as CSV to dev for pipelining to HDX
       # and then empties the indicator one
