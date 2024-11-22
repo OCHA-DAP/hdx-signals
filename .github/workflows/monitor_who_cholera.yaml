@@ -63,4 +63,4 @@ jobs:
                 retry_on: error
                 retry_wait_seconds: 120
                 shell: bash
-                command:  Rscript ./src/indicators/who_cholera/__init__.R
+                command: Rscript ./src/indicators/who_cholera/__init__.R
