@@ -18,7 +18,8 @@ jobs:
         uses: nick-fields/retry@v3
         with:
           max_attempts: 2
-          timeout_minutes: 2
+          timeout_minutes: 20
           retry_on: error
+          retry_wait_seconds: 120
           shell: bash
           command: Rscript ./test/manual/gha_retry_example.R
