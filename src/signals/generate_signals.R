@@ -74,7 +74,7 @@ generate_signals <- function(
   fn_signals <- cs$signals_path(ind_module$indicator_id, hs_dry_run$hs_dry_run())
 
   check_existing_signals$check_existing_signals(
-    indicator_id = indicator_id,
+    indicator_id = ind_module$indicator_id,
     fn_signals = fn_signals
   )
 
