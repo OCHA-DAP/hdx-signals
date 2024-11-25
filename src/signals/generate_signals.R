@@ -86,12 +86,12 @@ generate_signals <- function(
       dry_run_filter = dry_run_filter
     ) |>
     generate_alerts$generate_alerts(
-      indicator_id = indicator_id
+      indicator_id = ind_module$indicator_id
     )
 
   # return empty data frame if alerts is empty
   if (nrow(df_alerts) == 0) {
-    logger$log_info(paste0("No signals created for ", indicator_id))
+    logger$log_info(paste0("No signals created for ", ind_module$indicator_id$indicator_id))
     return(
       template_data$signals_template
     )
