@@ -1,5 +1,10 @@
 # Changes
 
+## 0.2.0.1 (25 November 2024)
+
+- bugfix to on `generate_signals()`. Attached `ind_module` module name space to 
+all instance where  `indicator_id` was used.
+
 ## 0.2.0.0 (22 November 2024)
 
 ### System
