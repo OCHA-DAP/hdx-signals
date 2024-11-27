@@ -1,7 +1,8 @@
 box::use(
   stringr,
   purrr,
-  dplyr
+  dplyr,
+  glue
 )
 
 box::use(
@@ -30,8 +31,13 @@ box::use(
 #' delete all campaign content from Mailchimp and then delete all of the rows
 #' from `output/{indicator_id}/signals.parquet`.
 #'
-#' - `Any other user input`: Do nothing, in which you can decide later manually what to do, and use
+#' - `DO_NOTHING` Do nothing, in which you can decide later manually what to do, and use
 #' `delete_campaign_content()` or `send_signals()` yourself manually.
+#'
+#' - `Any other user input`: the user will be asked again what's the desired action to be taken.
+#'
+#' The`APPROVE`, `DELETE` and `APPROVE` command will require a double confirmation given the criticality of the action.
+#' To confirm the user needs to type `I CONFIRM`
 #'
 #' There is no way to completely delete the alerts, which would essentially
 #' determine that we do not want to send an alert at all. This would mean changing
@@ -47,7 +53,7 @@ box::use(
 #' `triage_signals()` accepts the explicit `test` argument rather than looking
 #' for `HS_DRY_RUN` because the function is intended for interactive use. Users
 #' may want to look to triage signals in `output/{indicator}/test/signals.parquet`,
-#' by setting `test` to `TRUE`. However, they will need their own `HS_DRY_RUN`
+#' by setting `test` to `TRUE`. However, they will need their own `HS_LOCAL`
 #' env variable set to `FALSE` in order to `DELETE` or `APPROVE` these test signals.
 #'
 #' @param indicator_id Indicator ID mapped in `input/indicator_mapping.parquet`
@@ -65,7 +71,8 @@ triage_signals <- function(indicator_id, n_campaigns = 10, test = FALSE) {
   fn_signals <- cs$signals_path(indicator_id, test)
   df <- get_signals_df(fn_signals)
   preview_signals(df = df, n_campaigns = n_campaigns)
-  approve_signals(df = df, fn_signals = fn_signals, test = test)
+  user_input <- approve_signals(df = df, fn_signals = fn_signals, test = test, indicator_id = indicator_id)
+  dispatch_signals(df = df, fn_signals = fn_signals, test = test, user_command = user_input)
 }
 
 #' Check the signals data frame
@@ -140,22 +147,47 @@ preview_campaign_urls <- function(campaign_urls) {
 #' @param df Signals data frame
 #' @param fn_signals File name to the signals data
 #' @param test Whether or not the signals were in the test folder.
-approve_signals <- function(df, fn_signals, test) {
-  user_name <- get_env$get_env("HS_ADMIN_NAME")
-  # send message to user
-  cat(
-    "Tell us what you want to do with the following commands:\n\n",
-    "APPROVE: Send campaigns",
-    if (test) "\n" else " and add to `output/signals.parquet`\n",
-    "DELETE: Delete the campaign content and `output/{indicator}/signals.parquet`",
-    "file so you can recreate later.\n",
-    "ARCHIVE: Delete the email campaign, but move the alert to `output/signals.parquet`\n",
-    "Any other input: Do nothing, so you can decide later.\n",
-    sep = ""
-  )
+approve_signals <- function(df, fn_signals, test, indicator_id) {
+  user_command  <- "init"
+  while (!(user_command %in% c("APPROVE", "DELETE", "ARCHIVE", "DO_NOTHING"))) {
+    # send message to user
+    msg <- glue$glue(
+                     "Tell us what you want to do with the following commands:
 
-  user_command <- readline(prompt = "Your command: ")
+                      APPROVE: Send campaigns{if (test) '' else ' and add to `output/signals.parquet`'}
+                      DELETE: Delete the campaign content and `output/{indicator_id}/signals.parquet` file
+                      so you can recreate later.
+                      ARCHIVE: Delete the email campaign, but move the alert to `output/signals.parquet`
+                      DO_NOTHING: Do nothing, so you can decide later.")
+    print(msg)
+    user_command <- readline(prompt = "Your command: ")
+  }
+  if (user_command %in% c("APPROVE", "DELETE", "ARCHIVE")) {
+    # send message to user
+    cat(
+      "You typed the command: ", user_command, "\n",
+      "Given the criticality of the action please type I CONFIRM to proceed with the action selected",
+      sep = ""
+    )
 
+    user_command_confirmation <- readline(prompt = "Your command: ")
+    if (user_command_confirmation != "I CONFIRM") {
+      stop(glue$glue("The process was not confirmed, you will need to re-run `triage_signals()` to {user_command} the
+                     signal and then confirm it."),
+        call. = FALSE
+      )
+    }
+  }
+  user_command
+}
+
+#' Dispatch or not campaigns based on user input
+#'
+#' @param df Signals data frame
+#' @param fn_signals File name to the signals data
+#' @param test Whether or not the signals were in the test folder.
+#' @param user_command command provided by the user
+dispatch_signals <- function(df, fn_signals, test, user_command) {
   if (user_command %in% c("APPROVE", "ARCHIVE")) {
     if (user_command == "ARCHIVE") {
       # delete the email template and campaigns, but not the content
@@ -172,18 +204,20 @@ approve_signals <- function(df, fn_signals, test) {
       )
     }
 
+    # add triage information to the data before joining to core
+    # do this now so we test this process when `test = TRUE`
+    df$triage_approver <- get_env$get_env("HS_ADMIN_NAME")
+    df$triage_time <- Sys.time()
+
+    df_core_signals <- dplyr$bind_rows(
+      read_core_signals(),
+      df
+    )
+
     send_signals(df)
 
     # if not testing, move everything to the core signals dataset
     if (!test) {
-      # add triage information to the data before joining to core
-      df$triage_approver <- user_name
-      df$triage_time <- Sys.time()
-
-      df_core_signals <- dplyr$bind_rows(
-        read_core_signals(),
-        df
-      )
       # adds the indicator signals data to the core file
       # saves a reduced version as CSV to dev for pipelining to HDX
       # and then empties the indicator one
@@ -191,17 +225,21 @@ approve_signals <- function(df, fn_signals, test) {
       save_core_signals_hdx(df_core_signals)
       cs$update_az_file(df[0, ], fn_signals)
     } else {
+      if (user_command == "ARCHIVE") {
+        action_selected <= "archived"
+      } else {
+        action_selected <- "sent"
+      }
       new_input <- readline(
-        paste0(
-          "You have sent your test campaigns. If you want to delete the\n",
-          "test campaigns file ",
-          fn_signals,
-          " and its content from Mailchimp, type DELETE."
-        )
+        paste0(glue$glue("You have {action_selected} your test campaigns. If you want to delete the\n"),
+               "test campaigns file ",
+               fn_signals,
+               " and its content from Mailchimp, type DELETE.")
       )
       if (new_input == "DELETE") {
         df_deleted <- delete_campaign_content$delete_campaign_content(df)
         cs$update_az_file(df_deleted, fn_signals)
+        message("The campaigns file have been succesfully deleted.")
       } else {
         message(
           "You have not deleted the content in ",

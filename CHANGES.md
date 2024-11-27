@@ -1,5 +1,47 @@
 # Changes
 
+## 0.2.0.1 (25 November 2024)
+
+- bugfix to on `generate_signals()`. Attached `ind_module` module name space to 
+all instance where  `indicator_id` was used.
+
+## 0.2.0.0 (22 November 2024)
+
+### System
+
+- Setup testing for `email` and `utils` folders, as well as documentation on how
+to setup testing for other modules
+- Implemented new module structure for indicators that streamlines the process of
+passing indicators to `generate_signals()`, to mirror OOP class/method approaches
+
+## 0.1.14.6 (20 November 2024)
+
+### Runs
+
+- Add `Run user analytics` GitHub Action (run every Monday) to store and compile data for user research/analytics initiative
+
+## 0.1.14.5 (13 November 2024)
+
+### System
+
+- Add numerical iso codes to be ignored in `location_codes$ison_to_iso3()`
+
+## 0.1.14.4 (30 October 2024)
+
+### System
+
+- Small fix to `triage_signals()` to check for environment variable presence prior
+to sending emails
+>>>>>>> 5973d675e2be9aa37935a347bb7e5b7163373a99
+
+## 0.1.14.3 (29 October 2024)
+
+### System
+
+- Add DO_NOTHING command and a double confirmation for critical actions when
+triaging a signal.
+
+
 ## 0.1.14.2 (2 October 2024)
 
 ### Runs

@@ -37,10 +37,13 @@ names_to_iso3 <- function(location_names) {
 #'
 #' @export
 ison_to_iso3 <- function(ison) {
+  # list of numerical iso codes used from data provider but not officially recognized
+  # 2 is used by ACLED for the areas of Akrotiri and Dhekelia (British overseas territories in Cyprus)
+  not_recognized_ison <- c(2)
   iso3 <- character(length(ison))
   iso3[ison == 0] <- "XKX"
-  iso3[ison != 0] <- countrycode$countrycode(
-    sourcevar = ison[ison != 0],
+  iso3[! ison %in% c(not_recognized_ison, 0)] <- countrycode$countrycode(
+    sourcevar = ison[! ison %in% c(not_recognized_ison, 0)],
     origin = "iso3n",
     destination = "iso3c"
   )
@@ -86,6 +89,7 @@ iso2_to_iso3 <- function(iso2) {
 #'
 #' @export
 iso3_to_names <- function(iso3) {
+  df_metadata <- cs$read_az_file_cached("input/locations_metadata.parquet")
   df_metadata$location[match(iso3, df_metadata$iso3)]
 }
 
@@ -96,6 +100,7 @@ iso3_to_names <- function(iso3) {
 #'
 #' @export
 iso3_to_regions <- function(iso3) {
+  df_metadata <- cs$read_az_file_cached("input/locations_metadata.parquet")
   df_metadata$region[match(iso3, df_metadata$iso3)]
 }
 
@@ -105,8 +110,6 @@ iso3_to_regions <- function(iso3) {
 #'
 #' @export
 asap_to_iso3 <- function(asap0_id) {
+  df_asap <- cs$read_az_file_cached("input/asap_iso3.parquet")
   df_asap$iso3[match(asap0_id, df_asap$asap0_id)]
 }
-
-df_metadata <- cs$read_az_file("input/locations_metadata.parquet")
-df_asap <- cs$read_az_file("input/asap_iso3.parquet")

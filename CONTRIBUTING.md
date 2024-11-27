@@ -41,13 +41,10 @@ Create a pull request to address a specific issue.
 Add a bullet point to the `CHANGES.md` file to describe the changes in your PR.
 
 *   All PR changes need to be reflected in `CHANGES.md`. Add a bullet to the top
-of `NEWS.md` (i.e. just below the first header). Follow the style described
+of the file (i.e. just below the first header). Follow the style described
 in <https://style.tidyverse.org/news.html>.
 *   Since there is only a single branch `main`, every PR will need to increment
 the version number as described in the next section.
-*  `CHANGES.md` is automatically parsed to create a public-facing `NEWS.md` in
-the methods documentation. This is done by ensuring `CHANGES.md` is formatted
-like so:
 
 ```
 ## version number
@@ -100,17 +97,25 @@ So, for all PRs:
 ### Coding practices
 
 *   New code should follow the tidyverse [style guide](https://style.tidyverse.org). 
-    You can use the [styler](https://CRAN.R-project.org/package=styler) package to apply these styles, but please don't restyle code that has nothing to do with your PR.  
+    You can use the [{styler}](https://CRAN.R-project.org/package=styler) package to apply these styles, but please don't restyle code that has nothing to do with your PR.  
 
-*   We use [roxygen2](https://cran.r-project.org/package=roxygen2), with [Markdown syntax](https://cran.r-project.org/web/packages/roxygen2/vignettes/rd-formatting.html), for documentation.  
+*   We use [{roxygen2}](https://cran.r-project.org/package=roxygen2), with [Markdown syntax](https://cran.r-project.org/web/packages/roxygen2/vignettes/rd-formatting.html), for documentation.  
 
-*   We use [testthat](https://cran.r-project.org/package=testthat) for unit tests. 
+*   We use [{testthat}](https://cran.r-project.org/package=testthat) for unit tests. 
    Contributions with test cases included are easier to accept.
    
-*   We use [box](https://cran.r-project.org/package=box) for module and
+*   We use [{box}](https://cran.r-project.org/package=box) for module and
 library management for importing local modules and R libraries.
 Use only the `box::use()` syntax with `library$function()` and
 never `library(library)` or `library::function()`.
+
+*   Modules should be structured so that exported objects are available directly
+by importing the folder itself, rather than individual files. This should be done
+using `__init__.R` files as described in this
+[box vignette](https://cran.r-project.org/web/packages/box/vignettes/box.html).
+In this way, function `a()` from `src/utils/a.R` can be access by doing
+`box::use(src/utils)` and then `utils$a()`. The only exception is other files
+within `src/utils` should access `a()` by still doing `box::use(src/utils/a)`.
 
 *   We use `{renv}` for package management. Any new dependencies need to be
 added to the lockfile. You can easily do this by running
@@ -120,3 +125,5 @@ bring your cache up-to-date with the lockfile in there.
 
 *   All environment variables required in the system need to be documented in
     [ENVIRONMENT.md](/ENVIRONMENT.md)
+    
+*   The testing setup for the project is described in [TESTING.md](/TESTING.md)

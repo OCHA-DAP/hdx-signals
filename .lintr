@@ -6,6 +6,21 @@ linters:
   )
 exclusions:
   list(
-    "src/utils/box_linters.R"
+    "src/utils/box_linters.R",
+    "src/email/components/__tests__",
+    "src/email/components/__init__.R",
+    "src/email/mailchimp/__init__.R",
+    "src/email/mailchimp/__tests__",
+    "src/utils/__init__.R",
+    "src/utils/__tests__",
+    "src/signals/__init__.R",
+    "src/signals/__tests__",
+    "src/indicators/wfp_market_monitor/__init__.R",
+    "src/indicators/jrc_agricultural_hotspots/__init__.R",
+    "src/indicators/ipc_food_insecurity/__init__.R",
+    "src/indicators/acled_conflict/__init__.R",
+    "src/indicators/who_cholera/__init__.R",
+    "src/indicators/idmc_displacement/disaster/__init__.R",
+    "src/indicators/idmc_displacement/conflict/__init__.R"
   )
 encoding: "UTF-8"

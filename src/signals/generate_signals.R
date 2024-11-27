@@ -15,10 +15,13 @@ box::use(
   src/signals/generate_alerts,
   src/signals/check_existing_signals,
   src/signals/template_data,
+  src/signals/validate_indicator,
   cs = src/utils/cloud_storage,
+  src/utils/hs_logger,
   src/utils/hs_local,
   src/utils/hs_dry_run,
-  src/utils/hs_first_run
+  src/utils/hs_first_run,
+  src/utils/update_coverage
 )
 
 #' Generate campaigns for any indicator
@@ -42,18 +45,8 @@ box::use(
 #' to Mailchimp and then used for test visualization. If `HS_DRY_RUN` is `FALSE`,
 #' then monitoring is done normally.
 #'
-#' @param df_wrangled Data frame of wrangled data
-#' @param df_raw Data frame of raw data
-#' @param indicator_id ID of the indicator for the campaign, to match names in
-#'     `input/indicator_mapping.parquet`, which can extract template folders and
-#'     other info for campaigns.
-#' @param alert_fn Function to generate alerts with.
-#' @param plot_fn Plotting function
-#' @param map_fn Mapping function
-#' @param plot2_fn Second plotting function
-#' @param other_images_fn Function to embed other images
-#' @param summary_fn Function to generate a summary
-#' @param info_fn Function to add additional information
+#' @param ind_module Indicator module that contains functions to retrieve data,
+#'     wrangle it, and generate signals for relevant locations.
 #' @param dry_run_filter Used only if `HS_DRY_RUN` is `TRUE`. If `NULL`, the default,
 #'     then 2 random signals from different locations are selected for testing.
 #'     If you pass in a vector of `iso3` codes, then the latest signals from those
@@ -61,39 +54,44 @@ box::use(
 #'
 #' @export
 generate_signals <- function(
-    df_wrangled,
-    df_raw,
-    indicator_id,
-    alert_fn,
-    plot_fn = NULL,
-    map_fn = NULL,
-    plot2_fn = NULL,
-    other_images_fn = NULL,
-    summary_fn = NULL,
-    info_fn = NULL,
+    ind_module,
     dry_run_filter = NULL) {
+  # validate that module
+  validate_indicator$validate_indicator(ind_module)
+
+  # setup run and retrieve/wrangle data
+  hs_logger$monitoring_log_setup(ind_module$indicator_id)
+  df_raw <- ind_module$raw()
+  df_wrangled <- ind_module$wrangle(df_raw)
+
+  # update coverage data to ensure locations_metadata up to date
+  update_coverage$update_coverage(
+    indicator_id = ind_module$indicator_id,
+    iso3 = df_wrangled$iso3
+  )
+
   # file name differs if testing or not
-  fn_signals <- cs$signals_path(indicator_id, hs_dry_run$hs_dry_run())
+  fn_signals <- cs$signals_path(ind_module$indicator_id, hs_dry_run$hs_dry_run())
 
   check_existing_signals$check_existing_signals(
-    indicator_id = indicator_id,
+    indicator_id = ind_module$indicator_id,
     fn_signals = fn_signals
   )
 
   # generate the new alerts that will receive a campaign
   # filter out the data before generating new alerts
   df_alerts <- df_wrangled |>
+    ind_module$alert() |>
     filter_test_data$filter_test_data(
       dry_run_filter = dry_run_filter
     ) |>
-    alert_fn() |>
     generate_alerts$generate_alerts(
-      indicator_id = indicator_id
+      indicator_id = ind_module$indicator_id
     )
 
   # return empty data frame if alerts is empty
   if (nrow(df_alerts) == 0) {
-    logger$log_info(paste0("No signals created for ", indicator_id))
+    logger$log_info(paste0("No signals created for ", ind_module$indicator_id))
     return(
       template_data$signals_template
     )
@@ -105,12 +103,7 @@ generate_signals <- function(
     df_alerts = df_alerts,
     df_wrangled = df_wrangled,
     df_raw = df_raw,
-    plot_fn = plot_fn,
-    map_fn = map_fn,
-    plot2_fn = plot2_fn,
-    other_images_fn = other_images_fn,
-    summary_fn = summary_fn,
-    info_fn = info_fn,
+    ind_module = ind_module,
     empty = FALSE
   )
 
@@ -126,7 +119,7 @@ generate_signals <- function(
         .f = \(df) {
           create_campaigns$create_campaigns(
             df_campaign_content = df,
-            indicator_id = indicator_id
+            indicator_id = ind_module$indicator_id
           )
         }
       ) |>
@@ -135,7 +128,7 @@ generate_signals <- function(
     # otherwise, all new alerts are put into the same campaign
     df_campaigns <- create_campaigns$create_campaigns(
       df_campaign_content = df_campaign_content,
-      indicator_id = indicator_id
+      indicator_id = ind_module$indicator_id
     )
   }
 
@@ -158,7 +151,7 @@ generate_signals <- function(
       "Monitoring completed. ",
       nrow(df_campaigns),
       " signals generated for ",
-      indicator_id
+      ind_module$indicator_id
     )
   )
 

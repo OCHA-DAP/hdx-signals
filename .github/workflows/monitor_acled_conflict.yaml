@@ -61,4 +61,4 @@ jobs:
 
             - name: Run R monitoring script
               shell: bash
-              run: Rscript ./src/indicators/acled_conflict/update_conflict.R
+              run: Rscript ./src/indicators/acled_conflict/__init__.R
