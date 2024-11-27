@@ -137,6 +137,13 @@ df_members <- purrr$map(
     name != "" # HDX Signals email
   )
 
+df_member_interactions_new <- df_members |>
+  dplyr$group_by(id) |>
+  dplyr$distinct(open_rate, click_rate, email_count) |>
+  dplyr$ungroup() |>
+  dplyr$mutate(
+    extraction_date = lubridate$as_date(Sys.Date())
+  )
 
 df_members_new <- df_members |>
   dplyr$mutate(
@@ -145,17 +152,8 @@ df_members_new <- df_members |>
     extraction_date = lubridate$as_date(Sys.Date())
   ) |>
   dplyr$select(
-    -dplyr$all_of(c("name", "email"))
+    -dplyr$all_of(c("name", "email","open_rate", "click_rate", "email_count"))
   )
-
-df_member_interactions_new <- df_members_new |>
-  dplyr$group_by(id) |>
-  dplyr$distinct(open_rate, click_rate, email_count) |>
-  dplyr$ungroup() |>
-  dplyr$mutate(
-    extraction_date = lubridate$as_date(Sys.Date())
-  )
-
 
 df_contact <- df_members |>
   dplyr$distinct(id, name, email)
