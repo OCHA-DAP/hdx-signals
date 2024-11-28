@@ -152,7 +152,7 @@ df_members_new <- df_members |>
     extraction_date = lubridate$as_date(Sys.Date())
   ) |>
   dplyr$select(
-    -dplyr$all_of(c("name", "email","open_rate", "click_rate", "email_count"))
+    -dplyr$all_of(c("name", "email", "open_rate", "click_rate", "email_count"))
   )
 
 df_contact <- df_members |>
