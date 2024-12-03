@@ -1,5 +1,12 @@
 # Changes
 
+## 0.2.0.3 (03 December 2024)
+
+### Visualization
+
+- improve `food_insecurity_ts()`. Adding space between x axis ticks and
+increasing the length of the x axis ticks.
+
 ## 0.2.0.2 (03 December 2024)
 
 ### Runs
