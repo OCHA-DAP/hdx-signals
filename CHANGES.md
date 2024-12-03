@@ -1,5 +1,12 @@
 # Changes
 
+## 0.2.0.2 (03 December 2024)
+
+### Runs
+
+- add `nick-fields/retry@v3` action for all `monitor_*` GHA yaml files so that
+the scripts will run 1 extra time in case of failure.
+
 ## 0.2.0.1 (25 November 2024)
 
 - bugfix to on `generate_signals()`. Attached `ind_module` module name space to 
