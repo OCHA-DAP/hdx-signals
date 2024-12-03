@@ -61,7 +61,10 @@ generate_signals <- function(
 
   # setup run and retrieve/wrangle data
   hs_logger$monitoring_log_setup(ind_module$indicator_id)
-  df_raw <- ind_module$raw()
+  #df_raw <- ind_module$raw()
+  box::use(utils)
+  #utils$write.csv(df_raw, "inform_data_test.csv")
+  df_raw = utils$read.csv("inform_data_test.csv")
   df_wrangled <- ind_module$wrangle(df_raw)
 
   # update coverage data to ensure locations_metadata up to date
