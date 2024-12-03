@@ -1,6 +1,6 @@
 # Changes
 
-## 0.2.0.1 (03 December 2024)
+## 0.2.0.2 (03 December 2024)
 
 ### Runs
 
