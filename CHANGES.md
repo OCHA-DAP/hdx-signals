@@ -1,5 +1,11 @@
 # Changes
 
+## 0.2.0.4 (03 December 2024)
+
+### Logging
+
+- fix logging bug in `monitoring_log_setup()` so that `log_levels` are appropriately registered from default or selected inputs.
+
 ## 0.2.0.3 (03 December 2024)
 
 ### Visualization
