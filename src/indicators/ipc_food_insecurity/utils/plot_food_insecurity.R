@@ -188,7 +188,9 @@ food_insecurity_ts <- function(df_wrangled, df_raw, title, date) {
       x_axis_ticks = TRUE
     ) +
     gg$theme(
-      legend.position = "none"
+      legend.position = "none",
+      axis.ticks.length.x = gg$unit(5, "pt"),
+      axis.text.x = gg$element_text(margin = gg$margin(t = 5))
     ) +
     gg$scale_color_manual(
       values = c(
