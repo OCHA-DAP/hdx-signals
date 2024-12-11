@@ -26,7 +26,7 @@ Over 200 locations are monitored, with coverage varying depending on the dataset
 | -------------------------------------- | ------------------- |
 | Agricultural hotspots                  | 81                  |
 | Conflict events                        | 188                 |
-| Food insecurity                        | 53                  |
+| Food insecurity                        | 52                  |
 | Internal conflict-driven displacements | 82                  |
 | Internal disaster-driven displacements | 199                 |
 | Market monitoring                      | 80                  |
