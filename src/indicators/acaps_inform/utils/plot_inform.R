@@ -85,10 +85,10 @@ inform_ts <- function(df_wrangled, df_raw, title, date) {
     # Define color mappings
     gg$scale_color_manual(
       values = c(
-        "Inform Severity Index" = "blue",
-        "Impact Crisis" = "cyan",
-        "People Condition" = "cyan",
-        "Complexity" = "cyan"
+        "Inform Severity Index" = "#007ce0",
+        "Impact Crisis" = "#1ebfb3",
+        "People Condition" = "#1ebfb3",
+        "Complexity" = "#1ebfb3"
       ), breaks = c("Inform Severity Index", "Impact Crisis", "People Condition", "Complexity") # Order for line legend
     ) +
     # Define fill mappings for ribbons with custom grays
