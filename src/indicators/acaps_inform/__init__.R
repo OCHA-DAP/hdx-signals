@@ -4,7 +4,6 @@ box::use(
   src/indicators/acaps_inform/utils/wrangle_inform[...],
   src/indicators/acaps_inform/utils/info_inform[...],
   src/indicators/acaps_inform/utils/plot_inform[...],
-  src/indicators/acaps_inform/utils/map_inform[...],
   src/indicators/acaps_inform/utils/raw_inform[...],
   src/indicators/acaps_inform/utils/summary_inform[...],
 )
