@@ -72,6 +72,7 @@ This requires:
 - `HS_EMAIL`: HDX Signals email used as the sender in any Mailchimp campaigns.
 - `HS_SURVEY_LINK`: Link to the Mailchimp feedback survey contained at the bottom of
 all emails.
+- `HS_ADMIN_NAME`: Name to be recorded for user who triaged and sent email. It's required to complete the triaging process
 
 ## OpenAI
 
