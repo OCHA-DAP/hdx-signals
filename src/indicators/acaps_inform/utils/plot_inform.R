@@ -32,12 +32,7 @@ plot <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
   # add title for use in the plot
   df_plot <- df_alerts |>
     dplyr$mutate(
-      title = paste0(
-        scales$label_percent(accuracy = 1)(value),
-        " of the ",
-        type,
-        " analyzed population in P",
-        phase_level
+      title = paste0("Inform severity index value in ", format(as.Date(df_alerts$date), "%B %Y"), ": ", df_alerts$value
       )
     )
 
@@ -46,7 +41,8 @@ plot <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
     df_wrangled = df_wrangled,
     df_raw = df_raw,
     image_fn = inform_ts,
-    image_use = "plot"
+    image_use = "plot",
+    settings="plot"
   )
 }
 
@@ -67,20 +63,31 @@ inform_ts <- function(df_wrangled, df_raw, title, date) {
 
   # only plot the points that are comparable to the latest
   df_plot <- df_wrangled
+  df_plot$date <- as.Date(df_plot$date)
 
   # Create the plot
-  gg$ggplot(df_plot, aes(x = date)) +
+  gg$ggplot(df_plot, gg$aes(x = date)) +
     # Background shading using geom_ribbon
-    gg$geom_ribbon(aes(ymin = 0, ymax = 3, fill = "Low Severity"), alpha = 0.3) +
-    gg$geom_ribbon(aes(ymin = 3, ymax = 4, fill = "Moderate Severity"), alpha = 0.3) +
-    gg$geom_ribbon(aes(ymin = 4, ymax = 5, fill = "High Severity"), alpha = 0.3) +
+    gg$geom_ribbon(gg$aes(ymin = 0, ymax = 3, fill="Low Severity"), alpha = 0.3) +
+    gg$geom_ribbon(gg$aes(ymin = 3, ymax = 4, fill = "Moderate Severity"), alpha = 0.3) +
+    gg$geom_ribbon(gg$aes(ymin = 4, ymax = 5, fill = "High Severity"), alpha = 0.3) +
+
+    # Define fill mappings for ribbons with custom grays
+    gg$scale_fill_manual(
+      values = c(
+        "Low Severity" = "#d9d9d9",      # Light gray
+        "Moderate Severity" = "#bdbdbd", # Medium gray
+        "High Severity" = "#969696"      # Dark gray
+      ),
+      name = "Severity Level" # Custom title for the ribbon legend
+    )+
 
 
     # Lines for indicators
-    gg$geom_line(aes(y = inform_severity_index, color = "Inform Severity Index"), size = 1.6, linetype = "solid") +
-    gg$geom_line(aes(y = impact_crisis, color = "Impact Crisis"), size = 1.0, linetype = "dashed") +
-    gg$geom_line(aes(y = people_condition, color = "People Condition"), size = 1.0, linetype = "dotted") +
-    gg$geom_line(aes(y = complexity, color = "Complexity"), size = 1.0, linetype = "solid") +
+    gg$geom_line(gg$aes(y = inform_severity_index, color = "Inform Severity Index"), size = 1.6, linetype = "solid") +
+    gg$geom_line(gg$aes(y = impact_crisis, color = "Impact Crisis"), size = 1.0, linetype = "dashed") +
+    gg$geom_line(gg$aes(y = people_condition, color = "People Condition"), size = 1.0, linetype = "dotted") +
+    gg$geom_line(gg$aes(y = complexity, color = "Complexity"), size = 1.0, linetype = "solid") +
 
     # Define color mappings
     gg$scale_color_manual(
@@ -91,22 +98,18 @@ inform_ts <- function(df_wrangled, df_raw, title, date) {
         "Complexity" = "#1ebfb3"
       ), breaks = c("Inform Severity Index", "Impact Crisis", "People Condition", "Complexity") # Order for line legend
     ) +
-    # Define fill mappings for ribbons with custom grays
-    scale_fill_manual(
-      values = c(
-        "Low Severity" = "#d9d9d9",      # Light gray
-        "Moderate Severity" = "#bdbdbd", # Medium gray
-        "High Severity" = "#969696"      # Dark gray
-      ),
-      name = "Severity Level" # Custom title for the ribbon legend
-    )
+    # Combine legends and arrange them in two rows
+    gg$guides(
+      fill = gg$guide_legend(order = 2),  # Place fill legend first
+      color = gg$guide_legend(order = 1) # Place color legend second
+    ) +
 
     # Axis and title labels
     gg$labs(
       x = "Date",
       y = "Index Value",
       color = "Indicators",
-      title = "Inform Severity Index and sub-indicators"
+      title = title
     ) +
 
     # Set y-axis limits and ensure clipping isn't done
@@ -116,10 +119,12 @@ inform_ts <- function(df_wrangled, df_raw, title, date) {
     gg$theme_minimal() +
     gg$theme(
       legend.position = "bottom",
-      legend.title = gg$element_text(size = 12),
-      legend.text = gg$element_text(size = 10),
+      legend.box = "vertical",              # Stack legends vertically
+      legend.spacing.y = gg$unit(0.5, "cm"), # Add spacing between rows
+      legend.title = gg$element_text(size = 10),
+      legend.text = gg$element_text(size = 8),
       plot.title = gg$element_text(size = 14, face = "bold"),
-      axis.text.x = gg$element_text(angle = 45, hjust = 1),
+      axis.text.x = gg$element_text(angle = 0, hjust = 1),
       panel.grid.minor = gg$element_blank()  # Remove minor gridlines
     )
 }

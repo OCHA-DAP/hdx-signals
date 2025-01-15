@@ -4,12 +4,13 @@ box::use(
   src/indicators/acaps_inform/utils/wrangle_inform[...],
   src/indicators/acaps_inform/utils/info_inform[...],
   src/indicators/acaps_inform/utils/plot_inform[...],
+  src/indicators/acaps_inform/utils/table_inform[...],
   src/indicators/acaps_inform/utils/raw_inform[...],
   src/indicators/acaps_inform/utils/summary_inform[...],
 )
 
 #' @export
-indicator_id <- "acaps_inform"
+indicator_id <- "acaps_inform_severity"
 
 if (is.null(box::name())) {
   box::use(
@@ -22,3 +23,4 @@ if (is.null(box::name())) {
     dry_run_filter = c("AFG", "SSD")
   )
 }
+
