@@ -19,7 +19,7 @@ box::use(src/images/save_image)
 #'     `df_wrangled` and `df_raw` for the data frames to be used for plotting, and
 #'     `title` to be used for the plot title.
 #' @param image_use Where the image will be used, either as the default `plot`,
-#'     the `map`, or `plot2` in the campaign.
+#'     the `map`, `plot2` or `table`  in the campaign.
 #' @param height Height of the image in inches.
 #' @param width Width of the image in inches.
 #' @param use_map_settings Whether or not to use the map settings when saving. If
@@ -34,10 +34,10 @@ create_images <- function(
     df_wrangled,
     df_raw,
     image_fn,
-    image_use = c("plot", "map", "plot2"),
+    image_use = c("plot", "map", "plot2", "table"),
     width = 6,
     height = 4,
-    use_map_settings = FALSE,
+    settings = "plot",
     crop = FALSE) {
   validate_images_alerts(df_alerts)
   validate_filter_df(df_wrangled)
@@ -55,7 +55,7 @@ create_images <- function(
         image_fn = image_fn,
         width = width,
         heigh = height,
-        use_map_settings = use_map_settings,
+        settings = settings,
         crop = crop
       )
     }
@@ -84,7 +84,7 @@ create_image <- function(
     image_fn,
     width,
     height,
-    use_map_settings,
+    settings,
     crop) {
   df_wrangled <- filter_plot_df(
     iso3 = iso3,
@@ -104,7 +104,7 @@ create_image <- function(
     )
   }
 
-  if (use_map_settings) {
+  if (settings=="map") {
     save_image$save_map(
       p = p,
       iso3 = iso3,
@@ -112,6 +112,15 @@ create_image <- function(
       date = date,
       crop = crop
     )
+  } else if (settings=="table"){
+    save_image$save_table(
+      p = p,
+      iso3 = iso3,
+      indicator_id = indicator_id,
+      date = date,
+      width = width,
+      height = height,
+      crop = crop)
   } else {
     save_image$save_image(
       p = p,
