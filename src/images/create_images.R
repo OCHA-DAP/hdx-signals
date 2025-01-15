@@ -22,9 +22,10 @@ box::use(src/images/save_image)
 #'     the `map`, `plot2` or `table`  in the campaign.
 #' @param height Height of the image in inches.
 #' @param width Width of the image in inches.
-#' @param use_map_settings Whether or not to use the map settings when saving. If
-#'     `TRUE`, uses map dimensions in `input/iso3_map_settings.json` instead
-#'     of the `width` and `height` arguments.
+#' @param settings What type of settings to be used when saving. If
+#'     `map`, uses map dimensions in `input/iso3_map_settings.json` instead
+#'     of the `width` and `height` arguments. If `table` uses the `save_table`
+#'    function.
 #' @param crop Whether or not to run `knitr::plot_crop()` is run on the image
 #'     to crop white space around the image automatically.
 #'
