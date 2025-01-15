@@ -71,14 +71,31 @@ mc_upload_image <- function(fp, name, folder, preview = FALSE) {
   }
 }
 
-
-mc_upload_table <- function(plot, name, folder, height, width, crop = FALSE, preview = FALSE, ...) {
+#' Upload table to Mailchimp
+#'
+#' Saves tables as a plot, and then uploads them to mailchimp
+#' using `mc_upload_image()`.
+#'
+#' @param table table object
+#' @param name Name of the object to be passed into the Mailchimp system.
+#' @param folder Name of the file folder on Mailchimp.
+#' @param height Height of the plot (in inches)
+#' @param width Width of the plot (in inches)
+#' @param crop Whether or not to run `knitr::plot_crop()` is run on the image
+#'     to crop white space around the image automatically.
+#' @param preview Whether or not to preview the saved plot when `hs_local()`
+#'     is `TRUE`.
+#'
+#' @returns URL string to reference object on Mailchimp servers
+#'
+#' @export
+mc_upload_table <- function(table, name, folder, height, width, crop = FALSE, preview = FALSE) {
   # Create a temporary file for the image
   fp <- temp_file$temp_file(fileext = ".png")
 
   png(fp, width = width * 100, height = height * 100, res = 300, units = "px")
   grid::grid.newpage()  # Open a new page for the grid object
-  grid::grid.draw(plot) # Render the table
+  grid::grid.draw(table) # Render the table
   dev.off()
 
 
