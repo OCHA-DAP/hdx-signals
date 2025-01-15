@@ -71,6 +71,31 @@ mc_upload_image <- function(fp, name, folder, preview = FALSE) {
   }
 }
 
+
+mc_upload_table <- function(plot, name, folder, height, width, crop = FALSE, preview = FALSE, ...) {
+  # Create a temporary file for the image
+  fp <- temp_file$temp_file(fileext = ".png")
+
+  png(fp, width = width * 100, height = height * 100, res = 300, units = "px")
+  grid::grid.newpage()  # Open a new page for the grid object
+  grid::grid.draw(plot) # Render the table
+  dev.off()
+
+
+  # Optionally crop the image
+  if (crop) {
+    knitr$plot_crop(fp)
+  }
+
+  # Upload the image
+  mc_upload_image(
+    fp = fp,
+    name = name,
+    folder = folder,
+    preview = preview
+  )
+}
+
 #' Upload plot to Mailchimp
 #'
 #' Saves plots out with `ggplot2::ggsave()`, and then uploads them to mailchimp
