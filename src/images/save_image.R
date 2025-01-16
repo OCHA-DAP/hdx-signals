@@ -114,6 +114,6 @@ save_table <- function(p, iso3, indicator_id, date, width, height, crop = FALSE)
     width = width,
     height = height,
     crop = crop,
-    preview = FALSE,
+    preview = FALSE
   )
 }
