@@ -9,8 +9,7 @@ box::use(
   ggrepel,
   utils,
   glue,
-  grid,
-  gridExtra,
+  gt
 )
 
 box::use(
@@ -42,7 +41,8 @@ table <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
     df_wrangled = df_wrangled,
     df_raw = df_raw,
     image_fn = inform_table,
-    image_use = "table"
+    image_use = "table",
+    settings = "table"
   )
 }
 
@@ -65,14 +65,9 @@ inform_table <- function(df_wrangled, df_raw, title, date) {
   df_table <- df_wrangled[!duplicated(df_wrangled$crisis_id), c("crisis_name", "drivers")]
   df_table <- as.data.frame(lapply(df_table, wrap_text, width = 40))  # Wrap text to fit cell width
   colnames(df_table) <- c("Crisis name", "Drivers")
-  table <- gridExtra$tableGrob(df_table[, c("Crisis name", "Drivers")], rows = NULL)
-  # Create a title as a textGrob
-  title <- grid$textGrob("Drivers of the ongoing crisis",
-                    gp = grid$gpar(fontsize = 12, fontface = "bold"), just="left", x=grid$unit(0, "npc"))
+  df_table |>
+    gt$gt() |>
+    gt$tab_header(title = "Drivers of the ongoing crisis") |>
+    gt$tab_options()
 
-  # Arrange the title and table in a single layout
-  table <- gridExtra$grid.arrange(title, table,
-                              ncol = 1,  # Arrange in one column
-                              heights = grid$unit(c(1, 6), c("lines", "null")))
-  table
 }
