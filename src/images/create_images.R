@@ -92,7 +92,6 @@ create_image <- function(
     date = date,
     df = df_wrangled
   )
-
   p <- image_fn(df_wrangled, df_raw, title, date)
 
   # allow `image_fn` to return NA if some maps can fail to generate without error
