@@ -5,7 +5,8 @@ box::use(
   png,
   grid,
   knitr,
-  magick # nolint silent requirement for cropping file
+  magick, # nolint silent requirement for cropping file
+  gt
 )
 
 box::use(
@@ -93,12 +94,7 @@ mc_upload_table <- function(table, name, folder, height, width, crop = FALSE, pr
   # Create a temporary file for the image
   fp <- temp_file$temp_file(fileext = ".png")
 
-  png(fp, width = width * 100, height = height * 100, res = 300, units = "px")
-  grid::grid.newpage()  # Open a new page for the grid object
-  grid::grid.draw(table) # Render the table
-  dev.off()
-
-
+  gt$gtsave(data = table, filename = fp)
   # Optionally crop the image
   if (crop) {
     knitr$plot_crop(fp)
