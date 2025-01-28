@@ -57,7 +57,7 @@ plot <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
 #' @returns Plot of cholera for that wrangled data
 inform_ts <- function(df_wrangled, df_raw, title, date) {
   caption <- caption$caption(
-    indicator_id = "acaps_inform",
+    indicator_id = "acaps_inform_severity",
     iso3 = unique(df_wrangled$iso3)
   )
 
@@ -116,15 +116,15 @@ inform_ts <- function(df_wrangled, df_raw, title, date) {
     gg$coord_cartesian(ylim = c(2, 5)) +
 
     # Custom theme for styling
-    gg$theme_minimal() +
+    theme_signals$theme_signals(
+      x_axis_ticks = TRUE
+    ) +
     gg$theme(
       legend.position = "bottom",
       legend.box = "vertical",              # Stack legends vertically
       legend.spacing.y = gg$unit(0.5, "cm"), # Add spacing between rows
       legend.title = gg$element_text(size = 10),
       legend.text = gg$element_text(size = 8),
-      plot.title = gg$element_text(size = 14, face = "bold"),
-      axis.text.x = gg$element_text(angle = 0, hjust = 1),
-      panel.grid.minor = gg$element_blank()  # Remove minor gridlines
+      axis.text.x = gg$element_text(angle = 0, hjust = 0.5),
     )
 }

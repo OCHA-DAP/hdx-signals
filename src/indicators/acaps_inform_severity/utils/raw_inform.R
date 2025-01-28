@@ -21,7 +21,7 @@ box::use(
 #'
 #' @export
 raw <- function() {
-  date_check <- cs$read_az_file("output/acaps_inform/download_date.parquet")
+  date_check <- cs$read_az_file("output/acaps_inform_severity/download_date.parquet")
   if (Sys.Date() > date_check$acaps_download_date) {
     df <- get_acaps_severity()
 
@@ -29,12 +29,12 @@ raw <- function() {
     dplyr$tibble(
       acaps_download_date = Sys.Date()
     ) |>
-      cs$update_az_file("output/acaps_inform/download_date.parquet")
+      cs$update_az_file("output/acaps_inform_severity/download_date.parquet")
 
     # upload full data frame to cloud
-    cs$update_az_file(df, "output/acaps_inform/raw.parquet")
+    cs$update_az_file(df, "output/acaps_inform_severity/raw.parquet")
   } else {
-    df <- cs$read_az_file("output/acaps_inform/raw.parquet")
+    df <- cs$read_az_file("output/acaps_inform_severity/raw.parquet")
   }
   df
 }

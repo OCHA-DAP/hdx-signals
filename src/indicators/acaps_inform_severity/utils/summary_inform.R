@@ -18,7 +18,7 @@ box::use(
 #'
 #' @export
 summary <- function(df_alerts, df_wrangled, df_raw) {
-  prompts <- get_prompts$get_prompts("acaps_inform")
+  prompts <- get_prompts$get_prompts("acaps_inform_severity")
 
   # get all the event info from the ACAPS api
   # Get justifications
