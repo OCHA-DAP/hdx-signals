@@ -68,6 +68,8 @@ inform_table <- function(df_wrangled, df_raw, title, date) {
   df_table |>
     gt$gt() |>
     gt$tab_header(title = "Drivers of the ongoing crisis") |>
-    gt$tab_options()
-
+    gt$tab_options(table.align = "center",
+                  table.font.size = gt$px(26), # can do w/ units of pixels as well like:  px(10)
+                  table.width = gt$pct(100),
+                  heading.title.font.size = gt$px(34))# play w/ others too
 }
