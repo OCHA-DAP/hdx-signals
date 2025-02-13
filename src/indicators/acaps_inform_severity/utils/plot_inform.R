@@ -79,9 +79,9 @@ inform_ts <- function(df_wrangled, df_raw, title, date) {
         "Moderate Severity" = "#bdbdbd", # Medium gray
         "High Severity" = "#969696"      # Dark gray
       ),
-      name = "Severity Level" # Custom title for the ribbon legend
+      name = "Severity Level", # Custom title for the ribbon legend
+      limits = c("Low Severity", "Moderate Severity", "High Severity") # Specify order
     )+
-
 
     # Lines for indicators
     gg$geom_line(gg$aes(y = inform_severity_index, color = "Inform Severity Index"), size = 1.6, linetype = "solid") +
@@ -125,6 +125,7 @@ inform_ts <- function(df_wrangled, df_raw, title, date) {
       legend.spacing.y = gg$unit(0.5, "cm"), # Add spacing between rows
       legend.title = gg$element_text(size = 10),
       legend.text = gg$element_text(size = 8),
-      axis.text.x = gg$element_text(angle = 0, hjust = 0.5),
+      axis.ticks.length.x = gg$unit(5, "pt"),
+      axis.text.x = gg$element_text(margin = gg$margin(t = 5))
     )
 }
