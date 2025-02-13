@@ -25,15 +25,7 @@ raw <- function() {
   if (Sys.Date() > date_check$acaps_download_date) {
     df <- cs$read_az_file("output/acaps_inform_severity/raw.parquet")
     if (max(df$date) < as.Date(format(Sys.Date(), "%Y-%m-01"))) {
-      df <- cs$read_az_file("output/acaps_inform_severity/raw.parquet")
-      #df <- get_acaps_severity()
-
-      # update download date
-      #dplyr$tibble(
-      #  acaps_download_date = Sys.Date()
-      #) |>
-      #  cs$update_az_file("output/acaps_inform_severity/download_date.parquet")
-
+      df <- get_acaps_severity()
       # upload full data frame to cloud
       cs$update_az_file(df, "output/acaps_inform_severity/raw.parquet")
     }
