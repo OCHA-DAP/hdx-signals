@@ -46,6 +46,15 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
   internal_date = as.Date(character()),
   date = as.Date(character())
   )
+
+  df_risk <- dplyr$tibble(
+    iso3 = character(),
+    risk_title = character(),
+    rationale = character(),
+    vulnerability = character(),
+    internal_date = as.Date(character()),
+    date = as.Date(character())
+  )
   for (ii in 1:nrow(df_wrangled_alerting)){
     df_event_info <- httr2$request("https://api.acaps.org/api/v1/inform-severity-index/log") |>
     httr2$req_headers(
@@ -85,8 +94,42 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
       }
     ) |>
     purrr$list_rbind()
-   df_info<-dplyr$bind_rows(list(df_info, df_event_info))
+   df_info <-dplyr$bind_rows(list(df_info, df_event_info))
+
+   df_event_risk <- httr2$request("https://api.acaps.org/api/v1/risk-list/") |>
+     httr2$req_headers(
+       Authorization = paste("Token", get_env$get_env("ACAPS_TOKEN"))
+     ) |>
+     httr2$req_url_query(
+       iso3 = as.character(df_wrangled_alerting[ii, "iso3"]),
+       `_internal_filter_date_gte` = as.character(format(df_wrangled_alerting[ii, "date"] - 365, "%Y-%m-%d")),
+       .multi = "explode"
+     )|>
+     httr2$req_retry(
+       max_tries = 5,
+       backoff = \(x) x / 10
+     ) |>
+     httr2$req_perform() |>
+     httr2$resp_body_json() |>
+     purrr$pluck(
+       "results"
+     ) |>
+     purrr$map(
+       .f = \(x) {
+         dplyr$tibble(
+           iso3 = unlist(x$iso3),
+           risk_title = unlist(x$risk_title),
+           rationale = unlist(x$rationale),
+           vulnerability = unlist(x$vulnerability),
+           internal_date = as.Date(x$`_internal_filter_date`),
+           date =  dplyr$pull(df_wrangled_alerting[ii, "date"])
+         )
+       }
+     ) |>
+     purrr$list_rbind()
   }
+  df_risk <- dplyr$bind_rows(list(df_risk, df_event_risk))
+
   df_info <- df_info |>
     dplyr$group_by(iso3, crisis_id, indicator) |>
     dplyr$filter(internal_date==max(internal_date))
