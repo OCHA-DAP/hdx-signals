@@ -35,7 +35,6 @@ box::use(
 #' @export
 mc_upload_image <- function(fp, name, folder, preview = FALSE) {
   encoded_image <- encode_image(fp)
-
   # upload image to Mailchimp
   req <- base_api$mc_api(lists_api = FALSE) |>
     httr2$req_url_path_append(
