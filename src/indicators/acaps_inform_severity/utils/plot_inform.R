@@ -56,6 +56,7 @@ plot <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
 #'
 #' @returns Plot of cholera for that wrangled data
 inform_ts <- function(df_wrangled, df_raw, title, date) {
+  browser()
   caption <- caption$caption(
     indicator_id = "acaps_inform_severity",
     iso3 = unique(df_wrangled$iso3)
@@ -65,67 +66,55 @@ inform_ts <- function(df_wrangled, df_raw, title, date) {
   df_plot <- df_wrangled
   df_plot$date <- as.Date(df_plot$date)
 
+  # Determine dynamic y-axis minimum
+  y_min <- floor(min(df_plot$inform_severity_index, na.rm = TRUE)-1)
+
+  # Extract min, max, and latest points for annotation
+  min_point <- df_plot[which.min(df_plot$inform_severity_index), ]
+  max_point <- df_plot[which.max(df_plot$inform_severity_index), ]
+  latest_point <- df_plot[nrow(df_plot), ]
+
   # Create the plot
   gg$ggplot(df_plot, gg$aes(x = date)) +
-    # Background shading using geom_ribbon
-    gg$geom_ribbon(gg$aes(ymin = 0, ymax = 3, fill="Low Severity"), alpha = 0.3) +
-    gg$geom_ribbon(gg$aes(ymin = 3, ymax = 4, fill = "Moderate Severity"), alpha = 0.3) +
-    gg$geom_ribbon(gg$aes(ymin = 4, ymax = 5, fill = "High Severity"), alpha = 0.3) +
+    # Background shading for High Severity range
+    gg$geom_ribbon(gg$aes(ymin = 4, ymax = 5), fill = "#FDEFEF", alpha = 0.5) +
 
-    # Define fill mappings for ribbons with custom grays
-    gg$scale_fill_manual(
-      values = c(
-        "Low Severity" = "#d9d9d9",      # Light gray
-        "Moderate Severity" = "#bdbdbd", # Medium gray
-        "High Severity" = "#969696"      # Dark gray
-      ),
-      name = "Severity Level", # Custom title for the ribbon legend
-      limits = c("Low Severity", "Moderate Severity", "High Severity") # Specify order
-    )+
+    # Inform Severity Index line
+    gg$geom_line(gg$aes(y = inform_severity_index), color = "#5D3779", size = 2) +
 
-    # Lines for indicators
-    gg$geom_line(gg$aes(y = inform_severity_index, color = "Inform Severity Index"), size = 1.6, linetype = "solid") +
-    gg$geom_line(gg$aes(y = impact_crisis, color = "Impact Crisis"), size = 1.0, linetype = "dashed") +
-    gg$geom_line(gg$aes(y = people_condition, color = "People Condition"), size = 1.0, linetype = "dotted") +
-    gg$geom_line(gg$aes(y = complexity, color = "Complexity"), size = 1.0, linetype = "solid") +
+    # Add points for min, max, and latest data points
+    gg$geom_point(data = min_point, gg$aes(x = date, y = inform_severity_index), color = "#5D3779", size = 3) +
+    gg$geom_point(data = max_point, gg$aes(x = date, y = inform_severity_index), color = "#5D3779", size = 3) +
+    gg$geom_point(data = latest_point, gg$aes(x = date, y = inform_severity_index), color = "#5D3779", size = 3) +
 
-    # Define color mappings
-    gg$scale_color_manual(
-      values = c(
-        "Inform Severity Index" = "#007ce0",
-        "Impact Crisis" = "#1ebfb3",
-        "People Condition" = "#1ebfb3",
-        "Complexity" = "#1ebfb3"
-      ), breaks = c("Inform Severity Index", "Impact Crisis", "People Condition", "Complexity") # Order for line legend
-    ) +
-    # Combine legends and arrange them in two rows
-    gg$guides(
-      fill = gg$guide_legend(order = 2),  # Place fill legend first
-      color = gg$guide_legend(order = 1) # Place color legend second
-    ) +
+    # Add labels for min, max, and latest data points
+    gg$geom_text(data = min_point, gg$aes(x = date, y = inform_severity_index, label = round(inform_severity_index, 2)),
+              vjust = 1.8, color = "#5D3779", size = 3.5, fontface="bold") +
+    gg$geom_text(data = max_point, gg$aes(x = date, y = inform_severity_index, label = round(inform_severity_index, 2)),
+              vjust = -1, color = "#5D3779", size = 3.5, fontface="bold") +
+    gg$geom_text(data = latest_point, gg$aes(x = date, y = inform_severity_index, label = round(inform_severity_index, 2)),
+              vjust = -1, color = "#5D3779", size = 3.5, fontface="bold") +
 
     # Axis and title labels
     gg$labs(
-      x = "Date",
       y = "Index Value",
-      color = "Indicators",
       title = title
     ) +
 
-    # Set y-axis limits and ensure clipping isn't done
-    gg$coord_cartesian(ylim = c(2, 5)) +
+    # Customize x-axis for one tick per year
+    gg$scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
 
-    # Custom theme for styling
+    # Set y-axis limits dynamically
+    gg$coord_cartesian(ylim = c(y_min, 5)) +
+
+    # Custom theme
     theme_signals$theme_signals(
       x_axis_ticks = TRUE
     ) +
     gg$theme(
-      legend.position = "bottom",
-      legend.box = "vertical",              # Stack legends vertically
-      legend.spacing.y = gg$unit(0.5, "cm"), # Add spacing between rows
-      legend.title = gg$element_text(size = 10),
-      legend.text = gg$element_text(size = 8),
+      legend.position = "none",        # Remove legend
       axis.ticks.length.x = gg$unit(5, "pt"),
       axis.text.x = gg$element_text(margin = gg$margin(t = 5))
     )
+
 }
