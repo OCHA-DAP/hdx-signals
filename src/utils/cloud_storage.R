@@ -216,7 +216,7 @@ signals_path <- function(indicator_id, dry_run) {
 container_prod <- function() {
   container_endpoint_prod <- az$blob_endpoint(
     endpoint = azure_endpoint_url("blob", "prod"),
-    sas = get_env$get_env("DSCI_AZ_BLOB_PROD_SAS")
+    sas = get_env$get_env("DSCI_AZ_BLOB_PROD_SAS_WRITE")
   )
   az$blob_container(
     endpoint = container_endpoint_prod,
@@ -230,7 +230,7 @@ container_prod <- function() {
 container_dev <- function() {
   container_endpoint_dev <- az$blob_endpoint(
     endpoint = azure_endpoint_url("blob", "dev"),
-    sas = get_env$get_env("DSCI_AZ_BLOB_DEV_SAS")
+    sas = get_env$get_env("DSCI_AZ_BLOB_DEV_SAS_WRITE")
   )
   az$blob_container(
     endpoint = container_endpoint_dev,
@@ -246,7 +246,7 @@ container_dev <- function() {
 container_wfp <- function() {
   container_endpoint_dev <- az$blob_endpoint(
     endpoint = azure_endpoint_url("blob", "dev"),
-    sas = get_env$get_env("DSCI_AZ_BLOB_DEV_SAS")
+    sas = get_env$get_env("DSCI_AZ_BLOB_DEV_SAS_WRITE")
   )
   az$blob_container(
     endpoint = container_endpoint_dev,

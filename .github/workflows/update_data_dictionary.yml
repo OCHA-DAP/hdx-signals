@@ -17,8 +17,8 @@ jobs:
         env:
           HS_LOCAL: ${{ inputs.HS_LOCAL || 'FALSE' }}
           HS_HDX_BEARER: ${{ secrets.HS_HDX_BEARER }}
-          DSCI_AZ_BLOB_DEV_SAS: ${{ secrets.DSCI_AZ_BLOB_DEV_SAS }}
-          DSCI_AZ_BLOB_PROD_SAS: ${{ secrets.DSCI_AZ_BLOB_PROD_SAS }}
+          DSCI_AZ_BLOB_DEV_SAS_WRITE: ${{ secrets.DSCI_AZ_BLOB_DEV_SAS_WRITE }}
+          DSCI_AZ_BLOB_PROD_SAS_WRITE: ${{ secrets.DSCI_AZ_BLOB_PROD_SAS_WRITE }}
         steps:
             - name: Checkout repository
               uses: actions/checkout@v3

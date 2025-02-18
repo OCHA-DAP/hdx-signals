@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GH_TOKEN: ${{ secrets.GH_TOKEN}}
-      DSCI_AZ_BLOB_PROD_SAS: ${{ secrets.DSCI_AZ_BLOB_PROD_SAS }}
+      DSCI_AZ_BLOB_PROD_SAS_WRITE: ${{ secrets.DSCI_AZ_BLOB_PROD_SAS_WRITE }}
       HS_SLACK_URL: ${{ secrets.HS_SLACK_URL}}
       MAILCHIMP_API_KEY: ${{ secrets.MAILCHIMP_API_KEY }}
       HS_DRY_RUN: ${{ 'FALSE' }}
