@@ -36,13 +36,14 @@ generate_campaign_content <- function(
     df_raw,
     ind_module,
     empty = FALSE) {
-  df_alerts |>
-    generate_images(df_wrangled, df_raw, ind_module, "plot", empty) |>
+  df_alerts<- df_alerts |>
+    generate_images(df_wrangled, df_raw, ind_module, "plot", empty)|>
     generate_images(df_wrangled, df_raw, ind_module, "map", empty) |>
-    generate_images(df_wrangled, df_raw, ind_module, "plot2", empty) |>
-    generate_other_images(df_wrangled, df_raw, ind_module, empty) |>
-    generate_summary(df_wrangled, df_raw, ind_module, empty) |>
-    generate_info(df_wrangled, df_raw, ind_module, empty) |>
+    generate_images(df_wrangled, df_raw, ind_module, "plot2", empty)
+  df_alerts <- df_alerts |>generate_images(df_wrangled, df_raw, ind_module, "table", empty)
+  df_alerts <- df_alerts |> generate_other_images(df_wrangled, df_raw, ind_module, empty)
+  df_alerts <- df_alerts |> generate_summary(df_wrangled, df_raw, ind_module, empty)
+  df_alerts |> generate_info(df_wrangled, df_raw, ind_module, empty) |>
     validate_campaign_content()
 }
 
@@ -68,7 +69,7 @@ generate_images <- function(
     df_wrangled,
     df_raw,
     ind_module,
-    image_name = c("plot", "map", "plot2"),
+    image_name = c("plot", "map", "plot2", "table"),
     empty = FALSE) {
   image_name <- rlang$arg_match(image_name)
   generate_section(
@@ -114,6 +115,34 @@ generate_other_images <- function(
       other_images_ids = NA_character_,
       other_images_urls = NA_character_,
       other_images_captions = NA_character_,
+      .rows = nrow(df_alerts)
+    ),
+    empty = empty
+  )
+}
+
+#' Generate IDs and URLs for tables to be included in the email
+#'
+#' @param df Alerts data frame
+#' @param df_wrangled Wrangled data frame
+#' @param ind_module Indicator module
+#' @param empty Whether or not to return an empty data frame if `fn` is `NULL`.
+generate_table <- function(
+    df_alerts,
+    df_wrangled,
+    df_raw,
+    ind_module,
+    empty = FALSE) {
+  generate_section(
+    df_alerts = df_alerts,
+    df_wrangled = df_wrangled,
+    df_raw = df_raw,
+    fn = ind_module[["table"]],
+    fn_name = "table",
+    null_return = dplyr$tibble(
+      table_ids = NA_character_,
+      table_urls = NA_character_,
+      table_captions = NA_character_,
       .rows = nrow(df_alerts)
     ),
     empty = empty

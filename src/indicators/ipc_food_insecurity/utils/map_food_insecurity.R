@@ -44,7 +44,7 @@ map <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
     image_use = "map",
     width = 6,
     height = 4,
-    use_map_settings = FALSE
+    settings = "map"
   )
 }
 

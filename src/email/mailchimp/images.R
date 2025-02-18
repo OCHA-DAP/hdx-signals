@@ -5,7 +5,8 @@ box::use(
   png,
   grid,
   knitr,
-  magick # nolint silent requirement for cropping file
+  magick, # nolint silent requirement for cropping file
+  gt
 )
 
 box::use(
@@ -34,7 +35,6 @@ box::use(
 #' @export
 mc_upload_image <- function(fp, name, folder, preview = FALSE) {
   encoded_image <- encode_image(fp)
-
   # upload image to Mailchimp
   req <- base_api$mc_api(lists_api = FALSE) |>
     httr2$req_url_path_append(
@@ -69,6 +69,43 @@ mc_upload_image <- function(fp, name, folder, preview = FALSE) {
       url = resp$full_size_url
     )
   }
+}
+
+#' Upload table to Mailchimp
+#'
+#' Saves tables as a plot, and then uploads them to mailchimp
+#' using `mc_upload_image()`.
+#'
+#' @param table table object
+#' @param name Name of the object to be passed into the Mailchimp system.
+#' @param folder Name of the file folder on Mailchimp.
+#' @param height Height of the plot (in inches)
+#' @param width Width of the plot (in inches)
+#' @param crop Whether or not to run `knitr::plot_crop()` is run on the image
+#'     to crop white space around the image automatically.
+#' @param preview Whether or not to preview the saved plot when `hs_local()`
+#'     is `TRUE`.
+#'
+#' @returns URL string to reference object on Mailchimp servers
+#'
+#' @export
+mc_upload_table <- function(table, name, folder, height, width, crop = FALSE, preview = FALSE) {
+  # Create a temporary file for the image
+  fp <- temp_file$temp_file(fileext = ".png")
+
+  gt$gtsave(data = table, filename = fp)
+  # Optionally crop the image
+  if (crop) {
+    knitr$plot_crop(fp)
+  }
+
+  # Upload the image
+  mc_upload_image(
+    fp = fp,
+    name = name,
+    folder = folder,
+    preview = preview
+  )
 }
 
 #' Upload plot to Mailchimp

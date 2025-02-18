@@ -30,7 +30,6 @@ map <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
         formatters$format_date(date - lubridate$days(30))
       )
     )
-
   create_images$create_images(
     df_alerts = df_map,
     df_wrangled = df_wrangled,
@@ -39,7 +38,7 @@ map <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
     image_use = "map",
     width = 6,
     height = 4,
-    use_map_settings = FALSE
+    settings = "map"
   )
 }
 
@@ -65,7 +64,6 @@ conflict_map <- function(df_wrangled, df_raw, title, date) {
 
   iso3 <- unique(df_wrangled$iso3)
   ison <- location_codes$iso3_to_ison(iso3)
-
 
   # need to filter raw data and create sf
   # first filter
@@ -94,6 +92,6 @@ conflict_map <- function(df_wrangled, df_raw, title, date) {
     action = "filter",
     title = title,
     caption = caption,
-    use_map_settings = TRUE
+    settings = "map"
   )
 }
