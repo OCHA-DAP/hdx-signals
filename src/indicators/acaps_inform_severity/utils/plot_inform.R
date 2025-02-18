@@ -32,7 +32,7 @@ plot <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
   # add title for use in the plot
   df_plot <- df_alerts |>
     dplyr$mutate(
-      title = paste0("Inform severity index value in ", format(as.Date(df_alerts$date), "%B %Y"), ": ", df_alerts$value
+      title = paste0("Inform Severity Index - ", format(as.Date(df_alerts$date), "%B %Y"), ": ", df_alerts$value
       )
     )
 
@@ -56,7 +56,6 @@ plot <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
 #'
 #' @returns Plot of cholera for that wrangled data
 inform_ts <- function(df_wrangled, df_raw, title, date) {
-  browser()
   caption <- caption$caption(
     indicator_id = "acaps_inform_severity",
     iso3 = unique(df_wrangled$iso3)
@@ -80,7 +79,7 @@ inform_ts <- function(df_wrangled, df_raw, title, date) {
     gg$geom_ribbon(gg$aes(ymin = 4, ymax = 5), fill = "#FDEFEF", alpha = 0.5) +
 
     # Inform Severity Index line
-    gg$geom_line(gg$aes(y = inform_severity_index), color = "#5D3779", size = 2) +
+    gg$geom_line(gg$aes(y = inform_severity_index), color = "#5D3779", size = 1.5) +
 
     # Add points for min, max, and latest data points
     gg$geom_point(data = min_point, gg$aes(x = date, y = inform_severity_index), color = "#5D3779", size = 3) +
@@ -106,6 +105,7 @@ inform_ts <- function(df_wrangled, df_raw, title, date) {
 
     # Set y-axis limits dynamically
     gg$coord_cartesian(ylim = c(y_min, 5)) +
+    gg$scale_y_continuous(expand = c(0, 0))+
 
     # Custom theme
     theme_signals$theme_signals(
@@ -114,7 +114,7 @@ inform_ts <- function(df_wrangled, df_raw, title, date) {
     gg$theme(
       legend.position = "none",        # Remove legend
       axis.ticks.length.x = gg$unit(5, "pt"),
-      axis.text.x = gg$element_text(margin = gg$margin(t = 5))
+      axis.text.x = gg$element_text(margin = gg$margin(t = 5)),
     )
 
 }

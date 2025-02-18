@@ -57,7 +57,6 @@ table <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
 #' @returns Plot of cholera for that wrangled data
 inform_table <- function(df_wrangled, df_raw, title, date) {
   df_wrangled <- df_wrangled[order(df_wrangled$date, decreasing = TRUE), ]
-  browser()
 
   # Define a function to wrap text
   wrap_text <- function(x, width = 15) {
@@ -92,5 +91,9 @@ inform_table <- function(df_wrangled, df_raw, title, date) {
     gt$cols_align(
       align = "left",
       columns = everything() # Align all columns to the left
+    )|>
+    gt$tab_options(
+      table.font.size = gt$px(25), # Restore consistent font size for the table
+      table.width = gt$pct(100)   # Keep table width at 100%
     )
 }
