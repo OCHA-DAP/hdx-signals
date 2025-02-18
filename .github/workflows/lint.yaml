@@ -22,8 +22,8 @@ jobs:
           ACLED_EMAIL_ADDRESS: ${{ secrets.ACLED_EMAIL_ADDRESS }}
           CERF_CHOLERA_DATA: ${{ secrets.CERF_CHOLERA_DATA }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          DSCI_AZ_SAS_DEV: ${{ secrets.DSCI_AZ_SAS_DEV }}
-          DSCI_AZ_SAS_PROD: ${{ secrets.DSCI_AZ_SAS_PROD }}
+          DSCI_AZ_BLOB_DEV_SAS: ${{ secrets.DSCI_AZ_BLOB_DEV_SAS }}
+          DSCI_AZ_BLOB_PROD_SAS: ${{ secrets.DSCI_AZ_BLOB_PROD_SAS }}
           MAILCHIMP_API_KEY: ${{ secrets.MAILCHIMP_API_KEY }}
           HS_LOCAL: ${{ inputs.HS_LOCAL || 'FALSE' }}
           HS_FIRST_RUN: ${{ inputs.HS_FIRST_RUN || 'FALSE' }}
