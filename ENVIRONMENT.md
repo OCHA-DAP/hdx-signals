@@ -37,8 +37,8 @@ transferred automatically from Azure into [HDX](https://data.humdata.org).
 
 To read to and from the Azure storage containers, you need the following two permissions:
 
-- `DSCI_AZ_SAS_PROD`: SAS token for access to the production stage container.
-- `DSCI_AZ_SAS_DEV`: SAS token for access to the development stage container. Not
+- `DSCI_AZ_BLOB_PROD_SAS_WRITE`: SAS token for access to the production stage container.
+- `DSCI_AZ_BLOB_DEV_SAS_WRITE`: SAS token for access to the development stage container. Not
 currently used, but historically some data was stored on `dev`.
 
 ### HDX
