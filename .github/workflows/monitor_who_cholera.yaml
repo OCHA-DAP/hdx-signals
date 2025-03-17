@@ -41,8 +41,8 @@ jobs:
           HS_EMAIL: ${{ secrets.HS_EMAIL}}
           HS_SURVEY_LINK: ${{ secrets.HS_SURVEY_LINK}}
           HS_DRY_RUN: ${{ inputs.HS_DRY_RUN || 'FALSE' }}
-          DSCI_AZ_SAS_DEV: ${{ secrets.DSCI_AZ_SAS_DEV }}
-          DSCI_AZ_SAS_PROD: ${{ secrets.DSCI_AZ_SAS_PROD }}
+          DSCI_AZ_BLOB_DEV_SAS_WRITE: ${{ secrets.DSCI_AZ_BLOB_DEV_SAS_WRITE }}
+          DSCI_AZ_BLOB_PROD_SAS_WRITE: ${{ secrets.DSCI_AZ_BLOB_PROD_SAS_WRITE }}
           MAILCHIMP_API_KEY: ${{ secrets.MAILCHIMP_API_KEY }}
           CERF_CHOLERA_DATA: ${{ secrets.CERF_CHOLERA_DATA }}
           HS_LOCAL: ${{ inputs.HS_LOCAL || 'FALSE' }}
