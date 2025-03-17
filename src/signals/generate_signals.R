@@ -131,7 +131,6 @@ generate_signals <- function(
       indicator_id = ind_module$indicator_id
     )
   }
-
   # validate campaigns and delete content if any errors have occurred
   df_campaigns <- validate_campaigns(df_campaigns, df_campaign_content)
 
