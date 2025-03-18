@@ -36,14 +36,15 @@ generate_campaign_content <- function(
     df_raw,
     ind_module,
     empty = FALSE) {
-  df_alerts<- df_alerts |>
-    generate_images(df_wrangled, df_raw, ind_module, "plot", empty)|>
+  df_alerts <- df_alerts |>
+    generate_images(df_wrangled, df_raw, ind_module, "plot", empty) |>
     generate_images(df_wrangled, df_raw, ind_module, "map", empty) |>
     generate_images(df_wrangled, df_raw, ind_module, "plot2", empty)
-  df_alerts <- df_alerts |>generate_images(df_wrangled, df_raw, ind_module, "table", empty)
+  df_alerts <- df_alerts |> generate_images(df_wrangled, df_raw, ind_module, "table", empty)
   df_alerts <- df_alerts |> generate_other_images(df_wrangled, df_raw, ind_module, empty)
   df_alerts <- df_alerts |> generate_summary(df_wrangled, df_raw, ind_module, empty)
-  df_alerts |> generate_info(df_wrangled, df_raw, ind_module, empty) |>
+  df_alerts |>
+    generate_info(df_wrangled, df_raw, ind_module, empty) |>
     validate_campaign_content()
 }
 

@@ -24,4 +24,3 @@ if (is.null(box::name())) {
     dry_run_filter = c("AFG", "SSD")
   )
 }
-

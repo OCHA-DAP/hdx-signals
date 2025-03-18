@@ -1,20 +1,10 @@
 box::use(
-  dplyr,
-  tidyr,
-  scales,
-  gg = ggplot2,
-  gghdx,
-  lubridate,
-  readr,
-  ggrepel,
-  utils,
-  glue
-)
+         dplyr,
+         gg = ggplot2)
 
 box::use(
   src/images/plots/theme_signals,
   src/images/plots/caption,
-  src/images/plots/breaks_date,
   src/images/create_images
 )
 
@@ -42,7 +32,7 @@ plot <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
     df_raw = df_raw,
     image_fn = inform_ts,
     image_use = "plot",
-    settings="plot"
+    settings = "plot"
   )
 }
 
@@ -50,7 +40,7 @@ plot <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
 #'
 #' @param df_wrangled Wrangled data frame for plotting.
 #' @param df_raw Raw data frame for plotting, not used to plot displacement time
-#'     series
+#'      series
 #' @param title Plot title.
 #' @param date Date of the alert. Not used in the plot.
 #'
@@ -66,7 +56,7 @@ inform_ts <- function(df_wrangled, df_raw, title, date) {
   df_plot$date <- as.Date(df_plot$date)
 
   # Determine dynamic y-axis minimum
-  y_min <- floor(min(df_plot$inform_severity_index, na.rm = TRUE)-1)
+  y_min <- floor(min(df_plot$inform_severity_index, na.rm = TRUE) - 1)
 
   # Extract min, max, and latest points for annotation
   min_point <- df_plot[which.min(df_plot$inform_severity_index), ]
@@ -88,11 +78,12 @@ inform_ts <- function(df_wrangled, df_raw, title, date) {
 
     # Add labels for min, max, and latest data points
     gg$geom_text(data = min_point, gg$aes(x = date, y = inform_severity_index, label = round(inform_severity_index, 2)),
-              vjust = 1.8, color = "#5D3779", size = 3.5, fontface="bold") +
+                 vjust = 1.8, color = "#5D3779", size = 3.5, fontface = "bold") +
     gg$geom_text(data = max_point, gg$aes(x = date, y = inform_severity_index, label = round(inform_severity_index, 2)),
-              vjust = -1, color = "#5D3779", size = 3.5, fontface="bold") +
-    gg$geom_text(data = latest_point, gg$aes(x = date, y = inform_severity_index, label = round(inform_severity_index, 2)),
-              vjust = -1, color = "#5D3779", size = 3.5, fontface="bold") +
+                 vjust = -1, color = "#5D3779", size = 3.5, fontface = "bold") +
+    gg$geom_text(data = latest_point,
+                 gg$aes(x = date, y = inform_severity_index, label = round(inform_severity_index, 2)),
+                 vjust = -1, color = "#5D3779", size = 3.5, fontface = "bold") +
 
     # Axis and title labels
     gg$labs(
@@ -105,7 +96,7 @@ inform_ts <- function(df_wrangled, df_raw, title, date) {
 
     # Set y-axis limits dynamically
     gg$coord_cartesian(ylim = c(y_min, 5)) +
-    gg$scale_y_continuous(expand = c(0, 0))+
+    gg$scale_y_continuous(expand = c(0, 0)) +
 
     # Custom theme
     theme_signals$theme_signals(

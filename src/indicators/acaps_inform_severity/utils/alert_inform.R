@@ -29,10 +29,10 @@ alert <- function(df_wrangled) {
 
     ) |>
     dplyr$filter(
-      inform_severity_index>=3
+      inform_severity_index >= 3
     ) |>
     dplyr$filter(
-     higher_1yr | (diff_num_crises>0 & count>2)
+      higher_1yr | (diff_num_crises > 0 & count > 2)
     ) |>
     dplyr$transmute(
       iso3,
@@ -44,7 +44,7 @@ alert <- function(df_wrangled) {
       alert_level_numeric = as.integer(dplyr$case_when(
         is.na(higher_3yr) ~ 1,
         higher_3yr ~ 2,
-        higher_1yr & (diff_num_crises>0) ~ 2,
+        higher_1yr & (diff_num_crises > 0) ~ 2,
         .default = 1
       ))
     )

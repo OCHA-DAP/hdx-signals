@@ -103,7 +103,7 @@ create_image <- function(
     )
   }
 
-  if (settings=="map") {
+  if (settings == "map") {
     save_image$save_map(
       p = p,
       iso3 = iso3,
@@ -111,15 +111,15 @@ create_image <- function(
       date = date,
       crop = crop
     )
-  } else if (settings=="table"){
+  } else if (settings == "table") {
     save_image$save_table(
-      p = p,
-      iso3 = iso3,
-      indicator_id = indicator_id,
-      date = date,
-      width = width,
-      height = height,
-      crop = crop)
+                          p = p,
+                          iso3 = iso3,
+                          indicator_id = indicator_id,
+                          date = date,
+                          width = width,
+                          height = height,
+                          crop = crop)
   } else {
     save_image$save_image(
       p = p,

@@ -1,21 +1,9 @@
 box::use(
   dplyr,
-  tidyr,
-  scales,
-  gg = ggplot2,
-  gghdx,
-  lubridate,
-  readr,
-  ggrepel,
-  utils,
-  glue,
   gt
 )
 
 box::use(
-  src/images/plots/theme_signals,
-  src/images/plots/caption,
-  src/images/plots/breaks_date,
   src/images/create_images
 )
 
@@ -91,7 +79,7 @@ inform_table <- function(df_wrangled, df_raw, title, date) {
     gt$cols_align(
       align = "left",
       columns = everything() # Align all columns to the left
-    )|>
+    ) |>
     gt$tab_options(
       table.font.size = gt$px(25), # Restore consistent font size for the table
       table.width = gt$pct(100)   # Keep table width at 100%

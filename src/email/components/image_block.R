@@ -15,7 +15,7 @@ box::use(src/email/components/missing[missing_text])
 #' @returns Full image block HTML
 #'
 #' @export
-add_image <- function(src, alt = "", caption = "", img_width="660px") {
+add_image <- function(src, alt = "", caption = "", img_width = "660px") {
   if (missing_text(src)) {
     ""
   } else {
