@@ -122,34 +122,6 @@ generate_other_images <- function(
   )
 }
 
-#' Generate IDs and URLs for tables to be included in the email
-#'
-#' @param df Alerts data frame
-#' @param df_wrangled Wrangled data frame
-#' @param ind_module Indicator module
-#' @param empty Whether or not to return an empty data frame if `fn` is `NULL`.
-generate_table <- function(
-    df_alerts,
-    df_wrangled,
-    df_raw,
-    ind_module,
-    empty = FALSE) {
-  generate_section(
-    df_alerts = df_alerts,
-    df_wrangled = df_wrangled,
-    df_raw = df_raw,
-    fn = ind_module[["table"]],
-    fn_name = "table",
-    null_return = dplyr$tibble(
-      table_ids = NA_character_,
-      table_urls = NA_character_,
-      table_captions = NA_character_,
-      .rows = nrow(df_alerts)
-    ),
-    empty = empty
-  )
-}
-
 #' Generate summaries for campaigns
 #'
 #' Generates the short and long summaries for the campaigns.

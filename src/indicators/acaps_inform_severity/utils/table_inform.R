@@ -78,7 +78,7 @@ inform_table <- function(df_wrangled, df_raw, title, date) {
     ) |>
     gt$cols_align(
       align = "left",
-      columns = everything() # Align all columns to the left
+      columns = dplyr$everything() # Align all columns to the left
     ) |>
     gt$tab_options(
       table.font.size = gt$px(25), # Restore consistent font size for the table

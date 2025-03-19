@@ -27,7 +27,6 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
                   "Crisis affected groups")
 
   #Call api for each alert to get Justification
-  unique_date_iso3 <- unique(df_alerts[c("date", "iso3")])
   df_wrangled$date <- as.Date(df_wrangled$date)
   df_alerts$date <- as.Date(df_alerts$date)
   df_wrangled_alerting <- dplyr$inner_join(df_wrangled, df_alerts, by = c("iso3", "date"))
@@ -53,7 +52,7 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
     internal_date = as.Date(character()),
     date = as.Date(character())
   )
-  for (ii in 1:nrow(df_wrangled_alerting)){
+  for (ii in seq_len(nrow(df_wrangled_alerting))){
     df_event_info <- httr2$request("https://api.acaps.org/api/v1/inform-severity-index/log") |>
       httr2$req_headers(
         Authorization = paste("Token", get_env$get_env("ACAPS_TOKEN"))
@@ -159,7 +158,7 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
     dplyr$ungroup() |>
     dplyr$mutate(text = do.call(
       paste,
-      c(dplyr$across(-all_of(id_cols)), sep = " ")
+      c(dplyr$across(-dplyr$all_of(id_cols)), sep = " ")
     )) |>
     dplyr$select(c("iso3", "date", "crisis_id", "text"))
 

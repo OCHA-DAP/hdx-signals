@@ -1,8 +1,7 @@
 box::use(
   httr2,
   dplyr,
-  purrr,
-  tidyr
+  purrr
 )
 
 box::use(
