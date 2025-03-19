@@ -4,7 +4,7 @@
 
 ### Dataset
 
-- Add INFORM Seveirty Index among the monitored datasets.
+- Add INFORM Severity Index among the monitored datasets.
 
 ## 0.2.0.4 (03 December 2024)
 
