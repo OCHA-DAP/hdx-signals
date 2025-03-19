@@ -19,6 +19,7 @@ exclusions:
     "src/indicators/jrc_agricultural_hotspots/__init__.R",
     "src/indicators/ipc_food_insecurity/__init__.R",
     "src/indicators/acled_conflict/__init__.R",
+    "src/indicators/acaps_inform_severity/__init__.R",
     "src/indicators/who_cholera/__init__.R",
     "src/indicators/idmc_displacement/disaster/__init__.R",
     "src/indicators/idmc_displacement/conflict/__init__.R"
