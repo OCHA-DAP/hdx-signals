@@ -207,7 +207,7 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
         .y = text2,
         .f = ai_summarizer$ai_summarizer
       ),
-      summary_short = ifelse(
+      summary_short_temp = ifelse(
         is.na(summary_long1) | summary_long1 == "" | is.na(summary_long2) | summary_long2 == "",
         plot_title,
         purrr$pmap_chr(
@@ -218,6 +218,11 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
           ),
           .f = ai_summarizer$ai_summarizer_without_location
         )
+      ),
+      summary_short = ifelse(
+        is.na(summary_short_temp) | summary_short_temp == "",
+        plot_title,
+        summary_short_temp
       ),
       summary_long = ifelse(
         is.na(summary_long1) | summary_long1 == "",
