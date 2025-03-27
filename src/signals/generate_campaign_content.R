@@ -219,13 +219,15 @@ generate_section <- function(
   }
 
   # if we error out, ensure previously generated content is deleted from Mailchimp
-
   if (any(section == "ERROR", na.rm = TRUE)) {
     delete_campaign_content$delete_campaign_content(df_alerts)
     delete_campaign_content$delete_campaign_content(section)
+    row_numbers <- which(apply(section, 1, function(row) any(row == "ERROR")))
     stop(
       "Errors generated in ",
       fn_name,
+      " for",
+      df_alerts[row_numbers,c("iso3", "date")],
       ". All generated campaign content deleted. Please fix and start again.",
       call. = FALSE
     )
