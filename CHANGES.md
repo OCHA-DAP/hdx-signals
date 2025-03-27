@@ -1,5 +1,11 @@
 # Changes
 
+## 0.2.1.0 (19 March 2024)
+
+### Dataset
+
+- Add INFORM Severity Index among the monitored datasets.
+
 ## 0.2.0.4 (03 December 2024)
 
 ### Logging

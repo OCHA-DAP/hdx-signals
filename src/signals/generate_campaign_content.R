@@ -36,12 +36,14 @@ generate_campaign_content <- function(
     df_raw,
     ind_module,
     empty = FALSE) {
-  df_alerts |>
+  df_alerts <- df_alerts |>
     generate_images(df_wrangled, df_raw, ind_module, "plot", empty) |>
     generate_images(df_wrangled, df_raw, ind_module, "map", empty) |>
-    generate_images(df_wrangled, df_raw, ind_module, "plot2", empty) |>
-    generate_other_images(df_wrangled, df_raw, ind_module, empty) |>
-    generate_summary(df_wrangled, df_raw, ind_module, empty) |>
+    generate_images(df_wrangled, df_raw, ind_module, "plot2", empty)
+  df_alerts <- df_alerts |> generate_images(df_wrangled, df_raw, ind_module, "table", empty)
+  df_alerts <- df_alerts |> generate_other_images(df_wrangled, df_raw, ind_module, empty)
+  df_alerts <- df_alerts |> generate_summary(df_wrangled, df_raw, ind_module, empty)
+  df_alerts |>
     generate_info(df_wrangled, df_raw, ind_module, empty) |>
     validate_campaign_content()
 }
@@ -68,7 +70,7 @@ generate_images <- function(
     df_wrangled,
     df_raw,
     ind_module,
-    image_name = c("plot", "map", "plot2"),
+    image_name = c("plot", "map", "plot2", "table"),
     empty = FALSE) {
   image_name <- rlang$arg_match(image_name)
   generate_section(
