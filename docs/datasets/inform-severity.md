@@ -12,6 +12,6 @@ Signals are generated whenever the national level INFORM Severity Index reach le
 
 #### Examples
 
-[Philippines](https://us14.campaign-archive.com/?e=0c9936e61d\&u=ea3f905d50ea939780139789d\&id=edd0633c44): 
+[Mexico](http://eepurl.com/jaCrHc#MEX): 
+[Malawi](http://eepurl.com/jaCrtg#MWI)
 
-[Congo](https://us14.campaign-archive.com/?e=0c9936e61d\&u=ea3f905d50ea939780139789d\&id=ee643f5da7): 
