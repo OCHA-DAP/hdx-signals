@@ -229,7 +229,7 @@ generate_section <- function(
       "Errors generated in ",
       fn_name,
       " for",
-      df_alerts[row_numbers,c("iso3", "date")],
+      df_alerts[row_numbers, c("iso3", "date")],
       ". All generated campaign content deleted. Please fix and start again.",
       call. = FALSE
     )
