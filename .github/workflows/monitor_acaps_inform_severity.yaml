@@ -1,4 +1,4 @@
-name: Monitor ACLED conflict
+name: Monitor ACAPS Inform Severity
 
 on:
     workflow_dispatch:
