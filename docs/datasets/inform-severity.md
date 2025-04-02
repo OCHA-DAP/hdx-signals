@@ -11,6 +11,6 @@ Signals are generated whenever the national level INFORM Severity Index reach le
 
 #### Examples
 
-[Mexico](http://eepurl.com/jaCrHc#NGA): In January 2025, the INFORM Severity Index reached 4, a value higher than any time in the past year.
+[Nigeria](http://eepurl.com/jaCrHc#NGA): In January 2025, the INFORM Severity Index reached 4, a value higher than any time in the past year.
 
 [Malawi](http://eepurl.com/jaCrtg#MWI): In May 2024, the INFORM severity index reached 3.6, the highest value in the past three years.
