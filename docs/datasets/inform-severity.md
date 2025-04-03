@@ -1,6 +1,6 @@
 # INFORM Severity Index
 
-Signals are sent each month when the INFORM Severity Index reach levels not seen in the past 12 months.
+Signals are sent each month when the INFORM Severity Index reaches levels not seen in the past 12 months.
 
 ## Source
 We monitor the [INFORM Severity Index (ACAPS)](https://www.acaps.org/en/thematics/all-topics/inform-severity-index) data. Access ACAPS data directly on [HDX](https://data.humdata.org/organization/acaps) and find additional datasets and context on the [ACAPS website](https://www.acaps.org/en/).
