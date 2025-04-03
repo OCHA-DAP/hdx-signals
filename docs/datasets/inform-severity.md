@@ -5,11 +5,11 @@ Signals are sent when the national level INFORM Severity Index is above 3 and ex
 ## Source
 We monitor the [INFORM Severity Index (ACAPS)](https://www.acaps.org/en/thematics/all-topics/inform-severity-index) data. The INFORM Severity Index is a composite indicator designed to measure the severity of humanitarian crises globally, against a common scale. It aggregates data from various sources to categorise all crises into five levels of severity:
 
-- *Level 5*: Extreme humanitarian conditions. People are facing extreme shortages or availability and accessibility problems in regards to basic services.
-- *Level 4*: Severe humanitarian conditions. People are facing significant shortages and/or significant availability and accessibility problems in regards to basic services.
-- *Level 3*: Moderate humanitarian conditions. People are facing shortages and/or availability and accessibility problems in regards to basic services but they are not life-threatening.
-- *Level 2*: Stressed humanitarian conditions. People are facing some shortages or/and some availability and accessibility problems in regards to basic services. 
-- *Level 1*: None/Minor humanitarian conditions. People are facing none or minor shortages or/and accessibility problems regarding basic services. 
+- **Level 5:** Extreme humanitarian conditions. People are facing extreme shortages or availability and accessibility problems in regards to basic services.
+- **Level 4:** Severe humanitarian conditions. People are facing significant shortages and/or significant availability and accessibility problems in regards to basic services.
+- **Level 3:** Moderate humanitarian conditions. People are facing shortages and/or availability and accessibility problems in regards to basic services but they are not life-threatening.
+- **Level 2:** Stressed humanitarian conditions. People are facing some shortages or/and some availability and accessibility problems in regards to basic services. 
+- **Level 1:** None/Minor humanitarian conditions. People are facing none or minor shortages or/and accessibility problems regarding basic services. 
 
 People with identified humanitarian needs are included in levels 3–5, depending on the severity of their needs.
 
