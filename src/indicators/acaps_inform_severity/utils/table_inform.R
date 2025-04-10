@@ -45,6 +45,7 @@ table <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
 #' @returns Plot of cholera for that wrangled data
 inform_table <- function(df_wrangled, df_raw, title, date) {
   df_wrangled <- df_wrangled[order(df_wrangled$date, decreasing = TRUE), ]
+  browser()
 
   # Define a function to wrap text
   wrap_text <- function(x, width = 15) {
@@ -52,7 +53,8 @@ inform_table <- function(df_wrangled, df_raw, title, date) {
   }
 
   # Select and process columns
-  df_table <- df_wrangled[!duplicated(df_wrangled$crisis_id), c("crisis_name", "drivers")]
+  df_table <- df_wrangled[!duplicated(df_wrangled$crisis_id), ]
+  df_table <- df_table[df_table$date == max(df_table$date), c("crisis_name", "drivers")]
   df_table <- as.data.frame(lapply(df_table, wrap_text, width = 40))  # Wrap text to fit cell width
   colnames(df_table) <- c("Crisis name", "Drivers")
 
