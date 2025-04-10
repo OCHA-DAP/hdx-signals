@@ -12,6 +12,9 @@ box::use(
 #' @export
 alert <- function(df_wrangled) {
   df_wrangled |>
+    dplyr$filter(
+      country_level == "Yes"
+    ) |>
     dplyr$group_by(
       iso3
     ) |>
