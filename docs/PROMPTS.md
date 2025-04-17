@@ -15,12 +15,13 @@
 
 #### long.txt
 
-> In three sentences or less, please summarize the main risks for each country. Here are three rules:
+> In three sentences or less, please summarize the main risks for each country. Here are four rules:
 > 
 > - Avoid providing specific numbers or dates.
 > - Only use the information provided to you. If the information is limited, keep
 > the summarization brief.
-> - Focus on summarizing the situation.
+> - Focus on summarizing the situation
+> - If the "date request" is specified, filter out all the information after that date.
 > 
 > Here is the information -->
 
@@ -29,11 +30,11 @@
 > Please condense the following information into a single 10 word line,
 > similar to text you might see on a news ticker. Outputs could look like
 > the following 2 examples:
-> 'Conflict between agropasturalists surges in the northwest' or
-> 'Military offensive in the south sees surge in fatalities'.
+> 'Gang violence escalates crises: insecurity, displacement, migration surge imminent' or
+> 'Complex crisis worsens: conflict, natural disasters, bans, and instability surge'.
 > 
-> Do not include the country name in the output. For example, this output is invalid: 'Insecurity rises in Afghanistan, driven by separatist
-> armed groups'
+> Do not include the country name in the output. For example, this output is invalid: 'INFORM Severity index increases in Burkina Faso"
+> 
 > 
 > Expect the reader to have no context, but this is
 > intended to capture their attention, so keep the messaging simple, clear
