@@ -52,7 +52,8 @@ inform_ts <- function(df_wrangled, df_raw, title, date) {
   )
 
   # only plot the points that are comparable to the latest
-  df_plot <- df_wrangled
+  df_plot <- df_wrangled |>
+    dplyr$filter(country_level == "Yes")
   df_plot$date <- as.Date(df_plot$date)
 
   # Determine dynamic y-axis minimum

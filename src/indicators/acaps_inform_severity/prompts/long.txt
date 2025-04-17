@@ -1,8 +1,9 @@
-In three sentences or less, please summarize the main risks for each country. Here are three rules:
+In three sentences or less, please summarize the main risks for each country. Here are four rules:
 
 - Avoid providing specific numbers or dates.
 - Only use the information provided to you. If the information is limited, keep
 the summarization brief.
 - Focus on summarizing the situation
+- If the "date request" is specified, filter out all the information after that date.
 
 Here is the information -->

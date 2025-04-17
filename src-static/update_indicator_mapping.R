@@ -91,8 +91,8 @@ df <- dplyr$bind_rows(
     mc_tag = NA_character_,
     mc_folder = "HDX Signals - INFORM Severity",
     indicator_subject = "INFORM Severity",
-    static_segment = 7392229, # TODO: update link with banner with logo
-    banner_url = "https://mcusercontent.com/ea3f905d50ea939780139789d/images/1e122c90-d5b7-94a3-153b-77834b8cc684.png", #nolint
+    static_segment = 7392229,
+    banner_url = "https://mcusercontent.com/ea3f905d50ea939780139789d/images/b21825e8-0197-dfdf-b99a-ec498308f7b8.png", #nolint
     data_source = "INFORM Severity - ACAPS"
   )
 )
