@@ -45,8 +45,6 @@ table <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
 #' @returns Plot of cholera for that wrangled data
 inform_table <- function(df_wrangled, df_raw, title, date) {
   df_wrangled <- df_wrangled[order(df_wrangled$date, decreasing = TRUE), ]
-  browser()
-
   # Define a function to wrap text
   wrap_text <- function(x, width = 15) {
     sapply(x, function(y) paste(strwrap(y, width = width), collapse = "\n"))

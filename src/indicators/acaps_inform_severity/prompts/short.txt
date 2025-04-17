@@ -1,11 +1,11 @@
 Please condense the following information into a single 10 word line,
 similar to text you might see on a news ticker. Outputs could look like
 the following 2 examples:
-'Conflict between agropasturalists surges in the northwest' or
-'Military offensive in the south sees surge in fatalities'.
+'Gang violence escalates crises: insecurity, displacement, migration surge imminent' or
+'Complex crisis worsens: conflict, natural disasters, bans, and instability surge'.
 
-Do not include the country name in the output. For example, this output is invalid: 'Insecurity rises in Afghanistan, driven by separatist
-armed groups'
+Do not include the country name in the output. For example, this output is invalid: 'INFORM Severity index increases in Burkina Faso"
+
 
 Expect the reader to have no context, but this is
 intended to capture their attention, so keep the messaging simple, clear
