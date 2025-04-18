@@ -97,7 +97,6 @@ generate_signals <- function(
     )
   }
 
-
   # get content for the campaign
   df_campaign_content <- generate_campaign_content$generate_campaign_content(
     df_alerts = df_alerts,
