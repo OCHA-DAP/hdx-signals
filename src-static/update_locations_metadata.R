@@ -40,6 +40,12 @@ df_centroids <- purrr$map(
 ) |>
   purrr$list_rbind()
 
+##################################
+#### GET LOCATIONS METADATA FROM AZURE ####
+##################################
+
+df_input_metadata <- cs$read_az_file("input/locations_metadata.parquet")
+
 #######################
 #### HRP LOCATIONS ####
 #######################
@@ -79,6 +85,14 @@ df_locations_metadata <- purrr$reduce(
   .x = list(df_locations, df_hrp, df_centroids, df_coverage),
   .f = \(x, y) dplyr$left_join(x, y, by = "iso3")
 )
+
+# Define the iso3 values to update
+iso3_values <- c("VNM", "CHL")
+
+# Update both lat and lon columns
+for (col in c("lat", "lon")) {
+  df_locations_metadata[df_locations_metadata$iso3 %in% iso3_values, col] <- df_input_metadata[df_input_metadata$iso3 %in% iso3_values, col]
+}
 
 fname <- "output/signals_locations_metadata.parquet"
 cs$update_az_file(
