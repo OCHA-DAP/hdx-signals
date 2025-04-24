@@ -1,6 +1,12 @@
 # Changes
 
-## 0.2.1.0 (19 March 2024)
+## 0.2.2.0 (24 April 2025)
+
+### Bug fix
+
+- Add missing library to be imported in `update_adm0_sf`
+
+## 0.2.1.0 (19 March 2025)
 
 ### Dataset
 
