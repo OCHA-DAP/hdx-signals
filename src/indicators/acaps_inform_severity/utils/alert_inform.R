@@ -12,6 +12,9 @@ box::use(
 #' @export
 alert <- function(df_wrangled) {
   df_wrangled |>
+    dplyr$filter(
+      country_level == "Yes"
+    ) |>
     dplyr$group_by(
       iso3
     ) |>
@@ -25,14 +28,12 @@ alert <- function(df_wrangled) {
         higher_3yr ~ "3 year",
         higher_1yr ~ "1 year"
       ),
-      diff_num_crises = count - dplyr$lag(count)
-
     ) |>
     dplyr$filter(
       inform_severity_index >= 3
     ) |>
     dplyr$filter(
-      higher_1yr | (diff_num_crises > 0 & count > 2)
+      higher_1yr
     ) |>
     dplyr$transmute(
       iso3,
@@ -44,7 +45,6 @@ alert <- function(df_wrangled) {
       alert_level_numeric = as.integer(dplyr$case_when(
         is.na(higher_3yr) ~ 1,
         higher_3yr ~ 2,
-        higher_1yr & (diff_num_crises > 0) ~ 2,
         .default = 1
       ))
     )

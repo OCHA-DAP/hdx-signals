@@ -240,7 +240,6 @@ generate_section <- function(
     fn_name,
     "()."
   )
-
   dplyr$bind_cols(df_alerts, section)
 }
 
