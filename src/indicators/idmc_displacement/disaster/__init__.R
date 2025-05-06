@@ -30,6 +30,6 @@ if (is.null(box::name())) {
 
   signals$generate_signals(
     ind_module = module,
-    dry_run_filter = c("AFG", "SSD")
+    dry_run_filter = c("CMR", "SSD")
   )
 }

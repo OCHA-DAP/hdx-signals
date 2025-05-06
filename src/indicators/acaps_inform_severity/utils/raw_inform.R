@@ -6,7 +6,7 @@ box::use(
 
 box::use(
   src/utils/get_env,
-  cs = src/utils/cloud_storage
+  cs = src/utils/cloud_storage,
 )
 
 
