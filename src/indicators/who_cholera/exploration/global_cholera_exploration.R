@@ -8,14 +8,12 @@ box::use(
   readr,
   dplyr,
   purrr,
-  tidyr,
   lubridate,
   janitor,
   stringr,
   zoo,
   ggplot2,
-  gghdx,
-  scales
+  gghdx
 )
 box::use(src/utils/location_codes)
 gghdx$gghdx()
@@ -27,18 +25,19 @@ names(df_raw)
 
 # cerf allocations from HDX
 df_cerf <- readr$read_csv(file.path(Sys.getenv("AA_DATA_DIR"),
-                          "public", "raw", "glb", "cerf_allocations", "Data_ CERF Donor Contributions and Allocations - allocations (1).csv"))
+                                    "public", "raw", "glb", "cerf_allocations",
+                                    "Data_ CERF Donor Contributions and Allocations - allocations (1).csv"))
 cerf_cholera <- df_cerf |>
-  dplyr$filter(if_any(everything(), ~ grepl("cholera", ., ignore.case = TRUE)))
+  dplyr$filter(dplyr$if_any(dplyr$everything(), ~ grepl("cholera", ., ignore.case = TRUE)))
 
 
 # there are 3 columns with start of reporting period
 # checking if the columns with `Start of reporting period` are the same
-table(df_raw$`Start of reporting period` == df_raw$`Start of reporting
-period`)
+#table(df_raw$`Start of reporting period` == df_raw$`Start of reporting
+#period`)
 
-table(df_raw$`Start of reporting period` == df_raw$`Start of
-reporting period`)
+#table(df_raw$`Start of reporting period` == df_raw$`Start of
+#reporting period`)
 
 # it seems these columns are reporting on the same value and if one has a value, the rest are NA.
 
@@ -103,7 +102,6 @@ df_clean <- df_raw |>
     cholera_cases = zoo$na.approx(cholera_cases, na.rm = FALSE)
   ) |>
   # Fill in missing dates with NA values for cholera cases
-  #tidyr$complete(week_date_start = seq(min(week_date_start), max(week_date_start), by = "1 week")) |>
   # Cleaning up values shown as decimals
 
   # Remove grouping
@@ -116,7 +114,8 @@ df_rising_check <- df_clean |>
   dplyr$mutate(
     rising_cases = cholera_cases >= dplyr$lag(cholera_cases, 1, default = NA),
   ) |>
-  dplyr$summarise(mean(rising_cases, na.rm=T))
+  dplyr$summarise(mean(rising_cases, na.rm = TRUE))
+head(df_rising_check)
 
 # most of the values are greater than or equal to the one prior to it. (lowest being close to 90%)
 # giving a strong indication of cumulative number of cases.
@@ -131,14 +130,14 @@ df_rising_check <- df_clean |>
 # Fill in the missing weeks.
 decimal_values <- df_clean |>
   dplyr$filter(cholera_cases %% 1 != 0)
+head(decimal_values)
 
 small_values <- df_clean |>
   dplyr$filter(cholera_cases < 200)
+head(small_values)
 
 df_prepped <- df_clean |>
-  #dplyr$mutate(year = lubridate$year(date)) |>
   dplyr$group_by(iso3) |>
-  #tidyr$complete(date = seq(min(date), max(date), by = "1 week")) |>
   dplyr$mutate(
     original_value = cholera_cases,
     # if previous value is more than 3 weeks ago, do not change small values
@@ -163,7 +162,6 @@ df_prepped <- df_clean |>
       na.rm = TRUE
     ),
     # Calculate the reference value as the larger of the previous and next values
-    # ref = dplyr$if_else(!is.na(prev_val) & !is.na(next_val), pmax(prev_val, next_val), NA_real_),
     # Calculate the scaled cholera_cases (multiplying by 10, 100, and 1000)
     scaled_1 = cholera_cases * 1,
     scaled_10 = cholera_cases * 10,
@@ -182,7 +180,9 @@ df_prepped <- df_clean |>
     diffs_next_1000 = abs(scaled_1000 - next_val),
     diffs_next_10000 = abs(scaled_10000 - next_val),
     # Find the minimum difference for each row
-    min_diff = pmin(diffs_prev_1, diffs_prev_10, diffs_prev_100, diffs_prev_1000, diffs_prev_10000, diffs_next_1, diffs_next_10, diffs_next_100, diffs_next_1000, diffs_next_10000, na.rm = TRUE),
+    min_diff = pmin(diffs_prev_1, diffs_prev_10, diffs_prev_100, diffs_prev_1000,
+                    diffs_prev_10000, diffs_next_1, diffs_next_10, diffs_next_100,
+                    diffs_next_1000, diffs_next_10000, na.rm = TRUE),
     # Find the best match by selecting the scaled value with the smallest difference
     best_match = floor(dplyr$case_when(
       min_diff == diffs_prev_1 ~ scaled_1,
@@ -208,10 +208,12 @@ df_prepped <- df_clean |>
     # Apply the scaling logic: update cholera_cases based on the best match
     cholera_cases = dplyr$case_when(
       # prev_value == next value == current value, then keep current value
-      (dplyr$lag(cholera_cases, 1) == dplyr$lead(cholera_cases, 1) & dplyr$lag(cholera_cases, 1) == cholera_cases) ~ cholera_cases,
+      (dplyr$lag(cholera_cases, 1) == dplyr$lead(cholera_cases, 1) &
+         dplyr$lag(cholera_cases, 1) == cholera_cases) ~ cholera_cases,
       # If the value is non-integer and ref exists, check min_diff against best_match_class
       ((cholera_cases %% 1 != 0 & !is.na(ref))) ~ {
-        dplyr$if_else((min_diff < 1 | min_diff < best_match_class | best_match_class >= 100), best_match, floor(cholera_cases))
+        dplyr$if_else((min_diff < 1 | min_diff < best_match_class |
+                         best_match_class >= 100), best_match, floor(cholera_cases))
       },
       # If cholera_cases is small (< 200), and strong match to prev/next
       cholera_cases < 200 & !is.na(ref) ~ {
@@ -236,6 +238,7 @@ df_weeks_per_country <- df_prepped |>
   dplyr$ungroup() |>
   dplyr$group_by(iso3) |>
   dplyr$summarize(min_weeks = min(weeks), max_weeks = max(weeks), mean_weeks = mean(weeks), .groups = "drop")
+head(df_weeks_per_country)
 
 # check for countries where dates are less than 7 days apart
 df_prepped |>
@@ -280,7 +283,7 @@ allocation_years <- cerf_cholera |>
   dplyr$filter(!is.na(dateUSGSignature)) |>
   dplyr$mutate(year = lubridate$year(dateUSGSignature)) |>
   dplyr$distinct(countryCode, year) |>
-  dplyr$filter(year >= lubridate$year(min(df_prepped$date, na.rm = T))) |>
+  dplyr$filter(year >= lubridate$year(min(df_prepped$date, na.rm = TRUE))) |>
   dplyr$rename(iso3 = countryCode)
 # Methodology 1
 # Assumption: Values stay the same across weeks without data until reported otherwise
@@ -333,13 +336,13 @@ ggplot2$ggplot(alerts_by_year_and_level, ggplot2$aes(x = year, y = iso3, fill = 
   ggplot2$scale_fill_gradient2(low = "white", high = "red",
                                breaks = function(x) x[x %% 1 == 0],
                                labels = function(x) x[x %% 1 == 0]) +  # Adjust labels
-  ggplot2$scale_y_discrete(limits = rev(levels(factor(alerts_by_year_and_level$iso3)))) +  # Alphabetical ordering of countries
+  ggplot2$scale_y_discrete(limits = rev(levels(factor(alerts_by_year_and_level$iso3)))) +
   ggplot2$scale_x_continuous(breaks = unique(alerts_by_year_and_level$year))
 
 
 # comparing with CERF allocations
 # which alert level correlates with a CERF allocation
-df_1_cerf <- find_nearest_country(event_df=df_1, allocation_df=cerf_cholera)
+df_1_cerf <- find_nearest_country(event_df = df_1, allocation_df = cerf_cholera)
 df_summary <- df_1_cerf |>
   # baseline of 1000
   dplyr$mutate(
@@ -398,39 +401,20 @@ ggplot2$ggplot(alerts_by_year, ggplot2$aes(x = year, y = iso3, fill = num_alerts
   ) +
   ggplot2$facet_wrap(~level) +
   ggplot2$scale_fill_gradient(low = "white", high = "red",
-                               breaks = function(x) x[x %% 1 == 0],
-                               labels = function(x) x[x %% 1 == 0]) +
+                              breaks = function(x) x[x %% 1 == 0],
+                              labels = function(x) x[x %% 1 == 0]) +
   ggplot2$scale_y_discrete(limits = rev(levels(factor(alerts_by_year$iso3)))) +
   ggplot2$scale_x_continuous(breaks = unique(alerts_by_year$year))
 
 # comparing with CERF allocations
-df_2a_cerf <- find_nearest_country(event_df=df_2_a, allocation_df=cerf_cholera)
+df_2a_cerf <- find_nearest_country(event_df = df_2_a, allocation_df = cerf_cholera)
 df_2a_cerf |>
   dplyr$summarise(
-    n=dplyr$n(),
-    n_window=sum(time_diff_days >= -60 & time_diff_days <= 90, na.rm=T),
+    n = dplyr$n(),
+    n_window = sum(time_diff_days >= -60 & time_diff_days <= 90, na.rm = TRUE),
     prop_window = n_window / n,
   )
 
-#df_2_b <- df_prepped |>
-#  dplyr$arrange(iso3, date) |>
-#  dplyr$mutate(
-#    level = dplyr$case_when(
-#      cholera_cases > 5000 & dplyr$lag(cholera_cases, default = 0) <= 5000 ~ "Level 2",
-#      cholera_cases > 1000 & dplyr$lag(cholera_cases, default = 0) <= 1000 ~ "Level 1",
-#      TRUE ~ NA_character_
-#    )
-#  ) |>
-#  dplyr$filter(!is.na(level))
-
-# comparing with CERF allocations
-#df_2b_cerf <- find_nearest_country(event_df=df_2_b, allocation_df=cerf_cholera)
-#df_2b_cerf |>
-#  dplyr$summarise(
-#    n=dplyr$n(),
-#    n_window=sum(time_diff_days >= -60 & time_diff_days <= 90, na.rm=T),
-#    prop_window = n_window / n,
-#  )
 # Methodology 3
 # remove zeros from weekly increases
 # adding check for no signals for the next 3 months
@@ -466,7 +450,7 @@ df_3 <- df_prepped |>
 
 
 # comparing with CERF allocations
-df_3_cerf <- find_nearest_country(event_df=df_3, allocation_df=cerf_cholera)
+df_3_cerf <- find_nearest_country(event_df = df_3, allocation_df = cerf_cholera)
 # Aggregating the data for CERF allocation windows
 df_3_aggregated <- df_3_cerf |>
   dplyr$group_by(iso3, year = lubridate$year(date)) |>
@@ -506,7 +490,7 @@ df_joined <- dplyr$full_join(df_1, df_2_a,
                              by = c("iso3", "date"),
                              suffix = c("_df1", "_df2a")) |>
   dplyr$full_join(df_3, by = c("iso3", "date"))
-
+head(df_joined)
 # Plot
 
 iso3_levels <- unique(combined_df$iso3)
@@ -526,14 +510,18 @@ purrr$walk(iso3_levels, ~ {
       ggplot2$geom_hline(ggplot2$aes(yintercept = p99), color = "red", linetype = "dashed", show.legend = FALSE) +
       ggplot2$geom_hline(yintercept = 1000, color = "darkgreen", linetype = "dashed", show.legend = FALSE) +
       ggplot2$geom_hline(yintercept = 5000, color = "orange", linetype = "dashed", show.legend = FALSE) +
-      ggplot2$annotate("text", x = as.Date("2021-01-01"), y = 1000, label = "1000", color = "darkgreen", hjust = 0, vjust = -0.5) +
-      ggplot2$annotate("text", x = as.Date("2022-01-01"), y = 5000, label = "5000", color = "orange", hjust = 0, vjust = -0.5) +
-      ggplot2$geom_text(ggplot2$aes(x = as.Date("2020-01-01"), y = p99, label = "p99"), color = "red", hjust = 0, vjust = -0.5) +
+      ggplot2$annotate("text", x = as.Date("2021-01-01"), y = 1000, label = "1000",
+                       color = "darkgreen", hjust = 0, vjust = -0.5) +
+      ggplot2$annotate("text", x = as.Date("2022-01-01"), y = 5000, label = "5000",
+                       color = "orange", hjust = 0, vjust = -0.5) +
+      ggplot2$geom_text(ggplot2$aes(x = as.Date("2020-01-01"), y = p99, label = "p99"),
+                        color = "red", hjust = 0, vjust = -0.5) +
       ggplot2$labs(
         title = paste("Weekly Increase in Cholera Cases:", .x),
         x = "Date",
         y = "Weekly Increase",
-        caption = "red dots show alerts for method 1 \norange dots show alerts for method 2 \nblue dots show an alert for method 3"
+        caption = "red dots show alerts for method 1 \n
+        orange dots show alerts for method 2 \nblue dots show an alert for method 3"
       ) +
       gghdx$gghdx()
   })
