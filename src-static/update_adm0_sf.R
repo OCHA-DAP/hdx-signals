@@ -153,7 +153,14 @@ download_adm0_sf <- function(iso3) {
       dplyr$summarise(do_union = TRUE, .groups = "drop") |>
       # then merge all iso3s into 1 multipolygon retaining boundaries
       dplyr$summarise(iso3 = "LAC", boundary_source = "UN Geo Hub", do_union = FALSE)
-
+  } else if (iso3 == "IND") {
+    # for IND we get all India and Arunchal Pradesh
+    dplyr$filter(sf_world, iso3 %in% c("IND", "XAP")) |>
+      dplyr$group_by(iso3) |>
+      # pull together polygons by iso3
+      dplyr$summarise(do_union = TRUE, .groups = "drop") |>
+      # then merge all iso3s into 1 multipolygon retaining boundaries
+      dplyr$summarise(iso3 = "IND", boundary_source = "UN Geo Hub", do_union = FALSE)
   } else if (iso3 == "AB9") {
     download_shapefile$download_shapefile(
       url = "https://open.africa/dataset/56d1d233-0298-4b6a-8397-d0233a1509aa/resource/76c698c9-e282-4d00-9202-42bcd908535b/download/ssd_admbnda_abyei_imwg_nbs_20180401.zip", # nolint
