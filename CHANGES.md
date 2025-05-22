@@ -1,5 +1,11 @@
 # Changes
 
+## 0.2.3.0 (22 May 2025)
+
+### Map improvement
+
+- Add XAP to IND in `update_adm0_sf`
+
 ## 0.2.2.0 (24 April 2025)
 
 ### Bug fix
