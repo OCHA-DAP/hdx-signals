@@ -14,8 +14,8 @@ box::use(
 )
 
 df_signals <- cs$read_az_file("output/signals.parquet")
-indicator <- "acled_conflict"
-displacement_type_filter <- "Disaster"
+indicator <- "idmc_displacement_conflict"
+displacement_type_filter <- "Conflict"
 indicators <- unique(df_signals$indicator_id)
 if (indicator %in% c("idmc_displacement_disaster", "idmc_displacement_conflict")){
   data <- raw_displacement$raw() |>
@@ -36,10 +36,10 @@ if (indicator %in% c("idmc_displacement_disaster", "idmc_displacement_conflict")
     )
   plot_fn <- plot_conflict$conflict_ts
 }
-alerts <- alerts |>
-  dplyr$filter(
-    iso3 =="MMR"
-  )
+# alerts <- alerts |>
+#   dplyr$filter(
+#     iso3 =="MMR"
+#   )
 for (country in unique(alerts$iso3)){
   country_data <- data |>
     dplyr$filter(iso3 == country)
