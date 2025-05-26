@@ -91,7 +91,8 @@ iso3_values <- c("VNM", "CHL")
 
 # Update both lat and lon columns
 for (col in c("lat", "lon")) {
-  df_locations_metadata[df_locations_metadata$iso3 %in% iso3_values, col] <- df_input_metadata[df_input_metadata$iso3 %in% iso3_values, col]
+  df_locations_metadata[df_locations_metadata$iso3 %in% iso3_values, col] <-
+    df_input_metadata[df_input_metadata$iso3 %in% iso3_values, col]
 }
 
 fname <- "output/signals_locations_metadata.parquet"

@@ -217,7 +217,7 @@ get_inform_justification <- function(iso3_param, date_param, country_param) {
 }
 
 get_country_info <- function(iso3_param, date_param) {
-  country_info <- httr2$request("https://api.acaps.org/api/v1/countries/") |>
+  httr2$request("https://api.acaps.org/api/v1/countries/") |>
     httr2$req_headers(
       Authorization = paste("Token", get_env$get_env("ACAPS_TOKEN"))
     ) |>
