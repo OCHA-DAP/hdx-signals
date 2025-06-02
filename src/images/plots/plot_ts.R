@@ -2,7 +2,8 @@ box::use(
   gg = ggplot2,
   scales,
   gghdx,
-  dplyr
+  dplyr,
+  utils
 )
 
 box::use(
@@ -52,18 +53,41 @@ plot_ts <- function(
       color = gghdx$hdx_hex("sapphire-hdx")
     )
   if (is.data.frame(alerts)){
+    indicator="acled_conflict"
+    df_alerts_new <- utils$read.csv("all_new_alerts.csv")
+    df_alerts_new <- df_alerts_new |>
+      dplyr$filter(indicator_id==indicator, iso3==alerts$iso3[1])
+    df_alerts_new$date <- as.Date(df_alerts_new$date, format="%m/%d/%Y")
     df_alerts <- alerts|>
       dplyr$filter(
       Sys.Date()- date <= 365 * 5
     )
+    df_alerts_new <- df_alerts_new|>
+      dplyr$filter(
+        Sys.Date()- date <= 365 * 5
+      )
 
     p <- p + gg$geom_point(
       data = df_alerts,
       mapping = gg$aes(
         x = date,
-        y = value),
+        y = value,
+        colour="Old alerts"),
+      size = 4,
+      alpha = 0.3
+    )
+    p <- p + gg$geom_point(
+      data = df_alerts_new,
+      mapping = gg$aes(
+        x = date,
+        y = value,
+        colour="New alerts"),
       size = 3,
-      color = gghdx$hdx_hex("tomato-hdx")
+      alpha = 0.5
+    )
+    p <- p + gg$scale_color_manual(
+      values = c("Old alerts" = gghdx$hdx_hex("tomato-hdx"),
+                 "New alerts" = gghdx$hdx_hex("mint-hdx"))
     )
   } else {
     p <- p + gg$geom_point(
@@ -106,7 +130,7 @@ plot_ts <- function(
         colour = gghdx$hdx_hex("gray-dark"),
         linewidth = gg$rel(1)
       ),
-      axis.ticks.length = gg$unit(-0.05, "in")
+      axis.ticks.length = gg$unit(-0.05, "in"),
     )
 
 }

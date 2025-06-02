@@ -62,14 +62,6 @@ conflict_ts <- function(df_wrangled, df_raw, title, date, alerts=NA) {
     !is.na(fatalities_30d),
     (as.numeric(date - !!date) %% 30) == 0 # every 30 days from date of signal
   )
-  if (is.data.frame(alerts)){
-    # df_wrangled_alerting <- df_wrangled |> dplyr$filter(date %in% alerts$date)
-    # df_plot <- dplyr$bind_rows(
-    #   df_plot,
-    #   df_wrangled_alerting
-    # )
-    df_plot <- df_wrangled
-  }
 
   plot_ts$plot_ts(
     df = df_plot,
