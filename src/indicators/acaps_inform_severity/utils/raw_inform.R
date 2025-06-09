@@ -52,49 +52,11 @@ raw <- function() {
 #'
 #' @param formatted_date Date formatted as `MonYYYY`, such as `Jan2020`.
 get_acaps_severity_date <- function(formatted_date) {
-  df <- httr2$request("https://api.acaps.org/api/v1/inform-severity-index/") |>
-    httr2$req_url_path_append(
-      formatted_date
-    ) |>
-    httr2$req_headers(
-      Authorization = paste("Token", get_env$get_env("ACAPS_TOKEN"))
-    ) |>
-    httr2$req_retry(
-      max_tries = 5,
-      backoff = \(x) x / 10
-    ) |>
-    httr2$req_error( # only return an error if not in the latest month
-      is_error = \(resp) if (format(Sys.Date(), "%b%Y") == formatted_date || !httr2$resp_is_error(resp)) FALSE else TRUE
-    ) |>
-    httr2$req_perform() |>
-    httr2$resp_body_json() |>
-    purrr$pluck(
-      "results"
-    ) |>
-    purrr$map(
-      .f = \(x) {
-        dplyr$tibble(
-          iso3 = unlist(x$iso3),
-          country = unlist(x$country),
-          regions = unlist(x$regions),
-          crisis_id = x$crisis_id,
-          crisis_name = x$crisis_name,
-          inform_severity_index = x$`INFORM Severity Index`,
-          impact_crisis = x$`Impact of the crisis`,
-          people_condition = x$`Conditions of affected people`,
-          complexity = x$Complexity,
-          drivers = paste(x$drivers, collapse = ", "),
-          date = as.Date(x$`_internal_filter_date`),
-          reliability = x$reliability,
-          reliability_score = x$reliability_score,
-          country_level = x$country_level,
-        )
-      }
-    ) |>
-    purrr$list_rbind()
+  base_url <- "https://api.acaps.org/api/v1/inform-severity-index/"
+  token <- Sys.getenv("ACAPS_TOKEN")
 
-  df
-
+  data <- fetch_all_pages(base_url, token, formatted_date)
+  data
 }
 
 #' Get ACAPS severity data
@@ -116,3 +78,56 @@ get_acaps_severity <- function() {
       date
     )
 }
+
+fetch_all_pages <- function(base_url, token, formatted_date) {
+  all_results <- list()
+  next_url <- base_url
+  while (!is.null(next_url)) {
+    print(formatted_date)
+    if (next_url == base_url) {
+      # Append the formatted_date only to the base_url
+      request <- httr2$request(next_url) |>
+        httr2$req_url_path_append(formatted_date)
+    } else {
+      # Use the next_url directly without appending formatted_date again
+      request <- httr2$request(next_url)
+    }
+    response <- request |>
+      httr2$req_headers(Authorization = paste("Token", token)) |>
+      httr2$req_retry(max_tries = 5, backoff = \(x) x / 10) |>
+      httr2$req_error(is_error = \(resp) {
+        if (format(Sys.Date(), "%b%Y") == formatted_date || !httr2$resp_is_error(resp)) FALSE else TRUE
+      }) |>
+      httr2$req_perform() |>
+      httr2$resp_body_json()
+
+    # Extract and process the current page's results
+    page_results <- response$results |>
+      purrr$map(\(x) dplyr$tibble(
+        iso3 = unlist(x$iso3),
+        country = unlist(x$country),
+        regions = unlist(x$regions),
+        crisis_id = x$crisis_id,
+        crisis_name = x$crisis_name,
+        inform_severity_index = x$`INFORM Severity Index`,
+        impact_crisis = x$`Impact of the crisis`,
+        people_condition = x$`Conditions of affected people`,
+        complexity = x$Complexity,
+        drivers = paste(x$drivers, collapse = ", "),
+        date = as.Date(x$`_internal_filter_date`),
+        reliability = x$reliability,
+        reliability_score = x$reliability_score,
+        country_level = x$country_level
+      ))
+
+    all_results <- append(all_results, page_results)
+
+    # Update the next_url for the next iteration
+    next_url <- response[["next"]]
+  }
+
+  # Combine all results into a single tibble
+  dplyr$bind_rows(all_results)
+}
+
+
