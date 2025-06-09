@@ -117,7 +117,7 @@ interest_emails <- function(interest, geo_ids) {
   df_interests <- audience$mc_groups()
   member_list <- audience$mc_members()
 
-  interest_id <- df_interests$interest_id[match(interest, df_interests$name)]
+  interest_id <- df_interests$interest_id[match(tolower(interest), tolower(df_interests$name))]
   dry_run <- hs_dry_run$hs_dry_run()
 
   purrr$map_chr(

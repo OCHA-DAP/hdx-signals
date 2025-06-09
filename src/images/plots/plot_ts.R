@@ -2,7 +2,8 @@ box::use(
   gg = ggplot2,
   scales,
   gghdx,
-  dplyr
+  dplyr,
+  utils
 )
 
 box::use(
@@ -38,6 +39,7 @@ plot_ts <- function(
       max(date, as.Date("1500-01-01")) - date <= 365 * 5
     )
 
+
   p <- plot_df |>
     gg$ggplot(
       mapping = gg$aes(
@@ -48,12 +50,14 @@ plot_ts <- function(
     gg$geom_line(
       linewidth = 0.7,
       color = gghdx$hdx_hex("sapphire-hdx")
-    ) +
-    gg$geom_point(
-      data = dplyr$filter(df, date == max(date, as.Date("1500-01-01"))),
-      size = 3,
-      color = gghdx$hdx_hex("sapphire-hdx")
-    ) +
+    )
+
+  p <- p + gg$geom_point(
+    data = dplyr$filter(df, date == max(date, as.Date("1500-01-01"))),
+    size = 3,
+    color = gghdx$hdx_hex("sapphire-hdx")
+  )
+  p <- p +
     gghdx$scale_y_continuous_hdx(
       labels = gghdx$label_number_hdx(),
     ) +
@@ -87,7 +91,7 @@ plot_ts <- function(
         colour = gghdx$hdx_hex("gray-dark"),
         linewidth = gg$rel(1)
       ),
-      axis.ticks.length = gg$unit(-0.05, "in")
+      axis.ticks.length = gg$unit(-0.05, "in"),
     )
 
 }
