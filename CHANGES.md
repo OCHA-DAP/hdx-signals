@@ -1,5 +1,11 @@
 # Changes
 
+## 0.2.4.0 (18 June 2025)
+
+### Template modification
+
+- remove Centre address from campaign template
+
 ## 0.2.3.0 (22 May 2025)
 
 ### Map improvement
