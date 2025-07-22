@@ -1,5 +1,11 @@
 # Changes
 
+## 0.2.4.0 (30 July 2025)
+
+### ACLED API update
+
+- Update ACLED data fetching using OAuth
+
 ## 0.2.3.0 (22 May 2025)
 
 ### Map improvement
