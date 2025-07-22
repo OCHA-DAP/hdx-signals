@@ -3,13 +3,21 @@ box::use(
   dplyr,
   purrr,
   readr,
-  logger
+  logger,
 )
+
 
 box::use(
   src/utils/get_env,
   cs = src/utils/cloud_storage
 )
+
+# API and token URLs
+token_url <- "https://reactivation.acleddata.com/oauth/token"
+# Get credentials from environment variables
+username <- Sys.getenv("ACLED_USERNAME")
+password <- Sys.getenv("ACLED_PASSWORD")
+
 
 #' Download raw conflict data
 #'
@@ -35,12 +43,22 @@ raw <- function() {
     cs$read_az_file("output/acled_conflict/raw.parquet")
   } else {
     logger$log_debug("Downloading ACLED data")
+
+    httr2$request(
+      api_url
+    )  |>
+      httr2$req_oauth_password(
+        client = httr2$oauth_client("acled", token_url),
+        username = username,
+        password = password
+      )|>
+      httr2$req_perform()
+
+    # Perform request with OAuth2 password flow
     df_acled <- httr2$request(
       "https://api.acleddata.com/acled/read"
     ) |>
       httr2$req_url_query(
-        key = get_env$get_env("ACLED_ACCESS_KEY"),
-        email = get_env$get_env("ACLED_EMAIL_ADDRESS"),
         fields = paste(
           "iso",
           "event_date",
@@ -53,6 +71,11 @@ raw <- function() {
         ),
         limit = 0 # much faster than using limits / pagination sadly
       ) |>
+      req_oauth_password(
+        client = oauth_client("acled", token_url),
+        username = username,
+        password = password
+      )|>
       httr2$req_perform() |>
       httr2$resp_body_json() |>
       purrr$pluck("data") |>
