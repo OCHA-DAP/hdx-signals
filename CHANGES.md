@@ -1,10 +1,16 @@
 # Changes
 
-## 0.2.4.0 (30 July 2025)
+## 0.2.5.0 (30 July 2025)
 
 ### ACLED API update
 
 - Update ACLED data fetching using OAuth
+
+## 0.2.4.0 (18 June 2025)
+
+### Template modification
+
+- remove Centre address from campaign template
 
 ## 0.2.3.0 (22 May 2025)
 
@@ -76,7 +82,6 @@ passing indicators to `generate_signals()`, to mirror OOP class/method approache
 
 - Small fix to `triage_signals()` to check for environment variable presence prior
 to sending emails
->>>>>>> 5973d675e2be9aa37935a347bb7e5b7163373a99
 
 ## 0.1.14.3 (29 October 2024)
 
