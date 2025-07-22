@@ -3,7 +3,7 @@ box::use(
   dplyr,
   purrr,
   readr,
-  logger,
+  logger
 )
 
 
@@ -44,17 +44,7 @@ raw <- function() {
   } else {
     logger$log_debug("Downloading ACLED data")
 
-    httr2$request(
-      api_url
-    )  |>
-      httr2$req_oauth_password(
-        client = httr2$oauth_client("acled", token_url),
-        username = username,
-        password = password
-      )|>
-      httr2$req_perform()
-
-    # Perform request with OAuth2 password flow
+    # Perform request with OAuth2 password
     df_acled <- httr2$request(
       "https://api.acleddata.com/acled/read"
     ) |>
