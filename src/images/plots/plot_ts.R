@@ -2,8 +2,7 @@ box::use(
   gg = ggplot2,
   scales,
   gghdx,
-  dplyr,
-  utils
+  dplyr
 )
 
 box::use(

@@ -6,7 +6,6 @@ box::use(
   logger
 )
 
-
 box::use(
   src/utils/get_env,
   cs = src/utils/cloud_storage
@@ -15,8 +14,8 @@ box::use(
 # API and token URLs
 token_url <- "https://reactivation.acleddata.com/oauth/token"
 # Get credentials from environment variables
-username <- Sys.getenv("ACLED_USERNAME")
-password <- Sys.getenv("ACLED_PASSWORD")
+username <- get_env$get_env("ACLED_USERNAME")
+password <- get_env$get_env("ACLED_PASSWORD")
 
 
 #' Download raw conflict data
@@ -61,11 +60,11 @@ raw <- function() {
         ),
         limit = 0 # much faster than using limits / pagination sadly
       ) |>
-      req_oauth_password(
-        client = oauth_client("acled", token_url),
+      httr2$req_oauth_password(
+        client = httr2$oauth_client("acled", token_url),
         username = username,
         password = password
-      )|>
+      ) |>
       httr2$req_perform() |>
       httr2$resp_body_json() |>
       purrr$pluck("data") |>

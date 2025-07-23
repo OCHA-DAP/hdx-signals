@@ -73,10 +73,10 @@ generate_signals <- function(
   # file name differs if testing or not
   fn_signals <- cs$signals_path(ind_module$indicator_id, hs_dry_run$hs_dry_run())
 
-  check_existing_signals$check_existing_signals(
-    indicator_id = ind_module$indicator_id,
-    fn_signals = fn_signals
-  )
+  # check_existing_signals$check_existing_signals(
+  #   indicator_id = ind_module$indicator_id,
+  #   fn_signals = fn_signals
+  # )
 
   # generate the new alerts that will receive a campaign
   # filter out the data before generating new alerts
@@ -88,7 +88,6 @@ generate_signals <- function(
     generate_alerts$generate_alerts(
       indicator_id = ind_module$indicator_id
     )
-
   # return empty data frame if alerts is empty
   if (nrow(df_alerts) == 0) {
     logger$log_info(paste0("No signals created for ", ind_module$indicator_id))
