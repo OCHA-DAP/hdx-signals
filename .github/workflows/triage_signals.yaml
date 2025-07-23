@@ -49,7 +49,6 @@ on:
           options:
             - "DONT CONFIRM"
             - "I CONFIRM"
-
   jobs:
       run:
           runs-on: ubuntu-latest
