@@ -162,7 +162,7 @@ approve_signals <- function(df, fn_signals, test, indicator_id) {
                       ARCHIVE: Delete the email campaign, but move the alert to `output/signals.parquet`
                       DO_NOTHING: Do nothing, so you can decide later.")
     print(msg)
-    user_command <- Sys.getenv("USER_COMMAND")
+    user_command <- get_env$get_env("USER_COMMAND")
     if (user_command == "") {
       user_command <- readline(prompt = "Your command: ")
     }
@@ -174,7 +174,7 @@ approve_signals <- function(df, fn_signals, test, indicator_id) {
       "Given the criticality of the action please type I CONFIRM to proceed with the action selected",
       sep = ""
     )
-    user_command_confirmation <- Sys.getenv("USER_COMMAND_CONFIRMATION")
+    user_command_confirmation <- get_env$get_env("USER_COMMAND_CONFIRMATION")
     if (user_command_confirmation == "") {
       user_command_confirmation <- readline(prompt = "Your command: ")}
     if (user_command_confirmation != "I CONFIRM") {
