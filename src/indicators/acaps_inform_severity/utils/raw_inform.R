@@ -53,7 +53,7 @@ raw <- function() {
 #' @param formatted_date Date formatted as `MonYYYY`, such as `Jan2020`.
 get_acaps_severity_date <- function(formatted_date) {
   base_url <- "https://api.acaps.org/api/v1/inform-severity-index/"
-  token <- Sys.getenv("ACAPS_TOKEN")
+  token <- get_env$get_env("ACAPS_TOKEN")
 
   data <- fetch_all_pages(base_url, token, formatted_date)
   data
@@ -103,22 +103,24 @@ fetch_all_pages <- function(base_url, token, formatted_date) {
 
     # Extract and process the current page's results
     page_results <- response$results |>
-      purrr$map(\(x) dplyr$tibble(
-        iso3 = unlist(x$iso3),
-        country = unlist(x$country),
-        regions = unlist(x$regions),
-        crisis_id = x$crisis_id,
-        crisis_name = x$crisis_name,
-        inform_severity_index = x$`INFORM Severity Index`,
-        impact_crisis = x$`Impact of the crisis`,
-        people_condition = x$`Conditions of affected people`,
-        complexity = x$Complexity,
-        drivers = paste(x$drivers, collapse = ", "),
-        date = as.Date(x$`_internal_filter_date`),
-        reliability = x$reliability,
-        reliability_score = x$reliability_score,
-        country_level = x$country_level
-      ))
+      purrr$map(\(x) {
+        dplyr$tibble(
+          iso3 = unlist(x$iso3),
+          country = unlist(x$country),
+          regions = unlist(x$regions),
+          crisis_id = x$crisis_id,
+          crisis_name = x$crisis_name,
+          inform_severity_index = x$`INFORM Severity Index`,
+          impact_crisis = x$`Impact of the crisis`,
+          people_condition = x$`Conditions of affected people`,
+          complexity = x$Complexity,
+          drivers = paste(x$drivers, collapse = ", "),
+          date = as.Date(x$`_internal_filter_date`),
+          reliability = x$reliability,
+          reliability_score = x$reliability_score,
+          country_level = x$country_level
+        )
+      })
 
     all_results <- append(all_results, page_results)
 
@@ -129,5 +131,3 @@ fetch_all_pages <- function(base_url, token, formatted_date) {
   # Combine all results into a single tibble
   dplyr$bind_rows(all_results)
 }
-
-

@@ -134,9 +134,7 @@ interest_emails <- function(interest, geo_ids) {
           )
         }
       }
-      return(
-        NA_character_
-      )
+      NA_character_
     }
   )
 }
@@ -162,9 +160,7 @@ tag_emails <- function(interest_tag, geo_ids) {
           )
         }
       }
-      return(
-        NA_character_
-      )
+      NA_character_
     }
   )
 }

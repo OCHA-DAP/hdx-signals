@@ -3,7 +3,6 @@ box::use(
   scales,
   gghdx,
   dplyr,
-  utils
 )
 
 box::use(

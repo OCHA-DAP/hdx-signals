@@ -1,5 +1,11 @@
 # Changes
 
+## 0.2.5.0 (25 July 2025)
+
+### Added workflow
+
+- Add workflow to triage Signals
+
 ## 0.2.4.0 (18 June 2025)
 
 ### Template modification
