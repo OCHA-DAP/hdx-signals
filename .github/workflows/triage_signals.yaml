@@ -71,6 +71,7 @@ jobs:
       HS_FIRST_RUN: ${{ inputs.HS_FIRST_RUN || 'FALSE' }}
       HS_DRY_RUN: ${{ inputs.HS_DRY_RUN || 'FALSE' }}
       LOG_LEVEL: ${{ inputs.LOG_LEVEL || 'INFO' }}
+      INDICATOR_ID: ${{ inputs.INDICATOR_ID }}
       USER_COMMAND: ${{ inputs.USER_COMMAND || 'DO_NOTHING' }}
       USER_COMMAND_CONFIRMATION: ${{ inputs.USER_COMMAND_CONFIRMATION || 'I CONFIRM' }}
     steps:
