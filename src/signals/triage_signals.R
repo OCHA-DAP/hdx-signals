@@ -345,3 +345,9 @@ save_core_signals_hdx <- function(df) {
 
   push_hdx$push_hdx()
 }
+
+triage_signals(
+  indicator_id = get_env$get_env("INDICATOR_ID"),
+  n_campaigns = 0,
+  test = FALSE
+)
