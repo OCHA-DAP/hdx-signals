@@ -42,18 +42,18 @@ on:
         options:
           - "DONT CONFIRM"
           - "I CONFIRM"
-      INDICATORE_ID:
-      required: true
-      type: choice
-      default: "acled_conflict"
-      options:
-        - "acled_conflict"
-        - "acaps_inform_severity"
-        - "idmc_displacement"
-        - "ipc_food_insecurity"
-        - "jrc_agricultural_hotspot"
-        - "wfp_market_monitor"
-        - "who_cholera"
+      INDICATOR_ID:
+        required: true
+        type: choice
+        default: "acled_conflict"
+        options:
+          - "acled_conflict"
+          - "acaps_inform_severity"
+          - "idmc_displacement"
+          - "ipc_food_insecurity"
+          - "jrc_agricultural_hotspot"
+          - "wfp_market_monitor"
+          - "who_cholera"
   push:
     branches:
     - '**'
