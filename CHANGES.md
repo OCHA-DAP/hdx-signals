@@ -1,10 +1,17 @@
 # Changes
 
-## 0.2.5.0 (30 July 2025)
+## 0.2.6.0 (30 July 2025)
 
 ### ACLED API update
 
 - Update ACLED data fetching using OAuth
+
+## 0.2.5.0 (25 July 2025)
+
+### Added workflow
+
+- Add workflow to triage Signals
+
 
 ## 0.2.4.0 (18 June 2025)
 

@@ -138,8 +138,10 @@ preview_campaign_urls <- function(campaign_urls) {
     .x = campaign_urls,
     .f = utils::browseURL
   )
-
-  readline("Press any key to continue.")
+  go_ahead <- get_env$get_env("GO_AHEAD")
+  if (go_ahead != TRUE) {
+    readline("Press any key to continue.")
+  }
 }
 
 #' Approve (or not) campaigns
@@ -160,7 +162,10 @@ approve_signals <- function(df, fn_signals, test, indicator_id) {
                       ARCHIVE: Delete the email campaign, but move the alert to `output/signals.parquet`
                       DO_NOTHING: Do nothing, so you can decide later.")
     print(msg)
-    user_command <- readline(prompt = "Your command: ")
+    user_command <- get_env$get_env("USER_COMMAND")
+    if (user_command == "") {
+      user_command <- readline(prompt = "Your command: ")
+    }
   }
   if (user_command %in% c("APPROVE", "DELETE", "ARCHIVE")) {
     # send message to user
@@ -169,8 +174,10 @@ approve_signals <- function(df, fn_signals, test, indicator_id) {
       "Given the criticality of the action please type I CONFIRM to proceed with the action selected",
       sep = ""
     )
-
-    user_command_confirmation <- readline(prompt = "Your command: ")
+    user_command_confirmation <- get_env$get_env("USER_COMMAND_CONFIRMATION")
+    if (user_command_confirmation == "") {
+      user_command_confirmation <- readline(prompt = "Your command: ")
+    }
     if (user_command_confirmation != "I CONFIRM") {
       stop(glue$glue("The process was not confirmed, you will need to re-run `triage_signals()` to {user_command} the
                      signal and then confirm it."),
