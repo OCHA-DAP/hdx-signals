@@ -3,13 +3,6 @@ name: Triage Signals
 on:
   workflow_dispatch:
     inputs:
-      HS_FIRST_RUN:
-        required: true
-        type: choice
-        default: "FALSE"
-        options:
-          - "TRUE"
-          - "FALSE"
       HS_DRY_RUN:
         required: true
         type: choice
