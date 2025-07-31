@@ -11,8 +11,9 @@ box::use(
   cs = src/utils/cloud_storage
 )
 
-# API and token URLs
-token_url <- "https://reactivation.acleddata.com/oauth/token"
+# Define the API and token URLs
+api_base_url <- "https://acleddata.com/api/acled/read?_format=json"
+token_url <- "https://acleddata.com/oauth/token"
 # Get credentials from environment variables
 username <- get_env$get_env("ACLED_USERNAME")
 password <- get_env$get_env("ACLED_PASSWORD")
@@ -45,7 +46,7 @@ raw <- function() {
 
     # Perform request with OAuth2 password
     df_acled <- httr2$request(
-      "https://api.acleddata.com/acled/read"
+      api_base_url
     ) |>
       httr2$req_url_query(
         fields = paste(
