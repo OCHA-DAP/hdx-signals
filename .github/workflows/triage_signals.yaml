@@ -51,7 +51,7 @@ on:
           - "acaps_inform_severity"
           - "idmc_displacement"
           - "ipc_food_insecurity"
-          - "jrc_agricultural_hotspot"
+          - "jrc_agricultural_hotspots"
           - "wfp_market_monitor"
           - "who_cholera"
       TEST:
