@@ -30,6 +30,7 @@ plot_ts <- function(
     val_col,
     y_axis,
     title,
+    alerts,
     subtitle = gg$waiver(),
     caption = gg$waiver()) {
   # data frame for plotting that is filtered to only 5 years of data at most
