@@ -21,7 +21,7 @@ box::use(
 #' @param preview Whether or not to preview the plots
 #'
 #' @export
-plot <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
+plot <- function(df_alerts, df_wrangled, df_raw, preview = NA) {
   df_plot <- df_alerts |>
     dplyr$mutate(
       title = paste0(
@@ -51,7 +51,8 @@ plot <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
 #' @param date Date of the alert. Not used in the plot.
 #'
 #' @returns Plot of cholera for that wrangled data
-displacement_ts <- function(df_wrangled, df_raw, title, date) {
+#' @export
+displacement_ts <- function(df_wrangled, df_alerts, title, date, alerts = NA) {
   caption <- caption$caption(
     indicator_id = "idmc_displacement_conflict", # same details as disaster
     iso3 = unique(df_wrangled$iso3)
@@ -63,6 +64,13 @@ displacement_ts <- function(df_wrangled, df_raw, title, date) {
     df_wrangled,
     (as.numeric(date - !!date) %% 30) == 0 # every 30 days from date of signal
   )
+  if (is.data.frame(alerts)) {
+    df_wrangled_alerting <- df_wrangled |> dplyr$filter(date %in% alerts$date)
+    df_plot <- dplyr$bind_rows(
+      df_plot,
+      df_wrangled_alerting
+    )
+  }
 
   plot_ts$plot_ts(
     df = dplyr$filter(df_plot, !is.na(displacement_30d)),
@@ -70,6 +78,7 @@ displacement_ts <- function(df_wrangled, df_raw, title, date) {
     y_axis = "Displacements (monthly)",
     title = title,
     subtitle = paste0(unique(df_wrangled$displacement_type), "-driven displacements"),
-    caption = caption
+    caption = caption,
+    alerts = alerts
   )
 }
