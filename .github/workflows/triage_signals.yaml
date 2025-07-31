@@ -83,6 +83,7 @@ jobs:
       TEST: ${{ inputs.TEST || 'TRUE' }}
       USER_COMMAND: ${{ inputs.USER_COMMAND || 'DO_NOTHING' }}
       USER_COMMAND_CONFIRMATION: ${{ inputs.USER_COMMAND_CONFIRMATION || 'I CONFIRM' }}
+      HS_ADMIN_NAME: ${{ secrets.HS_ADMIN_NAME }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
