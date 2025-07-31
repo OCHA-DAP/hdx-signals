@@ -54,6 +54,13 @@ on:
           - "jrc_agricultural_hotspot"
           - "wfp_market_monitor"
           - "who_cholera"
+      TEST:
+        required: true
+        type: choice
+        default: "FALSE"
+        options:
+          - "FALSE"
+          - "TRUE"
   push:
     branches:
     - '**'
@@ -72,6 +79,7 @@ jobs:
       HS_DRY_RUN: ${{ inputs.HS_DRY_RUN || 'FALSE' }}
       LOG_LEVEL: ${{ inputs.LOG_LEVEL || 'INFO' }}
       INDICATOR_ID: ${{ inputs.INDICATOR_ID }}
+      TEST: ${{ inputs.TEST || 'TRUE' }}
       USER_COMMAND: ${{ inputs.USER_COMMAND || 'DO_NOTHING' }}
       USER_COMMAND_CONFIRMATION: ${{ inputs.USER_COMMAND_CONFIRMATION || 'I CONFIRM' }}
     steps:
@@ -89,4 +97,4 @@ jobs:
           retry_on: error
           retry_wait_seconds: 120
           shell: bash
-          command: Rscript ./src/signals/triage_signals.R
+          command: Rscript ./src/run/run_triage_signals.R
