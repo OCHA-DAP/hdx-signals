@@ -1,5 +1,11 @@
 # Changes
 
+## 0.2.7.0 (31 July 2025)
+
+### Add Run folder
+
+- Create Run folder for facilitating the running of the Signals code in GitHub Actions
+
 ## 0.2.6.0 (30 July 2025)
 
 ### ACLED API update
