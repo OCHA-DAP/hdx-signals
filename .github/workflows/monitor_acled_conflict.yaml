@@ -59,11 +59,11 @@ jobs:
             - name: Set up environment
               uses: ocha-dap/hdx-signals-actions@v3
 
-            - name: Diagnose ACLED blocking (TEMPORARY)
+            - name: Test ACLED OAuth Authentication
               run: |
-                echo "=== ACLED BLOCKING DIAGNOSTIC ==="
-                echo "Running temporary diagnostic to identify blocking mechanism"
-                Rscript tmp/gha_blocking_test.R
+                echo "=== Testing ACLED OAuth with Enhanced Logging ==="
+                echo "This test follows ACLED's exact OAuth documentation"
+                Rscript tmp/test_acled_oauth.R
 
             - name: Run R monitoring script
               uses: nick-fields/retry@v3

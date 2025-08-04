@@ -50,46 +50,25 @@ raw <- function() {
   logger$log_debug(paste("Username format check - length:", nchar(username), "contains @:", grepl("@", username)))
   logger$log_debug(paste("Password format check - length:", nchar(password)))
 
-  # OAuth authentication with attempted IP block bypass techniques
-  logger$log_debug("Starting OAuth authentication for ACLED with advanced CloudFlare bypass")
+  # OAuth authentication following ACLED's exact documentation
+  logger$log_debug("Starting OAuth authentication for ACLED following official documentation")
   access_token <- NULL
-  max_retries <- 5 # Increase retries for CloudFlare
+  max_retries <- 3 # Reduced retries since we know CloudFlare is the issue
 
   for (attempt in 1:max_retries) {
     if (attempt > 1) {
-      # Much longer delays for CloudFlare - wait 5-15 minutes between attempts
-      delay_minutes <- stats$runif(1, 5, 15)
-      logger$log_debug(paste("OAuth retry attempt", attempt, "of", max_retries, "- waiting", round(delay_minutes, 1), "minutes"))
-      Sys.sleep(delay_minutes * 60)
-    } else {
-      # Initial delay
-      Sys.sleep(stats$runif(1, 1, 3))
+      # Short delay between attempts
+      delay_seconds <- stats$runif(1, 2, 5)
+      logger$log_debug(paste("OAuth retry attempt", attempt, "of", max_retries, "- waiting", round(delay_seconds, 1), "seconds"))
+      Sys.sleep(delay_seconds)
     }
 
     auth_success <- tryCatch(
       {
+        # Follow ACLED's exact OAuth implementation
         resp <- httr2$request("https://acleddata.com/oauth/token") |>
           httr2$req_method("POST") |>
-          httr2$req_headers(
-            # Use a more realistic browser User-Agent
-            "User-Agent" = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-            "Content-Type" = "application/x-www-form-urlencoded",
-            # Add browser-like headers to bypass CloudFlare
-            "Accept" = "application/json, text/plain, */*",
-            "Accept-Language" = "en-US,en;q=0.9",
-            "Accept-Encoding" = "gzip, deflate, br",
-            "Cache-Control" = "no-cache",
-            "Pragma" = "no-cache",
-            "Sec-Fetch-Dest" = "empty",
-            "Sec-Fetch-Mode" = "cors",
-            "Sec-Fetch-Site" = "same-origin",
-            "X-Requested-With" = "XMLHttpRequest",
-            # Additional CloudFlare bypass headers
-            "Referer" = "https://acleddata.com/",
-            "Origin" = "https://acleddata.com",
-            "Connection" = "keep-alive",
-            "Upgrade-Insecure-Requests" = "1"
-          ) |>
+          httr2$req_headers("Content-Type" = "application/x-www-form-urlencoded") |>
           httr2$req_body_form(
             username = username,
             password = password,
@@ -105,6 +84,7 @@ raw <- function() {
           if (!is.null(resp_json$access_token)) {
             access_token <<- resp_json$access_token
             logger$log_debug("Successfully obtained OAuth token")
+            logger$log_debug(paste("Token expires in:", resp_json$expires_in %||% "unknown", "seconds"))
             TRUE
           } else {
             logger$log_warn("OAuth response missing access_token")
@@ -127,7 +107,19 @@ raw <- function() {
               logger$log_debug(paste("Response body (first 200 chars):", substr(response_body, 1, 200)))
 
               if (grepl("text/html", content_type, ignore.case = TRUE)) {
-                logger$log_warn("OAuth endpoint returned HTML instead of JSON - possible redirect or IP block")
+                logger$log_warn("OAuth endpoint returned HTML instead of JSON - CloudFlare blocking detected")
+                if (grepl("Just a moment", response_body, ignore.case = TRUE)) {
+                  logger$log_warn("CloudFlare 'Just a moment' challenge page confirmed")
+                }
+              }
+
+              # Check for CloudFlare headers
+              headers <- httr2$resp_headers(e$resp)
+              if (!is.null(headers$server) && grepl("cloudflare", headers$server, ignore.case = TRUE)) {
+                logger$log_warn("CloudFlare server detected in response headers")
+              }
+              if (!is.null(headers$`cf-ray`)) {
+                logger$log_warn(paste("CloudFlare Ray ID:", headers$`cf-ray`))
               }
             },
             error = function(body_err) {
@@ -146,16 +138,16 @@ raw <- function() {
     }
 
     if (attempt == max_retries) {
-      stop("OAuth authentication failed after all retry attempts. This may be due to IP-based blocking in GitHub Actions environment.", call. = FALSE)
+      stop("OAuth authentication failed after all retry attempts. CloudFlare is blocking GitHub Actions IP ranges. Consider contacting ACLED support for IP whitelisting or using self-hosted runners.", call. = FALSE)
     }
   }
 
   # Now perform data request with the access token
-  logger$log_debug("Requesting ACLED data with OAuth token")
+  logger$log_debug("Requesting ACLED data with Bearer token authentication")
   df_acled <- tryCatch(
     {
       # Add delay before data request
-      Sys.sleep(stats$runif(1, 1, 3))
+      Sys.sleep(stats$runif(1, 1, 2))
 
       resp <- httr2$request(api_base_url) |>
         httr2$req_url_query(
@@ -171,15 +163,9 @@ raw <- function() {
           ),
           limit = 0
         ) |>
-        httr2$req_auth_bearer_token(access_token) |>
         httr2$req_headers(
-          # Use same browser-like User-Agent
-          "User-Agent" = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-          "Accept" = "application/json, text/plain, */*",
-          "Accept-Language" = "en-US,en;q=0.9",
-          "Accept-Encoding" = "gzip, deflate, br",
-          "Cache-Control" = "no-cache",
-          "Pragma" = "no-cache"
+          "Authorization" = paste("Bearer", access_token),
+          "Content-Type" = "application/json"
         ) |>
         httr2$req_perform()
 
