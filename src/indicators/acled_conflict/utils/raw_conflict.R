@@ -3,12 +3,13 @@ box::use(
   dplyr,
   purrr,
   readr,
-  logger
+  logger,
+  jsonlite
 )
 
 box::use(
-  src/utils/get_env,
-  cs = src/utils/cloud_storage
+  src / utils / get_env,
+  cs = src / utils / cloud_storage
 )
 
 # Define the API and token URLs
@@ -44,36 +45,78 @@ raw <- function() {
   } else {
     logger$log_debug("Downloading ACLED data")
 
-    # Perform request with OAuth2 password
-    df_acled <- httr2$request(
-      api_base_url
-    ) |>
-      httr2$req_url_query(
-        fields = paste(
-          "iso",
-          "event_date",
-          "event_type",
-          "latitude",
-          "longitude",
-          "fatalities",
-          "notes",
-          sep = "|"
-        ),
-        limit = 0 # much faster than using limits / pagination sadly
-      ) |>
-      httr2$req_oauth_password(
-        client = httr2$oauth_client("acled", token_url),
-        username = username,
-        password = password
-      ) |>
-      httr2$req_perform() |>
-      httr2$resp_body_json() |>
-      purrr$pluck("data") |>
-      purrr$map(dplyr$as_tibble) |>
-      purrr$list_rbind() |>
-      readr$type_convert(
-        col_types = readr$cols()
-      )
+    # Validate credentials are available
+    if (is.null(username) || is.null(password) || username == "" || password == "") {
+      logger$log_error("ACLED credentials are missing or empty")
+      stop("ACLED credentials are missing or empty", call. = FALSE)
+    }
+
+    # First, get OAuth token manually to match ACLED's specific format requirements
+    logger$log_debug("Requesting OAuth token from ACLED")
+    token_response <- tryCatch(
+      {
+        httr2$request(token_url) |>
+          httr2$req_method("POST") |>
+          httr2$req_headers("Content-Type" = "multipart/form-data") |>
+          httr2$req_body_multipart(
+            username = username,
+            password = password,
+            grant_type = "password",
+            client_id = "acled"
+          ) |>
+          httr2$req_perform() |>
+          httr2$resp_body_json()
+      },
+      error = function(e) {
+        logger$log_error(paste("Failed to get OAuth token:", e$message))
+        stop(paste("Failed to get OAuth token:", e$message), call. = FALSE)
+      }
+    )
+
+    if (is.null(token_response$access_token)) {
+      logger$log_error("OAuth token response did not contain access_token")
+      logger$log_debug(paste("Token response:", jsonlite$toJSON(token_response, auto_unbox = TRUE)))
+      stop("OAuth token response did not contain access_token", call. = FALSE)
+    }
+
+    access_token <- token_response$access_token
+    logger$log_debug("Successfully obtained OAuth token")
+
+    # Now perform request with the access token
+    logger$log_debug("Requesting ACLED data with OAuth token")
+    df_acled <- tryCatch(
+      {
+        httr2$request(
+          api_base_url
+        ) |>
+          httr2$req_url_query(
+            fields = paste(
+              "iso",
+              "event_date",
+              "event_type",
+              "latitude",
+              "longitude",
+              "fatalities",
+              "notes",
+              sep = "|"
+            ),
+            limit = 0 # much faster than using limits / pagination sadly
+          ) |>
+          httr2$req_headers("Authorization" = paste("Bearer", access_token)) |>
+          httr2$req_perform() |>
+          httr2$resp_body_json() |>
+          purrr$pluck("data") |>
+          purrr$map(dplyr$as_tibble) |>
+          purrr$list_rbind() |>
+          readr$type_convert(
+            col_types = readr$cols()
+          )
+      },
+      error = function(e) {
+        logger$log_error(paste("Failed to get ACLED data:", e$message))
+        stop(paste("Failed to get ACLED data:", e$message), call. = FALSE)
+      }
+    )
 
     # since the ACLED API takes significant amount of time to call
     # store the date we've downloaded so we don't continually call it each time
