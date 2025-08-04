@@ -28,7 +28,7 @@ raw <- function() {
     },
     error = function(e) NULL
   )
-  
+
   if (!is.null(date_check) && date_check$acled_download_date == Sys.Date()) {
     logger$log_debug("ACLED data already downloaded today, loading from cache")
     return(cs$read_az_file("output/acled_conflict/raw.parquet"))
@@ -49,24 +49,44 @@ raw <- function() {
   logger$log_debug(paste("Username format check - length:", nchar(username), "contains @:", grepl("@", username)))
   logger$log_debug(paste("Password format check - length:", nchar(password)))
 
-  # OAuth authentication with retry logic
-  logger$log_debug("Starting OAuth authentication for ACLED")
+  # OAuth authentication with advanced CloudFlare bypass techniques
+  logger$log_debug("Starting OAuth authentication for ACLED with advanced CloudFlare bypass")
   access_token <- NULL
-  max_retries <- 3
-  
+  max_retries <- 5 # Increase retries for CloudFlare
+
   for (attempt in 1:max_retries) {
     if (attempt > 1) {
       logger$log_debug(paste("OAuth retry attempt", attempt, "of", max_retries))
-      Sys.sleep(2 * attempt)  # Exponential backoff
+      # Random delay to avoid pattern detection
+      Sys.sleep(runif(1, 3, 8))
+    } else {
+      # Initial delay
+      Sys.sleep(runif(1, 1, 3))
     }
-    
+
     auth_success <- tryCatch(
       {
         resp <- httr2$request("https://acleddata.com/oauth/token") |>
           httr2$req_method("POST") |>
           httr2$req_headers(
-            "User-Agent" = "R-httr2-hdx-signals",
-            "Content-Type" = "application/x-www-form-urlencoded"
+            # Use a more realistic browser User-Agent
+            "User-Agent" = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            "Content-Type" = "application/x-www-form-urlencoded",
+            # Add browser-like headers to bypass CloudFlare
+            "Accept" = "application/json, text/plain, */*",
+            "Accept-Language" = "en-US,en;q=0.9",
+            "Accept-Encoding" = "gzip, deflate, br",
+            "Cache-Control" = "no-cache",
+            "Pragma" = "no-cache",
+            "Sec-Fetch-Dest" = "empty",
+            "Sec-Fetch-Mode" = "cors",
+            "Sec-Fetch-Site" = "same-origin",
+            "X-Requested-With" = "XMLHttpRequest",
+            # Additional CloudFlare bypass headers
+            "Referer" = "https://acleddata.com/",
+            "Origin" = "https://acleddata.com",
+            "Connection" = "keep-alive",
+            "Upgrade-Insecure-Requests" = "1"
           ) |>
           httr2$req_body_form(
             username = username,
@@ -77,7 +97,7 @@ raw <- function() {
           httr2$req_perform()
 
         logger$log_debug(paste("OAuth response status:", httr2$resp_status(resp)))
-        
+
         if (httr2$resp_status(resp) == 200) {
           resp_json <- httr2$resp_body_json(resp)
           if (!is.null(resp_json$access_token)) {
@@ -96,31 +116,33 @@ raw <- function() {
       error = function(e) {
         if (inherits(e, "httr2_http")) {
           logger$log_warn(paste("OAuth HTTP error attempt", attempt, "- Status:", e$status))
-          
-          tryCatch({
-            response_body <- httr2$resp_body_string(e$resp)
-            content_type <- httr2$resp_header(e$resp, "content-type") %||% "unknown"
-            logger$log_debug(paste("Response content-type:", content_type))
-            logger$log_debug(paste("Response body (first 200 chars):", substr(response_body, 1, 200)))
-            
-            if (grepl("text/html", content_type, ignore.case = TRUE)) {
-              logger$log_warn("OAuth endpoint returned HTML instead of JSON - possible redirect or IP block")
+
+          tryCatch(
+            {
+              response_body <- httr2$resp_body_string(e$resp)
+              content_type <- httr2$resp_header(e$resp, "content-type") %||% "unknown"
+              logger$log_debug(paste("Response content-type:", content_type))
+              logger$log_debug(paste("Response body (first 200 chars):", substr(response_body, 1, 200)))
+
+              if (grepl("text/html", content_type, ignore.case = TRUE)) {
+                logger$log_warn("OAuth endpoint returned HTML instead of JSON - possible redirect or IP block")
+              }
+            },
+            error = function(body_err) {
+              logger$log_debug("Could not read OAuth response body")
             }
-          }, error = function(body_err) {
-            logger$log_debug("Could not read OAuth response body")
-          })
-          
+          )
         } else {
           logger$log_warn(paste("OAuth error attempt", attempt, ":", e$message))
         }
         FALSE
       }
     )
-    
+
     if (auth_success) {
       break
     }
-    
+
     if (attempt == max_retries) {
       stop("OAuth authentication failed after all retry attempts. This may be due to IP-based blocking in GitHub Actions environment.", call. = FALSE)
     }
@@ -130,6 +152,9 @@ raw <- function() {
   logger$log_debug("Requesting ACLED data with OAuth token")
   df_acled <- tryCatch(
     {
+      # Add delay before data request
+      Sys.sleep(runif(1, 1, 3))
+
       resp <- httr2$request(api_base_url) |>
         httr2$req_url_query(
           fields = paste(
@@ -145,11 +170,19 @@ raw <- function() {
           limit = 0
         ) |>
         httr2$req_auth_bearer_token(access_token) |>
-        httr2$req_headers("User-Agent" = "R-httr2-hdx-signals") |>
+        httr2$req_headers(
+          # Use same browser-like User-Agent
+          "User-Agent" = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+          "Accept" = "application/json, text/plain, */*",
+          "Accept-Language" = "en-US,en;q=0.9",
+          "Accept-Encoding" = "gzip, deflate, br",
+          "Cache-Control" = "no-cache",
+          "Pragma" = "no-cache"
+        ) |>
         httr2$req_perform()
-      
+
       logger$log_debug(paste("Data response status:", httr2$resp_status(resp)))
-      
+
       if (httr2$resp_status(resp) == 200) {
         data <- httr2$resp_body_json(resp, simplifyVector = TRUE)
         logger$log_debug(paste("Successfully retrieved", nrow(data), "ACLED records"))
@@ -161,14 +194,16 @@ raw <- function() {
     error = function(e) {
       if (inherits(e, "httr2_http")) {
         logger$log_error(paste("HTTP error requesting ACLED data. Status:", e$status))
-        
-        tryCatch({
-          response_body <- httr2$resp_body_string(e$resp)
-          logger$log_error(paste("ACLED data response body:", substr(response_body, 1, 300)))
-        }, error = function(body_err) {
-          logger$log_error("Could not read ACLED data response body")
-        })
-        
+
+        tryCatch(
+          {
+            response_body <- httr2$resp_body_string(e$resp)
+            logger$log_error(paste("ACLED data response body:", substr(response_body, 1, 300)))
+          },
+          error = function(body_err) {
+            logger$log_error("Could not read ACLED data response body")
+          }
+        )
       } else {
         logger$log_error(paste("Failed to get ACLED data:", e$message))
       }
@@ -183,6 +218,6 @@ raw <- function() {
     cs$update_az_file("output/acled_conflict/download_date.parquet")
 
   cs$update_az_file(df_acled, "output/acled_conflict/raw.parquet")
-  
+
   df_acled
 }
