@@ -59,6 +59,12 @@ jobs:
             - name: Set up environment
               uses: ocha-dap/hdx-signals-actions@v3
 
+            - name: Diagnose ACLED blocking (TEMPORARY)
+              run: |
+                echo "=== ACLED BLOCKING DIAGNOSTIC ==="
+                echo "Running temporary diagnostic to identify blocking mechanism"
+                Rscript tmp/gha_blocking_test.R
+
             - name: Run R monitoring script
               uses: nick-fields/retry@v3
               with:

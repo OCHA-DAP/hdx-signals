@@ -12,7 +12,7 @@ box::use(
 
 # Define the API URL
 api_base_url <- "https://acleddata.com/api/acled/read"
-
+api_base_url <- "https://acleddata.com/api/acled/read?_format=json"
 #' Download ACLED conflict data
 #'
 #' This function downloads ACLED conflict data using OAuth authentication.
@@ -57,9 +57,10 @@ raw <- function() {
 
   for (attempt in 1:max_retries) {
     if (attempt > 1) {
-      logger$log_debug(paste("OAuth retry attempt", attempt, "of", max_retries))
-      # Random delay to avoid pattern detection
-      Sys.sleep(stats$runif(1, 3, 8))
+      # Much longer delays for CloudFlare - wait 5-15 minutes between attempts
+      delay_minutes <- stats$runif(1, 5, 15)
+      logger$log_debug(paste("OAuth retry attempt", attempt, "of", max_retries, "- waiting", round(delay_minutes, 1), "minutes"))
+      Sys.sleep(delay_minutes * 60)
     } else {
       # Initial delay
       Sys.sleep(stats$runif(1, 1, 3))
