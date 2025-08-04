@@ -57,12 +57,16 @@ raw <- function() {
 
     # First, get OAuth token manually to match ACLED's specific format requirements
     logger$log_debug("Requesting OAuth token from ACLED")
+    
+    # Add a small delay to avoid potential rate limiting
+    Sys.sleep(1)
+    
     token_response <- tryCatch(
       {
         # Try form-urlencoded format as shown in ACLED's Python example
         resp <- httr2$request(token_url) |>
           httr2$req_method("POST") |>
-          httr2$req_headers("Content-Type" = "application/x-www-form-urlencoded") |>
+          httr2$req_headers("User-Agent" = "R-httr2-hdx-signals") |>
           httr2$req_body_form(
             username = username,
             password = password,
@@ -81,7 +85,15 @@ raw <- function() {
         # Try to capture more details about the error
         if (inherits(e, "httr2_http")) {
           logger$log_error(paste("HTTP error getting OAuth token. Status:", e$status))
-          logger$log_error(paste("Response body:", httr2$resp_body_string(e$resp)))
+          
+          # Always try to get the response body to see what ACLED is returning
+          tryCatch({
+            response_body <- httr2$resp_body_string(e$resp)
+            logger$log_error(paste("Response body:", response_body))
+          }, error = function(body_err) {
+            logger$log_error("Could not read response body")
+          })
+          
         } else {
           logger$log_error(paste("Failed to get OAuth token:", e$message))
         }
