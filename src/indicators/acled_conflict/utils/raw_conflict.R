@@ -51,24 +51,40 @@ raw <- function() {
       stop("ACLED credentials are missing or empty", call. = FALSE)
     }
 
+    # Log credential format for debugging (without exposing actual values)
+    logger$log_debug(paste("Username format check - length:", nchar(username), "contains @:", grepl("@", username)))
+    logger$log_debug(paste("Password format check - length:", nchar(password)))
+
     # First, get OAuth token manually to match ACLED's specific format requirements
     logger$log_debug("Requesting OAuth token from ACLED")
     token_response <- tryCatch(
       {
-        httr2$request(token_url) |>
+        # Try form-urlencoded format as shown in ACLED's Python example
+        resp <- httr2$request(token_url) |>
           httr2$req_method("POST") |>
-          httr2$req_headers("Content-Type" = "multipart/form-data") |>
-          httr2$req_body_multipart(
+          httr2$req_headers("Content-Type" = "application/x-www-form-urlencoded") |>
+          httr2$req_body_form(
             username = username,
             password = password,
             grant_type = "password",
             client_id = "acled"
           ) |>
-          httr2$req_perform() |>
-          httr2$resp_body_json()
+          httr2$req_perform()
+
+        # Log response details for debugging
+        logger$log_debug(paste("Token response status:", httr2$resp_status(resp)))
+        logger$log_debug(paste("Token response headers:", paste(names(httr2$resp_headers(resp)), collapse = ", ")))
+
+        httr2$resp_body_json(resp)
       },
       error = function(e) {
-        logger$log_error(paste("Failed to get OAuth token:", e$message))
+        # Try to capture more details about the error
+        if (inherits(e, "httr2_http")) {
+          logger$log_error(paste("HTTP error getting OAuth token. Status:", e$status))
+          logger$log_error(paste("Response body:", httr2$resp_body_string(e$resp)))
+        } else {
+          logger$log_error(paste("Failed to get OAuth token:", e$message))
+        }
         stop(paste("Failed to get OAuth token:", e$message), call. = FALSE)
       }
     )
