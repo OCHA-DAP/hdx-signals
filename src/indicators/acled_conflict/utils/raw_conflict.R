@@ -1,7 +1,8 @@
 box::use(
   httr2,
   dplyr,
-  logger
+  logger,
+  stats
 )
 
 box::use(
@@ -49,7 +50,7 @@ raw <- function() {
   logger$log_debug(paste("Username format check - length:", nchar(username), "contains @:", grepl("@", username)))
   logger$log_debug(paste("Password format check - length:", nchar(password)))
 
-  # OAuth authentication with advanced CloudFlare bypass techniques
+  # OAuth authentication with attempted IP block bypass techniques
   logger$log_debug("Starting OAuth authentication for ACLED with advanced CloudFlare bypass")
   access_token <- NULL
   max_retries <- 5 # Increase retries for CloudFlare
@@ -58,10 +59,10 @@ raw <- function() {
     if (attempt > 1) {
       logger$log_debug(paste("OAuth retry attempt", attempt, "of", max_retries))
       # Random delay to avoid pattern detection
-      Sys.sleep(runif(1, 3, 8))
+      Sys.sleep(stats$runif(1, 3, 8))
     } else {
       # Initial delay
-      Sys.sleep(runif(1, 1, 3))
+      Sys.sleep(stats$runif(1, 1, 3))
     }
 
     auth_success <- tryCatch(
@@ -153,7 +154,7 @@ raw <- function() {
   df_acled <- tryCatch(
     {
       # Add delay before data request
-      Sys.sleep(runif(1, 1, 3))
+      Sys.sleep(stats$runif(1, 1, 3))
 
       resp <- httr2$request(api_base_url) |>
         httr2$req_url_query(
