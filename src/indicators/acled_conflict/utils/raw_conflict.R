@@ -1,10 +1,7 @@
 box::use(
   httr2,
   dplyr,
-  purrr,
-  readr,
-  logger,
-  jsonlite
+  logger
 )
 
 box::use(
@@ -12,61 +9,65 @@ box::use(
   cs = src / utils / cloud_storage
 )
 
-# Define the API and token URLs
-api_base_url <- "https://acleddata.com/api/acled/read?_format=json"
-token_url <- "https://acleddata.com/oauth/token"
-# Get credentials from environment variables
-username <- get_env$get_env("ACLED_USERNAME")
-password <- get_env$get_env("ACLED_PASSWORD")
+# Define the API URL
+api_base_url <- "https://acleddata.com/api/acled/read"
 
-
-#' Download raw conflict data
+#' Download ACLED conflict data
 #'
-#' Downloads raw conflict data from the ACLED API. Uses the ACLED API,
-#' which requires the `ACLED_EMAIL_ADDRESS` and `ACLED_ACCESS_KEY` environment
-#' variables. No longer uses the `{acled.api}` package as the downloads were
-#' unsuccessful, so instead directly using `{httr2}` and the API endpoint.
+#' This function downloads ACLED conflict data using OAuth authentication.
+#' It includes retry logic to handle potential GitHub Actions issues.
 #'
-#' The downloaded data is stored on the Azure blob so we don't have to make multiple calls to
-#' the ACLED API in a single day. To reduce the size of the returned data, only
-#' relevant event types are returned and the only columns returned are the
-#' numeric ISO codes, geocoordinates of the event, date of the event,
-#' number of fatalities, and notes describing the event.
+#' @return A data frame containing ACLED conflict data
 #'
 #' @export
 raw <- function() {
-  # first we check that we haven't already downloaded ACLED data today, and if we
-  # have, just use that raw data. Also checks that `HS_FIRST_RUN` values match
-  date_check <- cs$read_az_file("output/acled_conflict/download_date.parquet")
+  # Check if we already downloaded data today
+  date_check <- tryCatch(
+    {
+      cs$read_az_file("output/acled_conflict/download_date.parquet")
+    },
+    error = function(e) NULL
+  )
+  
+  if (!is.null(date_check) && date_check$acled_download_date == Sys.Date()) {
+    logger$log_debug("ACLED data already downloaded today, loading from cache")
+    return(cs$read_az_file("output/acled_conflict/raw.parquet"))
+  }
 
-  if (date_check$acled_download_date == Sys.Date()) {
-    logger$log_debug("ACLED data already downloaded today. Using existing raw.parquet file on Azure")
-    cs$read_az_file("output/acled_conflict/raw.parquet")
-  } else {
-    logger$log_debug("Downloading ACLED data")
+  logger$log_debug("Downloading ACLED data")
 
-    # Validate credentials are available
-    if (is.null(username) || is.null(password) || username == "" || password == "") {
-      logger$log_error("ACLED credentials are missing or empty")
-      stop("ACLED credentials are missing or empty", call. = FALSE)
+  # Get credentials
+  username <- get_env$get_env("ACLED_USERNAME")
+  password <- get_env$get_env("ACLED_PASSWORD")
+
+  if (is.null(username) || is.null(password) || username == "" || password == "") {
+    logger$log_error("ACLED credentials are missing or empty")
+    stop("ACLED credentials are missing or empty", call. = FALSE)
+  }
+
+  # Log credential format for debugging (without exposing actual values)
+  logger$log_debug(paste("Username format check - length:", nchar(username), "contains @:", grepl("@", username)))
+  logger$log_debug(paste("Password format check - length:", nchar(password)))
+
+  # OAuth authentication with retry logic
+  logger$log_debug("Starting OAuth authentication for ACLED")
+  access_token <- NULL
+  max_retries <- 3
+  
+  for (attempt in 1:max_retries) {
+    if (attempt > 1) {
+      logger$log_debug(paste("OAuth retry attempt", attempt, "of", max_retries))
+      Sys.sleep(2 * attempt)  # Exponential backoff
     }
-
-    # Log credential format for debugging (without exposing actual values)
-    logger$log_debug(paste("Username format check - length:", nchar(username), "contains @:", grepl("@", username)))
-    logger$log_debug(paste("Password format check - length:", nchar(password)))
-
-    # First, get OAuth token manually to match ACLED's specific format requirements
-    logger$log_debug("Requesting OAuth token from ACLED")
     
-    # Add a small delay to avoid potential rate limiting
-    Sys.sleep(1)
-    
-    token_response <- tryCatch(
+    auth_success <- tryCatch(
       {
-        # Try form-urlencoded format as shown in ACLED's Python example
-        resp <- httr2$request(token_url) |>
+        resp <- httr2$request("https://acleddata.com/oauth/token") |>
           httr2$req_method("POST") |>
-          httr2$req_headers("User-Agent" = "R-httr2-hdx-signals") |>
+          httr2$req_headers(
+            "User-Agent" = "R-httr2-hdx-signals",
+            "Content-Type" = "application/x-www-form-urlencoded"
+          ) |>
           httr2$req_body_form(
             username = username,
             password = password,
@@ -75,86 +76,113 @@ raw <- function() {
           ) |>
           httr2$req_perform()
 
-        # Log response details for debugging
-        logger$log_debug(paste("Token response status:", httr2$resp_status(resp)))
-        logger$log_debug(paste("Token response headers:", paste(names(httr2$resp_headers(resp)), collapse = ", ")))
-
-        httr2$resp_body_json(resp)
+        logger$log_debug(paste("OAuth response status:", httr2$resp_status(resp)))
+        
+        if (httr2$resp_status(resp) == 200) {
+          resp_json <- httr2$resp_body_json(resp)
+          if (!is.null(resp_json$access_token)) {
+            access_token <<- resp_json$access_token
+            logger$log_debug("Successfully obtained OAuth token")
+            TRUE
+          } else {
+            logger$log_warn("OAuth response missing access_token")
+            FALSE
+          }
+        } else {
+          logger$log_warn(paste("OAuth failed with status:", httr2$resp_status(resp)))
+          FALSE
+        }
       },
       error = function(e) {
-        # Try to capture more details about the error
         if (inherits(e, "httr2_http")) {
-          logger$log_error(paste("HTTP error getting OAuth token. Status:", e$status))
+          logger$log_warn(paste("OAuth HTTP error attempt", attempt, "- Status:", e$status))
           
-          # Always try to get the response body to see what ACLED is returning
           tryCatch({
             response_body <- httr2$resp_body_string(e$resp)
-            logger$log_error(paste("Response body:", response_body))
+            content_type <- httr2$resp_header(e$resp, "content-type") %||% "unknown"
+            logger$log_debug(paste("Response content-type:", content_type))
+            logger$log_debug(paste("Response body (first 200 chars):", substr(response_body, 1, 200)))
+            
+            if (grepl("text/html", content_type, ignore.case = TRUE)) {
+              logger$log_warn("OAuth endpoint returned HTML instead of JSON - possible redirect or IP block")
+            }
           }, error = function(body_err) {
-            logger$log_error("Could not read response body")
+            logger$log_debug("Could not read OAuth response body")
           })
           
         } else {
-          logger$log_error(paste("Failed to get OAuth token:", e$message))
+          logger$log_warn(paste("OAuth error attempt", attempt, ":", e$message))
         }
-        stop(paste("Failed to get OAuth token:", e$message), call. = FALSE)
+        FALSE
       }
     )
-
-    if (is.null(token_response$access_token)) {
-      logger$log_error("OAuth token response did not contain access_token")
-      logger$log_debug(paste("Token response:", jsonlite$toJSON(token_response, auto_unbox = TRUE)))
-      stop("OAuth token response did not contain access_token", call. = FALSE)
+    
+    if (auth_success) {
+      break
     }
-
-    access_token <- token_response$access_token
-    logger$log_debug("Successfully obtained OAuth token")
-
-    # Now perform request with the access token
-    logger$log_debug("Requesting ACLED data with OAuth token")
-    df_acled <- tryCatch(
-      {
-        httr2$request(
-          api_base_url
-        ) |>
-          httr2$req_url_query(
-            fields = paste(
-              "iso",
-              "event_date",
-              "event_type",
-              "latitude",
-              "longitude",
-              "fatalities",
-              "notes",
-              sep = "|"
-            ),
-            limit = 0 # much faster than using limits / pagination sadly
-          ) |>
-          httr2$req_headers("Authorization" = paste("Bearer", access_token)) |>
-          httr2$req_perform() |>
-          httr2$resp_body_json() |>
-          purrr$pluck("data") |>
-          purrr$map(dplyr$as_tibble) |>
-          purrr$list_rbind() |>
-          readr$type_convert(
-            col_types = readr$cols()
-          )
-      },
-      error = function(e) {
-        logger$log_error(paste("Failed to get ACLED data:", e$message))
-        stop(paste("Failed to get ACLED data:", e$message), call. = FALSE)
-      }
-    )
-
-    # since the ACLED API takes significant amount of time to call
-    # store the date we've downloaded so we don't continually call it each time
-    # on the same day
-    dplyr$tibble(
-      acled_download_date = Sys.Date()
-    ) |>
-      cs$update_az_file("output/acled_conflict/download_date.parquet")
-
-    cs$update_az_file(df_acled, "output/acled_conflict/raw.parquet")
-    df_acled
+    
+    if (attempt == max_retries) {
+      stop("OAuth authentication failed after all retry attempts. This may be due to IP-based blocking in GitHub Actions environment.", call. = FALSE)
+    }
   }
+
+  # Now perform data request with the access token
+  logger$log_debug("Requesting ACLED data with OAuth token")
+  df_acled <- tryCatch(
+    {
+      resp <- httr2$request(api_base_url) |>
+        httr2$req_url_query(
+          fields = paste(
+            "iso",
+            "event_date",
+            "event_type",
+            "latitude",
+            "longitude",
+            "fatalities",
+            "notes",
+            sep = "|"
+          ),
+          limit = 0
+        ) |>
+        httr2$req_auth_bearer_token(access_token) |>
+        httr2$req_headers("User-Agent" = "R-httr2-hdx-signals") |>
+        httr2$req_perform()
+      
+      logger$log_debug(paste("Data response status:", httr2$resp_status(resp)))
+      
+      if (httr2$resp_status(resp) == 200) {
+        data <- httr2$resp_body_json(resp, simplifyVector = TRUE)
+        logger$log_debug(paste("Successfully retrieved", nrow(data), "ACLED records"))
+        data
+      } else {
+        stop(paste("Data request failed with status:", httr2$resp_status(resp)))
+      }
+    },
+    error = function(e) {
+      if (inherits(e, "httr2_http")) {
+        logger$log_error(paste("HTTP error requesting ACLED data. Status:", e$status))
+        
+        tryCatch({
+          response_body <- httr2$resp_body_string(e$resp)
+          logger$log_error(paste("ACLED data response body:", substr(response_body, 1, 300)))
+        }, error = function(body_err) {
+          logger$log_error("Could not read ACLED data response body")
+        })
+        
+      } else {
+        logger$log_error(paste("Failed to get ACLED data:", e$message))
+      }
+      stop(paste("Failed to get ACLED data:", e$message), call. = FALSE)
+    }
+  )
+
+  # Store the download date and data
+  dplyr$tibble(
+    acled_download_date = Sys.Date()
+  ) |>
+    cs$update_az_file("output/acled_conflict/download_date.parquet")
+
+  cs$update_az_file(df_acled, "output/acled_conflict/raw.parquet")
+  
+  df_acled
 }
