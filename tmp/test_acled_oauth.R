@@ -21,6 +21,41 @@ test_acled_oauth <- function() {
     logger$log_info("R version: %s", R.version.string)
     logger$log_info("Time: %s", Sys.time())
 
+    # Get IP address information for ACLED support
+    logger$log_info("=== IP ADDRESS INFORMATION FOR ACLED SUPPORT ===")
+    tryCatch(
+        {
+            # Try to get public IP using httr2 (same method our OAuth will use)
+            ip_response <- httr2$request("https://api.ipify.org") |>
+                httr2$req_perform()
+            if (httr2$resp_status(ip_response) == 200) {
+                public_ip <- httr2$resp_body_string(ip_response)
+                logger$log_info("🌐 Public IP Address: %s", public_ip)
+            } else {
+                logger$log_warn("Could not determine public IP address")
+            }
+        },
+        error = function(e) {
+            logger$log_warn("Failed to get IP address: %s", e$message)
+        }
+    )
+
+    # Try alternative IP service
+    tryCatch(
+        {
+            ip_response2 <- httr2$request("https://httpbin.org/ip") |>
+                httr2$req_perform()
+            if (httr2$resp_status(ip_response2) == 200) {
+                ip_data <- httr2$resp_body_json(ip_response2)
+                logger$log_info("🌐 Public IP (httpbin): %s", ip_data$origin)
+            }
+        },
+        error = function(e) {
+            logger$log_debug("Alternative IP service failed: %s", e$message)
+        }
+    )
+    logger$log_info("================================================")
+
     # Get credentials
     username <- Sys.getenv("ACLED_USERNAME")
     password <- Sys.getenv("ACLED_PASSWORD")

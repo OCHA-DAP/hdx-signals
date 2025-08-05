@@ -59,6 +59,29 @@ jobs:
             - name: Set up environment
               uses: ocha-dap/hdx-signals-actions@v3
 
+            - name: Get GitHub Actions IP Address
+              run: |
+                echo "=== GITHUB ACTIONS IP ADDRESS DETECTION ==="
+                echo "This information is to understand what IP address GHA is using"
+                echo ""
+                echo "Public IP (via ipify.org):"
+                curl -s https://api.ipify.org || echo "Failed to get IP from ipify.org"
+                echo ""
+                echo "Public IP (via httpbin.org):"
+                curl -s https://httpbin.org/ip | jq -r '.origin' || echo "Failed to get IP from httpbin.org"
+                echo ""
+                echo "Public IP (via ifconfig.me):"
+                curl -s https://ifconfig.me || echo "Failed to get IP from ifconfig.me"
+                echo ""
+                echo "Network interface information:"
+                ip addr show || ifconfig || echo "Could not get network interface info"
+                echo ""
+                echo "DNS resolution for acleddata.com:"
+                nslookup acleddata.com || dig acleddata.com || echo "Could not resolve acleddata.com"
+                echo ""
+                echo "Trace route to acleddata.com (first 5 hops):"
+                traceroute -m 5 acleddata.com || echo "Traceroute not available"
+
             - name: Test ACLED OAuth Authentication
               run: |
                 echo "=== Testing ACLED OAuth with Enhanced Logging ==="
