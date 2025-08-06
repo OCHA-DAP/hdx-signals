@@ -6,12 +6,12 @@ box::use(
 )
 
 box::use(
-  src/signals/delete_campaign_content,
-  src/signals/template_data,
-  src/email/mailchimp/campaigns,
-  cs = src/utils/cloud_storage,
-  src/utils/get_env,
-  src/utils/push_hdx
+  src / signals / delete_campaign_content,
+  src / signals / template_data,
+  src / email / mailchimp / campaigns,
+  cs = src / utils / cloud_storage,
+  src / utils / get_env,
+  src / utils / push_hdx
 )
 
 #' Triage signals generated automatically
@@ -150,17 +150,18 @@ preview_campaign_urls <- function(campaign_urls) {
 #' @param fn_signals File name to the signals data
 #' @param test Whether or not the signals were in the test folder.
 approve_signals <- function(df, fn_signals, test, indicator_id) {
-  user_command  <- "init"
+  user_command <- "init"
   while (!(user_command %in% c("APPROVE", "DELETE", "ARCHIVE", "DO_NOTHING"))) {
     # send message to user
     msg <- glue$glue(
-                     "Tell us what you want to do with the following commands:
+      "Tell us what you want to do with the following commands:
 
                       APPROVE: Send campaigns{if (test) '' else ' and add to `output/signals.parquet`'}
                       DELETE: Delete the campaign content and `output/{indicator_id}/signals.parquet` file
                       so you can recreate later.
                       ARCHIVE: Delete the email campaign, but move the alert to `output/signals.parquet`
-                      DO_NOTHING: Do nothing, so you can decide later.")
+                      DO_NOTHING: Do nothing, so you can decide later."
+    )
     print(msg)
     user_command <- Sys.getenv("USER_COMMAND")
     if (user_command == "") {
@@ -233,15 +234,17 @@ dispatch_signals <- function(df, fn_signals, test, user_command) {
       cs$update_az_file(df[0, ], fn_signals)
     } else {
       if (user_command == "ARCHIVE") {
-        action_selected <= "archived"
+        action_selected <- "archived"
       } else {
         action_selected <- "sent"
       }
       new_input <- readline(
-        paste0(glue$glue("You have {action_selected} your test campaigns. If you want to delete the\n"),
-               "test campaigns file ",
-               fn_signals,
-               " and its content from Mailchimp, type DELETE.")
+        paste0(
+          glue$glue("You have {action_selected} your test campaigns. If you want to delete the\n"),
+          "test campaigns file ",
+          fn_signals,
+          " and its content from Mailchimp, type DELETE."
+        )
       )
       if (new_input == "DELETE") {
         df_deleted <- delete_campaign_content$delete_campaign_content(df)
