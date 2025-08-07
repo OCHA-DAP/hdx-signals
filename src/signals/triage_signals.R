@@ -11,7 +11,8 @@ box::use(
   src/email/mailchimp/campaigns,
   cs = src/utils/cloud_storage,
   src/utils/get_env,
-  src/utils/push_hdx
+  src/utils/push_hdx,
+  src/utils/hs_triage_test
 )
 
 #' Triage signals generated automatically
@@ -194,7 +195,10 @@ approve_signals <- function(df, fn_signals, test, indicator_id) {
 #' @param fn_signals File name to the signals data
 #' @param test Whether or not the signals were in the test folder.
 #' @param user_command command provided by the user
-dispatch_signals <- function(df, fn_signals, test, user_command) {
+dispatch_signals <- function(df, fn_signals, test=NULL, user_command) {
+  if(is.null(test)){
+    test <- hs_triage_test$hs_triage_test()
+  }
   if (user_command %in% c("APPROVE", "ARCHIVE")) {
     if (user_command == "ARCHIVE") {
       # delete the email template and campaigns, but not the content
@@ -210,7 +214,7 @@ dispatch_signals <- function(df, fn_signals, test, user_command) {
           stop(e) # re-throw if it's a different error
         }
       })
-      
+
       # ensure ALL campaign ID columns are empty (including archive campaigns)
       df <- dplyr$mutate(
         df,
