@@ -198,10 +198,20 @@ dispatch_signals <- function(df, fn_signals, test, user_command) {
   if (user_command %in% c("APPROVE", "ARCHIVE")) {
     if (user_command == "ARCHIVE") {
       # delete the email template and campaigns, but not the content
-      delete_campaign_content$delete_campaign_content(
-        df = dplyr$select(df, dplyr$ends_with("_email"))
-      )
-      # ensure the email columns are empty
+      # wrap in try-catch to handle already-sent campaigns that can't be deleted
+      tryCatch({
+        delete_campaign_content$delete_campaign_content(
+          df = dplyr$select(df, dplyr$ends_with("_email"))
+        )
+      }, error = function(e) {
+        if (stringr$str_detect(e$message, "404|Not Found")) {
+          message("Some campaigns were already sent and cannot be deleted from Mailchimp. Proceeding with archival...")
+        } else {
+          stop(e) # re-throw if it's a different error
+        }
+      })
+      
+      # ensure ALL campaign ID columns are empty (including archive campaigns)
       df <- dplyr$mutate(
         df,
         dplyr$across(
@@ -221,7 +231,10 @@ dispatch_signals <- function(df, fn_signals, test, user_command) {
       df
     )
 
-    send_signals(df)
+    # only send signals for APPROVE, not ARCHIVE
+    if (user_command == "APPROVE") {
+      send_signals(df)
+    }
 
     # if not testing, move everything to the core signals dataset
     if (!test) {
