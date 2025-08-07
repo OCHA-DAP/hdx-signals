@@ -160,12 +160,22 @@ slack_build_workflow_status <- function(indicator_id) {
   }
   # Get today's scheduled runs from the main branch
   df_runs$date <- as.Date(df_runs$workflow_runs.created_at)
+  if(indicator_id=="idmc_displacement_conflict"){
   df_sel <- dplyr$filter(
     df_runs,
     workflow_runs.event %in% c( "schedule","workflow_dispatch"),
     workflow_runs.head_branch == "main",
     date == Sys.Date()
   )
+  }
+  else{
+    df_sel <- dplyr$filter(
+      df_runs,
+      workflow_runs.event %in% c( "schedule"),
+      workflow_runs.head_branch == "main",
+      date == Sys.Date()
+    )
+  }
   if(nrow(df_sel)==2){
     df_sel_filt <- df_sel |>
       dplyr$filter(workflow_runs.conclusion=="success")
@@ -179,11 +189,7 @@ slack_build_workflow_status <- function(indicator_id) {
       paste0(":large_green_circle: ", indicator_id, ": Successful update \n")
     }
     # If no scheduled runs happened off of main today
-  } else if (nrow(df_sel) == 0) {
-    paste0(":heavy_minus_sign: ", indicator_id, ": No scheduled update \n")
-  } else {
-    paste0(":red_circle: ", indicator_id, ": More than one scheduled run today \n")
-  }
+
   }
 
   if (nrow(df_sel) == 1) {
@@ -197,7 +203,8 @@ slack_build_workflow_status <- function(indicator_id) {
       paste0(":large_green_circle: ", indicator_id, ": Successful update \n")
     }
     # If no scheduled runs happened off of main today
-  } else if (nrow(df_sel) == 0) {
+  }
+  else if (nrow(df_sel) == 0) {
     paste0(":heavy_minus_sign: ", indicator_id, ": No scheduled update \n")
   } else {
     paste0(":red_circle: ", indicator_id, ": More than one scheduled run today \n")
@@ -218,7 +225,7 @@ n_signals <- 0
 # Needs to have at least 1 character for the Slack API
 signals <- " "
 dry_run <- hs_dry_run$hs_dry_run()
-
+dry_run <- FALSE
 for (ind in indicators) {
   logger$log_info(paste0("Checking GitHub Actions status for ", ind, "..."))
   workflow_status <- slack_build_workflow_status(ind)
