@@ -176,7 +176,7 @@ slack_build_workflow_status <- function(indicator_id) {
       date == Sys.Date()
     )
   }
-  if(nrow(df_sel)==2){
+  if(nrow(df_sel)>1){
     df_sel_filt <- df_sel |>
       dplyr$filter(workflow_runs.conclusion=="success")
     status <- df_sel_filt$workflow_runs.conclusion
@@ -188,8 +188,7 @@ slack_build_workflow_status <- function(indicator_id) {
     } else if (status == "success") {
       paste0(":large_green_circle: ", indicator_id, ": Successful update \n")
     }
-    # If no scheduled runs happened off of main today
-
+    # If no scheduled runs happened off of main toda
   }
 
   if (nrow(df_sel) == 1) {
@@ -204,11 +203,12 @@ slack_build_workflow_status <- function(indicator_id) {
     }
     # If no scheduled runs happened off of main today
   }
-  else if (nrow(df_sel) == 0) {
+   if (nrow(df_sel) == 0) {
     paste0(":heavy_minus_sign: ", indicator_id, ": No scheduled update \n")
-  } else {
-    paste0(":red_circle: ", indicator_id, ": More than one scheduled run today \n")
   }
+  # else {
+  #   paste0(":red_circle: ", indicator_id, ": More than one scheduled run today \n")
+  # }
 }
 
 # Get the indicator ids of all workflows
