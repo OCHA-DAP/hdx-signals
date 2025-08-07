@@ -196,9 +196,7 @@ approve_signals <- function(df, fn_signals, test, indicator_id) {
 #' @param test Whether or not the signals were in the test folder.
 #' @param user_command command provided by the user
 dispatch_signals <- function(df, fn_signals, test=NULL, user_command) {
-  if(is.null(test)){
-    test <- hs_triage_test$hs_triage_test()
-  }
+
   if (user_command %in% c("APPROVE", "ARCHIVE")) {
     if (user_command == "ARCHIVE") {
       # delete the email template and campaigns, but not the content
