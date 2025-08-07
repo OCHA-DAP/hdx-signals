@@ -233,7 +233,7 @@ dispatch_signals <- function(df, fn_signals, test, user_command) {
       cs$update_az_file(df[0, ], fn_signals)
     } else {
       if (user_command == "ARCHIVE") {
-        action_selected <= "archived"
+        action_selected <- "archived"
       } else {
         action_selected <- "sent"
       }
