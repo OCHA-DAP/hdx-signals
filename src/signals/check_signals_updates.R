@@ -162,10 +162,29 @@ slack_build_workflow_status <- function(indicator_id) {
   df_runs$date <- as.Date(df_runs$workflow_runs.created_at)
   df_sel <- dplyr$filter(
     df_runs,
-    workflow_runs.event == "schedule",
+    workflow_runs.event %in% c( "schedule","workflow_dispatch"),
     workflow_runs.head_branch == "main",
     date == Sys.Date()
   )
+  if(nrow(df_sel)==2){
+    df_sel_filt <- df_sel |>
+      dplyr$filter(workflow_runs.conclusion=="success")
+    status <- df_sel_filt$workflow_runs.conclusion
+    if (status == "failure") {
+      base_logs_url <- "https://github.com/ocha-dap/hdx-signals/actions/runs/"
+      run_id <- df_sel_filt$workflow_runs.id
+      run_link <- paste0(base_logs_url, run_id)
+      paste0(":red_circle: ", indicator_id, ": Failed update - <", run_link, "|Check logs> \n")
+    } else if (status == "success") {
+      paste0(":large_green_circle: ", indicator_id, ": Successful update \n")
+    }
+    # If no scheduled runs happened off of main today
+  } else if (nrow(df_sel) == 0) {
+    paste0(":heavy_minus_sign: ", indicator_id, ": No scheduled update \n")
+  } else {
+    paste0(":red_circle: ", indicator_id, ": More than one scheduled run today \n")
+  }
+  }
 
   if (nrow(df_sel) == 1) {
     status <- df_sel$workflow_runs.conclusion
