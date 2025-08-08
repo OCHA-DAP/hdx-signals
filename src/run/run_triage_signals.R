@@ -6,5 +6,5 @@ box::use(
 triage_signals$triage_signals(
   indicator_id = get_env$get_env("INDICATOR_ID"),
   n_campaigns = 0,
-  test = get_env$get_env("TEST")
+  test = as.logical(get_env$get_env("TEST"))
 )
