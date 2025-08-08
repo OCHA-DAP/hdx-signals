@@ -84,6 +84,7 @@ jobs:
       USER_COMMAND: ${{ inputs.USER_COMMAND || 'DO_NOTHING' }}
       USER_COMMAND_CONFIRMATION: ${{ inputs.USER_COMMAND_CONFIRMATION || 'I CONFIRM' }}
       HS_ADMIN_NAME: ${{ secrets.HS_ADMIN_NAME }}
+      HS_HDX_BEARER: ${{ secrets.HS_HDX_BEARER }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
