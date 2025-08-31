@@ -1,4 +1,9 @@
 # Changes
+## 0.2.8.0 (31 October 2025)
+
+### Modify ACAPS data update frequency
+
+- Swri
 
 ## 0.2.7.0 (31 July 2025)
 
