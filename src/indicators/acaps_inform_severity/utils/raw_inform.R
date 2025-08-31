@@ -21,13 +21,16 @@ box::use(
 #' @export
 raw <- function() {
   date_check <- cs$read_az_file("output/acaps_inform_severity/download_date.parquet")
-  if (Sys.Date() > date_check$acaps_download_date) {
-    df <- cs$read_az_file("output/acaps_inform_severity/raw.parquet")
-    if (max(df$date) < as.Date(format(Sys.Date(), "%Y-%m-01"))) {
-      df <- get_acaps_severity()
-      # upload full data frame to cloud
-      cs$update_az_file(df, "output/acaps_inform_severity/raw.parquet")
-    }
+  # We download ACAPS data once a week as it takes a while to download all months
+  if (Sys.Date() > date_check$acaps_download_date + 6) {
+    df <- get_acaps_severity()
+    # update download date
+    dplyr$tibble(
+      acaps_download_date = Sys.Date()
+    ) |>
+      cs$update_az_file("output/acaps_inform_severity/download_date.parquet")
+    # upload full data frame to cloud
+    cs$update_az_file(df, "output/acaps_inform_severity/raw.parquet")
   } else {
     df <- cs$read_az_file("output/acaps_inform_severity/raw.parquet")
   }
