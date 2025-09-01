@@ -1,9 +1,16 @@
 # Changes
-## 0.2.8.0 (31 October 2025)
+
+## 0.2.9.0 (1 September 2025)
+
+### Modify campaign template
+
+- Modify campaign template adding additional disclaimer
+
+## 0.2.8.0 (31 August 2025)
 
 ### Modify ACAPS data update frequency
 
-- Swri
+- Modify ACAPS data update frequency to weekly from monthly
 
 ## 0.2.7.0 (31 July 2025)
 
