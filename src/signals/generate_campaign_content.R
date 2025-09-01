@@ -6,8 +6,8 @@ box::use(
 )
 
 box::use(
-  src/signals/delete_campaign_content,
-  src/signals/template_data,
+  src / signals / delete_campaign_content,
+  src / signals / template_data,
 )
 
 #' Generate campaigns content data frame
@@ -136,11 +136,15 @@ generate_summary <- function(
     df_raw,
     ind_module,
     empty = FALSE) {
+  aug25_exception <- Sys.getenv("AUG25_EXCEPT", unset = "FALSE") == "TRUE"
+
   generate_section(
     df_alerts = df_alerts,
     df_wrangled = df_wrangled,
     df_raw = df_raw,
-    fn = ind_module[["summary"]],
+    fn = function(df_alerts, df_wrangled, df_raw) {
+      ind_module[["summary"]](df_alerts, df_wrangled, df_raw)
+    },
     fn_name = "summary",
     null_return = dplyr$tibble(
       summary_long = NA_character_,

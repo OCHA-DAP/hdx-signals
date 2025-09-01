@@ -8,11 +8,11 @@ box::use(
 )
 
 box::use(
-  src/images/create_images,
-  src/images/plots/caption,
-  src/images/maps/sf_adm0,
-  src/images/maps/geom_cities,
-  src/images/maps/map_theme
+  src / images / create_images,
+  src / images / plots / caption,
+  src / images / maps / sf_adm0,
+  src / images / maps / geom_cities,
+  src / images / maps / map_theme
 )
 
 #' Map food insecurity
@@ -60,6 +60,12 @@ map <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
 #' @returns Plot of cholera for that wrangled data
 food_insecurity_map <- function(df_wrangled, df_raw, title, date) {
   iso3 <- unique(df_wrangled$iso3)
+
+  # Temporary fix: Skip map generation for Palestine due to GDAL/PROJ issues
+  if (iso3 == "PSE") {
+    return(NULL)
+  }
+
   caption <- caption$caption(
     indicator_id = "ipc_food_insecurity",
     iso3 = unique(df_wrangled$iso3),
@@ -109,7 +115,9 @@ food_insecurity_map <- function(df_wrangled, df_raw, title, date) {
 
   # make sure we catch for the few instances where no map is available via API
   # use NULL because `is.null()` is not vectorized, so easier than `NA`
-  if (is.null(sf_ipc)) return(NULL)
+  if (is.null(sf_ipc)) {
+    return(NULL)
+  }
 
   # if points available, separate those out
   geom_type <- sf$st_geometry_type(sf_ipc)
@@ -207,10 +215,10 @@ food_insecurity_map <- function(df_wrangled, df_raw, title, date) {
 #' Produce labels for the LAC product
 lac_labels <- function() {
   dplyr$tribble(
-    ~X,        ~Y,   ~poly_label,
-    -90.6285,  14.83991,   "Guatemala",
+    ~X, ~Y, ~poly_label,
+    -90.6285, 14.83991, "Guatemala",
     -88.773358, 13.679912, "El Salvador",
-    -87.215936, 14.565515,    "Honduras"
+    -87.215936, 14.565515, "Honduras"
   ) |>
     sf$st_as_sf(coords = c("X", "Y"), crs = 4326)
 }

@@ -80,29 +80,46 @@ alert <- function(df_wrangled) {
     )
 
   # now bring in the URLs closest matching
-  ch_df <- ch_scraper()
+  aug25_exception <- Sys.getenv("AUG25_EXCEPT", unset = "FALSE") == "TRUE"
 
-  # join back to alerts data frame to get CH links
-  dplyr$cross_join(
-    df_alerts,
-    ch_df
-  ) |>
-    dplyr$group_by(iso3, date) |>
-    dplyr$mutate(pub_date_diff = abs(pub_date - date)) |> # find nearest pubs to alert date
-    dplyr$filter(
-      pub_date_diff == min(pub_date_diff, as.difftime(Inf, units = "days")),
-      !stringr$str_detect(ch_url, "Tchad") | analysis_id == 68596035, # specific displaced pop pub for Chad
-      analysis_id != 68596035 | stringr$str_detect(ch_url, "Tchad")
+  if (!aug25_exception) {
+    ch_df <- ch_scraper()
+
+    # join back to alerts data frame to get CH links
+    df_alerts <- dplyr$cross_join(
+      df_alerts,
+      ch_df
     ) |>
-    dplyr$ungroup() |>
-    dplyr$mutate(
-      ch = stringr$str_detect(link, "cadre-harmonise"),
-      link = ifelse( # bring the specific CH links into the link variable
-        ch,
-        ch_url,
-        link
+      dplyr$group_by(iso3, date) |>
+      dplyr$mutate(pub_date_diff = abs(pub_date - date)) |> # find nearest pubs to alert date
+      dplyr$filter(
+        pub_date_diff == min(pub_date_diff, as.difftime(Inf, units = "days")),
+        !stringr$str_detect(ch_url, "Tchad") | analysis_id == 68596035, # specific displaced pop pub for Chad
+        analysis_id != 68596035 | stringr$str_detect(ch_url, "Tchad")
+      ) |>
+      dplyr$ungroup() |>
+      dplyr$mutate(
+        ch = stringr$str_detect(link, "cadre-harmonise"),
+        link = ifelse( # bring the specific CH links into the link variable
+          ch,
+          ch_url,
+          link
+        )
       )
-    )
+  }
+  if (aug25_exception) {
+    df_alerts <- df_alerts |>
+      dplyr$filter(
+        analysis_id == 82890135 |
+          analysis_id == "82890135"
+      ) |>
+      dplyr$mutate(
+        link = "https://www.ipcinfo.org/ipc-country-analysis/details-map/en/c/1159596/?iso3=PSE",
+        ch = FALSE # Add ch column for summary function
+      )
+  }
+
+  return(df_alerts)
 }
 
 #' Scrapes the CH landing page for publications

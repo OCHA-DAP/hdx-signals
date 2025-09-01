@@ -7,9 +7,9 @@ box::use(
 )
 
 box::use(
-  src/utils/ai_summarizer,
-  src/utils/get_prompts,
-  src/utils/parse_pdf
+  src / utils / ai_summarizer,
+  src / utils / get_prompts,
+  src / utils / parse_pdf
 )
 
 #' Generate summary for food insecurity alerts
@@ -18,11 +18,12 @@ box::use(
 #'
 #' @export
 summary <- function(df_alerts, df_wrangled, df_raw) {
+  aug25_exception <- Sys.getenv("AUG25_EXCEPT", unset = "FALSE") == "TRUE"
   prompts <- get_prompts$get_prompts(
     indicator_id = "ipc_food_insecurity",
     prompts = "short"
   )
-
+  f_use <- ifelse(aug25_exception, ipc_ch_summarizer_exception, ipc_ch_summarizer)
   df_alerts |>
     dplyr$mutate(
       summary_long = purrr$pmap_chr(
@@ -31,7 +32,7 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
           ch = ch,
           location = location
         ),
-        .f = ipc_ch_summarizer
+        .f = f_use
       ),
       summary_short = ifelse(
         is.na(summary_long),
@@ -96,6 +97,24 @@ ipc_ch_summarizer <- function(url, ch, location) {
 
   text_summarizer(txt = txt, org = org)
 }
+
+#' @export
+ipc_ch_summarizer_exception <- function(url = NULL, ch = NULL, location = NULL) {
+  txt <- "Key results
+    As of 15 August 2025, Famine (IPC Phase 5)—with reasonable evidence—is confirmed in Gaza Governorate. After 22 months of relentless conflict, over half a million people in the Gaza Strip are facing catastrophic conditions characterised by starvation, destitution and death. Another 1.07 million people (54 percent) are in Emergency (IPC Phase 4), and 396,000 people (20 percent) are in Crisis (IPC Phase 3). Between mid-August and the end of September 2025, conditions are expected to further worsen with Famine projected to expand to Deir al-Balah and Khan Younis. Nearly a third of the population (641,000 people) are expected to face catastrophic conditions (IPC Phase 5), while those in Emergency (IPC Phase 4) will likely rise to 1.14 million (58 percent). Acute malnutrition is projected to continue worsening rapidly. Through June 2026, at least 132,000 children under five are expected to suffer from acute malnutrition—double the IPC estimates from May 2025. This includes over 41,000 severe cases of children at heightened risk of death. Nearly 55,500 malnourished pregnant and breastfeeding women will require urgent nutrition response. Conditions in North Gaza Governorate are estimated to be as severe—or worse—than in Gaza Governorate. However, limited data prevents IPC classification of this area, highlighting the urgent need for access and comprehensive assessments. Rafah Governorate was not analysed given indications that it is largely depopulated.
+
+    Recommendations & next steps
+    Famine is a race against time, and every effort by all actors counts. Immediate and decisive actions will save lives and alleviate suffering.
+    Immediate and sustained cessation of hostilities To prevent further loss of life and famine from spreading further, an immediate ceasefire and putting an end to the conflict is critical.
+    Guarantee unconditional and safe humanitarian access Safe, stable, and unhindered access must be guaranteed through all entry points, in full respect of international humanitarian law, allowing for lifesaving assistance and essential services to reach all people in need across the Gaza Strip. Access must also be granted urgently to allow for a comprehensive humanitarian assessment, in particular in North Gaza Governorate.
+    Immediate, large-scale, unobstructed multi-sector humanitarian assistance is needed to avert further destitution, starvation and death. This includes the provision of food, nutrition, health, WASH, shelter, fuel, cooking gas and food production inputs, while safeguarding humanitarian principles. This is also the only way to stop the interception of aid trucks by desperate populations.
+    Protect civilians and critical infrastructure Ensure the safety of civilians and humanitarian personnel across the Gaza Strip. Protect and restore critical infrastructure essential for survival and for the functioning of food, health and WASH systems.
+    Restore commercial flows at scale, market systems, essential services, and local food production."
+
+  org <- "ipc"
+  text_summarizer(txt = txt, org = org)
+}
+
 
 #' Scrapes IPC URL for information
 #'

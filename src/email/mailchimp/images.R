@@ -10,10 +10,10 @@ box::use(
 )
 
 box::use(
-  src/email/mailchimp/base_api,
-  src/email/mailchimp/folders,
-  src/utils/hs_local,
-  src/utils/temp_file
+  src / email / mailchimp / base_api,
+  src / email / mailchimp / folders,
+  src / utils / hs_local,
+  src / utils / temp_file
 )
 
 #' Upload image to Mailchimp
@@ -34,21 +34,6 @@ box::use(
 #'
 #' @export
 mc_upload_image <- function(fp, name, folder, preview = FALSE) {
-  encoded_image <- encode_image(fp)
-  # upload image to Mailchimp
-  req <- base_api$mc_api(lists_api = FALSE) |>
-    httr2$req_url_path_append(
-      "file-manager",
-      "files"
-    ) |>
-    httr2$req_body_json(
-      data = list(
-        file_data = encoded_image,
-        name = name,
-        folder_id = folders$mc_file_folder_id(folder)
-      )
-    )
-
   if (hs_local$hs_local()) {
     # print out the image and return the dry run
     data.frame(
@@ -59,6 +44,21 @@ mc_upload_image <- function(fp, name, folder, preview = FALSE) {
       )
     )
   } else {
+    encoded_image <- encode_image(fp)
+    # upload image to Mailchimp
+    req <- base_api$mc_api(lists_api = FALSE) |>
+      httr2$req_url_path_append(
+        "file-manager",
+        "files"
+      ) |>
+      httr2$req_body_json(
+        data = list(
+          file_data = encoded_image,
+          name = name,
+          folder_id = folders$mc_file_folder_id(folder)
+        )
+      )
+
     # upload the image and extract URL
     resp <- req |>
       httr2$req_perform() |>
@@ -129,7 +129,8 @@ mc_upload_table <- function(table, name, folder, height, width, crop = FALSE, pr
 #' library(ggplot2)
 #'
 #'
-#' p <- ggplot(mtcars) + geom_point(aes(x = mpg, y = wt))
+#' p <- ggplot(mtcars) +
+#'   geom_point(aes(x = mpg, y = wt))
 #' mc_upload_plot(p, "test.jpg")
 #'
 #' @export

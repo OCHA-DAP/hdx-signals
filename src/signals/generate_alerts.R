@@ -4,9 +4,9 @@ box::use(
 )
 
 box::use(
-  src/signals/filter_alerts,
-  src/signals/template_data,
-  src/utils/add_locations_metadata
+  src / signals / filter_alerts,
+  src / signals / template_data,
+  src / utils / add_locations_metadata
 )
 
 #' Generate and upload alerts data frame
@@ -35,13 +35,21 @@ box::use(
 #'
 #' @export
 generate_alerts <- function(df, indicator_id) {
-  df |>
+  aug25_exception <- Sys.getenv("AUG25_EXCEPT", unset = "FALSE") == "TRUE"
+
+  df_ret <- df |>
     validate_alerts() |>
     add_alert_level() |>
-    add_locations_metadata$add_locations_metadata() |>
-    filter_alerts$filter_alerts(
-      indicator_id = indicator_id
-    )
+    add_locations_metadata$add_locations_metadata()
+  if (!aug25_exception) {
+    df_ret |>
+      filter_alerts$filter_alerts(
+        indicator_id = indicator_id
+      )
+  }
+  if (aug25_exception) {
+    df_ret
+  }
 }
 
 #' Validates that alerts have the correct names and typing when passed in.
