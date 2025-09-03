@@ -4,7 +4,8 @@ box::use(
   tidyr,
   stringr,
   rvest,
-  httr
+  httr,
+  logger
 )
 
 #' Creates food insecurity alerts dataset
@@ -114,6 +115,11 @@ alert <- function(df_wrangled) {
 ch_scraper <- function() {
   # extract list of publications from the CH landing page
   url <- "https://www.ipcinfo.org/cadre-harmonise"
+
+  user_agent <- Sys.getenv("IPC_USER_AGENT")
+  debug_print <- stringr$str_sub(user_agent,start = 1,end = 2)
+  logger$log_info("ch scraper,Start of user agent code: " , debug_print)
+
   session <- rvest$session(url, httr$user_agent(Sys.getenv("IPC_USER_AGENT")))
 
   # Read the page
