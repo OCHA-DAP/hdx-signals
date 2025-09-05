@@ -117,8 +117,8 @@ ch_scraper <- function() {
   url <- "https://www.ipcinfo.org/cadre-harmonise"
 
   user_agent <- Sys.getenv("IPC_USER_AGENT")
-  debug_print <- stringr$str_sub(user_agent,start = 1,end = 2)
-  logger$log_info("ch scraper,Start of user agent code: " , debug_print)
+  debug_print <- stringr$str_sub(user_agent, start = 1, end = 2)
+  logger$log_info("ch scraper,Start of user agent code: ", debug_print)
 
   session <- rvest$session(url, httr$user_agent(Sys.getenv("IPC_USER_AGENT")))
 
