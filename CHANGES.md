@@ -1,5 +1,11 @@
 # Changes
 
+## 0.2.10.0 (5 September 2025)
+
+### Fix IPC scraping
+
+- Add user agent to scrape IPC information
+
 ## 0.2.9.0 (1 September 2025)
 
 ### Modify campaign template
