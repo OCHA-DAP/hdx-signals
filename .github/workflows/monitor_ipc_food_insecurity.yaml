@@ -47,6 +47,7 @@ jobs:
           DSCI_AZ_BLOB_DEV_SAS_WRITE: ${{ secrets.DSCI_AZ_BLOB_DEV_SAS_WRITE }}
           DSCI_AZ_BLOB_PROD_SAS_WRITE: ${{ secrets.DSCI_AZ_BLOB_PROD_SAS_WRITE }}
           MAILCHIMP_API_KEY: ${{ secrets.MAILCHIMP_API_KEY }}
+          IPC_USER_AGENT: ${{ secrets.IPC_USER_AGENT }}
           HS_LOCAL: ${{ inputs.HS_LOCAL || 'FALSE' }}
           HS_FIRST_RUN: ${{ inputs.HS_FIRST_RUN || 'FALSE' }}
           HS_DRY_RUN: ${{ inputs.HS_DRY_RUN || 'FALSE' }}

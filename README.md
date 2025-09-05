@@ -2,7 +2,7 @@
 
 HDX Signals is a product of [HDX](https://data.humdata.org) that monitors key
 datasets and generates automated emails when significant, negative changes
-are detected. 
+are detected.  
 
 Find all code and technical documentation behind HDX Signals in
 this repository. Read more about HDX Signals and sign up to receive signals direct
