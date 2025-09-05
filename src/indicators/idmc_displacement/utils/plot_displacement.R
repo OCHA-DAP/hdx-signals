@@ -57,7 +57,6 @@ displacement_ts <- function(df_wrangled, df_alerts, title, date, alerts = NA) {
     indicator_id = "idmc_displacement_conflict", # same details as disaster
     iso3 = unique(df_wrangled$iso3)
   )
-
   # filter displacement data to the latest day of the week, since we are plotting the
   # weekly rolling sum
   df_plot <- dplyr$filter(
