@@ -216,7 +216,7 @@ signals_path <- function(indicator_id, dry_run) {
 container_prod <- function() {
   container_endpoint_prod <- az$blob_endpoint(
     endpoint = azure_endpoint_url("blob", "prod"),
-    sas = get_env$get_env("DSCI_AZ_BLOB_PROD_SAS_WRITE")
+    sas = get_env$get_env("DSCI_AZ_BLOB_PROD_SIGNALS_SAS_WRITE")
   )
   az$blob_container(
     endpoint = container_endpoint_prod,
