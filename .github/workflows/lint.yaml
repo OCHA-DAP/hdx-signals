@@ -18,8 +18,6 @@ jobs:
           HS_SURVEY_LINK: ${{ secrets.HS_SURVEY_LINK}}
           IPC_API_KEY: ${{ secrets.IPC_API_KEY }}
           IDMC_API: ${{ secrets.IDMC_API }}
-          ACLED_ACCESS_KEY: ${{ secrets.ACLED_ACCESS_KEY }}
-          ACLED_EMAIL_ADDRESS: ${{ secrets.ACLED_EMAIL_ADDRESS }}
           CERF_CHOLERA_DATA: ${{ secrets.CERF_CHOLERA_DATA }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           DSCI_AZ_BLOB_DEV_SAS_WRITE: ${{ secrets.DSCI_AZ_BLOB_DEV_SAS_WRITE }}

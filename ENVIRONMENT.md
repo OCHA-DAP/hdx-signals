@@ -89,7 +89,7 @@ primarily to provide access to APIs.
 
 ### `acled_conflict`
 
-- `ACLED_ACCESS_KEY`: ACLED access key provisioned upon request to ACLED.
+- `ACLED_PASSWORD`: ACLED password to access ACLED data.
 - `ACLED_EMAIL_ADDRESS`: Email address used to register the key.
 
 ### `idmc_displacement_{shock}`
