@@ -1,4 +1,4 @@
-install.packages("ggplot2")
+# install.packages("ggplot2")
 
 box::use(
   src/utils/cloud_storage,
@@ -29,9 +29,15 @@ box::use(
 )
 
 # Global variables
-START_DATE <- as.Date("2024-09-10")
-END_DATE <- as.Date("2025-09-10")
+YEARS_BACK <- 3
 N_TOP_LOCATIONS <- 3
+
+# Date Auto-detection YYYY-MM-DD
+END_DATE <- as.Date(Sys.Date())
+START_DATE <- as.Date(format(Sys.Date() - lubridate$years(YEARS_BACK), "%Y-%m-%d"))
+
+end_year <- lubridate$year(END_DATE)
+start_year <- lubridate$year(START_DATE)
 
 ####### DATA #######
 
@@ -65,6 +71,7 @@ df <- cloud_storage$read_az_file(
   container='prod'
 )
 
+
 # Extract year
 df <- dplyr$mutate(df, year = as.numeric(format(df$date, "%Y")))
 
@@ -74,57 +81,90 @@ first_alert <- df %>%
   dplyr$group_by(indicator_name) %>%
   dplyr$summarise(first_year = min(year), .groups = "drop")
 
+# For filter
+effective_start_year <- max(max(first_alert$first_year), start_year)
+
 # Frequency distribution
 df_summary_filtered <- df %>%
   dplyr$group_by(indicator_name, year) %>%
   dplyr$summarise(freq = dplyr$n(), .groups = "drop") %>%
-  dplyr$filter(year >= max(first_alert$first_year))
+  dplyr$filter(year >= effective_start_year & year <= end_year)
 
-# Relative frequencies
-df_summary_pct <- df_summary_filtered %>%
+
+df_dist <- df_summary_filtered %>%
   dplyr$group_by(indicator_name) %>%
-  dplyr$summarise(freq_total = sum(freq), .groups = "drop") %>%
-  dplyr$mutate(percent = 100 * freq_total / sum(freq_total))
+  dplyr$summarise(total_freq = sum(freq), .groups = "drop")
 
-# Plot 1 - Relative frequency of indicators from 2020 (aggregated)
-p1 <- gg$ggplot(df_summary_pct, gg$aes(x = reorder(indicator_name, -percent), y = percent, fill = indicator_name)) +
+indicator_labels <- c(
+  "conflict" = "Conflict",
+  "agricultural_hotspots" = "Agricultural\nHotspots",
+  "displacement_conflict" = "Conflict\nDisplacement",
+  "inform_severity" = "Inform Severity\nIndex",
+  "displacement_disaster" = "Disaster\nDisplacement",
+  "food_insecurity" = "Food\nInsecurity",
+  "market_monitor" = "Market\nMonitor",
+  "cholera" = "Cholera"
+)
+
+# Plot 1 - Absolute frequency distributions
+p1 <- gg$ggplot(df_dist, gg$aes(x = reorder(indicator_name, -total_freq), y = total_freq, fill = indicator_name)) +
   gg$geom_col() +
-  gg$labs(title = "Relative frequency of indicators (from 2020)", x = "Indicator", y = "Percentage (%)") +
+  gg$labs(title = "Sum of indicators frequency", x = "Indicator", y = "Total Frequency") +
+  gg$scale_x_discrete(labels = function(x) indicator_labels[x]) +
   gg$theme_minimal() +
-  gg$theme(axis.text.x = gg$element_text(angle = 45, hjust = 1),
+  gg$theme(axis.text.x = gg$element_text(angle = 0, hjust = 0.5, vjust = 1, size = 9),
+           axis.text.y = gg$element_text(size = 9),
+           axis.title.x = gg$element_text(size = 12, margin = gg$margin(t = 15, b = 0)),
+           axis.title.y = gg$element_text(size = 12, margin = gg$margin(r = 15, l = 0)),
+           plot.title = gg$element_text(hjust = 0.5, size = 14, face = "bold"),
            legend.position = "none")
-
-# print(p1)
 
 # Plot 2 - Frequency distribution for each indicator per year
 p2 <- gg$ggplot(df_summary_filtered, gg$aes(x = factor(year), y = freq, fill = indicator_name)) +
   gg$geom_col() +
-  gg$facet_wrap(~ indicator_name, scales = "free_y", ncol = 4, nrow = 2) +
+  gg$facet_wrap(~ indicator_name,
+                labeller = gg$labeller(indicator_name = indicator_labels),
+                scales = "free_y", ncol = 4, nrow = 2) +
   gg$labs(x = "Year", y = "Frequency", fill = "Indicator") +
   gg$theme_minimal() +
-  gg$theme(
-    axis.text.x = gg$element_text(angle = 45, hjust = 1),
-    legend.position = "none"
-  )
+  gg$theme(axis.text.x = gg$element_text(angle = 45, hjust = 1, size = 9),
+           axis.text.y = gg$element_text(size = 9),
+           axis.title.x = gg$element_text(size = 12, margin = gg$margin(t = 15, b = 0)),
+           axis.title.y = gg$element_text(size = 12, margin = gg$margin(r = 15, l = 0)),
+           strip.text = gg$element_text(size = 11, face = "bold"),
+           legend.position = "none")
 
-# print(p2)
+# Combine Plots
+combined_plot <- cowplot::ggdraw() +
+  cowplot::draw_plot(p1, x = 0.05, y = 0.55, width = 0.9, height = 0.35) +
+  cowplot::draw_plot(p2, x = 0.05, y = 0.1, width = 0.9, height = 0.35)
+
+# Title
+title_plot <- cowplot::ggdraw() +
+  cowplot::draw_label(paste0("Indicator Frequency Distribution (", effective_start_year, "-", end_year, ")"),
+                      x = 0.5, y = 0.5,
+                      size = 14,
+                      fontface = "bold",
+                      hjust = 0.5, vjust = 0.5) +
+  gg$theme(panel.background = gg$element_rect(fill = "white", color = NA),
+           plot.background = gg$element_rect(fill = "white", color = NA))
+
+# resize for margins
+final_plot <- cowplot::plot_grid(title_plot, combined_plot,
+                                 ncol = 1,
+                                 rel_heights = c(0.08, 0.92))
+
+# A4 PDF
+gg$ggsave("indicators_fr_dist.pdf",
+          plot = final_plot,
+          width = 8.27,
+          height = 11.69,
+          units = "in",
+          device = "pdf",
+          useDingbats = FALSE)
 
 
-combined_plot <- cowplot::plot_grid(p1, p2,
-                                    nrow = 2,
-                                    ncol = 1,
-                                    align = "v")
-
-# Save to PNG
-gg$ggsave("indicators_fr_dist.png",
-          plot = combined_plot,
-          width = 8,
-          height = 10,
-          dpi = 300,
-          units = "in")
-
-
-### FOCUS ON THE PAST YEAR ###
+### FOCUS ON THE PAST N YEARS ###
 
 # Filter data for last year
 df_last_year <- df %>%
@@ -204,13 +244,16 @@ plot_conflict_analysis <- function(
     ) +
     gg$scale_y_continuous() +
     gg$scale_x_date(
-      date_labels = "%b %Y",   # mostra mese + anno
-      date_breaks = "1 month"  # tick ogni mese
+      date_labels = "%b %Y",
+      date_breaks = "1 month"
     ) +
     gg$theme_minimal() +
     gg$theme(
-      plot.title = gg$element_text(hjust = 0.5, size = 14, face = "bold"),
-      axis.text.x = gg$element_text(angle = 45, hjust = 1)
+      axis.text.x = gg$element_text(angle = 45, hjust = 1, size = 10),           # X tick labels
+      axis.text.y = gg$element_text(size = 10),                                  # Y tick labels
+      axis.title.x = gg$element_text(size = 12, margin = gg$margin(t = 15, b = 0)),  # X axis title spacing
+      axis.title.y = gg$element_text(size = 12, margin = gg$margin(r = 15, l = 0)),  # Y axis title spacing
+      plot.title = gg$element_text(hjust = 0.5, size = 14, face = "bold")       # Centered bold title
     )
 
 
@@ -299,10 +342,17 @@ plot_displacement_analysis <- function(
       x = x_label,
       y = y_label
     ) +
+    gg$scale_x_date(
+      date_labels = "%b %Y",
+      date_breaks = "1 month"
+    ) +
     gg$theme_minimal() +
     gg$theme(
-      plot.title = gg$element_text(hjust = 0.5, size = 14, face = "bold"),
-      axis.text.x = gg$element_text(angle = 45, hjust = 1)
+      axis.text.x = gg$element_text(angle = 45, hjust = 1, size = 10),           # X tick labels
+      axis.text.y = gg$element_text(size = 10),                                  # Y tick labels
+      axis.title.x = gg$element_text(size = 12, margin = gg$margin(t = 15, b = 0)),  # X axis title spacing
+      axis.title.y = gg$element_text(size = 12, margin = gg$margin(r = 15, l = 0)),  # Y axis title spacing
+      plot.title = gg$element_text(hjust = 0.5, size = 14, face = "bold")       # Centered bold title
     )
 
   # Apply k scaling if requested
@@ -397,14 +447,14 @@ plot_agricultural_hotspot <- function(
         pattern = ifelse(missing, "stripe", "none")
       ),
       color = "white",
-      width = tile_width,  # Fixed width for uniform spacing
+      width = tile_width,
       height = 0.5,
       pattern_fill = "black",
       pattern_density = 0.4,
       pattern_spacing = 0.05
     ) +
     gg$geom_vline(
-      xintercept = agri_dates,  # Convert dates to numeric
+      xintercept = agri_dates,
       color = "red",
       linetype = "dashed",
       alpha = 0.7
@@ -412,11 +462,11 @@ plot_agricultural_hotspot <- function(
     gg$scale_fill_manual(
       values = c("0" = "lightgray", "1" = "orange", "2" = "red"),
       name = "Hotspot level",
-      na.value = "white",  # Missing data appaiono bianchi con strisce
+      na.value = "white",
       labels = c("0" = "No hotspot", "1" = "Moderate", "2" = "Severe")
     ) +
     gg$guides(
-      fill = gg$guide_legend(override.aes = list(pattern = "none"))  # Rimuovi pattern dalla legenda
+      fill = gg$guide_legend(override.aes = list(pattern = "none"))
     ) +
     gg$scale_x_date(
       breaks = agri_complete$month,
@@ -433,11 +483,14 @@ plot_agricultural_hotspot <- function(
     ) +
     gg$theme_minimal() +
     gg$theme(
-      axis.text.y = gg$element_blank(),
-      axis.ticks.y = gg$element_blank(),
-      plot.title = gg$element_text(hjust = 0.5, size = 14, face = "bold"),
-      axis.text.x = gg$element_text(angle = 45, hjust = 1),
-      legend.position = "bottom"
+      axis.text.x = gg$element_text(angle = 45, hjust = 1, size = 10),           # X tick labels
+      axis.text.y = gg$element_blank(),                                          # No Y labels
+      axis.ticks.y = gg$element_blank(),                                         # No Y ticks
+      axis.title.x = gg$element_text(size = 12, margin = gg$margin(t = 15, b = 0)),  # X axis title spacing
+      plot.title = gg$element_text(hjust = 0.5, size = 14, face = "bold"),      # Centered bold title
+      legend.position = "bottom",
+      legend.text = gg$element_text(size = 10),                                  # Legend text size
+      legend.title = gg$element_text(size = 11, face = "bold")                   # Legend title size
     )
 
   return(plot)
@@ -496,8 +549,11 @@ plot_inform_severity <- function(
     ) +
     gg$theme_minimal() +
     gg$theme(
-      plot.title = gg$element_text(hjust = 0.5, size = 14, face = "bold"),
-      axis.text.x = gg$element_text(angle = 45, hjust = 1)
+      axis.text.x = gg$element_text(angle = 45, hjust = 1, size = 10),           # X tick labels
+      axis.text.y = gg$element_text(size = 10),                                  # Y tick labels
+      axis.title.x = gg$element_text(size = 12, margin = gg$margin(t = 15, b = 0)),  # X axis title spacing
+      axis.title.y = gg$element_text(size = 12, margin = gg$margin(r = 15, l = 0)),  # Y axis title spacing
+      plot.title = gg$element_text(hjust = 0.5, size = 14, face = "bold")       # Centered bold title
     )
 
   # Add vertical lines if df_top3 is provided
@@ -863,13 +919,21 @@ plot_market_change <- function(iso3_code, market_wrangle, df_top3, start_date, e
     gg$geom_line() +
     gg$geom_point() +
     gg$geom_hline(yintercept = 0, linetype = "dashed", color = "violet") +
-    gg$labs(title = title,
-            x = "Date",
-            y = "% Change Monthly") +
+    gg$geom_vline(xintercept = market_dates, color = "red", linetype = "dashed", alpha = 0.7) +
+    gg$labs(
+      title = title,
+      x = "Date",
+      y = "% Change Monthly"
+    ) +
     gg$scale_x_date(date_labels = "%b %Y", date_breaks = "1 month") +
     gg$theme_minimal() +
-    gg$theme(axis.text.x = gg$element_text(angle = 45, hjust = 1)) +
-    gg$geom_vline(xintercept = market_dates, color = "red", linetype = "dashed", alpha = 0.7)
+    gg$theme(
+      axis.text.x = gg$element_text(angle = 45, hjust = 1, size = 10),           # X tick labels
+      axis.text.y = gg$element_text(size = 10),                                  # Y tick labels
+      axis.title.x = gg$element_text(size = 12, margin = gg$margin(t = 15, b = 0)),  # X axis title spacing
+      axis.title.y = gg$element_text(size = 12, margin = gg$margin(r = 15, l = 0)),  # Y axis title spacing
+      plot.title = gg$element_text(hjust = 0.5, size = 14, face = "bold")       # Centered bold title
+    )
 
   return(plot)
 }
@@ -921,7 +985,7 @@ for(i in 1:nrow(top3)) {
     date_start = START_DATE,
     date_end = END_DATE,
     displacement_type = "Disaster",
-    title = paste("30-Day Rolling Sum of Disaster-Driven Displacements in", location),
+    title = "30-Day Rolling Sum of Disaster-Driven Displacements",
     x_label = "Date",
     y_label = "30-Day Rolling Sum (k)",
     df_top3 = df_top3
@@ -933,7 +997,7 @@ for(i in 1:nrow(top3)) {
     date_start = START_DATE,
     date_end = END_DATE,
     displacement_type = "Conflict",
-    title = paste("30-Day Rolling Sum of Conflict-Driven Displacements in", location),
+    title = "30-Day Rolling Sum of Conflict-Driven Displacements",
     x_label = "Date",
     y_label = "30-Day Rolling Sum (k)",
     df_top3 = df_top3
@@ -944,7 +1008,7 @@ for(i in 1:nrow(top3)) {
     iso3 = ISO3,
     date_start = START_DATE,
     date_end = END_DATE,
-    title = paste("Monthly Rolling Sum of Conflict Fatalities in", location),
+    title = "Monthly Rolling Sum of Conflict Fatalities",
     x_label = "Date",
     y_label = "Conflict Fatalities (monthly)",
     df_top3 = df_top3
@@ -956,7 +1020,7 @@ for(i in 1:nrow(top3)) {
     iso3_code = ISO3,
     start_date = START_DATE,
     end_date = END_DATE,
-    title = paste("Agricultural Hotspot Timeline in", location)
+    title = "Agricultural Hotspot Timeline"
   )
 
   p5 <- plot_food_insecurity(
@@ -965,7 +1029,7 @@ for(i in 1:nrow(top3)) {
     food_wrangle = food_wrangle,
     start_date = "2020-09-10",
     end_date = END_DATE,
-    title = paste("Food Insecurity Phases in", location, ": Current Data and Projections")
+    title = "Food Insecurity Phases"
   )
 
   p6 <- plot_inform_severity(
@@ -973,7 +1037,7 @@ for(i in 1:nrow(top3)) {
     iso3 = ISO3,
     date_start = START_DATE,
     date_end = END_DATE,
-    title = paste("INFORM Severity Index in", location),
+    title = paste("Inform Severity Index"),
     df_top3 = df_top3
   )
 
@@ -983,27 +1047,47 @@ for(i in 1:nrow(top3)) {
     df_top3 = df_top3,
     start_date = START_DATE,
     end_date = END_DATE,
-    title = paste('Monthly Percentage Basket Cost Change in', location)
+    title = paste('Monthly Percentage Basket Cost Change')
   )
 
+  # Combined plot - simple vertical stacking
   combined_plot <- cowplot$plot_grid(
     p1, p2, p3, p4, p5, p6, p7,
     nrow = 7,
     ncol = 1,
-    align = "v"
+    align = "hv",
+    axis = "tblr"
   )
 
-  # Create filename
-  filename <- paste0(ISO3, "_indicators_past_year.png")
+  # Report Title
+  final_title <- paste0("Signals Indicators in ", location, " (", start_year, "-", end_year, ")")
 
-  # Save combined plot
+  title_plot <- cowplot::ggdraw() +
+    cowplot::draw_label(final_title,
+                        x = 0.5, y = 0.5,
+                        size = 16,
+                        fontface = "bold",
+                        hjust = 0.5, vjust = 0.5) +
+    gg$theme(panel.background = gg$element_rect(fill = "white", color = NA),
+             plot.background = gg$element_rect(fill = "white", color = NA))
+
+  # Final plot with title
+  final_plot <- cowplot::plot_grid(title_plot, combined_plot,
+                                   ncol = 1,
+                                   rel_heights = c(0.05, 0.95))  # Less space for title
+
+  # PDF filename
+  filename <- paste0(ISO3, "_indicators_overview.pdf")
+
+  # Save PDF - optimized for screen viewing
   gg$ggsave(filename,
-            plot = combined_plot,
-            width = 12,
-            height = 20,
-            dpi = 300,
-            units = "in")
+            plot = final_plot,
+            width = 12,                # Wider for better screen viewing
+            height = 24,               # Tall for 7 subplots
+            units = "in",
+            device = "pdf",
+            useDingbats = FALSE)
 
-  cat("Saved:", filename, "\n\n")
+  cat("Saved:", filename, "\n")
 }
 
