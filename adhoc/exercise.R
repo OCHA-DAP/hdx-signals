@@ -26,7 +26,7 @@ box::use(
 
 # Global variables
 years_back <- 3
-# n_top_locations <- 3
+n_top_locations <- 3
 
 # Date Auto-detection YYYY-MM-DD
 end_date <- as.Date(Sys.Date())
