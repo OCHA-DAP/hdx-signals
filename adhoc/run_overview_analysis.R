@@ -26,7 +26,7 @@ box::use(
 
 # Global variables
 years_back <- 3
-n_top_locations <- 6
+n_top_locations <- 3
 
 # Date Auto-detection YYYY-MM-DD
 end_date <- as.Date(Sys.Date())
@@ -1149,7 +1149,7 @@ report_by_country <- function(top3,
 }
 
 
-
+Sys.setlocale("LC_TIME", "C")
 
 plot_signals_overvew_pdf(df_dist,
                          df_summary_filtered,
