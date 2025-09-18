@@ -18,10 +18,8 @@ box::use(
   dplyr,
   gg = ggplot2,
   lubridate,
-  cowplot,
   logger,
-  scales,
-  ggpattern
+  scales
 )
 
 # Global variables
@@ -63,8 +61,8 @@ market_wrangle <- wrangle_market_monitor$wrangle(market_data)
 
 # GET AZURE SIGNALS DATA
 df <- cloud_storage$read_az_file(
-  name='output/signals.parquet',
-  container='prod'
+  name = "output/signals.parquet",
+  container = "prod"
 )
 
 
@@ -117,12 +115,11 @@ plot_indicator_frequency <- function(df_dist, indicator_labels) {
              axis.title.y = gg$element_text(size = 12, margin = gg$margin(r = 15, l = 0)),
              plot.title = gg$element_text(hjust = 0.5, size = 14, face = "bold"),
              legend.position = "none")
-  return(p)
 }
 
 
 # Plot - Frequency distribution for each indicator per year
-plot_indicator_frequency_per_year <- function(df_summary_filtered, indicator_labels) {
+plot_indicator_freq_year <- function(df_summary_filtered, indicator_labels) {
   p <- gg$ggplot(df_summary_filtered, gg$aes(x = factor(year), y = freq, fill = indicator_name)) +
     gg$geom_col() +
     gg$facet_wrap(~ indicator_name,
@@ -136,13 +133,13 @@ plot_indicator_frequency_per_year <- function(df_summary_filtered, indicator_lab
              axis.title.y = gg$element_text(size = 12, margin = gg$margin(r = 15, l = 0)),
              strip.text = gg$element_text(size = 11, face = "bold"),
              legend.position = "none")
-  return(p)
+  p
 }
 
-plot_signals_overvew_pdf <-function(df_dist, df_summary_filtered, indicator_labels, effective_start_year, end_year, save_azure=TRUE, file_type="pdf") {
+plot_signals_overvew_pdf <-function(df_dist, df_summary_filtered, indicator_labels, effective_start_year, end_year, save_azure = TRUE, file_type = "pdf") {
 
   p1 <- plot_indicator_frequency(df_dist, indicator_labels)
-  p2 <- plot_indicator_frequency_per_year(df_summary_filtered, indicator_labels)
+  p2 <- plot_indicator_freq_year(df_summary_filtered, indicator_labels)
 
   # Combine Plots
   combined_plot <- cowplot$ggdraw() +
