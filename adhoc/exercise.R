@@ -792,7 +792,6 @@ plot_food_insecurity <- function(
       dplyr$select(phase, plot_date, percentage, type) |>
       dplyr$arrange(phase, plot_date)
 
-    return(combined_dataset)
   }
 
   # 4. CREATE THE COMBINED DATASET
@@ -897,6 +896,16 @@ plot_food_insecurity <- function(
     )
   }
 
+  vline_layer <- NULL
+  if (length(food_dates) > 0) {
+    vline_layer <- gg$geom_vline(
+      xintercept = food_dates,
+      color = "red",
+      linetype = "dashed",
+      alpha = 0.7
+    )
+  }
+
   # Complete the plot
   p <- p +
     # Add points to highlight data
@@ -930,7 +939,7 @@ plot_food_insecurity <- function(
     ) +
 
     # Vertical lines for food_dates (only if they exist)
-    {if(length(food_dates) > 0) gg$geom_vline(xintercept = food_dates, color = "red", linetype = "dashed", alpha = 0.7)} +
+    vline_layer +
 
     # Clean theme
     gg$theme_minimal() +
@@ -987,8 +996,6 @@ plot_market_change <- function(iso3_code, market_wrangle, df_top3, start_date, e
       axis.title.y = gg$element_text(size = 12, margin = gg$margin(r = 15, l = 0)),  # Y axis title spacing
       plot.title = gg$element_text(hjust = 0.5, size = 14, face = "bold")       # Centered bold title
     )
-
-  return(plot)
 }
 
 
@@ -1003,11 +1010,11 @@ report_by_country <- function(
   food_wrangle,
   infsev_wrangle,
   market_wrangle,
-  save_azure=TRUE,
-  file_type="pdf"
+  save_azure = TRUE,
+  file_type = "pdf"
 ) {
   # Loop through top 3 locations
-  for(i in 1:nrow(top3)) {
+  for (i in seq_len(nrow(top3))) {
 
     # Get current ISO3 and location
     current_iso3 <- top3$iso3[i]
