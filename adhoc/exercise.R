@@ -139,14 +139,14 @@ plot_indicator_freq_year <- function(df_summary_filtered, indicator_labels) {
 }
 
 plot_signals_overvew_pdf <- function(
-    df_dist,
-    df_summary_filtered,
-    indicator_labels,
-    effective_start_year,
-    end_year,
-    save_azure = TRUE,
-    file_type = "pdf"
-    ) {
+  df_dist,
+  df_summary_filtered,
+  indicator_labels,
+  effective_start_year,
+  end_year,
+  save_azure = TRUE,
+  file_type = "pdf"
+) {
 
   p1 <- plot_indicator_frequency(df_dist, indicator_labels)
   p2 <- plot_indicator_freq_year(df_summary_filtered, indicator_labels)
@@ -577,7 +577,7 @@ plot_inform_severity <- function(
     dplyr$arrange(date) |>
     dplyr$group_by(date, iso3) |>
     dplyr$summarise(inform_severity_index = mean(inform_severity_index, na.rm = TRUE),
-                     .groups = 'drop') |>
+                    .groups = "drop") |>
     # Remove any remaining NA values that could cause plotting issues
     dplyr$filter(!is.na(inform_severity_index))
 
@@ -637,9 +637,14 @@ plot_inform_severity <- function(
 
 
 
-plot_food_insecurity <- function(iso3_code, df_top3, food_wrangle, start_date, end_date, title = "Food Insecurity Phases: Current Data and Projections") {
-
-  # require(dplyr)
+plot_food_insecurity <- function(
+  iso3_code,
+  df_top3,
+  food_wrangle,
+  start_date,
+  end_date,
+  title = "Food Insecurity Phases: Current Data and Projections"
+) {
 
   # 1. INITIAL DATA FILTERING
   food_filtered <- df_top3[df_top3$iso3 == iso3_code & df_top3$indicator_name == "food_insecurity", ]
@@ -648,9 +653,9 @@ plot_food_insecurity <- function(iso3_code, df_top3, food_wrangle, start_date, e
   # Filter data for the country and critical phases
   food_wrangle_country_p <- food_wrangle |>
     dplyr$filter(iso3 == iso3_code &
-                    date >= as.Date(start_date) &
-                    date < as.Date(end_date) &
-                    phase %in% c("phase3", "phase4", "phase5"))
+                   date >= as.Date(start_date) &
+                   date < as.Date(end_date) &
+                   phase %in% c("phase3", "phase4", "phase5"))
 
   # Check if data exists
   if (nrow(food_wrangle_country_p) == 0) {
@@ -714,7 +719,7 @@ plot_food_insecurity <- function(iso3_code, df_top3, food_wrangle, start_date, e
           `plot_date-projected` > last_current_date
       ) |>
       dplyr$group_by(`plot_date-projected`) |>
-      dplyr$arrange(desc(date)) |>
+      dplyr$arrange(dplyr$desc(date)) |>
       dplyr$slice(1) |>
       dplyr$ungroup() |>
       dplyr$select(
@@ -740,7 +745,7 @@ plot_food_insecurity <- function(iso3_code, df_top3, food_wrangle, start_date, e
           `plot_date-second_projected` > last_projected_date
       ) |>
       dplyr$group_by(`plot_date-second_projected`) |>
-      dplyr$arrange(desc(date)) |>
+      dplyr$arrange(dplyr$desc(date)) |>
       dplyr$slice(1) |>
       dplyr$ungroup() |>
       dplyr$select(
@@ -760,7 +765,6 @@ plot_food_insecurity <- function(iso3_code, df_top3, food_wrangle, start_date, e
       dplyr$arrange(plot_date) |>
       dplyr$select(plot_date, percentage, type)
 
-    return(final_dataset)
   }
 
   # 3. FUNCTION TO PROCESS ALL PHASES TOGETHER
@@ -988,19 +992,20 @@ plot_market_change <- function(iso3_code, market_wrangle, df_top3, start_date, e
 }
 
 
-report_by_country <- function(top3,
-                              df_top3,
-                              start_date,
-                              end_date,
-                              disp_wrangle,
-                              conflict_wrangle,
-                              agri_wrangle,
-                              food_wrangle,
-                              infsev_wrangle,
-                              market_wrangle,
-                              save_azure=TRUE,
-                              file_type="pdf"
-                              ) {
+report_by_country <- function(
+  top3,
+  df_top3,
+  start_date,
+  end_date,
+  disp_wrangle,
+  conflict_wrangle,
+  agri_wrangle,
+  food_wrangle,
+  infsev_wrangle,
+  market_wrangle,
+  save_azure=TRUE,
+  file_type="pdf"
+) {
   # Loop through top 3 locations
   for(i in 1:nrow(top3)) {
 
