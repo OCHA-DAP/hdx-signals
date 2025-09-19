@@ -19,7 +19,9 @@ box::use(
   gg = ggplot2,
   lubridate,
   logger,
-  scales
+  scales,
+  az = AzureStor,
+  utils
 )
 
 # Global variables
@@ -136,7 +138,15 @@ plot_indicator_freq_year <- function(df_summary_filtered, indicator_labels) {
   p
 }
 
-plot_signals_overvew_pdf <-function(df_dist, df_summary_filtered, indicator_labels, effective_start_year, end_year, save_azure = TRUE, file_type = "pdf") {
+plot_signals_overvew_pdf <- function(
+    df_dist,
+    df_summary_filtered,
+    indicator_labels,
+    effective_start_year,
+    end_year,
+    save_azure = TRUE,
+    file_type = "pdf"
+    ) {
 
   p1 <- plot_indicator_frequency(df_dist, indicator_labels)
   p2 <- plot_indicator_freq_year(df_summary_filtered, indicator_labels)
@@ -175,8 +185,8 @@ plot_signals_overvew_pdf <-function(df_dist, df_summary_filtered, indicator_labe
   # Save plot locally
   gg$ggsave(local_file,
             plot = final_plot,
-            width = ifelse(file_type == "pdf", 8.27, 800/96),   # A4 width in in vs px
-            height = ifelse(file_type == "pdf", 11.69, 600/96), # A4 height in in vs px
+            width = ifelse(file_type == "pdf", 8.27, 800 / 96),   # A4 width in in vs px
+            height = ifelse(file_type == "pdf", 11.69, 600 / 96), # A4 height in in vs px
             units = ifelse(file_type == "pdf", "in", "px"),
             device = file_type,
             useDingbats = FALSE)
@@ -187,10 +197,14 @@ plot_signals_overvew_pdf <-function(df_dist, df_summary_filtered, indicator_labe
     azure_file <- paste0("signals_overview_analysis/signals_overview_", gen_date, "/", file_name)
 
     # Save in Prod
-    cloud_storage$save_to_container(
-      container = "prod",
-      src       = local_file,
-      dest      = azure_file
+    invisible(
+      utils$capture.output(
+        az$upload_blob(
+          container = "prod",
+          src = local_file,
+          dest = azure_file
+        )
+      )
     )
 
     # Remove local file after upload
@@ -267,15 +281,15 @@ for (loc in unique(df_top3_summary$location)) {
 ### FUNCTIONS PLOT INDICATORS IN THE PAST YEAR FOR THE TOP3 NATIONS ###
 
 plot_conflict_analysis <- function(
-    conflict_wrangle,
-    iso3 = "MOZ",
-    date_start = as.Date("2024-09-10"),
-    date_end = as.Date("2025-09-10"),
-    indicator_name = "conflict",
-    title = "Monthly Rolling Sum of Conflict Fatalities",
-    x_label = "Date",
-    y_label = "Conflict Fatalities (monthly)",
-    df_top3 = NULL
+  conflict_wrangle,
+  iso3 = "MOZ",
+  date_start = as.Date("2024-09-10"),
+  date_end = as.Date("2025-09-10"),
+  indicator_name = "conflict",
+  title = "Monthly Rolling Sum of Conflict Fatalities",
+  x_label = "Date",
+  y_label = "Conflict Fatalities (monthly)",
+  df_top3 = NULL
 ) {
 
   conflict_wrangle_filtered <- conflict_wrangle |>
@@ -329,17 +343,17 @@ plot_conflict_analysis <- function(
 
 
 plot_displacement_analysis <- function(
-    disp_wrangle,
-    iso3 = "MOZ",
-    date_start = as.Date("2024-09-10"),
-    date_end = as.Date("2025-09-10"),
-    displacement_type = "Disaster", # "Disaster" or "Conflict"
-    indicator_name = NULL, # will be auto-set based on displacement_type if NULL
-    title = NULL, # will be auto-generated if NULL
-    x_label = "Date",
-    y_label = "30-Day Rolling Sum (k)",
-    df_top3 = NULL,
-    use_k_scale = TRUE # whether to scale y-axis to thousands
+  disp_wrangle,
+  iso3 = "MOZ",
+  date_start = as.Date("2024-09-10"),
+  date_end = as.Date("2025-09-10"),
+  displacement_type = "Disaster", # "Disaster" or "Conflict"
+  indicator_name = NULL, # will be auto-set based on displacement_type if NULL
+  title = NULL, # will be auto-generated if NULL
+  x_label = "Date",
+  y_label = "30-Day Rolling Sum (k)",
+  df_top3 = NULL,
+  use_k_scale = TRUE # whether to scale y-axis to thousands
 ) {
 
 
@@ -428,12 +442,12 @@ plot_displacement_analysis <- function(
 
 
 plot_agricultural_hotspot <- function(
-    agri_wrangle,
-    df_top3,
-    iso3_code = "MOZ",
-    start_date = "2024-09-10",
-    end_date = "2025-09-10",
-    title = "Agricultural Hotspot Timeline"
+  agri_wrangle,
+  df_top3,
+  iso3_code = "MOZ",
+  start_date = "2024-09-10",
+  end_date = "2025-09-10",
+  title = "Agricultural Hotspot Timeline"
 ) {
   # Input validation
   if (!is.data.frame(agri_wrangle) || !is.data.frame(df_top3)) {
@@ -446,8 +460,8 @@ plot_agricultural_hotspot <- function(
   # Filter data for country and date range
   agri_wrangle_filtered <- agri_wrangle |>
     dplyr$filter(iso3 == iso3_code &
-                    date >= as.Date(start_date) &
-                    date < as.Date(end_date))
+                   date >= as.Date(start_date) &
+                   date < as.Date(end_date))
 
   # Monthly aggregation
   agri_wrangle_monthly <- agri_wrangle_filtered |>
@@ -539,16 +553,16 @@ plot_agricultural_hotspot <- function(
 
 
 plot_inform_severity <- function(
-    infsev_wrangle,
-    iso3 = "HTI",
-    date_start = as.Date("2024-09-10"),
-    date_end = as.Date("2025-09-10"),
-    indicator_name = "inform_severity",
-    title = NULL,
-    x_label = "Date",
-    y_label = "INFORM Severity Index",
-    df_top3 = NULL,
-    line_color = "steelblue"
+  infsev_wrangle,
+  iso3 = "HTI",
+  date_start = as.Date("2024-09-10"),
+  date_end = as.Date("2025-09-10"),
+  indicator_name = "inform_severity",
+  title = NULL,
+  x_label = "Date",
+  y_label = "INFORM Severity Index",
+  df_top3 = NULL,
+  line_color = "steelblue"
 ) {
 
   # Auto-generate title if not provided
@@ -1132,10 +1146,14 @@ report_by_country <- function(top3,
       azure_file <- paste0("signals_overview_analysis/signals_overview_", gen_date, "/", file_name)
 
       # Save in Prod
-      cloud_storage$save_to_container(
-        container = "prod",
-        src       = local_file,
-        dest      = azure_file
+      invisible(
+        utils$capture.output(
+          az$upload_blob(
+            container = "prod",
+            src = local_file,
+            dest = azure_file
+          )
+        )
       )
 
       # Remove local file after upload
