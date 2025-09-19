@@ -1091,7 +1091,7 @@ report_by_country <- function(
       df_top3 = df_top3,
       start_date = start_date,
       end_date = end_date,
-      title = paste('Monthly Percentage Basket Cost Change')
+      title = paste("Monthly Percentage Basket Cost Change")
     )
 
     # Combined plot - simple vertical stacking
@@ -1108,17 +1108,17 @@ report_by_country <- function(
 
     title_plot <- cowplot$ggdraw() +
       cowplot$draw_label(final_title,
-                          x = 0.5, y = 0.5,
-                          size = 16,
-                          fontface = "bold",
-                          hjust = 0.5, vjust = 0.5) +
+                         x = 0.5, y = 0.5,
+                         size = 16,
+                         fontface = "bold",
+                         hjust = 0.5, vjust = 0.5) +
       gg$theme(panel.background = gg$element_rect(fill = "white", color = NA),
                plot.background = gg$element_rect(fill = "white", color = NA))
 
     # Final plot with title
     final_plot <- cowplot$plot_grid(title_plot, combined_plot,
-                                     ncol = 1,
-                                     rel_heights = c(0.05, 0.95))  # Less space for title
+                                    ncol = 1,
+                                    rel_heights = c(0.05, 0.95))  # Less space for title
 
     gen_date  <- format(Sys.Date(), "%Y-%m-%d")
 
@@ -1183,8 +1183,7 @@ plot_signals_overvew_pdf(df_dist,
                          indicator_labels,
                          effective_start_year,
                          end_year,
-                         save_azure=FALSE)
-
+                         save_azure = FALSE)
 
 report_by_country(top3,
                   df_top3,
@@ -1196,6 +1195,4 @@ report_by_country(top3,
                   food_wrangle,
                   infsev_wrangle,
                   market_wrangle,
-                  save_azure=FALSE)
-
-
+                  save_azure = FALSE)
