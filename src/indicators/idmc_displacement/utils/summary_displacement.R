@@ -76,10 +76,16 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
         !is.na(manual_info) & manual_info != "" & url_info == "" ~
           paste(event_info, manual_info, sep = " "),
         !is.na(manual_info) & manual_info != "" & url_info != "" ~
-          paste(event_info, manual_info, ". Here is additional raw text sourced directly from original PDFs --> ", sep = " "),
+          paste(
+            event_info,
+            manual_info,
+            ". Here is additional raw text sourced directly from original PDFs --> ",
+            sep = " "),
         # Original
         url_info == "" ~ event_info,
-        .default = paste0(event_info, ". Here is additional raw text sourced directly from original PDFs --> ")
+        .default = paste0(
+          event_info,
+          ". Here is additional raw text sourced directly from original PDFs --> ")
       ),
       summary_long = purrr$map2_chr(
         .x = prompts$long,

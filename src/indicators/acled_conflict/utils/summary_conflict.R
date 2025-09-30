@@ -96,5 +96,3 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
       summary_source
     )
 }
-
-

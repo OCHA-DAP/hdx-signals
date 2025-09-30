@@ -12,9 +12,6 @@ box::use(
   src/utils/ai_summarizer,
   src/utils/get_prompts,
   src/utils/parse_pdf,
-  src/utils/cloud_storage,
-  src/utils/validate_manual_info,
-  scr/utils/read_manual_info,
   src/utils/get_manual_info
 )
 
@@ -95,7 +92,7 @@ ipc_ch_summarizer <- function(url, ch, location, iso3, indicator_id, date) {
   manual_result <- NULL
 
   # Always try to get manual data
-  manual_txt <- get_manual_info(iso3, indicator_id, date)
+  manual_txt <- get_manual_info$get_manual_info(iso3, indicator_id, date)
   if (!is.null(manual_txt)) {
     manual_result <- manual_txt
   }
@@ -106,14 +103,14 @@ ipc_ch_summarizer <- function(url, ch, location, iso3, indicator_id, date) {
       txt <- ch_scraper(url = url)
       if (!is.null(txt) && length(txt) > 0 && !all(is.na(txt))) {
         scraper_result <- txt
-        org = "ch"
+        org <- "ch"
       }
     } else {
       txt <- ipc_scraper(url)
       # Check that scraping was successful
       if (length(txt) > 0 && !all(is.na(txt)) && !(length(txt) == 1 && nchar(txt) < 100)) {
         scraper_result <- txt
-        org = "ipc"
+        org <- "ipc"
       }
     }
   }
