@@ -14,7 +14,8 @@ box::use(
   src/utils/parse_pdf,
   src/utils/cloud_storage,
   src/utils/validate_manual_info,
-  scr/utils/read_manual_info
+  scr/utils/read_manual_info,
+  src/utils/get_manual_info
 )
 
 #' Generate summary for food insecurity alerts
@@ -94,7 +95,7 @@ ipc_ch_summarizer <- function(url, ch, location, iso3, indicator_id, date) {
   manual_result <- NULL
 
   # Always try to get manual data
-  manual_txt <- get_manual_data(iso3, indicator_id, date)
+  manual_txt <- get_manual_info(iso3, indicator_id, date)
   if (!is.null(manual_txt)) {
     manual_result <- manual_txt
   }
@@ -131,70 +132,6 @@ ipc_ch_summarizer <- function(url, ch, location, iso3, indicator_id, date) {
     # None available
     return(NA_character_)
   }
-}
-
-
-#' Read dataset with manually scraped situation and recommendations
-#'
-#' This function retrieves manually curated information for a specific country,
-#' indicator, and date from the manual context information dataset.
-#'
-#' @param iso3 ISO3 country code (character string)
-#' @param indicator_id The Signals indicator identifier (character string)
-#' @param date A character string or Date object. The date in YYYY-MM-DD format to refer to specific alert-related information.
-#'
-#' @return A character vector of length 2 containing situation and recommendations, or NULL if no matching data is found.
-#' @export
-get_manual_data <- function(iso3, indicator_id, date) {
-
-  data <- read_manual_info()
-  if (is.null(data)) {
-    return(NULL)
-  }
-
-  data <- validate_manual_info$validate_manual_info(data)
-
-  # Filter data by iso3 and indicator_id, then look for specific date or most recent
-  filtered_data <- data[data$iso3 == iso3 & data$indicator_id == indicator_id, ]
-
-  if (nrow(filtered_data) == 0) {
-    logger$info("No updated or related information found for iso3: ", iso3, " and indicator_id: ", indicator_id, "\n")
-    return(NULL)
-  }
-
-  # Determine which row to use
-  selected_row <- NULL
-
-  # Check if specific date was provided
-  if (!is.null(date)) {
-    # Look for exact date match
-    exact_date_data <- filtered_data[filtered_data$date == as.Date(date), ]
-    if (nrow(exact_date_data) == 0) {
-      logger$info("No alert day updated info was found for iso3: ", iso3, ", indicator_id: ", indicator_id, " on date: ", date, "\n")
-      return(NULL)
-    }
-    # logger$info("Found exact date data for ", iso3, " and ", indicator_id, " on date: ", date, "\n")
-    selected_row <- exact_date_data[1, ]  # Take first match if multiple
-  }
-
-  # Extract fields
-  situation <- selected_row$food_situation
-  recommendations <- selected_row$food_recommendations
-
-  # Check if both fields exist and are not empty/NA
-  if (is.na(situation) || is.na(recommendations) ||
-      situation == "" || recommendations == "") {
-    # Try fallback to general 'info' column
-    if ("info" %in% names(selected_row) &&
-        !is.na(selected_row$info) &&
-        selected_row$info != "") {
-      info <- as.character(selected_row$info)
-      return(c(info, info))
-    }
-    return(NULL)
-  }
-
-  return(c(as.character(situation), as.character(recommendations)))
 }
 
 #' Scrapes IPC URL for information
