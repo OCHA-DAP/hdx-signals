@@ -10,9 +10,9 @@ box::use(
 #'
 #' @param iso3 ISO3 country code (character string)
 #' @param indicator_id The Signals indicator identifier (character string)
-#' @param date A character string or Date object. The date in YYYY-MM-DD format to refer to specific alert-related information.
+#' @param date A character string or Date object. The expected date format is YYYY-MM-DD.
 #'
-#' @return A character vector of length 2 containing situation and recommendations, or NULL if no matching data is found.
+#' @return A character vector of length 2 with situation and recommendations, or NULL if no matching data is found.
 #' @export
 get_manual_info <- function(iso3, indicator_id, date) {
 
