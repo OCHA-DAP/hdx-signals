@@ -9,15 +9,8 @@ box::use(
   src/utils/ai_summarizer,
   src/utils/get_prompts,
   src/utils/get_env,
-  src/utils/cloud_storage,
   src/utils/get_manual_info
 )
-
-# # GET AZURE SIGNALS DATA
-# df <- cloud_storage$read_az_file(
-#   name='output/signals.parquet',
-#   container='prod'
-# )
 
 #' Add campaign info to ACAPS inform data
 #'
@@ -79,7 +72,7 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
     df_justification_single <- get_inform_justification(iso3_param, date_param, country_param)
     df_country_single <- get_country_info(iso3_param, date_param)
     df_daily_monitoring_single <- get_daily_monitoring(date_param, iso3_param)
-    df_manual_single <- get_manual_info(iso3_param, "acaps_inform_severity", date_param)
+    df_manual_single <- get_manual_info$get_manual_info(iso3_param, "acaps_inform_severity", date_param)
 
     df_justification <- dplyr$bind_rows(df_justification, df_justification_single)
     df_country <- dplyr$bind_rows(df_country, df_country_single)
@@ -138,7 +131,14 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
 
   df_text <- df_text |>
     dplyr$left_join(df_manual, by = c("iso3", "date")) |>
-    dplyr$select(c("iso3", "date", "text", "latest_developments", "overview", "manual_info", "manual_source", "location"))
+    dplyr$select(c("iso3",
+                   "date",
+                   "text",
+                   "latest_developments",
+                   "overview",
+                   "manual_info",
+                   "manual_source",
+                   "location"))
 
   df_text <- df_text |>
     dplyr$mutate(
@@ -311,51 +311,3 @@ get_daily_monitoring <- function(date_param, iso3_param) {
     ) |>
     purrr$list_rbind()
 }
-
-# get_manual_data <- function(iso3, indicator_id, date) {
-#
-#   data <- read_manual_info()
-#   if (is.null(data)) {
-#     return(NULL)
-#   }
-#
-#   data <- validate_manual_info$validate_manual_info(data)
-#
-#   # Filter data by iso3 and indicator_id, then look for specific date or most recent
-#   filtered_data <- data[data$iso3 == iso3 & data$indicator_id == indicator_id, ]
-#
-#   if (nrow(filtered_data) == 0) {
-#     logger$info("No updated or related information found for iso3: ", iso3, " and indicator_id: ", indicator_id, "\n")
-#     return(NULL)
-#   }
-#
-#   # Determine which row to use
-#   selected_row <- NULL
-#
-#   # Check if specific date was provided
-#   if (!is.null(date)) {
-#     # Look for exact date match
-#     exact_date_data <- filtered_data[filtered_data$date == as.Date(date), ]
-#     if (nrow(exact_date_data) == 0) {
-#       logger$info("No alert day updated info was found for iso3: ", iso3, ", indicator_id: ", indicator_id, " on date: ", date, "\n")
-#       return(NULL)
-#     }
-#     # logger$info("Found exact date data for ", iso3, " and ", indicator_id, " on date: ", date, "\n")
-#     selected_row <- exact_date_data[1, ]  # Take first match if multiple
-#   }
-#
-#   # Extract fields
-#   if ("info" %in% names(selected_row) &&
-#       !is.na(selected_row$info) &&
-#       selected_row$info != "") {
-#     info <- as.character(selected_row$info)
-#     return(dplyr$tibble(
-#       iso3 = iso3,
-#       date = as.Date(date),
-#       manual_info = info
-#     ))
-#   }
-#   return(NULL)
-# }
-#
-# # should we add source?
