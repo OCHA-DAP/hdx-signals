@@ -1,5 +1,6 @@
 box::use(
-  src/utils/validate_manual_info
+  src/utils/validate_manual_info,
+  src/utils/read_manual_info
 )
 
 
@@ -16,7 +17,7 @@ box::use(
 #' @export
 get_manual_info <- function(iso3, indicator_id, date) {
 
-  data <- read_manual_info()
+  data <- read_manual_info$read_manual_info()
   if (is.null(data)) {
     return(NULL)
   }
@@ -39,10 +40,10 @@ get_manual_info <- function(iso3, indicator_id, date) {
     # Look for exact date match
     exact_date_data <- filtered_data[filtered_data$date == as.Date(date), ]
     if (nrow(exact_date_data) == 0) {
-      logger$info("No alert day updated info was found for iso3: ", iso3, ", indicator_id: ", indicator_id, " on date: ", date, "\n")
+      logger$info("No alert day updated info was found for iso3: ",
+                  iso3, ", indicator_id: ", indicator_id, " on date: ", date, "\n")
       return(NULL)
     }
-    # logger$info("Found exact date data for ", iso3, " and ", indicator_id, " on date: ", date, "\n")
     selected_row <- exact_date_data[1, ]  # Take first match if multiple
   }
 
@@ -54,11 +55,11 @@ get_manual_info <- function(iso3, indicator_id, date) {
 
     # Check if both fields exist and are not empty/NA
     if (is.na(situation) || is.na(recommendations) ||
-        situation == "" || recommendations == "") {
+          situation == "" || recommendations == "") {
 
       # If both are missing, return NULL
       if ((is.na(situation) || situation == "") &&
-          (is.na(recommendations) || recommendations == "")) {
+            (is.na(recommendations) || recommendations == "")) {
         return(NULL)
       }
 
@@ -70,13 +71,13 @@ get_manual_info <- function(iso3, indicator_id, date) {
       }
     }
 
-    return(c(as.character(situation), as.character(recommendations)))
+    c(as.character(situation), as.character(recommendations))
 
   } else if (indicator_id == "acaps_inform_severity") {
     # Extract field
     if ("text1" %in% names(selected_row) &&
-        !is.na(selected_row$text1) &&
-        selected_row$text1 != "") {
+          !is.na(selected_row$text1) &&
+          selected_row$text1 != "") {
       info <- as.character(selected_row$text1)
       return(dplyr$tibble(
         iso3 = iso3,
@@ -84,7 +85,7 @@ get_manual_info <- function(iso3, indicator_id, date) {
         manual_info = info
       ))
     }
-    return(NULL)
+    NULL
 
   } else if (indicator_id %in% c("acled_conflict", "jrc_agricultural_hotspots", "idmc_displacement")) {
     if ("text1" %in% names(selected_row) &&
@@ -92,7 +93,7 @@ get_manual_info <- function(iso3, indicator_id, date) {
         selected_row$text1 != "") {
       return(selected_row$text1)
     }
-    return(NULL)
+    NULL
   }
 
 }
