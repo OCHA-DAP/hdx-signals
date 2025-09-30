@@ -10,11 +10,12 @@ read_manual_info <- function() {
   container <- "dev"
 
   # Try to read the file if it exists already
-  tryCatch({
-    data <- cloud_storage$read_az_file(name, container)
-  }, error = function(e) {
-    data <- NULL
-  })
-
-  return(data)
+  tryCatch(
+    {
+      cloud_storage$read_az_file(name, container)
+    },
+    error = function(e) {
+      NULL
+    }
+  )
 }

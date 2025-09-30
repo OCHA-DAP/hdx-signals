@@ -89,8 +89,8 @@ get_manual_info <- function(iso3, indicator_id, date) {
 
   } else if (indicator_id %in% c("acled_conflict", "jrc_agricultural_hotspots", "idmc_displacement")) {
     if ("text1" %in% names(selected_row) &&
-        !is.na(selected_row$text1) &&
-        selected_row$text1 != "") {
+          !is.na(selected_row$text1) &&
+          selected_row$text1 != "") {
       return(selected_row$text1)
     }
     NULL

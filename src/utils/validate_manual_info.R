@@ -71,5 +71,5 @@ validate_manual_info <- function(df) {
   valid_rows <- valid_rows & date_valid
 
   # Filter and return only valid rows
-  return(df[valid_rows, ])
+  df[valid_rows, ]
 }
