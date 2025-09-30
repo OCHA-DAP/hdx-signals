@@ -118,16 +118,16 @@ ipc_ch_summarizer <- function(url, ch, location, iso3, indicator_id, date) {
   # Combine results
   if (!is.null(scraper_result) && !is.null(manual_result)) {
     # Both available - combine them
-    return(text_summarizer_combined(scraper_result = scraper_result, manual_result = manual_result, org = org))
+    text_summarizer_combined(scraper_result = scraper_result, manual_result = manual_result, org = org)
   } else if (!is.null(scraper_result)) {
     # Scraper only
-    return(text_summarizer(txt = txt, org = org))
+    text_summarizer(txt = txt, org = org)
   } else if (!is.null(manual_result)) {
     # Manual only
-    return(text_summarizer_manual(manual_result))
+    text_summarizer_manual(manual_result)
   } else {
     # None available
-    return(NA_character_)
+    NA_character_
   }
 }
 
@@ -248,7 +248,7 @@ text_summarizer_combined <- function(scraper_result, manual_result, org) {
   # Return combined vector
   txt <- c(combined_situation, combined_recommendations)
 
-  return(text_summarizer(txt, org))
+  text_summarizer(txt, org)
 }
 
 
@@ -302,4 +302,3 @@ text_summarizer <- function(txt, org) {
     )
   }
 }
-
