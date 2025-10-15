@@ -45,7 +45,7 @@ jobs:
           IPC_API_KEY: ${{ secrets.IPC_API_KEY }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           DSCI_AZ_BLOB_DEV_SAS_WRITE: ${{ secrets.DSCI_AZ_BLOB_DEV_SAS_WRITE }}
-          DSCI_AZ_BLOB_PROD_SAS_WRITE: ${{ secrets.DSCI_AZ_BLOB_PROD_SAS_WRITE }}
+          DSCI_AZ_BLOB_PROD_SIGNALS_SAS_WRITE: ${{ secrets.DSCI_AZ_BLOB_PROD_SIGNALS_SAS_WRITE }}
           MAILCHIMP_API_KEY: ${{ secrets.MAILCHIMP_API_KEY }}
           IPC_USER_AGENT: ${{ secrets.IPC_USER_AGENT }}
           HS_LOCAL: ${{ inputs.HS_LOCAL || 'FALSE' }}

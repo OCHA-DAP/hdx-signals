@@ -1,5 +1,11 @@
 # Changes
 
+## 0.3.0.0 (9 September 2025)
+
+### Update env variables
+
+- Update Env variables
+
 ## 0.2.10.0 (5 September 2025)
 
 ### Fix IPC scraping
