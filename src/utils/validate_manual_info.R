@@ -84,5 +84,5 @@ validate_ipc_food_insecurity <- function(df) {
   text2_empty <- ipc_rows & (is.na(df$text2) | df$text2 == "")
   df$text2[text2_empty] <- df$text1[text2_empty]
 
-  return(df)
+  df
 }

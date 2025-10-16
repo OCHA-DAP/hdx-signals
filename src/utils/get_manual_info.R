@@ -64,7 +64,8 @@ get_manual_info <- function(iso3, indicator_id, date = NULL) {
     "acled_conflict",
     "jrc_agricultural_hotspots",
     "idmc_displacement_disaster",
-    "idmc_displacement_conflict")) {
+    "idmc_displacement_conflict"
+  )) {
     selected_row$text1
   }
 }
