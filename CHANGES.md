@@ -1,5 +1,11 @@
 # Changes
 
+## 0.2.11.0 (19 September 2025)
+
+### Signals overview analysis
+
+- Generate reports on generated signals in general and by country in the last X years. 
+
 ## 0.2.10.0 (5 September 2025)
 
 ### Fix IPC scraping
