@@ -9,20 +9,22 @@ box::use(
   src/utils/get_manual_info
 )
 
+jrc_agricultural_hotspots <- "jrc_agricultural_hotspots"
+
 #' Add campaign info to cholera alerts
 #'
 #' @returns Data frame with campaign information
 #'
 #' @export
 summary <- function(df_alerts, df_wrangled, df_raw) {
-  prompts <- get_prompts$get_prompts("jrc_agricultural_hotspots")
+  prompts <- get_prompts$get_prompts(jrc_agricultural_hotspots)
 
   df_manual <- df_alerts |>
-    dplyr$filter(indicator_id == "jrc_agricultural_hotspots") |>
+    dplyr$filter(indicator_id == jrc_agricultural_hotspots) |>
     dplyr$distinct(iso3, date) |>
     dplyr$rowwise() |>
     dplyr$mutate(
-      manual_info = get_manual_info$get_manual_info(iso3, "jrc_agricultural_hotspots", date)
+      manual_info = get_manual_info$get_manual_info(iso3, jrc_agricultural_hotspots, date)
     ) |>
     dplyr$ungroup()
 
@@ -61,10 +63,8 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
     ) |>
     dplyr$mutate(
       # COMBINA info con manual_info
-      info = dplyr$if_else(
-        !is.na(manual_info) & manual_info != "",
-        paste(info, manual_info, sep = "\n"),
-        info
+      info = paste(
+        info, manual_info, sep = "\n"
       ),
       summary_long = purrr$map2_chr(
         .x = prompts$long,

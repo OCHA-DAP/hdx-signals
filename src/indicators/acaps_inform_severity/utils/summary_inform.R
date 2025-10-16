@@ -149,11 +149,7 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
         text
       ),
       # Always add manual_info if available
-      text = dplyr$if_else(
-        !is.na(manual_info) & manual_info != "",
-        paste(text, manual_info, sep = " "),
-        text
-      )
+      text = paste(text, manual_info, sep = " ")
     )
 
   # now join together and get summarizations

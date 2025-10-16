@@ -59,11 +59,7 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
     ) |>
     dplyr$mutate(
       # Combine event_info with manual_info if present
-      event_info = dplyr$if_else(
-        !is.na(manual_info) & manual_info != "",
-        paste(event_info, manual_info, sep = " "),
-        event_info
-      ),
+      event_info = paste(event_info, manual_info, sep = " "),
       summary_long = purrr$map2_chr(
         .x = prompts$long,
         .y = event_info,

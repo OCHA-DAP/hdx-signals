@@ -5,9 +5,8 @@ box::use(
 
 # Function to validate and filter manual dataset
 validate_manual_info <- function(df) {
-
   # Check required columns exist
-  required_cols <- c("iso3", "indicator_id", "date")
+  required_cols <- c("iso3", "indicator_id", "date", "text1")
   missing_cols <- setdiff(required_cols, names(df))
   if (length(missing_cols) > 0) {
     stop("Missing required columns: ", paste(missing_cols, collapse = ", "))
@@ -26,27 +25,25 @@ validate_manual_info <- function(df) {
     "acaps_inform_severity"
   )
 
-  # Initialize logical vector for valid rows
-  valid_rows <- rep(TRUE, nrow(df))
+  # Combine all validations
+  valid_rows <- (df$iso3 %in% valid_iso3_codes) &
+    (df$indicator_id %in% valid_indicator_ids) &
+    validate_dates(df$date) &
+    (!is.na(df$text1) & df$text1 != "")
 
-  # Validate iso3 codes
-  iso3_valid <- !is.na(df$iso3) &
-    df$iso3 != "" &
-    !is.null(df$iso3) &
-    df$iso3 %in% valid_iso3_codes
-  valid_rows <- valid_rows & iso3_valid
+  # Filter and return only valid rows
+  df[valid_rows, ]
+}
 
-  # Validate indicator_id
-  indicator_valid <- !is.na(df$indicator_id) &
-    df$indicator_id != "" &
-    !is.null(df$indicator_id) &
-    df$indicator_id %in% valid_indicator_ids
-  valid_rows <- valid_rows & indicator_valid
 
-  # Validate date format and parsability
-  date_valid <- rep(FALSE, nrow(df))
-  for (i in seq_len(nrow(df))) {
-    date_val <- df$date[i]
+validate_dates <- function(dates,
+                           format = "%Y-%m-%d",
+                           pattern = "^\\d{4}-\\d{2}-\\d{2}$") {
+
+  date_valid <- rep(FALSE, length(dates))
+
+  for (i in seq_along(dates)) {
+    date_val <- dates[i]
 
     # Check if date is not NA/NULL/empty
     if (is.na(date_val) || is.null(date_val) || date_val == "") {
@@ -54,22 +51,38 @@ validate_manual_info <- function(df) {
       next
     }
 
-    # Check YYYY-MM-DD pattern
-    if (!grepl("^\\d{4}-\\d{2}-\\d{2}$", as.character(date_val))) {
+    # Check date pattern
+    if (!grepl(pattern, as.character(date_val))) {
       date_valid[i] <- FALSE
       next
     }
 
     # Try to parse date
     tryCatch({
-      date_parsed <- as.Date(date_val, format = "%Y-%m-%d")
+      date_parsed <- as.Date(date_val, format = format)
       date_valid[i] <- !is.na(date_parsed)
     }, error = function(e) {
       date_valid[i] <- FALSE
     })
   }
-  valid_rows <- valid_rows & date_valid
 
-  # Filter and return only valid rows
-  df[valid_rows, ]
+  return(date_valid)
+}
+
+validate_ipc_food_insecurity <- function(df) {
+
+  # Filter for ipc_food_insecurity rows
+  ipc_rows <- df$indicator_id == "ipc_food_insecurity"
+
+  # If no IPC rows, return as is
+  if (!any(ipc_rows)) {
+    return(df)
+  }
+
+  # we have already checked text1, so we look at text2
+  # if text2 is NULL or empty, copy text1 (situation) to text2 (recommendations)
+  text2_empty <- ipc_rows & (is.na(df$text2) | df$text2 == "")
+  df$text2[text2_empty] <- df$text1[text2_empty]
+
+  return(df)
 }

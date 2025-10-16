@@ -89,13 +89,7 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
 #' @returns Summarized text data
 ipc_ch_summarizer <- function(url, ch, location, iso3, indicator_id, date) {
   scraper_result <- NULL
-  manual_result <- NULL
-
-  # Always try to get manual data
-  manual_txt <- get_manual_info$get_manual_info(iso3, indicator_id, date)
-  if (!is.null(manual_txt)) {
-    manual_result <- manual_txt
-  }
+  manual_result <- get_manual_info$get_manual_info(iso3, indicator_id, date)
 
   # Scrape data if URL is available
   if (!is.na(url)) {
@@ -228,26 +222,10 @@ text_summarizer_manual <- function(txt_c) {
 
 
 text_summarizer_combined <- function(scraper_result, manual_result, org) {
-  # Extract individual elements
-  scraper_situation <- scraper_result[1]
-  scraper_recommendations <- scraper_result[2]
-
-  manual_situation <- manual_result[1]
-  manual_recommendations <- manual_result[2]
-
-  # Combine situation (scraper + manual)
-  combined_situation <- paste(scraper_situation,
-                              "\n",
-                              manual_situation)
-
-  # Combine recommendations (scraper + manual)
-  combined_recommendations <- paste(scraper_recommendations,
-                                    "\n",
-                                    manual_recommendations)
-
-  # Return combined vector
-  txt <- c(combined_situation, combined_recommendations)
-
+  txt <- c(
+    paste(scraper_result[1], "\n", manual_result[1]),
+    paste(scraper_result[2], "\n", manual_result[2])
+  )
   text_summarizer(txt, org)
 }
 

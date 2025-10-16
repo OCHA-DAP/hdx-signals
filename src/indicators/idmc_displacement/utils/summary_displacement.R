@@ -72,20 +72,13 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
     ) |>
     dplyr$mutate(
       overall_info = dplyr$case_when(
-        # We add manual info if available
-        !is.na(manual_info) & manual_info != "" & url_info == "" ~
+        url_info == "" ~
           paste(event_info, manual_info, sep = " "),
-        !is.na(manual_info) & manual_info != "" & url_info != "" ~
-          paste(
-                event_info,
+        .default =
+          paste(event_info,
                 manual_info,
                 ". Here is additional raw text sourced directly from original PDFs --> ",
-                sep = " "),
-        # Original
-        url_info == "" ~ event_info,
-        .default = paste0(
-                          event_info,
-                          ". Here is additional raw text sourced directly from original PDFs --> ")
+                sep = " ")
       ),
       summary_long = purrr$map2_chr(
         .x = prompts$long,
