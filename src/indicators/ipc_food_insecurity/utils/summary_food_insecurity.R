@@ -177,14 +177,10 @@ text_summarizer_manual <- function(txt_c) {
     stop("Input must be a list of exactly two strings")
   }
 
-  # Load manual prompts from files
-  prompts <- list(
-    readLines("manual_sit_rep.txt", warn = FALSE),
-    readLines("manual_recs.txt", warn = FALSE)
+  prompts <- get_prompts$get_prompts(
+    indicator_id = "ipc_food_insecurity",
+    prompts = c("ipc_sit_rep", "ipc_recs")
   )
-
-  # Combine prompt file lines into single strings
-  prompts <- lapply(prompts, function(x) paste(x, collapse = "\n"))
 
   # Process situation and recommendations using AI
   sit_rep <- ai_summarizer$ai_summarizer(
