@@ -29,11 +29,24 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
       event_url
     )
 
+  df_manual <- df_alerts |>
+    dplyr$filter(indicator_id == "idmc_displacement") |>
+    dplyr$distinct(iso3, date) |>
+    dplyr$rowwise() |>
+    dplyr$mutate(
+      manual_info = get_manual_info$get_manual_info(iso3, "idmc_displacement", date)
+    ) |>
+    dplyr$ungroup()
+
   # now join together and get summarizations
   df_joined <- df_alerts |>
     dplyr$full_join(
       df_event_info,
       by = "iso3"
+    ) |>
+    dplyr$left_join(
+      df_manual,
+      by = c("iso3", "date")
     ) |>
     dplyr$group_by(iso3, location, date) |>
     dplyr$filter(
@@ -54,16 +67,18 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
     dplyr$summarize(
       event_info = paste(event_info, collapse = " "),
       url_info = paste(url_info[!is.na(url_info)], collapse = "\n"),
+      manual_info = dplyr$first(manual_info, default = NA_character_),
       .groups = "drop"
     ) |>
     dplyr$mutate(
-      overall_info = ifelse(
-        url_info == "",
-        event_info,
-        paste0(
-          event_info,
-          ". Here is additional raw text sourced directly from original PDFs --> "
-        )
+      overall_info = dplyr$case_when(
+        url_info == "" ~
+          paste(event_info, manual_info, sep = " "),
+        .default =
+          paste(event_info,
+                manual_info,
+                ". Here is additional raw text sourced directly from original PDFs --> ",
+                sep = " ")
       ),
       summary_long = purrr$map2_chr(
         .x = prompts$long,

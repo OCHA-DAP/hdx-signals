@@ -8,7 +8,8 @@ box::use(
 box::use(
   src/utils/ai_summarizer,
   src/utils/get_prompts,
-  src/utils/get_env
+  src/utils/get_env,
+  src/utils/get_manual_info
 )
 
 #' Add campaign info to ACAPS inform data
@@ -56,6 +57,13 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
     overview = character(),
     date_request = as.Date(character())
   )
+
+  df_manual <- dplyr$tibble(
+    iso3 = character(),
+    date = as.Date(character()),
+    manual_info = character()
+  )
+
   for (ii in seq_len(nrow(df_wrangled_alerting))){
     date_param <- df_wrangled_alerting[[ii, "date"]]
     iso3_param <- df_wrangled_alerting[[ii, "iso3"]]
@@ -64,11 +72,12 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
     df_justification_single <- get_inform_justification(iso3_param, date_param, country_param)
     df_country_single <- get_country_info(iso3_param, date_param)
     df_daily_monitoring_single <- get_daily_monitoring(date_param, iso3_param)
-
+    df_manual_single <- get_manual_info$get_manual_info(iso3_param, "acaps_inform_severity", date_param)
 
     df_justification <- dplyr$bind_rows(df_justification, df_justification_single)
     df_country <- dplyr$bind_rows(df_country, df_country_single)
     df_daily_monitoring <- dplyr$bind_rows(df_daily_monitoring, df_daily_monitoring_single)
+    df_manual <- dplyr$bind_rows(df_manual, df_manual_single)
   }
 
   df_justification <- df_justification |>
@@ -121,12 +130,26 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
     dplyr$select(c("iso3", "date", "text", "latest_developments", "overview", "location"))
 
   df_text <- df_text |>
+    dplyr$left_join(df_manual, by = c("iso3", "date")) |>
+    dplyr$select(c("iso3",
+                   "date",
+                   "text",
+                   "latest_developments",
+                   "overview",
+                   "manual_info",
+                   "manual_source",
+                   "location"))
+
+  df_text <- df_text |>
     dplyr$mutate(
+      # Fallback
       text = dplyr$if_else(
-        text == "" | is.na(text),  # Check if `text` is empty or NA
+        text == "" | is.na(text),
         dplyr$coalesce(latest_developments, overview),
-        text  # Keep original `text` if not empty
-      )
+        text
+      ),
+      # Always add manual_info if available
+      text = paste(text, manual_info, sep = " ")
     )
 
   # now join together and get summarizations

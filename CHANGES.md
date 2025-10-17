@@ -1,5 +1,11 @@
 # Changes
 
+## 0.2.12.0 (16 October 2025)
+
+### Add manual contextual information 
+
+- Add manual contextual information injection system 
+
 ## 0.2.11.0 (19 September 2025)
 
 ### Signals overview analysis
