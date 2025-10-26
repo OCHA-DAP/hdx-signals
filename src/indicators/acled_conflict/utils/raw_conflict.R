@@ -11,6 +11,14 @@ box::use(
   cs = src/utils/cloud_storage
 )
 
+# Define the API and token URLs
+api_base_url <- "https://acleddata.com/api/acled/read?_format=json"
+token_url <- "https://acleddata.com/oauth/token"
+# Get credentials from environment variables
+username <- get_env$get_env("ACLED_USERNAME")
+password <- get_env$get_env("ACLED_PASSWORD")
+
+
 #' Download raw conflict data
 #'
 #' Downloads raw conflict data from the ACLED API. Uses the ACLED API,
@@ -35,12 +43,12 @@ raw <- function() {
     cs$read_az_file("output/acled_conflict/raw.parquet")
   } else {
     logger$log_debug("Downloading ACLED data")
+
+    # Perform request with OAuth2 password
     df_acled <- httr2$request(
-      "https://api.acleddata.com/acled/read"
+      api_base_url
     ) |>
       httr2$req_url_query(
-        key = get_env$get_env("ACLED_ACCESS_KEY"),
-        email = get_env$get_env("ACLED_EMAIL_ADDRESS"),
         fields = paste(
           "iso",
           "event_date",
@@ -52,6 +60,11 @@ raw <- function() {
           sep = "|"
         ),
         limit = 0 # much faster than using limits / pagination sadly
+      ) |>
+      httr2$req_oauth_password(
+        client = httr2$oauth_client("acled", token_url),
+        username = username,
+        password = password
       ) |>
       httr2$req_perform() |>
       httr2$resp_body_json() |>

@@ -1,5 +1,60 @@
 # Changes
 
+## 0.2.11.0 (19 September 2025)
+
+### Signals overview analysis
+
+- Generate reports on generated signals in general and by country in the last X years. 
+
+## 0.2.10.0 (5 September 2025)
+
+### Fix IPC scraping
+
+- Add user agent to scrape IPC information
+
+## 0.2.9.0 (1 September 2025)
+
+### Modify campaign template
+
+- Modify campaign template adding additional disclaimer
+
+## 0.2.8.0 (31 August 2025)
+
+### Modify ACAPS data update frequency
+
+- Modify ACAPS data update frequency to weekly from monthly
+
+## 0.2.7.0 (31 July 2025)
+
+### Add Run folder
+
+- Create Run folder for facilitating the running of the Signals code in GitHub Actions
+
+## 0.2.6.0 (30 July 2025)
+
+### ACLED API update
+
+- Update ACLED data fetching using OAuth
+
+## 0.2.5.0 (25 July 2025)
+
+### Added workflow
+
+- Add workflow to triage Signals
+
+
+## 0.2.4.0 (18 June 2025)
+
+### Template modification
+
+- remove Centre address from campaign template
+
+## 0.2.3.0 (22 May 2025)
+
+### Map improvement
+
+- Add XAP to IND in `update_adm0_sf`
+
 ## 0.2.2.0 (24 April 2025)
 
 ### Bug fix
@@ -64,7 +119,6 @@ passing indicators to `generate_signals()`, to mirror OOP class/method approache
 
 - Small fix to `triage_signals()` to check for environment variable presence prior
 to sending emails
->>>>>>> 5973d675e2be9aa37935a347bb7e5b7163373a99
 
 ## 0.1.14.3 (29 October 2024)
 

@@ -82,7 +82,8 @@
       "NeedsCompilation": "no",
       "Author": "Hong Ooi [aut, cre], Microsoft [cph]",
       "Maintainer": "Hong Ooi <hongooi73@gmail.com>",
-      "Repository": "CRAN"
+      "Repository": "RSPM",
+      "Encoding": "UTF-8"
     },
     "AzureRMR": {
       "Package": "AzureRMR",
@@ -119,7 +120,8 @@
       "NeedsCompilation": "no",
       "Author": "Hong Ooi [aut, cre], Microsoft [cph]",
       "Maintainer": "Hong Ooi <hongooi73@gmail.com>",
-      "Repository": "CRAN"
+      "Repository": "RSPM",
+      "Encoding": "UTF-8"
     },
     "AzureStor": {
       "Package": "AzureStor",
@@ -159,7 +161,8 @@
       "NeedsCompilation": "no",
       "Author": "Hong Ooi [aut, cre], Microsoft [cph]",
       "Maintainer": "Hong Ooi <hongooi73@gmail.com>",
-      "Repository": "CRAN"
+      "Repository": "RSPM",
+      "Encoding": "UTF-8"
     },
     "DBI": {
       "Package": "DBI",
@@ -272,51 +275,6 @@
       "Repository": "RSPM",
       "Encoding": "UTF-8"
     },
-    "Matrix": {
-      "Package": "Matrix",
-      "Version": "1.7-0",
-      "Source": "Repository",
-      "VersionNote": "do also bump src/version.h, inst/include/Matrix/version.h",
-      "Date": "2024-03-16",
-      "Priority": "recommended",
-      "Title": "Sparse and Dense Matrix Classes and Methods",
-      "Description": "A rich hierarchy of sparse and dense matrix classes, including general, symmetric, triangular, and diagonal matrices with numeric, logical, or pattern entries.  Efficient methods for operating on such matrices, often wrapping the 'BLAS', 'LAPACK', and 'SuiteSparse' libraries.",
-      "License": "GPL (>= 2) | file LICENCE",
-      "URL": "https://Matrix.R-forge.R-project.org",
-      "BugReports": "https://R-forge.R-project.org/tracker/?atid=294&group_id=61",
-      "Contact": "Matrix-authors@R-project.org",
-      "Authors@R": "c(person(\"Douglas\", \"Bates\", role = \"aut\", comment = c(ORCID = \"0000-0001-8316-9503\")), person(\"Martin\", \"Maechler\", role = c(\"aut\", \"cre\"), email = \"mmaechler+Matrix@gmail.com\", comment = c(ORCID = \"0000-0002-8685-9910\")), person(\"Mikael\", \"Jagan\", role = \"aut\", comment = c(ORCID = \"0000-0002-3542-2938\")), person(\"Timothy A.\", \"Davis\", role = \"ctb\", comment = c(ORCID = \"0000-0001-7614-6899\", \"SuiteSparse libraries\", \"collaborators listed in dir(system.file(\\\"doc\\\", \\\"SuiteSparse\\\", package=\\\"Matrix\\\"), pattern=\\\"License\\\", full.names=TRUE, recursive=TRUE)\")), person(\"George\", \"Karypis\", role = \"ctb\", comment = c(ORCID = \"0000-0003-2753-1437\", \"METIS library\", \"Copyright: Regents of the University of Minnesota\")), person(\"Jason\", \"Riedy\", role = \"ctb\", comment = c(ORCID = \"0000-0002-4345-4200\", \"GNU Octave's condest() and onenormest()\", \"Copyright: Regents of the University of California\")), person(\"Jens\", \"Oehlschlägel\", role = \"ctb\", comment = \"initial nearPD()\"), person(\"R Core Team\", role = \"ctb\", comment = \"base R's matrix implementation\"))",
-      "Depends": [
-        "R (>= 4.4.0)",
-        "methods"
-      ],
-      "Imports": [
-        "grDevices",
-        "graphics",
-        "grid",
-        "lattice",
-        "stats",
-        "utils"
-      ],
-      "Suggests": [
-        "MASS",
-        "datasets",
-        "sfsmisc",
-        "tools"
-      ],
-      "Enhances": [
-        "SparseM",
-        "graph"
-      ],
-      "LazyData": "no",
-      "LazyDataNote": "not possible, since we use data/*.R and our S4 classes",
-      "BuildResaveData": "no",
-      "Encoding": "UTF-8",
-      "NeedsCompilation": "yes",
-      "Author": "Douglas Bates [aut] (<https://orcid.org/0000-0001-8316-9503>), Martin Maechler [aut, cre] (<https://orcid.org/0000-0002-8685-9910>), Mikael Jagan [aut] (<https://orcid.org/0000-0002-3542-2938>), Timothy A. Davis [ctb] (<https://orcid.org/0000-0001-7614-6899>, SuiteSparse libraries, collaborators listed in dir(system.file(\"doc\", \"SuiteSparse\", package=\"Matrix\"), pattern=\"License\", full.names=TRUE, recursive=TRUE)), George Karypis [ctb] (<https://orcid.org/0000-0003-2753-1437>, METIS library, Copyright: Regents of the University of Minnesota), Jason Riedy [ctb] (<https://orcid.org/0000-0002-4345-4200>, GNU Octave's condest() and onenormest(), Copyright: Regents of the University of California), Jens Oehlschlägel [ctb] (initial nearPD()), R Core Team [ctb] (base R's matrix implementation)",
-      "Maintainer": "Martin Maechler <mmaechler+Matrix@gmail.com>",
-      "Repository": "CRAN"
-    },
     "R6": {
       "Package": "R6",
       "Version": "2.5.1",
@@ -338,7 +296,8 @@
       "NeedsCompilation": "no",
       "Author": "Winston Chang [aut, cre]",
       "Maintainer": "Winston Chang <winston@stdout.org>",
-      "Repository": "CRAN"
+      "Repository": "RSPM",
+      "Encoding": "UTF-8"
     },
     "RColorBrewer": {
       "Package": "RColorBrewer",
@@ -384,6 +343,45 @@
       "Encoding": "UTF-8",
       "NeedsCompilation": "yes",
       "Repository": "RSPM"
+    },
+    "S7": {
+      "Package": "S7",
+      "Version": "0.2.0",
+      "Source": "Repository",
+      "Title": "An Object Oriented System Meant to Become a Successor to S3 and S4",
+      "Authors@R": "c( person(\"Object-Oriented Programming Working Group\", role = \"cph\"), person(\"Davis\", \"Vaughan\", role = \"aut\"), person(\"Jim\", \"Hester\", role = \"aut\", comment = c(ORCID = \"0000-0002-2739-7082\")), person(\"Tomasz\", \"Kalinowski\", role = \"aut\"), person(\"Will\", \"Landau\", role = \"aut\"), person(\"Michael\", \"Lawrence\", role = \"aut\"), person(\"Martin\", \"Maechler\", role = \"aut\", comment = c(ORCID = \"0000-0002-8685-9910\")), person(\"Luke\", \"Tierney\", role = \"aut\"), person(\"Hadley\", \"Wickham\", , \"hadley@posit.co\", role = c(\"aut\", \"cre\"), comment = c(ORCID = \"0000-0003-4757-117X\")) )",
+      "Description": "A new object oriented programming system designed to be a successor to S3 and S4. It includes formal class, generic, and method specification, and a limited form of multiple dispatch. It has been designed and implemented collaboratively by the R Consortium Object-Oriented Programming Working Group, which includes representatives from R-Core, 'Bioconductor', 'Posit'/'tidyverse', and the wider R community.",
+      "License": "MIT + file LICENSE",
+      "URL": "https://rconsortium.github.io/S7/, https://github.com/RConsortium/S7",
+      "BugReports": "https://github.com/RConsortium/S7/issues",
+      "Depends": [
+        "R (>= 3.5.0)"
+      ],
+      "Imports": [
+        "utils"
+      ],
+      "Suggests": [
+        "bench",
+        "callr",
+        "covr",
+        "knitr",
+        "methods",
+        "rmarkdown",
+        "testthat (>= 3.2.0)",
+        "tibble"
+      ],
+      "VignetteBuilder": "knitr",
+      "Config/build/compilation-database": "true",
+      "Config/Needs/website": "sloop",
+      "Config/testthat/edition": "3",
+      "Config/testthat/parallel": "TRUE",
+      "Config/testthat/start-first": "external-generic",
+      "Encoding": "UTF-8",
+      "RoxygenNote": "7.3.2",
+      "NeedsCompilation": "yes",
+      "Author": "Object-Oriented Programming Working Group [cph], Davis Vaughan [aut], Jim Hester [aut] (<https://orcid.org/0000-0002-2739-7082>), Tomasz Kalinowski [aut], Will Landau [aut], Michael Lawrence [aut], Martin Maechler [aut] (<https://orcid.org/0000-0002-8685-9910>), Luke Tierney [aut], Hadley Wickham [aut, cre] (<https://orcid.org/0000-0003-4757-117X>)",
+      "Maintainer": "Hadley Wickham <hadley@posit.co>",
+      "Repository": "CRAN"
     },
     "V8": {
       "Package": "V8",
@@ -1108,60 +1106,6 @@
       "NeedsCompilation": "no",
       "Repository": "CRAN"
     },
-    "colorspace": {
-      "Package": "colorspace",
-      "Version": "2.1-1",
-      "Source": "Repository",
-      "Date": "2024-07-26",
-      "Title": "A Toolbox for Manipulating and Assessing Colors and Palettes",
-      "Authors@R": "c(person(given = \"Ross\", family = \"Ihaka\", role = \"aut\", email = \"ihaka@stat.auckland.ac.nz\"), person(given = \"Paul\", family = \"Murrell\", role = \"aut\", email = \"paul@stat.auckland.ac.nz\", comment = c(ORCID = \"0000-0002-3224-8858\")), person(given = \"Kurt\", family = \"Hornik\", role = \"aut\", email = \"Kurt.Hornik@R-project.org\", comment = c(ORCID = \"0000-0003-4198-9911\")), person(given = c(\"Jason\", \"C.\"), family = \"Fisher\", role = \"aut\", email = \"jfisher@usgs.gov\", comment = c(ORCID = \"0000-0001-9032-8912\")), person(given = \"Reto\", family = \"Stauffer\", role = \"aut\", email = \"Reto.Stauffer@uibk.ac.at\", comment = c(ORCID = \"0000-0002-3798-5507\")), person(given = c(\"Claus\", \"O.\"), family = \"Wilke\", role = \"aut\", email = \"wilke@austin.utexas.edu\", comment = c(ORCID = \"0000-0002-7470-9261\")), person(given = c(\"Claire\", \"D.\"), family = \"McWhite\", role = \"aut\", email = \"claire.mcwhite@utmail.utexas.edu\", comment = c(ORCID = \"0000-0001-7346-3047\")), person(given = \"Achim\", family = \"Zeileis\", role = c(\"aut\", \"cre\"), email = \"Achim.Zeileis@R-project.org\", comment = c(ORCID = \"0000-0003-0918-3766\")))",
-      "Description": "Carries out mapping between assorted color spaces including RGB, HSV, HLS, CIEXYZ, CIELUV, HCL (polar CIELUV), CIELAB, and polar CIELAB. Qualitative, sequential, and diverging color palettes based on HCL colors are provided along with corresponding ggplot2 color scales. Color palette choice is aided by an interactive app (with either a Tcl/Tk or a shiny graphical user interface) and shiny apps with an HCL color picker and a color vision deficiency emulator. Plotting functions for displaying and assessing palettes include color swatches, visualizations of the HCL space, and trajectories in HCL and/or RGB spectrum. Color manipulation functions include: desaturation, lightening/darkening, mixing, and simulation of color vision deficiencies (deutanomaly, protanomaly, tritanomaly). Details can be found on the project web page at <https://colorspace.R-Forge.R-project.org/> and in the accompanying scientific paper: Zeileis et al. (2020, Journal of Statistical Software, <doi:10.18637/jss.v096.i01>).",
-      "Depends": [
-        "R (>= 3.0.0)",
-        "methods"
-      ],
-      "Imports": [
-        "graphics",
-        "grDevices",
-        "stats"
-      ],
-      "Suggests": [
-        "datasets",
-        "utils",
-        "KernSmooth",
-        "MASS",
-        "kernlab",
-        "mvtnorm",
-        "vcd",
-        "tcltk",
-        "shiny",
-        "shinyjs",
-        "ggplot2",
-        "dplyr",
-        "scales",
-        "grid",
-        "png",
-        "jpeg",
-        "knitr",
-        "rmarkdown",
-        "RColorBrewer",
-        "rcartocolor",
-        "scico",
-        "viridis",
-        "wesanderson"
-      ],
-      "VignetteBuilder": "knitr",
-      "License": "BSD_3_clause + file LICENSE",
-      "URL": "https://colorspace.R-Forge.R-project.org/, https://hclwizard.org/",
-      "BugReports": "https://colorspace.R-Forge.R-project.org/contact.html",
-      "LazyData": "yes",
-      "Encoding": "UTF-8",
-      "RoxygenNote": "7.3.1",
-      "NeedsCompilation": "yes",
-      "Author": "Ross Ihaka [aut], Paul Murrell [aut] (<https://orcid.org/0000-0002-3224-8858>), Kurt Hornik [aut] (<https://orcid.org/0000-0003-4198-9911>), Jason C. Fisher [aut] (<https://orcid.org/0000-0001-9032-8912>), Reto Stauffer [aut] (<https://orcid.org/0000-0002-3798-5507>), Claus O. Wilke [aut] (<https://orcid.org/0000-0002-7470-9261>), Claire D. McWhite [aut] (<https://orcid.org/0000-0001-7346-3047>), Achim Zeileis [aut, cre] (<https://orcid.org/0000-0003-0918-3766>)",
-      "Maintainer": "Achim Zeileis <Achim.Zeileis@R-project.org>",
-      "Repository": "CRAN"
-    },
     "commonmark": {
       "Package": "commonmark",
       "Version": "1.9.2",
@@ -1215,6 +1159,56 @@
       "NeedsCompilation": "no",
       "Author": "Vincent Arel-Bundock [aut, cre] (<https://orcid.org/0000-0003-2042-7063>), CJ Yetman [ctb] (<https://orcid.org/0000-0001-5099-9500>), Nils Enevoldsen [ctb] (<https://orcid.org/0000-0001-7195-4117>), Etienne Bacher [ctb] (<https://orcid.org/0000-0002-9271-5075>), Samuel Meichtry [ctb] (<https://orcid.org/0000-0003-2165-791X>)",
       "Maintainer": "Vincent Arel-Bundock <vincent.arel-bundock@umontreal.ca>",
+      "Repository": "CRAN"
+    },
+    "cowplot": {
+      "Package": "cowplot",
+      "Version": "1.2.0",
+      "Source": "Repository",
+      "Title": "Streamlined Plot Theme and Plot Annotations for 'ggplot2'",
+      "Authors@R": "person( given = \"Claus O.\", family = \"Wilke\", role = c(\"aut\", \"cre\"), email = \"wilke@austin.utexas.edu\", comment = c(ORCID = \"0000-0002-7470-9261\") )",
+      "Description": "Provides various features that help with creating publication-quality figures with 'ggplot2', such as a set of themes, functions to align plots and arrange them into complex compound figures, and functions that make it easy to annotate plots and or mix plots with images. The package was originally written for internal use in the Wilke lab, hence the name (Claus O. Wilke's plot package). It has also been used extensively in the book Fundamentals of Data Visualization.",
+      "URL": "https://wilkelab.org/cowplot/",
+      "BugReports": "https://github.com/wilkelab/cowplot/issues",
+      "Depends": [
+        "R (>= 3.5.0)"
+      ],
+      "Imports": [
+        "ggplot2 (>= 3.5.2)",
+        "grid",
+        "gtable",
+        "grDevices",
+        "methods",
+        "rlang",
+        "scales"
+      ],
+      "License": "GPL-2",
+      "Suggests": [
+        "Cairo",
+        "covr",
+        "dplyr",
+        "forcats",
+        "gridGraphics (>= 0.4-0)",
+        "knitr",
+        "lattice",
+        "magick",
+        "maps",
+        "PASWR",
+        "patchwork",
+        "rmarkdown",
+        "ragg",
+        "testthat (>= 1.0.0)",
+        "tidyr",
+        "vdiffr (>= 0.3.0)",
+        "VennDiagram"
+      ],
+      "VignetteBuilder": "knitr",
+      "Collate": "'add_sub.R' 'align_plots.R' 'as_grob.R' 'as_gtable.R' 'axis_canvas.R' 'cowplot.R' 'draw.R' 'get_plot_component.R' 'get_axes.R' 'get_titles.R' 'get_legend.R' 'get_panel.R' 'gtable.R' 'key_glyph.R' 'plot_grid.R' 'save.R' 'set_null_device.R' 'setup.R' 'stamp.R' 'themes.R' 'utils_ggplot2.R'",
+      "RoxygenNote": "7.3.2",
+      "Encoding": "UTF-8",
+      "NeedsCompilation": "no",
+      "Author": "Claus O. Wilke [aut, cre] (ORCID: <https://orcid.org/0000-0002-7470-9261>)",
+      "Maintainer": "Claus O. Wilke <wilke@austin.utexas.edu>",
       "Repository": "CRAN"
     },
     "cpp11": {
@@ -1860,37 +1854,83 @@
       "RemoteRef": "main",
       "RemoteSha": "d47f50ae03bf681d11c792c8677be738de28a0fe"
     },
+    "ggpattern": {
+      "Package": "ggpattern",
+      "Version": "1.2.1",
+      "Source": "Repository",
+      "Type": "Package",
+      "Title": "'ggplot2' Pattern Geoms",
+      "Authors@R": "c(person(\"Mike\", \"FC\", role = \"aut\"), person(\"Trevor L.\", \"Davis\", role = c(\"aut\", \"cre\"), email = \"trevor.l.davis@gmail.com\", comment = c(ORCID = \"0000-0001-6341-4639\")), person(\"ggplot2 authors\", role = \"aut\"))",
+      "Description": "Provides 'ggplot2' geoms filled with various patterns.  Includes a patterned version of every 'ggplot2' geom that has a region that can be filled with a pattern.  Provides a suite of 'ggplot2' aesthetics and scales for controlling pattern appearances.  Supports over a dozen builtin patterns (every pattern implemented by 'gridpattern') as well as allowing custom user-defined patterns.",
+      "URL": "https://github.com/trevorld/ggpattern, https://trevorldavis.com/R/ggpattern/",
+      "BugReports": "https://github.com/trevorld/ggpattern/issues",
+      "License": "MIT + file LICENSE",
+      "Encoding": "UTF-8",
+      "RoxygenNote": "7.3.2",
+      "Imports": [
+        "cli",
+        "ggplot2 (>= 3.5.1)",
+        "glue",
+        "grid",
+        "gridpattern (>= 1.2.2)",
+        "lifecycle",
+        "rlang (>= 1.1.3)",
+        "scales",
+        "vctrs"
+      ],
+      "Suggests": [
+        "ambient",
+        "dplyr",
+        "gganimate",
+        "knitr (>= 1.47)",
+        "magick",
+        "mapproj",
+        "maps",
+        "png",
+        "ragg (>= 1.2.0)",
+        "readr",
+        "rmarkdown (>= 2.27)",
+        "sf (>= 0.7-3)",
+        "svglite (>= 2.1.3)",
+        "testthat (>= 2.1.0)",
+        "vdiffr (>= 1.0.6)"
+      ],
+      "VignetteBuilder": "knitr, ragg, rmarkdown",
+      "Collate": "'a-geom-docs.R' 'aaa-ggplot2-compat-plyr.R' 'aaa-ggplot2-ggplot-global.R' 'aaa-ggplot2-performance.R' 'aaa-ggplot2-scale-manual.R' 'aaa-ggplot2-utilities-grid.R' 'aaa-ggplot2-utilities.R' 'geom-.R' 'geom-rect.R' 'geom-bar.R' 'geom-bin2d.R' 'geom-boxplot.R' 'geom-col.R' 'geom-crossbar.R' 'geom-ribbon.R' 'geom-density.R' 'geom-histogram.R' 'geom-polygon.R' 'geom-map.R' 'geom-sf.R' 'geom-tile.R' 'geom-violin.R' 'ggpattern-defunct.R' 'ggpattern-deprecated.R' 'ggpattern-package.R' 'pattern.R' 'polygon_df.R' 'scale-pattern-alpha.R' 'scale-pattern-auto.R' 'scale-pattern-brewer.R' 'scale-pattern-colour.R' 'scale-pattern-gradient.R' 'scale-pattern-grey.R' 'scale-pattern-hue.R' 'scale-pattern-linetype.R' 'scale-pattern-shape.R' 'scale-pattern-size.R' 'scale-pattern-viridis.R' 'scale-pattern.R' 'zxx.r' 'zzz.R'",
+      "NeedsCompilation": "no",
+      "Author": "Mike FC [aut], Trevor L. Davis [aut, cre] (ORCID: <https://orcid.org/0000-0001-6341-4639>), ggplot2 authors [aut]",
+      "Maintainer": "Trevor L. Davis <trevor.l.davis@gmail.com>",
+      "Repository": "CRAN"
+    },
     "ggplot2": {
       "Package": "ggplot2",
-      "Version": "3.5.1",
+      "Version": "4.0.0",
       "Source": "Repository",
       "Title": "Create Elegant Data Visualisations Using the Grammar of Graphics",
-      "Authors@R": "c( person(\"Hadley\", \"Wickham\", , \"hadley@posit.co\", role = \"aut\", comment = c(ORCID = \"0000-0003-4757-117X\")), person(\"Winston\", \"Chang\", role = \"aut\", comment = c(ORCID = \"0000-0002-1576-2126\")), person(\"Lionel\", \"Henry\", role = \"aut\"), person(\"Thomas Lin\", \"Pedersen\", , \"thomas.pedersen@posit.co\", role = c(\"aut\", \"cre\"), comment = c(ORCID = \"0000-0002-5147-4711\")), person(\"Kohske\", \"Takahashi\", role = \"aut\"), person(\"Claus\", \"Wilke\", role = \"aut\", comment = c(ORCID = \"0000-0002-7470-9261\")), person(\"Kara\", \"Woo\", role = \"aut\", comment = c(ORCID = \"0000-0002-5125-4188\")), person(\"Hiroaki\", \"Yutani\", role = \"aut\", comment = c(ORCID = \"0000-0002-3385-7233\")), person(\"Dewey\", \"Dunnington\", role = \"aut\", comment = c(ORCID = \"0000-0002-9415-4582\")), person(\"Teun\", \"van den Brand\", role = \"aut\", comment = c(ORCID = \"0000-0002-9335-7468\")), person(\"Posit, PBC\", role = c(\"cph\", \"fnd\")) )",
+      "Authors@R": "c( person(\"Hadley\", \"Wickham\", , \"hadley@posit.co\", role = \"aut\", comment = c(ORCID = \"0000-0003-4757-117X\")), person(\"Winston\", \"Chang\", role = \"aut\", comment = c(ORCID = \"0000-0002-1576-2126\")), person(\"Lionel\", \"Henry\", role = \"aut\"), person(\"Thomas Lin\", \"Pedersen\", , \"thomas.pedersen@posit.co\", role = c(\"aut\", \"cre\"), comment = c(ORCID = \"0000-0002-5147-4711\")), person(\"Kohske\", \"Takahashi\", role = \"aut\"), person(\"Claus\", \"Wilke\", role = \"aut\", comment = c(ORCID = \"0000-0002-7470-9261\")), person(\"Kara\", \"Woo\", role = \"aut\", comment = c(ORCID = \"0000-0002-5125-4188\")), person(\"Hiroaki\", \"Yutani\", role = \"aut\", comment = c(ORCID = \"0000-0002-3385-7233\")), person(\"Dewey\", \"Dunnington\", role = \"aut\", comment = c(ORCID = \"0000-0002-9415-4582\")), person(\"Teun\", \"van den Brand\", role = \"aut\", comment = c(ORCID = \"0000-0002-9335-7468\")), person(\"Posit, PBC\", role = c(\"cph\", \"fnd\"), comment = c(ROR = \"03wc8by49\")) )",
       "Description": "A system for 'declaratively' creating graphics, based on \"The Grammar of Graphics\". You provide the data, tell 'ggplot2' how to map variables to aesthetics, what graphical primitives to use, and it takes care of the details.",
       "License": "MIT + file LICENSE",
       "URL": "https://ggplot2.tidyverse.org, https://github.com/tidyverse/ggplot2",
       "BugReports": "https://github.com/tidyverse/ggplot2/issues",
       "Depends": [
-        "R (>= 3.5)"
+        "R (>= 4.1)"
       ],
       "Imports": [
         "cli",
-        "glue",
         "grDevices",
         "grid",
-        "gtable (>= 0.1.1)",
+        "gtable (>= 0.3.6)",
         "isoband",
         "lifecycle (> 1.0.1)",
-        "MASS",
-        "mgcv",
         "rlang (>= 1.1.0)",
-        "scales (>= 1.3.0)",
+        "S7",
+        "scales (>= 1.4.0)",
         "stats",
-        "tibble",
         "vctrs (>= 0.6.0)",
         "withr (>= 2.5.0)"
       ],
       "Suggests": [
+        "broom",
         "covr",
         "dplyr",
         "ggplot2movies",
@@ -1899,6 +1939,8 @@
         "knitr",
         "mapproj",
         "maps",
+        "MASS",
+        "mgcv",
         "multcomp",
         "munsell",
         "nlme",
@@ -1907,10 +1949,12 @@
         "ragg (>= 1.2.6)",
         "RColorBrewer",
         "rmarkdown",
+        "roxygen2",
         "rpart",
         "sf (>= 0.7-3)",
         "svglite (>= 2.1.2)",
-        "testthat (>= 3.1.2)",
+        "testthat (>= 3.1.5)",
+        "tibble",
         "vdiffr (>= 1.0.6)",
         "xml2"
       ],
@@ -1920,12 +1964,13 @@
       "VignetteBuilder": "knitr",
       "Config/Needs/website": "ggtext, tidyr, forcats, tidyverse/tidytemplate",
       "Config/testthat/edition": "3",
+      "Config/usethis/last-upkeep": "2025-04-23",
       "Encoding": "UTF-8",
       "LazyData": "true",
-      "RoxygenNote": "7.3.1",
-      "Collate": "'ggproto.R' 'ggplot-global.R' 'aaa-.R' 'aes-colour-fill-alpha.R' 'aes-evaluation.R' 'aes-group-order.R' 'aes-linetype-size-shape.R' 'aes-position.R' 'compat-plyr.R' 'utilities.R' 'aes.R' 'utilities-checks.R' 'legend-draw.R' 'geom-.R' 'annotation-custom.R' 'annotation-logticks.R' 'geom-polygon.R' 'geom-map.R' 'annotation-map.R' 'geom-raster.R' 'annotation-raster.R' 'annotation.R' 'autolayer.R' 'autoplot.R' 'axis-secondary.R' 'backports.R' 'bench.R' 'bin.R' 'coord-.R' 'coord-cartesian-.R' 'coord-fixed.R' 'coord-flip.R' 'coord-map.R' 'coord-munch.R' 'coord-polar.R' 'coord-quickmap.R' 'coord-radial.R' 'coord-sf.R' 'coord-transform.R' 'data.R' 'docs_layer.R' 'facet-.R' 'facet-grid-.R' 'facet-null.R' 'facet-wrap.R' 'fortify-lm.R' 'fortify-map.R' 'fortify-multcomp.R' 'fortify-spatial.R' 'fortify.R' 'stat-.R' 'geom-abline.R' 'geom-rect.R' 'geom-bar.R' 'geom-bin2d.R' 'geom-blank.R' 'geom-boxplot.R' 'geom-col.R' 'geom-path.R' 'geom-contour.R' 'geom-count.R' 'geom-crossbar.R' 'geom-segment.R' 'geom-curve.R' 'geom-defaults.R' 'geom-ribbon.R' 'geom-density.R' 'geom-density2d.R' 'geom-dotplot.R' 'geom-errorbar.R' 'geom-errorbarh.R' 'geom-freqpoly.R' 'geom-function.R' 'geom-hex.R' 'geom-histogram.R' 'geom-hline.R' 'geom-jitter.R' 'geom-label.R' 'geom-linerange.R' 'geom-point.R' 'geom-pointrange.R' 'geom-quantile.R' 'geom-rug.R' 'geom-sf.R' 'geom-smooth.R' 'geom-spoke.R' 'geom-text.R' 'geom-tile.R' 'geom-violin.R' 'geom-vline.R' 'ggplot2-package.R' 'grob-absolute.R' 'grob-dotstack.R' 'grob-null.R' 'grouping.R' 'theme-elements.R' 'guide-.R' 'guide-axis.R' 'guide-axis-logticks.R' 'guide-axis-stack.R' 'guide-axis-theta.R' 'guide-legend.R' 'guide-bins.R' 'guide-colorbar.R' 'guide-colorsteps.R' 'guide-custom.R' 'layer.R' 'guide-none.R' 'guide-old.R' 'guides-.R' 'guides-grid.R' 'hexbin.R' 'import-standalone-obj-type.R' 'import-standalone-types-check.R' 'labeller.R' 'labels.R' 'layer-sf.R' 'layout.R' 'limits.R' 'margins.R' 'performance.R' 'plot-build.R' 'plot-construction.R' 'plot-last.R' 'plot.R' 'position-.R' 'position-collide.R' 'position-dodge.R' 'position-dodge2.R' 'position-identity.R' 'position-jitter.R' 'position-jitterdodge.R' 'position-nudge.R' 'position-stack.R' 'quick-plot.R' 'reshape-add-margins.R' 'save.R' 'scale-.R' 'scale-alpha.R' 'scale-binned.R' 'scale-brewer.R' 'scale-colour.R' 'scale-continuous.R' 'scale-date.R' 'scale-discrete-.R' 'scale-expansion.R' 'scale-gradient.R' 'scale-grey.R' 'scale-hue.R' 'scale-identity.R' 'scale-linetype.R' 'scale-linewidth.R' 'scale-manual.R' 'scale-shape.R' 'scale-size.R' 'scale-steps.R' 'scale-type.R' 'scale-view.R' 'scale-viridis.R' 'scales-.R' 'stat-align.R' 'stat-bin.R' 'stat-bin2d.R' 'stat-bindot.R' 'stat-binhex.R' 'stat-boxplot.R' 'stat-contour.R' 'stat-count.R' 'stat-density-2d.R' 'stat-density.R' 'stat-ecdf.R' 'stat-ellipse.R' 'stat-function.R' 'stat-identity.R' 'stat-qq-line.R' 'stat-qq.R' 'stat-quantilemethods.R' 'stat-sf-coordinates.R' 'stat-sf.R' 'stat-smooth-methods.R' 'stat-smooth.R' 'stat-sum.R' 'stat-summary-2d.R' 'stat-summary-bin.R' 'stat-summary-hex.R' 'stat-summary.R' 'stat-unique.R' 'stat-ydensity.R' 'summarise-plot.R' 'summary.R' 'theme.R' 'theme-defaults.R' 'theme-current.R' 'utilities-break.R' 'utilities-grid.R' 'utilities-help.R' 'utilities-matrix.R' 'utilities-patterns.R' 'utilities-resolution.R' 'utilities-tidy-eval.R' 'zxx.R' 'zzz.R'",
+      "RoxygenNote": "7.3.2",
+      "Collate": "'ggproto.R' 'ggplot-global.R' 'aaa-.R' 'aes-colour-fill-alpha.R' 'aes-evaluation.R' 'aes-group-order.R' 'aes-linetype-size-shape.R' 'aes-position.R' 'all-classes.R' 'compat-plyr.R' 'utilities.R' 'aes.R' 'annotation-borders.R' 'utilities-checks.R' 'legend-draw.R' 'geom-.R' 'annotation-custom.R' 'annotation-logticks.R' 'scale-type.R' 'layer.R' 'make-constructor.R' 'geom-polygon.R' 'geom-map.R' 'annotation-map.R' 'geom-raster.R' 'annotation-raster.R' 'annotation.R' 'autolayer.R' 'autoplot.R' 'axis-secondary.R' 'backports.R' 'bench.R' 'bin.R' 'coord-.R' 'coord-cartesian-.R' 'coord-fixed.R' 'coord-flip.R' 'coord-map.R' 'coord-munch.R' 'coord-polar.R' 'coord-quickmap.R' 'coord-radial.R' 'coord-sf.R' 'coord-transform.R' 'data.R' 'docs_layer.R' 'facet-.R' 'facet-grid-.R' 'facet-null.R' 'facet-wrap.R' 'fortify-map.R' 'fortify-models.R' 'fortify-spatial.R' 'fortify.R' 'stat-.R' 'geom-abline.R' 'geom-rect.R' 'geom-bar.R' 'geom-tile.R' 'geom-bin2d.R' 'geom-blank.R' 'geom-boxplot.R' 'geom-col.R' 'geom-path.R' 'geom-contour.R' 'geom-point.R' 'geom-count.R' 'geom-crossbar.R' 'geom-segment.R' 'geom-curve.R' 'geom-defaults.R' 'geom-ribbon.R' 'geom-density.R' 'geom-density2d.R' 'geom-dotplot.R' 'geom-errorbar.R' 'geom-freqpoly.R' 'geom-function.R' 'geom-hex.R' 'geom-histogram.R' 'geom-hline.R' 'geom-jitter.R' 'geom-label.R' 'geom-linerange.R' 'geom-pointrange.R' 'geom-quantile.R' 'geom-rug.R' 'geom-sf.R' 'geom-smooth.R' 'geom-spoke.R' 'geom-text.R' 'geom-violin.R' 'geom-vline.R' 'ggplot2-package.R' 'grob-absolute.R' 'grob-dotstack.R' 'grob-null.R' 'grouping.R' 'properties.R' 'margins.R' 'theme-elements.R' 'guide-.R' 'guide-axis.R' 'guide-axis-logticks.R' 'guide-axis-stack.R' 'guide-axis-theta.R' 'guide-legend.R' 'guide-bins.R' 'guide-colorbar.R' 'guide-colorsteps.R' 'guide-custom.R' 'guide-none.R' 'guide-old.R' 'guides-.R' 'guides-grid.R' 'hexbin.R' 'import-standalone-obj-type.R' 'import-standalone-types-check.R' 'labeller.R' 'labels.R' 'layer-sf.R' 'layout.R' 'limits.R' 'performance.R' 'plot-build.R' 'plot-construction.R' 'plot-last.R' 'plot.R' 'position-.R' 'position-collide.R' 'position-dodge.R' 'position-dodge2.R' 'position-identity.R' 'position-jitter.R' 'position-jitterdodge.R' 'position-nudge.R' 'position-stack.R' 'quick-plot.R' 'reshape-add-margins.R' 'save.R' 'scale-.R' 'scale-alpha.R' 'scale-binned.R' 'scale-brewer.R' 'scale-colour.R' 'scale-continuous.R' 'scale-date.R' 'scale-discrete-.R' 'scale-expansion.R' 'scale-gradient.R' 'scale-grey.R' 'scale-hue.R' 'scale-identity.R' 'scale-linetype.R' 'scale-linewidth.R' 'scale-manual.R' 'scale-shape.R' 'scale-size.R' 'scale-steps.R' 'scale-view.R' 'scale-viridis.R' 'scales-.R' 'stat-align.R' 'stat-bin.R' 'stat-summary-2d.R' 'stat-bin2d.R' 'stat-bindot.R' 'stat-binhex.R' 'stat-boxplot.R' 'stat-connect.R' 'stat-contour.R' 'stat-count.R' 'stat-density-2d.R' 'stat-density.R' 'stat-ecdf.R' 'stat-ellipse.R' 'stat-function.R' 'stat-identity.R' 'stat-manual.R' 'stat-qq-line.R' 'stat-qq.R' 'stat-quantilemethods.R' 'stat-sf-coordinates.R' 'stat-sf.R' 'stat-smooth-methods.R' 'stat-smooth.R' 'stat-sum.R' 'stat-summary-bin.R' 'stat-summary-hex.R' 'stat-summary.R' 'stat-unique.R' 'stat-ydensity.R' 'summarise-plot.R' 'summary.R' 'theme.R' 'theme-defaults.R' 'theme-current.R' 'theme-sub.R' 'utilities-break.R' 'utilities-grid.R' 'utilities-help.R' 'utilities-patterns.R' 'utilities-resolution.R' 'utilities-tidy-eval.R' 'zxx.R' 'zzz.R'",
       "NeedsCompilation": "no",
-      "Author": "Hadley Wickham [aut] (<https://orcid.org/0000-0003-4757-117X>), Winston Chang [aut] (<https://orcid.org/0000-0002-1576-2126>), Lionel Henry [aut], Thomas Lin Pedersen [aut, cre] (<https://orcid.org/0000-0002-5147-4711>), Kohske Takahashi [aut], Claus Wilke [aut] (<https://orcid.org/0000-0002-7470-9261>), Kara Woo [aut] (<https://orcid.org/0000-0002-5125-4188>), Hiroaki Yutani [aut] (<https://orcid.org/0000-0002-3385-7233>), Dewey Dunnington [aut] (<https://orcid.org/0000-0002-9415-4582>), Teun van den Brand [aut] (<https://orcid.org/0000-0002-9335-7468>), Posit, PBC [cph, fnd]",
+      "Author": "Hadley Wickham [aut] (ORCID: <https://orcid.org/0000-0003-4757-117X>), Winston Chang [aut] (ORCID: <https://orcid.org/0000-0002-1576-2126>), Lionel Henry [aut], Thomas Lin Pedersen [aut, cre] (ORCID: <https://orcid.org/0000-0002-5147-4711>), Kohske Takahashi [aut], Claus Wilke [aut] (ORCID: <https://orcid.org/0000-0002-7470-9261>), Kara Woo [aut] (ORCID: <https://orcid.org/0000-0002-5125-4188>), Hiroaki Yutani [aut] (ORCID: <https://orcid.org/0000-0002-3385-7233>), Dewey Dunnington [aut] (ORCID: <https://orcid.org/0000-0002-9415-4582>), Teun van den Brand [aut] (ORCID: <https://orcid.org/0000-0002-9335-7468>), Posit, PBC [cph, fnd] (ROR: <https://ror.org/03wc8by49>)",
       "Maintainer": "Thomas Lin Pedersen <thomas.pedersen@posit.co>",
       "Repository": "CRAN"
     },
@@ -2073,6 +2118,52 @@
       "Maintainer": "Jennifer Bryan <jenny@posit.co>",
       "Repository": "CRAN"
     },
+    "gridpattern": {
+      "Package": "gridpattern",
+      "Version": "1.3.1",
+      "Source": "Repository",
+      "Type": "Package",
+      "Title": "'grid' Pattern Grobs",
+      "Authors@R": "c( person(\"Trevor L.\", \"Davis\", role=c(\"aut\", \"cre\"), email=\"trevor.l.davis@gmail.com\", comment = c(ORCID = \"0000-0001-6341-4639\")), person(\"Mike\", \"FC\", role = \"aut\", comment = \"Code/docs adapted from ggpattern\"), person(\"ggplot2 authors\", role = \"ctb\", comment = \"some utility functions copied from ggplot2\"))",
+      "Description": "Provides 'grid' grobs that fill in a user-defined area with various patterns.  Includes enhanced versions of the geometric and image-based patterns originally contained in the 'ggpattern' package as well as original 'pch', 'polygon_tiling', 'regular_polygon', 'rose', 'text', 'wave', and 'weave' patterns plus support for custom user-defined patterns.",
+      "URL": "https://trevorldavis.com/R/gridpattern/, https://github.com/trevorld/gridpattern",
+      "BugReports": "https://github.com/trevorld/gridpattern/issues",
+      "License": "MIT + file LICENSE",
+      "Encoding": "UTF-8",
+      "RoxygenNote": "7.3.1",
+      "Depends": [
+        "R (>= 3.4.0)"
+      ],
+      "Imports": [
+        "glue",
+        "grDevices",
+        "grid",
+        "memoise",
+        "png",
+        "rlang",
+        "sf",
+        "utils"
+      ],
+      "Suggests": [
+        "ambient",
+        "aRtsy",
+        "ggplot2 (>= 3.5.0)",
+        "gtable",
+        "knitr",
+        "magick (>= 2.7.4)",
+        "ragg (>= 1.2.0)",
+        "rmarkdown",
+        "scales",
+        "svglite (>= 2.1.0)",
+        "testthat",
+        "vdiffr (>= 1.0.6)"
+      ],
+      "VignetteBuilder": "knitr, rmarkdown",
+      "NeedsCompilation": "no",
+      "Author": "Trevor L. Davis [aut, cre] (<https://orcid.org/0000-0001-6341-4639>), Mike FC [aut] (Code/docs adapted from ggpattern), ggplot2 authors [ctb] (some utility functions copied from ggplot2)",
+      "Maintainer": "Trevor L. Davis <trevor.l.davis@gmail.com>",
+      "Repository": "CRAN"
+    },
     "gt": {
       "Package": "gt",
       "Version": "0.11.1",
@@ -2145,7 +2236,7 @@
     },
     "gtable": {
       "Package": "gtable",
-      "Version": "0.3.5",
+      "Version": "0.3.6",
       "Source": "Repository",
       "Title": "Arrange 'Grobs' in Tables",
       "Authors@R": "c( person(\"Hadley\", \"Wickham\", , \"hadley@posit.co\", role = \"aut\"), person(\"Thomas Lin\", \"Pedersen\", , \"thomas.pedersen@posit.co\", role = c(\"aut\", \"cre\")), person(\"Posit Software, PBC\", role = c(\"cph\", \"fnd\")) )",
@@ -2154,14 +2245,15 @@
       "URL": "https://gtable.r-lib.org, https://github.com/r-lib/gtable",
       "BugReports": "https://github.com/r-lib/gtable/issues",
       "Depends": [
-        "R (>= 3.5)"
+        "R (>= 4.0)"
       ],
       "Imports": [
         "cli",
         "glue",
         "grid",
         "lifecycle",
-        "rlang (>= 1.1.0)"
+        "rlang (>= 1.1.0)",
+        "stats"
       ],
       "Suggests": [
         "covr",
@@ -2174,12 +2266,13 @@
       "VignetteBuilder": "knitr",
       "Config/Needs/website": "tidyverse/tidytemplate",
       "Config/testthat/edition": "3",
+      "Config/usethis/last-upkeep": "2024-10-25",
       "Encoding": "UTF-8",
-      "RoxygenNote": "7.3.1",
+      "RoxygenNote": "7.3.2",
       "NeedsCompilation": "no",
       "Author": "Hadley Wickham [aut], Thomas Lin Pedersen [aut, cre], Posit Software, PBC [cph, fnd]",
       "Maintainer": "Thomas Lin Pedersen <thomas.pedersen@posit.co>",
-      "Repository": "RSPM"
+      "Repository": "CRAN"
     },
     "here": {
       "Package": "here",
@@ -3275,38 +3368,6 @@
       "Maintainer": "Winston Chang <winston@rstudio.com>",
       "Repository": "CRAN"
     },
-    "mgcv": {
-      "Package": "mgcv",
-      "Version": "1.9-1",
-      "Source": "Repository",
-      "Author": "Simon Wood <simon.wood@r-project.org>",
-      "Maintainer": "Simon Wood <simon.wood@r-project.org>",
-      "Title": "Mixed GAM Computation Vehicle with Automatic Smoothness Estimation",
-      "Description": "Generalized additive (mixed) models, some of their extensions and  other generalized ridge regression with multiple smoothing  parameter estimation by (Restricted) Marginal Likelihood,  Generalized Cross Validation and similar, or using iterated  nested Laplace approximation for fully Bayesian inference. See  Wood (2017) <doi:10.1201/9781315370279> for an overview.  Includes a gam() function, a wide variety of smoothers, 'JAGS'  support and distributions beyond the exponential family.",
-      "Priority": "recommended",
-      "Depends": [
-        "R (>= 3.6.0)",
-        "nlme (>= 3.1-64)"
-      ],
-      "Imports": [
-        "methods",
-        "stats",
-        "graphics",
-        "Matrix",
-        "splines",
-        "utils"
-      ],
-      "Suggests": [
-        "parallel",
-        "survival",
-        "MASS"
-      ],
-      "LazyLoad": "yes",
-      "ByteCompile": "yes",
-      "License": "GPL (>= 2)",
-      "NeedsCompilation": "yes",
-      "Repository": "CRAN"
-    },
     "mime": {
       "Package": "mime",
       "Version": "0.12",
@@ -3353,65 +3414,6 @@
       "NeedsCompilation": "no",
       "Author": "Noam Finkelstein [aut], Lukasz Bartnik [aut], Jim Hester [aut], Hadley Wickham [aut, cre]",
       "Maintainer": "Hadley Wickham <hadley@rstudio.com>",
-      "Repository": "CRAN"
-    },
-    "munsell": {
-      "Package": "munsell",
-      "Version": "0.5.1",
-      "Source": "Repository",
-      "Type": "Package",
-      "Title": "Utilities for Using Munsell Colours",
-      "Author": "Charlotte Wickham <cwickham@gmail.com>",
-      "Maintainer": "Charlotte Wickham <cwickham@gmail.com>",
-      "Description": "Provides easy access to, and manipulation of, the Munsell  colours. Provides a mapping between Munsell's  original notation (e.g. \"5R 5/10\") and hexadecimal strings suitable  for use directly in R graphics. Also provides utilities  to explore slices through the Munsell colour tree, to transform  Munsell colours and display colour palettes.",
-      "Suggests": [
-        "ggplot2",
-        "testthat"
-      ],
-      "Imports": [
-        "colorspace",
-        "methods"
-      ],
-      "License": "MIT + file LICENSE",
-      "URL": "https://cran.r-project.org/package=munsell, https://github.com/cwickham/munsell/",
-      "RoxygenNote": "7.3.1",
-      "Encoding": "UTF-8",
-      "BugReports": "https://github.com/cwickham/munsell/issues",
-      "NeedsCompilation": "no",
-      "Repository": "CRAN"
-    },
-    "nlme": {
-      "Package": "nlme",
-      "Version": "3.1-166",
-      "Source": "Repository",
-      "Date": "2024-08-13",
-      "Priority": "recommended",
-      "Title": "Linear and Nonlinear Mixed Effects Models",
-      "Authors@R": "c(person(\"José\", \"Pinheiro\", role = \"aut\", comment = \"S version\"), person(\"Douglas\", \"Bates\", role = \"aut\", comment = \"up to 2007\"), person(\"Saikat\", \"DebRoy\", role = \"ctb\", comment = \"up to 2002\"), person(\"Deepayan\", \"Sarkar\", role = \"ctb\", comment = \"up to 2005\"), person(\"EISPACK authors\", role = \"ctb\", comment = \"src/rs.f\"), person(\"Siem\", \"Heisterkamp\", role = \"ctb\", comment = \"Author fixed sigma\"), person(\"Bert\", \"Van Willigen\",role = \"ctb\", comment = \"Programmer fixed sigma\"), person(\"Johannes\", \"Ranke\", role = \"ctb\", comment = \"varConstProp()\"), person(\"R Core Team\", email = \"R-core@R-project.org\", role = c(\"aut\", \"cre\")))",
-      "Contact": "see 'MailingList'",
-      "Description": "Fit and compare Gaussian linear and nonlinear mixed-effects models.",
-      "Depends": [
-        "R (>= 3.6.0)"
-      ],
-      "Imports": [
-        "graphics",
-        "stats",
-        "utils",
-        "lattice"
-      ],
-      "Suggests": [
-        "MASS",
-        "SASmixed"
-      ],
-      "LazyData": "yes",
-      "Encoding": "UTF-8",
-      "License": "GPL (>= 2)",
-      "BugReports": "https://bugs.r-project.org",
-      "MailingList": "R-help@r-project.org",
-      "URL": "https://svn.r-project.org/R-packages/trunk/nlme/",
-      "NeedsCompilation": "yes",
-      "Author": "José Pinheiro [aut] (S version), Douglas Bates [aut] (up to 2007), Saikat DebRoy [ctb] (up to 2002), Deepayan Sarkar [ctb] (up to 2005), EISPACK authors [ctb] (src/rs.f), Siem Heisterkamp [ctb] (Author fixed sigma), Bert Van Willigen [ctb] (Programmer fixed sigma), Johannes Ranke [ctb] (varConstProp()), R Core Team [aut, cre]",
-      "Maintainer": "R Core Team <R-core@R-project.org>",
       "Repository": "CRAN"
     },
     "openai": {
@@ -4498,6 +4500,55 @@
       "Maintainer": "Yihui Xie <xie@yihui.name>",
       "Repository": "CRAN"
     },
+    "rnaturalearth": {
+      "Package": "rnaturalearth",
+      "Version": "1.1.0",
+      "Source": "Repository",
+      "Title": "World Map Data from Natural Earth",
+      "Authors@R": "c( person( family = \"Massicotte\", given = \"Philippe\", email = \"pmassicotte@hotmail.com\", role = c(\"aut\", \"cre\"), comment = c(ORCID = \"0000-0002-5919-4116\") ), person( family = \"South\", given = \"Andy\", email = \"southandy@gmail.com\", role = c(\"aut\") ), person( family = \"Hufkens\", given = \"Koen\", email = \"koen.hufkens@gmail.com\", role = c(\"ctb\"), comment = c(ORCID = \"0000-0002-5070-8109\") ))",
+      "Description": "Facilitates mapping by making natural earth map data from <https://www.naturalearthdata.com/> more easily available to R users.",
+      "License": "MIT + file LICENSE",
+      "LazyData": "true",
+      "LazyDataCompression": "xz",
+      "Encoding": "UTF-8",
+      "URL": "https://docs.ropensci.org/rnaturalearth/, https://github.com/ropensci/rnaturalearth, https://docs.ropensci.org/rnaturalearthhires/",
+      "BugReports": "https://github.com/ropensci/rnaturalearth/issues",
+      "Additional_repositories": "http://packages.ropensci.org",
+      "Depends": [
+        "R (>= 3.1.1)"
+      ],
+      "Imports": [
+        "cli",
+        "httr (>= 1.1.0)",
+        "jsonlite",
+        "sf (>= 0.3-4)",
+        "terra",
+        "utils (>= 3.2.3)"
+      ],
+      "Suggests": [
+        "devtools (>= 1.10.0)",
+        "dplyr",
+        "ggplot2",
+        "ggrepel",
+        "knitr (>= 1.12.3)",
+        "lifecycle (>= 1.0.3)",
+        "pbapply",
+        "purrr",
+        "rlang",
+        "rmarkdown",
+        "rnaturalearthdata (>= 1.0.0)",
+        "rnaturalearthhires (>= 1.0.0)",
+        "testthat (>= 0.9.1)",
+        "tmap"
+      ],
+      "Config/Needs/website": "ropensci/rnaturalearthhires",
+      "VignetteBuilder": "knitr",
+      "RoxygenNote": "7.3.2",
+      "NeedsCompilation": "no",
+      "Author": "Philippe Massicotte [aut, cre] (ORCID: <https://orcid.org/0000-0002-5919-4116>), Andy South [aut], Koen Hufkens [ctb] (ORCID: <https://orcid.org/0000-0002-5070-8109>)",
+      "Maintainer": "Philippe Massicotte <pmassicotte@hotmail.com>",
+      "Repository": "CRAN"
+    },
     "rprojroot": {
       "Package": "rprojroot",
       "Version": "2.0.4",
@@ -4653,16 +4704,16 @@
     },
     "scales": {
       "Package": "scales",
-      "Version": "1.3.0",
+      "Version": "1.4.0",
       "Source": "Repository",
       "Title": "Scale Functions for Visualization",
-      "Authors@R": "c( person(\"Hadley\", \"Wickham\", , \"hadley@posit.co\", role = c(\"aut\")), person(\"Thomas Lin\", \"Pedersen\", , \"thomas.pedersen@posit.co\", role = c(\"cre\", \"aut\"), comment = c(ORCID = \"0000-0002-5147-4711\")), person(\"Dana\", \"Seidel\", role = \"aut\"), person(\"Posit, PBC\", role = c(\"cph\", \"fnd\")) )",
+      "Authors@R": "c( person(\"Hadley\", \"Wickham\", , \"hadley@posit.co\", role = \"aut\"), person(\"Thomas Lin\", \"Pedersen\", , \"thomas.pedersen@posit.co\", role = c(\"cre\", \"aut\"), comment = c(ORCID = \"0000-0002-5147-4711\")), person(\"Dana\", \"Seidel\", role = \"aut\"), person(\"Posit Software, PBC\", role = c(\"cph\", \"fnd\"), comment = c(ROR = \"03wc8by49\")) )",
       "Description": "Graphical scales map data to aesthetics, and provide methods for automatically determining breaks and labels for axes and legends.",
       "License": "MIT + file LICENSE",
       "URL": "https://scales.r-lib.org, https://github.com/r-lib/scales",
       "BugReports": "https://github.com/r-lib/scales/issues",
       "Depends": [
-        "R (>= 3.6)"
+        "R (>= 4.1)"
       ],
       "Imports": [
         "cli",
@@ -4670,10 +4721,9 @@
         "glue",
         "labeling",
         "lifecycle",
-        "munsell (>= 0.5)",
         "R6",
         "RColorBrewer",
-        "rlang (>= 1.0.0)",
+        "rlang (>= 1.1.0)",
         "viridisLite"
       ],
       "Suggests": [
@@ -4687,11 +4737,12 @@
       ],
       "Config/Needs/website": "tidyverse/tidytemplate",
       "Config/testthat/edition": "3",
+      "Config/usethis/last-upkeep": "2025-04-23",
       "Encoding": "UTF-8",
       "LazyLoad": "yes",
-      "RoxygenNote": "7.2.3",
-      "NeedsCompilation": "yes",
-      "Author": "Hadley Wickham [aut], Thomas Lin Pedersen [cre, aut] (<https://orcid.org/0000-0002-5147-4711>), Dana Seidel [aut], Posit, PBC [cph, fnd]",
+      "RoxygenNote": "7.3.2",
+      "NeedsCompilation": "no",
+      "Author": "Hadley Wickham [aut], Thomas Lin Pedersen [cre, aut] (<https://orcid.org/0000-0002-5147-4711>), Dana Seidel [aut], Posit Software, PBC [cph, fnd] (03wc8by49)",
       "Maintainer": "Thomas Lin Pedersen <thomas.pedersen@posit.co>",
       "Repository": "CRAN"
     },
@@ -5017,6 +5068,47 @@
       "RoxygenNote": "7.3.1",
       "Encoding": "UTF-8",
       "NeedsCompilation": "yes",
+      "Repository": "CRAN"
+    },
+    "terra": {
+      "Package": "terra",
+      "Version": "1.8-70",
+      "Source": "Repository",
+      "Type": "Package",
+      "Title": "Spatial Data Analysis",
+      "Date": "2025-09-26",
+      "Depends": [
+        "R (>= 3.5.0)"
+      ],
+      "Suggests": [
+        "parallel",
+        "tinytest",
+        "ncdf4",
+        "sf (>= 0.9-8)",
+        "deldir",
+        "XML",
+        "leaflet (>= 2.2.1)",
+        "htmlwidgets"
+      ],
+      "LinkingTo": [
+        "Rcpp"
+      ],
+      "Imports": [
+        "methods",
+        "Rcpp (>= 1.0-10)"
+      ],
+      "SystemRequirements": "C++17, GDAL (>= 2.2.3), GEOS (>= 3.4.0), PROJ (>= 4.9.3), TBB, sqlite3",
+      "Encoding": "UTF-8",
+      "Language": "en-US",
+      "Maintainer": "Robert J. Hijmans <r.hijmans@gmail.com>",
+      "Description": "Methods for spatial data analysis with vector (points, lines, polygons) and raster (grid) data. Methods for vector data include geometric operations such as intersect and buffer. Raster methods include local, focal, global, zonal and geometric operations. The predict and interpolate methods facilitate the use of regression type (interpolation, machine learning) models for spatial prediction, including with satellite remote sensing data. Processing of very large files is supported. See the manual and tutorials on <https://rspatial.org/> to get started. 'terra' replaces the 'raster' package ('terra' can do more, and it is faster and easier to use).",
+      "License": "GPL (>= 3)",
+      "URL": "https://rspatial.org/, https://rspatial.github.io/terra/",
+      "BugReports": "https://github.com/rspatial/terra/issues/",
+      "LazyLoad": "yes",
+      "Authors@R": "c( person(\"Robert J.\", \"Hijmans\", role=c(\"cre\", \"aut\"),   email=\"r.hijmans@gmail.com\", comment=c(ORCID=\"0000-0001-5872-2872\")),\t\t\t person(\"Márcia\", \"Barbosa\", role=\"ctb\", comment=c(ORCID=\"0000-0001-8972-7713\")), person(\"Roger\", \"Bivand\", role=\"ctb\", comment=c(ORCID=\"0000-0003-2392-6140\")), person(\"Andrew\", \"Brown\", role=\"ctb\", comment=c(ORCID=\"0000-0002-4565-533X\")), person(\"Michael\", \"Chirico\", role=\"ctb\", comment=c(ORCID=\"0000-0003-0787-087X\")), person(\"Emanuele\", \"Cordano\", role=\"ctb\",comment=c(ORCID=\"0000-0002-3508-5898\")), person(\"Krzysztof\", \"Dyba\", role=\"ctb\", comment=c(ORCID=\"0000-0002-8614-3816\")), person(\"Edzer\", \"Pebesma\", role=\"ctb\", comment=c(ORCID=\"0000-0001-8049-7069\")), person(\"Barry\", \"Rowlingson\", role=\"ctb\", comment=c(ORCID=\"0000-0002-8586-6625\")), person(\"Michael D.\", \"Sumner\", role=\"ctb\", comment=c(ORCID=\"0000-0002-2471-7511\")))",
+      "NeedsCompilation": "yes",
+      "Author": "Robert J. Hijmans [cre, aut] (ORCID: <https://orcid.org/0000-0001-5872-2872>), Márcia Barbosa [ctb] (ORCID: <https://orcid.org/0000-0001-8972-7713>), Roger Bivand [ctb] (ORCID: <https://orcid.org/0000-0003-2392-6140>), Andrew Brown [ctb] (ORCID: <https://orcid.org/0000-0002-4565-533X>), Michael Chirico [ctb] (ORCID: <https://orcid.org/0000-0003-0787-087X>), Emanuele Cordano [ctb] (ORCID: <https://orcid.org/0000-0002-3508-5898>), Krzysztof Dyba [ctb] (ORCID: <https://orcid.org/0000-0002-8614-3816>), Edzer Pebesma [ctb] (ORCID: <https://orcid.org/0000-0001-8049-7069>), Barry Rowlingson [ctb] (ORCID: <https://orcid.org/0000-0002-8586-6625>), Michael D. Sumner [ctb] (ORCID: <https://orcid.org/0000-0002-2471-7511>)",
       "Repository": "CRAN"
     },
     "testthat": {
@@ -5836,7 +5928,8 @@
       "NeedsCompilation": "yes",
       "Author": "Achim Zeileis [aut, cre] (<https://orcid.org/0000-0003-0918-3766>), Gabor Grothendieck [aut], Jeffrey A. Ryan [aut], Joshua M. Ulrich [ctb], Felix Andrews [ctb]",
       "Maintainer": "Achim Zeileis <Achim.Zeileis@R-project.org>",
-      "Repository": "CRAN"
+      "Repository": "RSPM",
+      "Encoding": "UTF-8"
     }
   }
 }

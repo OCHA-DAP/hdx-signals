@@ -31,6 +31,7 @@ plot_ts <- function(
     val_col,
     y_axis,
     title,
+    alerts,
     subtitle = gg$waiver(),
     caption = gg$waiver(),
     alerts = NA) {
@@ -96,6 +97,7 @@ plot_ts <- function(
       color = gghdx$hdx_hex("sapphire-hdx")
     )
   }
+
   p <- p +
     gghdx$scale_y_continuous_hdx(
       labels = gghdx$label_number_hdx(),

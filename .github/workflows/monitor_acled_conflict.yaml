@@ -42,8 +42,8 @@ jobs:
         env:
           HS_EMAIL: ${{ secrets.HS_EMAIL}}
           HS_SURVEY_LINK: ${{ secrets.HS_SURVEY_LINK}}
-          ACLED_ACCESS_KEY: ${{ secrets.ACLED_ACCESS_KEY }}
-          ACLED_EMAIL_ADDRESS: ${{ secrets.ACLED_EMAIL_ADDRESS }}
+          ACLED_USERNAME: ${{ secrets.ACLED_USERNAME }}
+          ACLED_PASSWORD: ${{ secrets.ACLED_PASSWORD }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           DSCI_AZ_BLOB_DEV_SAS_WRITE: ${{ secrets.DSCI_AZ_BLOB_DEV_SAS_WRITE }}
           DSCI_AZ_BLOB_PROD_SAS_WRITE: ${{ secrets.DSCI_AZ_BLOB_PROD_SAS_WRITE }}

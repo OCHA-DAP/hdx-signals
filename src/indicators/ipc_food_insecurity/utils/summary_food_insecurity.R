@@ -3,7 +3,9 @@ box::use(
   purrr,
   rvest,
   stringr,
-  glue
+  glue,
+  httr,
+  logger
 )
 
 box::use(
@@ -107,7 +109,15 @@ ipc_ch_summarizer <- function(url, ch, location) {
 #'
 #' @returns Text from the website, with recommendations and summaries
 ipc_scraper <- function(url) {
-  txt <- rvest$read_html(url) |>
+  user_agent <- Sys.getenv("IPC_USER_AGENT")
+
+  debug_print <- stringr$str_sub(user_agent, start = 1, end = 2)
+  logger$log_info("Start of user agent code: ", debug_print)
+
+
+  session <- rvest$session(url, httr$user_agent(Sys.getenv("IPC_USER_AGENT")))
+
+  txt <- rvest$read_html(session) |>
     rvest$html_nodes("._undmaptext") |>
     rvest$html_text()
   # extract the situation report and recommendations from the scraped text

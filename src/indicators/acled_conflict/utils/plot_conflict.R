@@ -49,6 +49,7 @@ plot <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
 #'
 #' @returns Plot of cholera for that wrangled data
 #' @export
+
 conflict_ts <- function(df_wrangled, df_raw, title, date, alerts=NA) {
   caption <- caption$caption(
     indicator_id = "acled_conflict",

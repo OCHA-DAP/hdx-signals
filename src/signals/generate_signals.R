@@ -88,7 +88,6 @@ generate_signals <- function(
     generate_alerts$generate_alerts(
       indicator_id = ind_module$indicator_id
     )
-
   # return empty data frame if alerts is empty
   if (nrow(df_alerts) == 0) {
     logger$log_info(paste0("No signals created for ", ind_module$indicator_id))

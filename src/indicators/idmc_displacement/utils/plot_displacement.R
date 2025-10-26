@@ -52,25 +52,23 @@ plot <- function(df_alerts, df_wrangled, df_raw, preview = NA) {
 #'
 #' @returns Plot of cholera for that wrangled data
 #' @export
-displacement_ts <- function(df_wrangled, df_alerts, title, date, alerts=NA) {
+displacement_ts <- function(df_wrangled, df_alerts, title, date, alerts = NA) {
   caption <- caption$caption(
     indicator_id = "idmc_displacement_conflict", # same details as disaster
     iso3 = unique(df_wrangled$iso3)
   )
-
   # filter displacement data to the latest day of the week, since we are plotting the
   # weekly rolling sum
   df_plot <- dplyr$filter(
     df_wrangled,
     (as.numeric(date - !!date) %% 30) == 0 # every 30 days from date of signal
   )
-  if (is.data.frame(alerts)){
-    # df_wrangled_alerting <- df_wrangled |> dplyr$filter(date %in% alerts$date)
-    # df_plot <- dplyr$bind_rows(
-    #   df_plot,
-    #   df_wrangled_alerting
-    # )
-    df_plot <- df_wrangled
+  if (is.data.frame(alerts)) {
+    df_wrangled_alerting <- df_wrangled |> dplyr$filter(date %in% alerts$date)
+    df_plot <- dplyr$bind_rows(
+      df_plot,
+      df_wrangled_alerting
+    )
   }
 
   plot_ts$plot_ts(
