@@ -1,8 +1,9 @@
 box::use(
   src/utils/validate_manual_info,
   src/utils/read_manual_info,
-  logger
 )
+
+box::use(logger)
 
 #' Read dataset with manually scraped situation and recommendations
 #'
@@ -31,7 +32,7 @@ get_manual_info <- function(iso3, indicator_id, date = NULL) {
   filtered_data <- data[data$iso3 == iso3 & data$indicator_id == indicator_id, ]
   if (nrow(filtered_data) == 0) {
     logger$log_info("No updated or related information found for iso3: ", iso3,
-                " and indicator_id: ", indicator_id, "\n")
+                    " and indicator_id: ", indicator_id, "\n")
     return(NULL)
   }
 
@@ -43,7 +44,7 @@ get_manual_info <- function(iso3, indicator_id, date = NULL) {
     exact_date_data <- filtered_data[filtered_data$date == as.Date(date), ]
     if (nrow(exact_date_data) == 0) {
       logger$log_info("No alert day updated info was found for iso3: ", iso3,
-                  ", indicator_id: ", indicator_id, " on date: ", date, "\n")
+                      ", indicator_id: ", indicator_id, " on date: ", date, "\n")
       return(NULL)
     }
     selected_row <- exact_date_data[1, ]
