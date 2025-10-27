@@ -46,14 +46,16 @@ validate_dates <- function(dates,
     date_val <- dates[i]
 
     # Check if date is not NA/NULL/empty
-    if (is.na(date_val) || is.null(date_val) || date_val == "") {
-      date_valid[i] <- FALSE
+    if (is.na(date_val) || identical(date_val, "")) {
+      next
+    }
+
+    if (is.null(date_val)) {
       next
     }
 
     # Check date pattern
     if (!grepl(pattern, as.character(date_val))) {
-      date_valid[i] <- FALSE
       next
     }
 
@@ -68,6 +70,7 @@ validate_dates <- function(dates,
 
   return(date_valid)
 }
+
 
 validate_ipc_food_insecurity <- function(df) {
 
