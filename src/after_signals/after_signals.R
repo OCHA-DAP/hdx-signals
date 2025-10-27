@@ -14,7 +14,7 @@ box::use(
 )
 
 df_signals <- cs$read_az_file("output/signals.parquet")
-indicator <- "acled_conflict"
+indicator <- "idmc_displacement_disaster"
 displacement_type_filter <- "Disaster"
 indicators <- unique(df_signals$indicator_id)
 if (indicator %in% c("idmc_displacement_disaster", "idmc_displacement_conflict")){
@@ -36,7 +36,7 @@ if (indicator %in% c("idmc_displacement_disaster", "idmc_displacement_conflict")
     )
   plot_fn <- plot_conflict$conflict_ts
 }
-# alerts <- alerts |>
+#alerts <- alerts |>
 #   dplyr$filter(
 #     iso3 =="MMR"
 #   )
@@ -49,7 +49,7 @@ for (country in unique(alerts$iso3)){
   plot <- plot_fn(country_data, data, paste0(country, " - After the Signals"), Sys.Date(), alerts=alerts_data)
   gg$ggsave(
     plot,
-    filename = paste0(indicator, "_all_", country, ".png"),
+    filename = paste0(indicator, country, ".png"),
   )
 
 }

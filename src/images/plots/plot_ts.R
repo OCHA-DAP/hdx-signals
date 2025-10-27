@@ -31,7 +31,6 @@ plot_ts <- function(
     val_col,
     y_axis,
     title,
-    alerts,
     subtitle = gg$waiver(),
     caption = gg$waiver(),
     alerts = NA) {
@@ -54,42 +53,21 @@ plot_ts <- function(
       color = gghdx$hdx_hex("sapphire-hdx")
     )
   if (is.data.frame(alerts)){
-    indicator="acled_conflict"
-    df_alerts_new <- utils$read.csv("all_new_alerts.csv")
-    df_alerts_new <- df_alerts_new |>
-      dplyr$filter(indicator_id==indicator, iso3==alerts$iso3[1])
-    df_alerts_new$date <- as.Date(df_alerts_new$date, format="%m/%d/%Y")
     df_alerts <- alerts|>
       dplyr$filter(
       Sys.Date()- date <= 365 * 5
     )
-    df_alerts_new <- df_alerts_new|>
-      dplyr$filter(
-        Sys.Date()- date <= 365 * 5
-      )
 
-    p <- p + gg$geom_point(
+    p <- p + gg$geom_vline(
       data = df_alerts,
       mapping = gg$aes(
-        x = date,
-        y = value,
-        colour="Old alerts"),
-      size = 4,
-      alpha = 0.3
-    )
-    p <- p + gg$geom_point(
-      data = df_alerts_new,
-      mapping = gg$aes(
-        x = date,
-        y = value,
-        colour="New alerts"),
-      size = 3,
-      alpha = 0.5
+        xintercept = date,
+        colour="HDX Signals Alerts"),
     )
     p <- p + gg$scale_color_manual(
-      values = c("Old alerts" = gghdx$hdx_hex("tomato-hdx"),
-                 "New alerts" = gghdx$hdx_hex("mint-hdx"))
-    )
+      values = c("HDX Signals Alerts" = gghdx$hdx_hex("tomato-hdx"))
+    ) + gg$labs(colour = NULL)
+
   } else {
     p <- p + gg$geom_point(
       data = dplyr$filter(df, date == max(date, as.Date("1500-01-01"))),
