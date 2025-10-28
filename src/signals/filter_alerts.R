@@ -102,11 +102,7 @@ filter_alerts_ongoing <- function(df_alerts, indicator_id) {
   df_new_alerts_high <- df_new_alerts |>
     dplyr$filter(
       alert_level == "High concern"
-    ) |>
-    # dplyr$anti_join(
-    #   dplyr$filter(df_signals, alert_level == "High concern"),
-    #   by = "iso3"
-    # )
+    )
 
   # drop new medium alerts if any alerts in the past 6 months
   df_new_alerts_medium <- df_new_alerts |>
