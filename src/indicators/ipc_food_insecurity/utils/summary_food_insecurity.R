@@ -11,7 +11,8 @@ box::use(
 box::use(
   src/utils/ai_summarizer,
   src/utils/get_prompts,
-  src/utils/parse_pdf
+  src/utils/parse_pdf,
+  src/utils/get_manual_info
 )
 
 #' Generate summary for food insecurity alerts
@@ -31,7 +32,10 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
         .l = list(
           url = link,
           ch = ch,
-          location = location
+          location = location,
+          iso3 = iso3,
+          indicator_id = indicator_id,
+          date = date
         ),
         .f = ipc_ch_summarizer
       ),
@@ -79,24 +83,46 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
 #' @param url URL for the analysis
 #' @param ch If `TRUE` it's a CH analysis, otherwise it's IPC
 #' @param location Name of the location
-#'
+#' @param iso3  ISO3 country code (character string)
+#' @param indicator_id The Signals indicator identifier (character string)
+#' @param date A character string or Date object in YYYY-MM-DD format
 #' @returns Summarized text data
-ipc_ch_summarizer <- function(url, ch, location) {
-  if (is.na(url)) {
-    return(NA_character_)
-  } else if (ch) {
-    txt <- ch_scraper(url = url)
-    org <- "ch"
-  } else {
-    txt <- ipc_scraper(url)
-    # check that scraping was successful and exit early if not
-    if (length(txt) == 0 || all(is.na(txt)) || (length(txt) == 1 && nchar(txt) < 100)) {
-      return(NA_character_)
+ipc_ch_summarizer <- function(url, ch, location, iso3, indicator_id, date) {
+  scraper_result <- NULL
+  manual_result <- get_manual_info$get_manual_info(iso3, indicator_id, date)
+
+  # Scrape data if URL is available
+  if (!is.na(url)) {
+    if (ch) {
+      txt <- ch_scraper(url = url)
+      if (!is.null(txt) && length(txt) > 0 && !all(is.na(txt))) {
+        scraper_result <- txt
+        org <- "ch"
+      }
+    } else {
+      txt <- ipc_scraper(url)
+      # Check that scraping was successful
+      if (length(txt) > 0 && !all(is.na(txt)) && !(length(txt) == 1 && nchar(txt) < 100)) {
+        scraper_result <- txt
+        org <- "ipc"
+      }
     }
-    org <- "ipc"
   }
 
-  text_summarizer(txt = txt, org = org)
+  # Combine results
+  if (!is.null(scraper_result) && !is.null(manual_result)) {
+    # Both available - combine them
+    text_summarizer_combined(scraper_result = scraper_result, manual_result = manual_result, org = org)
+  } else if (!is.null(scraper_result)) {
+    # Scraper only
+    text_summarizer(txt = txt, org = org)
+  } else if (!is.null(manual_result)) {
+    # Manual only
+    text_summarizer_manual(manual_result)
+  } else {
+    # None available
+    NA_character_
+  }
 }
 
 #' Scrapes IPC URL for information
@@ -125,6 +151,80 @@ ipc_scraper <- function(url) {
   txt <- stringr$str_replace_all(txt, "[\r\n\t]+", " ")
   txt
 }
+
+#' Parses CH publications for information
+#'
+#' Since there are (typically) no location publications with specific links for the CH,
+#' each one is a URL of a PDF. We parse this very simply so it can be passed
+#' for summarisation.
+#'
+#' @param url URL to the PDF publications
+#'
+#' @returns Summary of text from the publication
+ch_scraper <- function(url) {
+  # get text from the PDFs for info for AI prompt
+  txt <- parse_pdf$parse_pdf(url)
+
+  # same text needs to be used for recommendations and summarisations
+  c(txt, txt)
+}
+
+
+
+text_summarizer_manual <- function(txt_c) {
+  # Check that input is a list of exactly two strings
+  if (!is.list(txt_c) || length(txt_c) != 2) {
+    stop("Input must be a list of exactly two strings")
+  }
+
+  prompts <- get_prompts$get_prompts(
+    indicator_id = "ipc_food_insecurity",
+    prompts = c("ipc_sit_rep", "ipc_recs")
+  )
+
+  # Process situation and recommendations using AI
+  sit_rep <- ai_summarizer$ai_summarizer(
+    prompt = glue$glue(prompts[[1]]),
+    info = txt_c[[1]]  # First string for situation
+  )
+
+  recs <- ai_summarizer$ai_summarizer(
+    prompt = glue$glue(prompts[[2]]),
+    info = txt_c[[2]]  # Second string for recommendations
+  )
+
+  # Handle cases where parts of content are not available
+  if (is.na(sit_rep) && is.na(recs)) {
+    NA_character_
+  } else if (is.na(sit_rep)) {
+    paste0(
+      "<b>Recommendations:</b><br><br>",
+      recs
+    )
+  } else if (is.na(recs)) {
+    paste0(
+      "<b>Overview: </b><br><br>",
+      sit_rep
+    )
+  } else {
+    paste(
+      "<b>Overview:</b><br><br>",
+      sit_rep,
+      "<br><br><b>Recommendations:</b><br><br>",
+      recs
+    )
+  }
+}
+
+
+text_summarizer_combined <- function(scraper_result, manual_result, org) {
+  txt <- c(
+    paste(scraper_result[1], "\n", manual_result[1]),
+    paste(scraper_result[2], "\n", manual_result[2])
+  )
+  text_summarizer(txt, org)
+}
+
 
 #' Summarize IPC text data
 #'
@@ -175,21 +275,4 @@ text_summarizer <- function(txt, org) {
       recs
     )
   }
-}
-
-#' Parses CH publications for information
-#'
-#' Since there are (typically) no location publications with specific links for the CH,
-#' each one is a URL of a PDF. We parse this very simply so it can be passed
-#' for summarisation.
-#'
-#' @param url URL to the PDF publications
-#'
-#' @returns Summary of text from the publication
-ch_scraper <- function(url) {
-  # get text from the PDFs for info for AI prompt
-  txt <- parse_pdf$parse_pdf(url)
-
-  # same text needs to be used for recommendations and summarisations
-  c(txt, txt)
 }

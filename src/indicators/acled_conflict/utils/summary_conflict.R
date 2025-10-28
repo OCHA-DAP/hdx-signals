@@ -6,7 +6,8 @@ box::use(
 
 box::use(
   src/utils/ai_summarizer,
-  src/utils/get_prompts
+  src/utils/get_prompts,
+  src/utils/get_manual_info
 )
 
 #' Add campaign info to ACLED conflict data
@@ -25,11 +26,25 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
       notes
     )
 
+  # get manual contextual info
+  df_manual <- df_alerts |>
+    dplyr$filter(indicator_id == "acled_conflict") |>
+    dplyr$distinct(iso3, date) |>
+    dplyr$rowwise() |>
+    dplyr$mutate(
+      manual_info = get_manual_info$get_manual_info(iso3, "acled_conflict", date)
+    ) |>
+    dplyr$ungroup()
+
   # now join together and get summarizations
   df_summary <- df_alerts |>
     dplyr$full_join(
       df_event_info,
       by = "iso3"
+    ) |>
+    dplyr$left_join(
+      df_manual,
+      by = c("iso3", "date")
     ) |>
     dplyr$group_by(iso3, location, date) |>
     dplyr$filter(
@@ -43,6 +58,8 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
       .groups = "drop"
     ) |>
     dplyr$mutate(
+      # Combine event_info with manual_info if present
+      event_info = paste(event_info, manual_info, sep = " "),
       summary_long = purrr$map2_chr(
         .x = prompts$long,
         .y = event_info,
