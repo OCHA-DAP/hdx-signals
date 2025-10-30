@@ -4,7 +4,7 @@
 
 ### Bug Fix
 
-- Fix summary modules for all indicators.
+- Ensure manual_info is preserved in summary for multiple indicators.
 
 ## 0.2.14.0 (30 October 2025)
 
