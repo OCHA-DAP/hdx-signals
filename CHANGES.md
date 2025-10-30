@@ -1,5 +1,11 @@
 # Changes
 
+## 0.2.15.0 (30 October 2025)
+
+### Bug Fix
+
+- Fix summary modules for all indicators.
+
 ## 0.2.14.0 (30 October 2025)
 
 ### Improve get manual contextual information

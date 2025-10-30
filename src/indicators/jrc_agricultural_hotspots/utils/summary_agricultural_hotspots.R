@@ -30,9 +30,7 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
 
 
   df_summary <- df_alerts |>
-    dplyr$select(
-      -comment
-    ) |>
+    dplyr$select(-comment) |>
     dplyr$full_join(
       dplyr$select(df_wrangled, iso3, comment_date = date, date_label, comment),
       by = "iso3",
@@ -46,23 +44,13 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
       df_manual,
       by = c("iso3", "date")
     ) |>
-    dplyr$group_by(
-      iso3,
-      location,
-      date
-    ) |>
-
+    dplyr$group_by(iso3, location, date) |>
     dplyr$summarize(
-      info = paste(
-        date_label,
-        comment,
-        sep = ": ",
-        collapse = "\n"
-      ),
+      info = paste(date_label, comment, sep = ": ", collapse = "\n"),
+      manual_info = dplyr$first(manual_info, default = NA_character_),
       .groups = "drop"
     ) |>
     dplyr$mutate(
-      # COMBINA info con manual_info
       info = paste(
         info, manual_info, sep = "\n"
       ),
