@@ -1,5 +1,11 @@
 # Changes
 
+## 0.2.14.0 (30 October 2025)
+
+### Improve get manual contextual information
+
+- Improve get manual information.
+
 ## 0.2.13.0 (30 October 2025)
 
 ### Fix import error 

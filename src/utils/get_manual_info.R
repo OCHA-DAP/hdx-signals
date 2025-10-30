@@ -29,7 +29,7 @@ get_manual_info <- function(iso3, indicator_id, date = NULL) {
   }
 
   # Filter by iso3 and indicator_id
-  filtered_data <- data[data$iso3 == iso3 & data$indicator_id == indicator_id, ]
+  filtered_data <- data[which(data$iso3 == iso3 & data$indicator_id == indicator_id), ]
   if (nrow(filtered_data) == 0) {
     logger$log_info("No updated or related information found for iso3: ", iso3,
                     " and indicator_id: ", indicator_id, "\n")
