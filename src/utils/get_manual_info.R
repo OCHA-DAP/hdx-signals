@@ -19,21 +19,21 @@ box::use(logger)
 get_manual_info <- function(iso3, indicator_id, date = NULL) {
   # Read data
   data <- read_manual_info$read_manual_info()
-  if (is.null(data)) return(NULL)
+  if (is.null(data)) return(NA_character_)
 
   # Validate data
   data <- validate_manual_info$validate_manual_info(data)
   if (is.null(data) || nrow(data) == 0) {
     logger$log_info("No valid data after validation\n")
-    return(NULL)
+    return(NA_character_)
   }
 
   # Filter by iso3 and indicator_id
-  filtered_data <- data[data$iso3 == iso3 & data$indicator_id == indicator_id, ]
+  filtered_data <- data[which(data$iso3 == iso3 & data$indicator_id == indicator_id), ]
   if (nrow(filtered_data) == 0) {
     logger$log_info("No updated or related information found for iso3: ", iso3,
                     " and indicator_id: ", indicator_id, "\n")
-    return(NULL)
+    return(NA_character_)
   }
 
   # Sort by date (most recent first)
@@ -45,7 +45,7 @@ get_manual_info <- function(iso3, indicator_id, date = NULL) {
     if (nrow(exact_date_data) == 0) {
       logger$log_info("No alert day updated info was found for iso3: ", iso3,
                       ", indicator_id: ", indicator_id, " on date: ", date, "\n")
-      return(NULL)
+      return(NA_character_)
     }
     selected_row <- exact_date_data[1, ]
   } else {
