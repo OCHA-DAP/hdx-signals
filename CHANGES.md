@@ -1,5 +1,11 @@
 # Changes
 
+## 0.2.13.0 (30 October 2025)
+
+### Fix import error 
+
+- Add module import in summary_displacement.
+
 ## 0.2.12.0 (16 October 2025)
 
 ### Add manual contextual information 
