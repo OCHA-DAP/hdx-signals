@@ -137,7 +137,6 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
                    "latest_developments",
                    "overview",
                    "manual_info",
-                   "manual_source",
                    "location"))
 
   df_text <- df_text |>
