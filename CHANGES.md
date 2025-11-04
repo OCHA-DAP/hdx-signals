@@ -1,5 +1,11 @@
 # Changes
 
+## 0.2.16.0 (3 November 2025)
+
+### Fix upload blob on Azure container for PDF reports in run_overview_analysis
+
+- The container parameter now correctly uses a container object instead of a string in upload_blob.
+
 ## 0.2.15.0 (30 October 2025)
 
 ### Bug Fix

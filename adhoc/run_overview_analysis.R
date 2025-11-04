@@ -198,11 +198,13 @@ plot_signals_overvew_pdf <- function(
     # Path
     azure_file <- paste0("signals_overview_analysis/signals_overview_", gen_date, "/", file_name)
 
+    container_obj <- cloud_storage$get_container("prod")
+
     # Save in Prod
     invisible(
       utils$capture.output(
         az$upload_blob(
-          container = "prod",
+          container = container_obj,
           src = local_file,
           dest = azure_file
         )
@@ -1165,10 +1167,13 @@ report_by_country <- function(
 
       # Upload to Azure
       azure_file <- paste0("signals_overview_analysis/signals_overview_", gen_date, "/", file_name)
+
+      container_obj <- cloud_storage$get_container("prod")
+
       invisible(
         utils$capture.output(
           az$upload_blob(
-            container = "prod",
+            container = container_obj,
             src = temp_file,
             dest = azure_file
           )
@@ -1201,7 +1206,7 @@ plot_signals_overvew_pdf(df_dist,
                          indicator_labels,
                          effective_start_year,
                          end_year,
-                         save_azure = FALSE)
+                         save_azure = TRUE)
 
 report_by_country(top3,
                   df_top3,
@@ -1214,4 +1219,4 @@ report_by_country(top3,
                   food_wrangle,
                   infsev_wrangle,
                   market_wrangle,
-                  save_azure = FALSE)
+                  save_azure = TRUE)
