@@ -1,9 +1,7 @@
 box::use(
   src/utils/cloud_storage,
   src/utils/read_manual_info,
-  src/utils/get_manual_info,
 )
-
 
 new_row <- data.frame(
   iso3 = "AFG",
