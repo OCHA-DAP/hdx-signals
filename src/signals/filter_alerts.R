@@ -43,7 +43,7 @@ box::use(
 #' @returns Data frame of new alerts matching the criteria above
 #'
 #' @export
-dffilter_alerts <- function(df_alerts, indicator_id) {
+filter_alerts <- function(df_alerts, indicator_id) {
   # no need to do anything for empty data frame
   if (nrow(df_alerts) == 0) {
     return(df_alerts)
