@@ -8,7 +8,8 @@ box::use(
 box::use(
   src/utils/ai_summarizer,
   src/utils/get_prompts,
-  src/utils/parse_pdf
+  src/utils/parse_pdf,
+  src/utils/get_manual_info
 )
 
 #' Add campaign info to cholera alerts
@@ -30,11 +31,11 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
     )
 
   df_manual <- df_alerts |>
-    dplyr$filter(indicator_id == "idmc_displacement") |>
-    dplyr$distinct(iso3, date) |>
+    dplyr$filter(indicator_id %in% c("idmc_displacement_conflict", "idmc_displacement_disaster")) |>
+    dplyr$distinct(iso3, indicator_id, date) |>
     dplyr$rowwise() |>
     dplyr$mutate(
-      manual_info = get_manual_info$get_manual_info(iso3, "idmc_displacement", date)
+      manual_info = get_manual_info$get_manual_info(iso3, indicator_id, date)
     ) |>
     dplyr$ungroup()
 
@@ -46,12 +47,10 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
     ) |>
     dplyr$left_join(
       df_manual,
-      by = c("iso3", "date")
+      by = c("iso3", "indicator_id", "date")
     ) |>
-    dplyr$group_by(iso3, location, date) |>
     dplyr$filter(
       displacement_end_date >= date - lubridate$days(30),
-      # keep recent reports for monitoring
       displacement_start_date <= date | (Sys.Date() - displacement_start_date <= 90 & Sys.Date() - date <= 90)
     )
 
@@ -63,7 +62,9 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
     .f = parse_pdf$parse_pdf
   )
 
+  # now group and summarize
   df_summary <- df_joined |>
+    dplyr$group_by(iso3, location, date) |>
     dplyr$summarize(
       event_info = paste(event_info, collapse = " "),
       url_info = paste(url_info[!is.na(url_info)], collapse = "\n"),

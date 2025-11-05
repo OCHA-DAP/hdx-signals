@@ -46,14 +46,15 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
       df_manual,
       by = c("iso3", "date")
     ) |>
-    dplyr$group_by(iso3, location, date) |>
     dplyr$filter(
       event_date >= date - lubridate$days(30),
       event_date <= date,
       !is.na(notes)
     ) |>
+    dplyr$group_by(iso3, location, date) |>
     dplyr$summarize(
       event_info = paste(notes, collapse = " "),
+      manual_info = dplyr$first(manual_info, default = NA_character_),
       plot_title = unique(plot_title),
       .groups = "drop"
     ) |>
