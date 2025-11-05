@@ -27,15 +27,3 @@ cloud_storage$update_az_file(
   name = "input/manual_context_info.csv",
   container = "dev"
 )
-
-### CHECKS ###
-
-#
-# df <- read_manual_info$read_manual_info()
-#
-# df_validated <- validate_manual_info$validate_manual_info(df)
-#
-# get_manual_info$get_manual_info("AFG", "idmc_displacement_conflict")
-
-###
-
