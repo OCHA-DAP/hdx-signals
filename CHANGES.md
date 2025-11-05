@@ -1,5 +1,11 @@
 # Changes
 
+## 0.2.17.0 (5 November 2025)
+
+### Add manual context update script
+
+- Added script to incrementally update manual context information by appending new rows to `input/manual_context_info.csv`.
+
 ## 0.2.16.0 (3 November 2025)
 
 ### Fix upload blob on Azure container for PDF reports in run_overview_analysis
