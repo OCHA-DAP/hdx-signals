@@ -2,7 +2,6 @@ box::use(
   src/utils/cloud_storage,
   src/utils/read_manual_info,
   src/utils/get_manual_info,
-  src/utils/validate_manual_info
 )
 
 
