@@ -45,7 +45,10 @@ alert <- function(df_wrangled) {
       -dplyr$starts_with("plot_date")
     ) |>
     dplyr$mutate(
-      phase_level = readr$parse_number(phase)
+      phase_level = readr$parse_number(phase),
+      extreme_case = phase == "phase5" &
+        `percentage-current` > `percentage-current_lag` &
+        compare_current
     ) |>
     dplyr$group_by(
       iso3, date
@@ -78,7 +81,8 @@ alert <- function(df_wrangled) {
       phase_level = ifelse(phase_level == 5, "5", paste0(phase_level, "+")),
       analysis_id,
       analysis_area = `analysis_area-current`,
-      link
+      link,
+      extreme_case
     )
 
   # now bring in the URLs closest matching
