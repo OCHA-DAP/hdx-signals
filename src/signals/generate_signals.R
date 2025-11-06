@@ -137,7 +137,7 @@ generate_signals <- function(
     df_campaigns,
     by = c("iso3", "date")
   )
-
+  browser
   cs$update_az_file(
     df_campaigns,
     fn_signals

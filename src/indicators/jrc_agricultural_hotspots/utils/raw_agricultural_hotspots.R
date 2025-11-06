@@ -1,7 +1,8 @@
 box::use(
   readr,
   utils,
-  dplyr
+  dplyr,
+  curl
 )
 
 box::use(src/utils/location_codes)
@@ -12,10 +13,13 @@ box::use(src/utils/location_codes)
 #'
 #' @export
 raw <- function() {
-  utils$download.file(
+  # Temporary zip file
+  zf <- tempfile(fileext = ".zip")
+
+  # Download file from JRC
+  curl$curl_download(
     url = "https://agricultural-production-hotspots.ec.europa.eu/files/hotspots_html_ts.zip",
-    destfile = zf <- tempfile(fileext = ".zip"),
-    quiet = TRUE
+    destfile = zf,
   )
 
   utils$unzip(

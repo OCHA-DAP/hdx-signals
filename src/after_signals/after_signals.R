@@ -36,10 +36,10 @@ if (indicator %in% c("idmc_displacement_disaster", "idmc_displacement_conflict")
     )
   plot_fn <- plot_conflict$conflict_ts
 }
-#alerts <- alerts |>
-#   dplyr$filter(
-#     iso3 =="MMR"
-#   )
+alerts <- alerts |>
+   dplyr$filter(
+     iso3 =="MMR"
+   )
 for (country in unique(alerts$iso3)){
   country_data <- data |>
     dplyr$filter(iso3 == country)

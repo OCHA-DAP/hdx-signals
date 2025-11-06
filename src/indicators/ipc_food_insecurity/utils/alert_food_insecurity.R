@@ -19,6 +19,8 @@ box::use(
 #'
 #' @export
 alert <- function(df_wrangled) {
+  browser()
+
   # get general alerts
   df_alerts <- df_wrangled |>
     dplyr$mutate(
