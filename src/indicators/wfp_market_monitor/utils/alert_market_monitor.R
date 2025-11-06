@@ -31,6 +31,7 @@ alert <- function(df_wrangled) {
       indicator_id = paste(indicator_source, indicator_name, sep = "_"),
       date,
       value = basket_change,
-      alert_level_numeric
+      alert_level_numeric,
+      extreme_case = FALSE
     )
 }

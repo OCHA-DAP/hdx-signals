@@ -22,7 +22,8 @@ alert <- function(df_wrangled) {
       date,
       alert_level_numeric = as.integer(hs_code),
       value = hs_code,
-      comment
+      comment,
+      extreme_case = FALSE
     ) |>
     dplyr$group_by(iso3) |>
     dplyr$filter(

@@ -30,6 +30,7 @@ alert <- function(df_wrangled) {
       indicator_name = !!indicator_name,
       indicator_source = "idmc",
       indicator_id = paste(indicator_source, indicator_name, sep = "_"),
+      extreme_case = FALSE,
       .after = iso3
     )
 }
