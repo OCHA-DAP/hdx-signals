@@ -19,6 +19,8 @@ box::use(
 #'
 #' @export
 alert <- function(df_wrangled) {
+  browser()
+
   # get general alerts
   df_alerts <- df_wrangled |>
     dplyr$mutate(
@@ -46,9 +48,7 @@ alert <- function(df_wrangled) {
     ) |>
     dplyr$mutate(
       phase_level = readr$parse_number(phase),
-      extreme_case = phase == "phase5" &
-        `percentage-current` > `percentage-current_lag` &
-        compare_current
+      extreme_case = phase == "phase5"
     ) |>
     dplyr$group_by(
       iso3, date
