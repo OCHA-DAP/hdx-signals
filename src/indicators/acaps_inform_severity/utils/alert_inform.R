@@ -28,6 +28,7 @@ alert <- function(df_wrangled) {
         higher_3yr ~ "3 year",
         higher_1yr ~ "1 year"
       ),
+      extreme_case = FALSE
     ) |>
     dplyr$filter(
       inform_severity_index >= 3
@@ -46,6 +47,7 @@ alert <- function(df_wrangled) {
         is.na(higher_3yr) ~ 1,
         higher_3yr ~ 2,
         .default = 1
-      ))
+      )),
+      extreme_case
     )
 }
