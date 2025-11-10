@@ -84,7 +84,7 @@ filter_alerts_ongoing <- function(df_alerts, indicator_id) {
       iso3
     ) |>
     dplyr$filter(
-      Sys.Date() - date <= 60
+      Sys.Date() - date <= 90
     ) |>
     dplyr$filter(
       alert_level == "High concern" | all(alert_level == "Medium concern")
@@ -98,15 +98,28 @@ filter_alerts_ongoing <- function(df_alerts, indicator_id) {
       location
     )
 
-  # drop new high alerts only if another high alert in the past 6 months
-  df_new_alerts_high <- df_new_alerts |>
+  # EXCEPT when extreme_case == TRUE (these are always kept)
+  df_new_alerts_high_e <- df_new_alerts |>
     dplyr$filter(
-      alert_level == "High concern"
+      alert_level == "High concern",
+      extreme_case == TRUE
+    )
+
+  # drop new high alerts only if another high alert in the past 6 months
+  df_new_alerts_high_n <- df_new_alerts |>
+    dplyr$filter(
+      alert_level == "High concern",
+      extreme_case != TRUE | is.na(extreme_case)
     ) |>
     dplyr$anti_join(
       dplyr$filter(df_signals, alert_level == "High concern"),
       by = "iso3"
     )
+
+  df_new_alerts_high <- dplyr$bind_rows(
+    df_new_alerts_high_e,
+    df_new_alerts_high_n
+  )
 
   # drop new medium alerts if any alerts in the past 6 months
   df_new_alerts_medium <- df_new_alerts |>

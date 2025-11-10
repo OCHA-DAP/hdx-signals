@@ -1,5 +1,11 @@
 # Changes
 
+## 0.2.18.0 6 November 2025)
+
+### Add extreme_case flag for Phase 5 alert exceptions in IPC Food Insecurity
+
+- Bypass 180-day filter for IPC Food Insecurity Phase 5 increases using `extreme_case flag`.
+
 ## 0.2.17.0 (5 November 2025)
 
 ### Add manual context update script
