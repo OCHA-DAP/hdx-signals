@@ -53,7 +53,7 @@ filter_alerts <- function(df_alerts, indicator_id) {
     filter_alerts_first_run(df_alerts)
   } else if (hs_dry_run$hs_dry_run()) {
     filter_alerts_test(df_alerts)
-  # } else {
+  } else {
     filter_alerts_ongoing(df_alerts, indicator_id)
   }
 }
