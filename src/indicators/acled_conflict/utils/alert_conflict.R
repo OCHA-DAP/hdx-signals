@@ -22,6 +22,7 @@ alert <- function(df_wrangled) {
       indicator_name = "conflict",
       indicator_source = "acled",
       indicator_id = paste(indicator_source, indicator_name, sep = "_"),
+      extreme_case = FALSE,
       .after = iso3
     )
 }
