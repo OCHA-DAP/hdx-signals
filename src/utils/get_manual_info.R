@@ -101,6 +101,6 @@ get_manual_info <- function(iso3, indicator_id, date = NULL) {
     "idmc_displacement_disaster",
     "idmc_displacement_conflict"
   )) {
-    selected_row$text1
+    ifelse(is.na(selected_row$text1), NA_character_, as.character(selected_row$text1))
   }
 }
