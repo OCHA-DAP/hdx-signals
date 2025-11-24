@@ -12,7 +12,8 @@ box::use(
   src/utils/ai_summarizer,
   src/utils/get_prompts,
   src/utils/parse_pdf,
-  src/utils/get_manual_info
+  src/utils/get_manual_info,
+  src/signals/track_summary_input
 )
 
 #' Generate summary for food insecurity alerts
@@ -26,37 +27,26 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
     prompts = "short"
   )
 
-  df_alerts |>
+  result <- df_alerts |>
     dplyr$mutate(
-      summary_long = purrr$pmap_chr(
-        .l = list(
-          url = link,
-          ch = ch,
-          location = location,
-          iso3 = iso3,
-          indicator_id = indicator_id,
-          date = date
-        ),
+      # Call summarizer (and get input info)
+      ipc_data = purrr$pmap(
+        .l = list(url = link, ch = ch, location = location, iso3 = iso3, indicator_id = indicator_id, date = date),
         .f = ipc_ch_summarizer
       ),
+      # Extract summary
+      summary_long = purrr$map_chr(ipc_data, ~.x$summary),
       summary_short = ifelse(
         is.na(summary_long),
-        plot_title, # use the plot title if no text to summarize
+        plot_title,
         purrr$pmap_chr(
-          .l = list(
-            prompt = prompts$short,
-            info = summary_long,
-            location = location
-          ),
+          .l = list(prompt = prompts$short, info = summary_long, location = location),
           .f = ai_summarizer$ai_summarizer_without_location
         )
       ),
       summary_short = ifelse(
         phase_level == "5",
-        paste0(
-          "<b><i>Phase 5 alert<b></i> - ",
-          summary_short
-        ),
+        paste0("<b><i>Phase 5 alert<b></i> - ", summary_short),
         summary_short
       ),
       summary_source = dplyr$case_when(
@@ -64,12 +54,26 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
         ch ~ "CH reports",
         .default = "IPC analyses"
       )
-    ) |>
-    dplyr$select(
-      summary_long,
-      summary_short,
-      summary_source,
     )
+
+  # tracking summarizer input
+  tracking_data <- result |>
+    dplyr$transmute(
+      location_iso3 = iso3,
+      date_generated = date,
+      indicator_id = "ipc_food_insecurity",
+      info = purrr$map_chr(ipc_data, ~.x$scraped_info),
+      manual_info = purrr$map_chr(ipc_data, ~.x$manual_info),
+      use_manual_info = purrr$map_lgl(ipc_data, ~!is.na(.x$manual_info)),
+      summary_long = summary_long,
+      summary_short = summary_short,
+      summary_source = summary_source
+    )
+
+  track_summary_input$append_tracking_data(tracking_data)
+
+  result |>
+    dplyr$select(summary_long, summary_short, summary_source)
 }
 
 #' Summarizes IPC/CH data
@@ -123,6 +127,12 @@ ipc_ch_summarizer <- function(url, ch, location, iso3, indicator_id, date) {
     # None available
     NA_character_
   }
+
+  list(
+    summary = summary,
+    scraped_info = if (!is.null(scraper_result)) paste(scraper_result, collapse = "\n") else NA_character_,
+    manual_info = if (!is.null(manual_result)) paste(manual_result, collapse = "\n") else NA_character_
+  )
 }
 
 #' Scrapes IPC URL for information

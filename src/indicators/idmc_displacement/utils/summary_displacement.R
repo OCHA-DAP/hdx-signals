@@ -9,7 +9,8 @@ box::use(
   src/utils/ai_summarizer,
   src/utils/get_prompts,
   src/utils/parse_pdf,
-  src/utils/get_manual_info
+  src/utils/get_manual_info,
+  src/signals/track_summary_input
 )
 
 #' Add campaign info to cholera alerts
@@ -97,12 +98,31 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
       summary_source = "IDMC analysis and source reports"
     )
 
+
   # ensuring the output matches the original input
-  df_alerts |>
+  result <- df_alerts |>
     dplyr$left_join(
       df_summary,
       by = c("iso3", "location", "date")
-    ) |>
+    )
+
+  # track summarizer input
+  tracking_data <- result |>
+    dplyr$transmute(
+      location_iso3 = iso3,
+      date_generated = date,
+      indicator_id = indicator_id,
+      info = overall_info,
+      manual_info = manual_info,
+      use_manual_info = !is.na(manual_info),
+      summary_long = summary_long,
+      summary_short = summary_short,
+      summary_source = summary_source
+    )
+
+  track_summary_input$append_tracking_data(tracking_data)
+
+  result |>
     dplyr$select(
       summary_long,
       summary_short,
