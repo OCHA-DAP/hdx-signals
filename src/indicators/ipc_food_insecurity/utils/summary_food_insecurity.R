@@ -116,16 +116,16 @@ ipc_ch_summarizer <- function(url, ch, location, iso3, indicator_id, date) {
   # Combine results
   if (!is.null(scraper_result) && !is.null(manual_result)) {
     # Both available - combine them
-    text_summarizer_combined(scraper_result = scraper_result, manual_result = manual_result, org = org)
+    summary <- text_summarizer_combined(scraper_result = scraper_result, manual_result = manual_result, org = org)
   } else if (!is.null(scraper_result)) {
     # Scraper only
-    text_summarizer(txt = txt, org = org)
+    summary <- text_summarizer(txt = txt, org = org)
   } else if (!is.null(manual_result)) {
     # Manual only
-    text_summarizer_manual(manual_result)
+    summary <- text_summarizer_manual(manual_result)
   } else {
     # None available
-    NA_character_
+    summary <- NA_character_
   }
 
   list(
