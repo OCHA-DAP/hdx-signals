@@ -91,6 +91,7 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
 #' @param indicator_id The Signals indicator identifier (character string)
 #' @param date A character string or Date object in YYYY-MM-DD format
 #' @returns Summarized text data
+#' @export
 ipc_ch_summarizer <- function(url, ch, location, iso3, indicator_id, date) {
   scraper_result <- NULL
   manual_result <- get_manual_info$get_manual_info(iso3, indicator_id, date)
@@ -114,13 +115,13 @@ ipc_ch_summarizer <- function(url, ch, location, iso3, indicator_id, date) {
   }
 
   # Combine results
-  if (!is.null(scraper_result) && !is.null(manual_result)) {
+  if (!is.null(scraper_result) && !is.null(manual_result) && !all(is.na(manual_result))) {
     # Both available - combine them
     summary <- text_summarizer_combined(scraper_result = scraper_result, manual_result = manual_result, org = org)
   } else if (!is.null(scraper_result)) {
     # Scraper only
     summary <- text_summarizer(txt = txt, org = org)
-  } else if (!is.null(manual_result)) {
+  } else if (!is.null(manual_result) && !all(is.na(manual_result))) {
     # Manual only
     summary <- text_summarizer_manual(manual_result)
   } else {
@@ -131,7 +132,11 @@ ipc_ch_summarizer <- function(url, ch, location, iso3, indicator_id, date) {
   list(
     summary = summary,
     scraped_info = if (!is.null(scraper_result)) paste(scraper_result, collapse = "\n") else NA_character_,
-    manual_info = if (!is.null(manual_result)) paste(manual_result, collapse = "\n") else NA_character_
+    manual_info = if (!is.null(manual_result) && !all(is.na(manual_result))) {
+      paste(manual_result, collapse = "\n")
+    } else {
+      NA_character_
+    }
   )
 }
 
