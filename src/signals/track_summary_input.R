@@ -7,7 +7,7 @@ box::use(
 box::use(
   arrow[read_parquet, write_parquet],
   dplyr,
-  logger[log_info, log_warn],
+  logger[log_info],
   purrr
 )
 
@@ -20,13 +20,13 @@ get_tracking_path <- function() {
     "summary_input.parquet"
   }
 
+  path <- file.path("output", filename)
+
   if (hs_local$hs_local()) {
-    path <- file.path("output", filename)
     dir.create(dirname(path), recursive = TRUE, showWarnings = FALSE)
-    return(path)
-  } else {
-    return(file.path("output", filename))
   }
+
+  path
 }
 
 
@@ -92,7 +92,7 @@ append_tracking_data <- function(new_data) {
   if (hs_local$hs_local()) {
     write_parquet(combined_data, path)
   } else {
-    cs$update_az_file(combined_data, path, container = 'dev')
+    cs$update_az_file(combined_data, path, container = "dev")
   }
 
   log_info("Tracking file updated: {path}")

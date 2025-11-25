@@ -174,7 +174,7 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
         )
       ),
       summary_source = "ACAPS reporting"
-    )|>
+    ) |>
     dplyr$ungroup() |>
     dplyr$select(iso3, location, date, text, manual_info, summary_long, summary_short, summary_source)
 
