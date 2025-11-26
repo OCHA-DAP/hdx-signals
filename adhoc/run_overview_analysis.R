@@ -29,6 +29,7 @@ box::use(
 # Global variables
 years_back <- 3
 n_top_locations <- 3
+signal_gap_days <- 30
 
 # Date Auto-detection YYYY-MM-DD
 end_date <- as.Date(Sys.Date())
@@ -70,9 +71,34 @@ df <- cloud_storage$read_az_file(
 )
 
 
+# Fitler singals in chosen ndays interval
+filter_signals_by_days <- function(dates, min_days = 30) {
+  if (length(dates) == 0) return(logical(0))
+  if (length(dates) == 1) return(TRUE)
+
+  keep <- rep(FALSE, length(dates))
+  keep[1] <- TRUE
+  last_kept <- dates[1]
+
+  for (i in 2:length(dates)) {
+    if (as.numeric(dates[i] - last_kept) > min_days) {
+      keep[i] <- TRUE
+      last_kept <- dates[i]
+    }
+  }
+  return(keep)
+}
+
+
 # Extract year
 df <- dplyr$mutate(df, year = as.numeric(format(df$date, "%Y")))
 
+# Apply filter
+df <- df |>
+  dplyr$arrange(iso3, indicator_name, date) |>
+  dplyr$group_by(iso3, indicator_name) |>
+  dplyr$filter(filter_signals_by_days(date, min_days = signal_gap_days)) |>
+  dplyr$ungroup()
 
 # Find minimum common year for all indicators
 first_alert <- df |>
@@ -291,9 +317,10 @@ plot_conflict_analysis <- function(
   date_end = as.Date("2025-09-10"),
   indicator_name = "conflict",
   title = "Monthly Rolling Sum of Conflict Fatalities",
-  x_label = "Date",
+  x_label = NULL,
   y_label = "Conflict Fatalities (monthly)",
-  df_top3 = NULL
+  df_top3 = NULL,
+  date_breaks = "2 months"
 ) {
 
   conflict_wrangle_filtered <- conflict_wrangle |>
@@ -307,40 +334,57 @@ plot_conflict_analysis <- function(
       x = x_label,
       y = y_label
     ) +
-    gg$scale_y_continuous() +
+    gg$scale_y_continuous(
+      labels = scales$label_number(scale_cut = scales$cut_short_scale())
+    ) +
     gg$scale_x_date(
       date_labels = "%b %Y",
-      date_breaks = "1 month"
+      date_breaks = date_breaks
     ) +
     gg$theme_minimal() +
     gg$theme(
-      axis.text.x = gg$element_text(angle = 45, hjust = 1, size = 10),           # X tick labels
-      axis.text.y = gg$element_text(size = 10),                                  # Y tick labels
-      axis.title.x = gg$element_text(size = 12, margin = gg$margin(t = 15, b = 0)),  # X axis title spacing
-      axis.title.y = gg$element_text(size = 12, margin = gg$margin(r = 15, l = 0)),  # Y axis title spacing
-      plot.title = gg$element_text(hjust = 0.5, size = 14, face = "bold")       # Centered bold title
+      plot.margin = gg$margin(t = 25, r = 10, b = 10, l = 10),
+      # Simpler grid style
+      panel.grid.major.x = gg$element_blank(),
+      panel.grid.minor.x = gg$element_blank(),
+      panel.grid.major.y = gg$element_line(color = "grey85", linewidth = 0.3),
+      panel.grid.minor.y = gg$element_blank(),
+      # Axis styling
+      axis.text.x = gg$element_text(angle = 45, hjust = 1, size = 10),
+      axis.text.y = gg$element_text(size = 10),
+      axis.title.y = gg$element_text(size = 12, margin = gg$margin(r = 15, l = 0)),
+      plot.title = gg$element_text(hjust = 0.5, size = 14, face = "bold", margin = gg$margin(b = 15))
     )
 
 
   if (!is.null(df_top3)) {
     conflict_filtered <- df_top3[df_top3$iso3 == iso3 & df_top3$indicator_name == indicator_name, ]
-
     if (nrow(conflict_filtered) > 0) {
       conflict_dates <- unique(conflict_filtered$date)
-
       conflict_dates <- conflict_dates[conflict_dates >= date_start & conflict_dates < date_end]
-
       if (length(conflict_dates) > 0) {
         p <- p + gg$geom_vline(
           xintercept = conflict_dates,
           color = "red",
           linetype = "dashed",
           alpha = 0.7
-        )
+        ) +
+          # Signal lines label
+          gg$annotate(
+            "text",
+            x = conflict_dates,
+            y = Inf,
+            label = format(conflict_dates, "%d %b"),
+            vjust = 1.5,
+            hjust = 0.5,
+            size = 2.5,
+            color = "red",
+            angle = 90
+          ) +
+          gg$coord_cartesian(clip = "off")
       }
     }
   }
-
   return(p)
 }
 
@@ -354,10 +398,11 @@ plot_displacement_analysis <- function(
   displacement_type = "Disaster", # "Disaster" or "Conflict"
   indicator_name = NULL, # will be auto-set based on displacement_type if NULL
   title = NULL, # will be auto-generated if NULL
-  x_label = "Date",
+  x_label = NULL,
   y_label = "30-Day Rolling Sum (k)",
   df_top3 = NULL,
-  use_k_scale = TRUE # whether to scale y-axis to thousands
+  use_k_scale = TRUE, # whether to scale y-axis to thousands
+  date_breaks = "2 months"
 ) {
 
 
@@ -403,20 +448,31 @@ plot_displacement_analysis <- function(
     ) +
     gg$scale_x_date(
       date_labels = "%b %Y",
-      date_breaks = "1 month"
+      date_breaks = date_breaks
     ) +
     gg$theme_minimal() +
     gg$theme(
-      axis.text.x = gg$element_text(angle = 45, hjust = 1, size = 10),           # X tick labels
-      axis.text.y = gg$element_text(size = 10),                                  # Y tick labels
-      axis.title.x = gg$element_text(size = 12, margin = gg$margin(t = 15, b = 0)),  # X axis title spacing
-      axis.title.y = gg$element_text(size = 12, margin = gg$margin(r = 15, l = 0)),  # Y axis title spacing
-      plot.title = gg$element_text(hjust = 0.5, size = 14, face = "bold")       # Centered bold title
+      plot.margin = gg$margin(t = 25, r = 10, b = 10, l = 10),
+      # Simplified grid - only major horizontal lines, lighter color
+      panel.grid.major.x = gg$element_blank(),
+      panel.grid.minor.x = gg$element_blank(),
+      panel.grid.major.y = gg$element_line(color = "grey85", linewidth = 0.3),
+      panel.grid.minor.y = gg$element_blank(),
+      # Axis styling
+      axis.text.x = gg$element_text(angle = 45, hjust = 1, size = 10),
+      axis.text.y = gg$element_text(size = 10),
+      axis.title.y = gg$element_text(size = 12, margin = gg$margin(r = 15, l = 0)),
+      plot.title = gg$element_text(hjust = 0.5, size = 14, face = "bold", margin = gg$margin(b = 15)),
+      # Legend styling
+      legend.position = "bottom",
+      legend.title = gg$element_blank()
     )
 
   # Apply k scaling if requested
   if (use_k_scale) {
-    p <- p + gg$scale_y_continuous(labels = scales$label_number(scale = 1e-3, suffix = "k"))
+    p <- p + gg$scale_y_continuous(
+      labels = scales$label_number(scale_cut = scales$cut_short_scale())
+    )
   } else {
     p <- p + gg$scale_y_continuous()
   }
@@ -424,19 +480,29 @@ plot_displacement_analysis <- function(
   # Add vertical lines if df_top3 is provided
   if (!is.null(df_top3)) {
     displacement_filtered <- df_top3[df_top3$iso3 == iso3 & df_top3$indicator_name == indicator_name, ]
-
     if (nrow(displacement_filtered) > 0) {
       displacement_dates <- unique(displacement_filtered$date)
-      # Filter dates that fall within the plot range
       displacement_dates <- displacement_dates[displacement_dates >= date_start & displacement_dates < date_end]
-
       if (length(displacement_dates) > 0) {
         p <- p + gg$geom_vline(
           xintercept = displacement_dates,
           color = "red",
           linetype = "dashed",
           alpha = 0.7
-        )
+        ) +
+          # Adding label to Signal lines to show the date
+          gg$annotate(
+            "text",
+            x = displacement_dates,
+            y = Inf,
+            label = format(displacement_dates, "%d %b"),
+            vjust = 1.5,
+            hjust = 0.5,
+            size = 2.5,
+            color = "red",
+            angle = 90
+          ) +
+          gg$coord_cartesian(clip = "off")
       }
     }
   }
@@ -451,7 +517,8 @@ plot_agricultural_hotspot <- function(
   iso3_code = "MOZ",
   start_date = "2024-09-10",
   end_date = "2025-09-10",
-  title = "Agricultural Hotspot Timeline"
+  title = "Agricultural Hotspot Timeline",
+  date_breaks = "2 months"
 ) {
   # Input validation
   if (!is.data.frame(agri_wrangle) || !is.data.frame(df_top3)) {
@@ -493,7 +560,7 @@ plot_agricultural_hotspot <- function(
   # Filter for agricultural hotspot dates
   agri_filtered <- df_top3[df_top3$iso3 == iso3_code &
                              df_top3$indicator_name == "agricultural_hotspots", ]
-  agri_dates <- unique(agri_filtered$date)
+  agri_dates <- as.Date(unique(agri_filtered$date))
 
   # Calculate uniform tile width based on time range
   tile_width <- 25  # Width in days - adjust as needed for better spacing
@@ -510,48 +577,62 @@ plot_agricultural_hotspot <- function(
       height = 0.5,
       pattern_fill = "black",
       pattern_density = 0.4,
-      pattern_spacing = 0.05
+      pattern_spacing = 0.05,
     ) +
     gg$geom_vline(
       xintercept = agri_dates,
-      color = "red",
+      color = "black",
       linetype = "dashed",
-      alpha = 0.7
+      alpha = 1
     ) +
     gg$scale_fill_manual(
       values = c("0" = "lightgray", "1" = "orange", "2" = "red"),
       name = "Hotspot level",
       na.value = "white",
+      na.translate = FALSE,
       labels = c("0" = "No hotspot", "1" = "Moderate", "2" = "Severe")
     ) +
     gg$guides(
       fill = gg$guide_legend(override.aes = list(pattern = "none"))
     ) +
     gg$scale_x_date(
-      breaks = agri_complete$month,
       date_labels = "%b %Y",
+      date_breaks = date_breaks,
       expand = c(0.02, 0)
     ) +
     gg$coord_cartesian(
-      xlim = c(start_month - 15, end_month + 15)
+      xlim = c(start_month - 15, end_month + 15),
+      clip = "off"
     ) +
     gg$labs(
       title = title,
-      x = "Month-Year",
+      caption = "Striped pattern = No data available | Dashed line = Signal",
+      x = NULL,
       y = NULL
     ) +
     gg$theme_minimal() +
     gg$theme(
-      axis.text.x = gg$element_text(angle = 45, hjust = 1, size = 10),           # X tick labels
-      axis.text.y = gg$element_blank(),                                          # No Y labels
-      axis.ticks.y = gg$element_blank(),                                         # No Y ticks
-      axis.title.x = gg$element_text(size = 12, margin = gg$margin(t = 15, b = 0)),  # X axis title spacing
-      plot.title = gg$element_text(hjust = 0.5, size = 14, face = "bold"),      # Centered bold title
+      plot.margin = gg$margin(t = 15, r = 10, b = 10, l = 10),
+      # Simplified grid
+      panel.grid.major.x = gg$element_blank(),
+      panel.grid.minor.x = gg$element_blank(),
+      panel.grid.major.y = gg$element_blank(),
+      panel.grid.minor.y = gg$element_blank(),
+      # Axis styling
+      axis.text.x = gg$element_text(angle = 45, hjust = 1, size = 10),
+      axis.text.y = gg$element_blank(),
+      axis.ticks.y = gg$element_blank(),
+      # Title styling
+      plot.title = gg$element_text(hjust = 0.5, size = 14, face = "bold", margin = gg$margin(b = 15)),
+      # Legend styling
       legend.position = "bottom",
-      legend.text = gg$element_text(size = 10),                                  # Legend text size
-      legend.title = gg$element_text(size = 11, face = "bold")                   # Legend title size
+      legend.justification = "center",
+      legend.margin = gg$margin(t = 0, r = 0, b = 0, l = 0),
+      legend.text = gg$element_text(size = 10),
+      legend.title = gg$element_text(size = 11, face = "bold"),
+      # Caption on the right
+      plot.caption = gg$element_text(hjust = 0.5, size = 9, color = "grey40")
     )
-
   return(plot)
 }
 
@@ -563,10 +644,11 @@ plot_inform_severity <- function(
   date_end = as.Date("2025-09-10"),
   indicator_name = "inform_severity",
   title = NULL,
-  x_label = "Date",
+  x_label = NULL,
   y_label = "INFORM Severity Index",
   df_top3 = NULL,
-  line_color = "steelblue"
+  line_color = "steelblue",
+  date_breaks = "2 months"
 ) {
 
   # Auto-generate title if not provided
@@ -596,22 +678,33 @@ plot_inform_severity <- function(
     gg$geom_line(color = line_color, linewidth = 1) +
     gg$labs(
       title = title,
+      caption = "Dashed line = Signal",
       x = x_label,
       y = y_label
     ) +
-    gg$scale_y_continuous() +
+    gg$scale_y_continuous(
+      labels = scales$label_number(scale_cut = scales$cut_short_scale())
+    ) +
     gg$scale_x_date(
       date_labels = "%b %Y",
-      date_breaks = "1 month",
+      date_breaks = date_breaks,
       expand = c(0.02, 0)
     ) +
     gg$theme_minimal() +
     gg$theme(
-      axis.text.x = gg$element_text(angle = 45, hjust = 1, size = 10),           # X tick labels
-      axis.text.y = gg$element_text(size = 10),                                  # Y tick labels
-      axis.title.x = gg$element_text(size = 12, margin = gg$margin(t = 15, b = 0)),  # X axis title spacing
-      axis.title.y = gg$element_text(size = 12, margin = gg$margin(r = 15, l = 0)),  # Y axis title spacing
-      plot.title = gg$element_text(hjust = 0.5, size = 14, face = "bold")       # Centered bold title
+      plot.margin = gg$margin(t = 25, r = 10, b = 10, l = 10),
+      # Simplified grid
+      panel.grid.major.x = gg$element_blank(),
+      panel.grid.minor.x = gg$element_blank(),
+      panel.grid.major.y = gg$element_line(color = "grey85", linewidth = 0.3),
+      panel.grid.minor.y = gg$element_blank(),
+      # Axis styling
+      axis.text.x = gg$element_text(angle = 45, hjust = 1, size = 10),
+      axis.text.y = gg$element_text(size = 10),
+      axis.title.y = gg$element_text(size = 12, margin = gg$margin(r = 15, l = 0)),
+      # Title styling
+      plot.title = gg$element_text(hjust = 0.5, size = 14, face = "bold", margin = gg$margin(b = 15)),
+      plot.caption = gg$element_text(hjust = 0.5, size = 9, color = "grey40")
     )
 
   # Add vertical lines if df_top3 is provided
@@ -621,17 +714,27 @@ plot_inform_severity <- function(
         dplyr$filter(iso3 == !!iso3 & indicator_name == !!indicator_name) |>
         dplyr$pull(date) |>
         unique()
-
       infsev_filtered <- dates[dates >= date_start & dates <= date_end]
-
-
       if (length(infsev_filtered) > 0) {
         p <- p + gg$geom_vline(
           xintercept = infsev_filtered,
           color = "red",
           linetype = "dashed",
-          alpha = 0.7
-        )
+          linewidth = 0.8,
+          alpha = 0.8
+        ) +
+          gg$annotate(
+            "text",
+            x = infsev_filtered,
+            y = Inf,
+            label = format(infsev_filtered, "%d %b"),
+            vjust = 1.5,
+            hjust = 0.5,
+            size = 2.5,
+            color = "red",
+            angle = 90
+          ) +
+          gg$coord_cartesian(clip = "off")
       }
     }
   }
@@ -639,20 +742,19 @@ plot_inform_severity <- function(
   return(p)
 }
 
-
-
 plot_food_insecurity <- function(
   iso3_code,
   df_top3,
   food_wrangle,
   start_date,
   end_date,
-  title = "Food Insecurity Phases: Current Data and Projections"
+  title = "Food Insecurity Phases: Current Data and Projections",
+  date_breaks = "2 months"
 ) {
 
   # 1. INITIAL DATA FILTERING
   food_filtered <- df_top3[df_top3$iso3 == iso3_code & df_top3$indicator_name == "food_insecurity", ]
-  food_dates <- unique(food_filtered$date)
+  food_dates <- as.Date(unique(food_filtered$date))
 
   # Filter data for the country and critical phases
   food_wrangle_country_p <- food_wrangle |>
@@ -678,14 +780,18 @@ plot_food_insecurity <- function(
       gg$labs(
         title = title,
         subtitle = "No Food Insecurity data available for this country/period",
-        x = "Date",
+        x = NULL,
         y = "Percentage (%)"
       ) +
       gg$theme_minimal() +
       gg$theme(
+        panel.grid.major.x = gg$element_blank(),
+        panel.grid.minor.x = gg$element_blank(),
+        panel.grid.major.y = gg$element_line(color = "grey85", linewidth = 0.3),
+        panel.grid.minor.y = gg$element_blank(),
         plot.title = gg$element_text(size = 14, face = "bold", hjust = 0.5),
-        plot.subtitle = gg$element_text(size = 11, hjust = 0.5, color = "gray60"),
-        panel.grid.minor = gg$element_blank()
+        plot.caption = gg$element_text(size = 9, hjust = 0.5, color = "gray60"),
+        axis.title.y = gg$element_text(size = 12, margin = gg$margin(r = 15, l = 0))
       ) +
       # Set some reasonable axis limits for empty plot
       gg$xlim(as.Date(start_date), as.Date(end_date)) +
@@ -826,6 +932,12 @@ plot_food_insecurity <- function(
   projected_data <- plot_data |>
     dplyr$filter(type %in% c("projected", "second_projected"))
 
+  # Find projection start date for shading
+  projection_start <- NULL
+  if (nrow(projected_data) > 0) {
+    projection_start <- min(projected_data$plot_date, na.rm = TRUE)
+  }
+
   # Create transition points ONLY if we have both current and projected data
   transition_points <- NULL
 
@@ -870,6 +982,19 @@ plot_food_insecurity <- function(
   # 6. CREATE THE PLOT
   p <- gg$ggplot(plot_data, gg$aes(x = plot_date, y = percentage, color = phase_label))
 
+  # Add shaded area for projected period
+  if (!is.null(projection_start)) {
+    p <- p + gg$annotate(
+      "rect",
+      xmin = projection_start,
+      xmax = +Inf,
+      ymin = -Inf,
+      ymax = Inf,
+      fill = "grey90",
+      alpha = 0.5
+    )
+  }
+
   # Add solid lines for current data if exists
   if (nrow(current_data) > 0) {
     p <- p + gg$geom_line(
@@ -885,8 +1010,8 @@ plot_food_insecurity <- function(
     p <- p + gg$geom_line(
       data = projected_data,
       gg$aes(group = phase_label),
-      linewidth = 1.2,
-      linetype = "dashed"
+      linewidth = 1,
+      linetype = "solid"
     )
   }
 
@@ -896,27 +1021,50 @@ plot_food_insecurity <- function(
       data = transition_points,
       gg$aes(group = transition_id),
       linewidth = 1.2,
-      linetype = "dashed"
+      linetype = "solid"
     )
   }
 
-  vline_layer <- NULL
+  # Signal lines
   if (length(food_dates) > 0) {
-    vline_layer <- gg$geom_vline(
+    p <- p + gg$geom_vline(
       xintercept = food_dates,
       color = "red",
       linetype = "dashed",
-      alpha = 0.7
-    )
+      linewidth = 0.8,
+      alpha = 0.8
+    ) +
+      gg$annotate(
+        "text",
+        x = food_dates,
+        y = Inf,
+        label = format(food_dates, "%d %b"),
+        vjust = 1.5,
+        hjust = 0.5,
+        size = 2.5,
+        color = "red",
+        angle = 90
+      ) +
+      gg$coord_cartesian(clip = "off")
   }
 
   # Complete the plot
   p <- p +
-    # Add points to highlight data
+    # Add points - current with color
     gg$geom_point(
+      data = current_data,
       gg$aes(shape = type),
-      size = 2,
-      alpha = 0.8
+      size = 2.5,
+      alpha = 0.9
+    ) +
+
+    # Add points - projected in black
+    gg$geom_point(
+      data = projected_data,
+      gg$aes(shape = type),
+      color = "black",
+      size = 2.5,
+      alpha = 0.9
     ) +
 
     # Standard IPC colors
@@ -934,32 +1082,45 @@ plot_food_insecurity <- function(
       name = "Data Type"
     ) +
 
+    gg$scale_x_date(
+      date_labels = "%b %Y",
+      date_breaks = date_breaks
+    ) +
+
     # Custom labels
     gg$labs(
       title = title,
-      subtitle = "Solid lines: current data | Dashed lines: projections",
-      x = "Date",
+      caption = "Shaded area = Projections | Dashed line = Signal",
+      x = NULL,
       y = "Percentage (%)"
     ) +
-
-    # Vertical lines for food_dates (only if they exist)
-    vline_layer +
 
     # Clean theme
     gg$theme_minimal() +
     gg$theme(
-      plot.title = gg$element_text(size = 14, face = "bold", hjust = 0.5),
-      plot.subtitle = gg$element_text(size = 11, hjust = 0.5, color = "gray60"),
+      plot.margin = gg$margin(t = 25, r = 10, b = 10, l = 10),
+      # Simplified grid
+      panel.grid.major.x = gg$element_blank(),
+      panel.grid.minor.x = gg$element_blank(),
+      panel.grid.major.y = gg$element_line(color = "grey85", linewidth = 0.3),
+      panel.grid.minor.y = gg$element_blank(),
+      # Axis styling
+      axis.text.x = gg$element_text(angle = 45, hjust = 1),
+      axis.text.y = gg$element_text(size = 10),
+      axis.title.y = gg$element_text(size = 12, margin = gg$margin(r = 15, l = 0)),
+      # Title styling
+      plot.title = gg$element_text(hjust = 0.5, size = 14, face = "bold", margin = gg$margin(b = 15)),
+      plot.caption = gg$element_text(size = 9, hjust = 0.5, color = "grey40"),
+      # Legend
       legend.position = "bottom",
       legend.box = "horizontal",
-      panel.grid.minor = gg$element_blank(),
-      axis.text.x = gg$element_text(angle = 45, hjust = 1)
+      legend.text = gg$element_text(size = 10),
+      legend.title = gg$element_text(size = 11, face = "bold")
     ) +
 
     # Guidelines to facilitate reading
     gg$guides(
-      color = gg$guide_legend(override.aes = list(linewidth = 2, linetype = "solid")),
-      shape = gg$guide_legend(override.aes = list(size = 3))
+      color = gg$guide_legend(override.aes = list(linewidth = 2, linetype = "solid"))
     )
 
   # 7. RETURN THE PLOT
@@ -967,39 +1128,85 @@ plot_food_insecurity <- function(
 }
 
 
-plot_market_change <- function(iso3_code, market_wrangle, df_top3, start_date, end_date, title) {
-
+plot_market_change <- function(
+    iso3_code,
+    market_wrangle,
+    df_top3,
+    start_date,
+    end_date,
+    title,
+    date_breaks = "2 months"
+) {
   # Filter market data for the specified country and date range
   market_wrangle_filtered <- market_wrangle |>
     dplyr$filter(iso3 == iso3_code & date >= as.Date(start_date) & date < as.Date(end_date))
-
   # Remove NA values from basket_change
   market_wrangle_filtered <- market_wrangle_filtered[!is.na(market_wrangle_filtered$basket_change), ]
-
   # Filter df_top3 for market monitor data
   market_filtered <- df_top3[df_top3$iso3 == iso3_code & df_top3$indicator_name == "market_monitor", ]
-  market_dates <- unique(market_filtered$date)
-
+  market_dates <- as.Date(unique(market_filtered$date))
   # Create the plot
   plot <- gg$ggplot(market_wrangle_filtered, gg$aes(x = date, y = basket_change)) +
-    gg$geom_line() +
-    gg$geom_point() +
-    gg$geom_hline(yintercept = 0, linetype = "dashed", color = "violet") +
-    gg$geom_vline(xintercept = market_dates, color = "red", linetype = "dashed", alpha = 0.7) +
+    # Shaded area below 0
+    gg$annotate(
+      "rect",
+      xmin = -Inf,
+      xmax = +Inf,
+      ymin = -Inf,
+      ymax = 0,
+      fill = "lightcoral",
+      alpha = 0.2
+    ) +
+    # Reference line at 0 (solid)
+    gg$geom_hline(yintercept = 0, linetype = "solid", color = "grey50", linewidth = 0.5) +
+    # Data line and points
+    gg$geom_line(color = "steelblue", linewidth = 1) +
+    gg$geom_point(color = "black", size = 2) +
+    # Signal lines
+    gg$geom_vline(
+      xintercept = market_dates,
+      color = "red",
+      linetype = "dashed",
+      linewidth = 0.8,
+      alpha = 0.8
+    ) +
+    gg$annotate(
+      "text",
+      x = market_dates,
+      y = Inf,
+      label = format(market_dates, "%d %b"),
+      vjust = 1.5,
+      hjust = 0.5,
+      size = 2.5,
+      color = "red",
+      angle = 90
+    ) +
+    gg$coord_cartesian(clip = "off") +
     gg$labs(
       title = title,
-      x = "Date",
+      caption = "Shaded area = Negative change | Dashed line = Signal | Black dots = Data points",
+      x = NULL,
       y = "% Change Monthly"
     ) +
-    gg$scale_x_date(date_labels = "%b %Y", date_breaks = "1 month") +
+    gg$scale_x_date(date_labels = "%b %Y", date_breaks = date_breaks) +
     gg$theme_minimal() +
     gg$theme(
-      axis.text.x = gg$element_text(angle = 45, hjust = 1, size = 10),           # X tick labels
-      axis.text.y = gg$element_text(size = 10),                                  # Y tick labels
-      axis.title.x = gg$element_text(size = 12, margin = gg$margin(t = 15, b = 0)),  # X axis title spacing
-      axis.title.y = gg$element_text(size = 12, margin = gg$margin(r = 15, l = 0)),  # Y axis title spacing
-      plot.title = gg$element_text(hjust = 0.5, size = 14, face = "bold")       # Centered bold title
+      plot.margin = gg$margin(t = 25, r = 10, b = 10, l = 10),
+      # Simplified grid
+      panel.grid.major.x = gg$element_blank(),
+      panel.grid.minor.x = gg$element_blank(),
+      panel.grid.major.y = gg$element_line(color = "grey85", linewidth = 0.3),
+      panel.grid.minor.y = gg$element_blank(),
+      # Axis styling
+      axis.text.x = gg$element_text(angle = 45, hjust = 1, size = 10),
+      axis.text.y = gg$element_text(size = 10),
+      axis.title.y = gg$element_text(size = 12, margin = gg$margin(r = 15, l = 0)),
+      # Title styling
+      plot.title = gg$element_text(hjust = 0.5, size = 14, face = "bold", margin = gg$margin(b = 15)),
+      plot.caption = gg$element_text(hjust = 0.5, size = 9, color = "grey40")
     )
+
+  return(plot)
 }
 
 
@@ -1036,7 +1243,7 @@ report_by_country <- function(
       date_end = end_date,
       displacement_type = "Disaster",
       title = "30-Day Rolling Sum of Disaster-Driven Displacements",
-      x_label = "Date",
+      x_label = NULL,
       y_label = "30-Day Rolling Sum (k)",
       df_top3 = df_top3
     )
@@ -1048,7 +1255,7 @@ report_by_country <- function(
       date_end = end_date,
       displacement_type = "Conflict",
       title = "30-Day Rolling Sum of Conflict-Driven Displacements",
-      x_label = "Date",
+      x_label = NULL,
       y_label = "30-Day Rolling Sum (k)",
       df_top3 = df_top3
     )
@@ -1059,7 +1266,7 @@ report_by_country <- function(
       date_start = start_date,
       date_end = end_date,
       title = "Monthly Rolling Sum of Conflict Fatalities",
-      x_label = "Date",
+      x_label = NULL,
       y_label = "Conflict Fatalities (monthly)",
       df_top3 = df_top3
     )
@@ -1112,7 +1319,7 @@ report_by_country <- function(
     # Report Title
     final_title <- paste0("Signals Indicators in ", location, " (", start_year, "-", end_year, ")")
 
-    subtitle <- paste0("Number of Signals in the last ", years_back, " years: ", occ)
+    subtitle <- paste0(occ, " Total Signals in the last ", years_back, " years")
 
     title_plot <- cowplot$ggdraw() +
       # Main title (centered)
