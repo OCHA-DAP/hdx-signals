@@ -23,7 +23,8 @@ box::use(
   logger,
   scales,
   az = AzureStor,
-  utils
+  utils,
+  ggnewscale
 )
 
 # Global variables
@@ -87,6 +88,29 @@ filter_signals_by_days <- function(dates, min_days = 30) {
     }
   }
   return(keep)
+}
+
+date_label_func <- function(dates) {
+  labels <- character(length(dates))
+  prev_year <- NA
+
+
+  for (i in seq_along(dates)) {
+    if (is.na(dates[i])) {
+      labels[i] <- ""
+      next
+    }
+    month_label <- toupper(format(dates[i], "%b"))
+    year_label <- format(dates[i], "%Y")
+
+    if (is.na(prev_year) || year_label != prev_year) {
+      labels[i] <- paste0(month_label, "\n", year_label)
+      prev_year <- year_label
+    } else {
+      labels[i] <- month_label
+    }
+  }
+  return(labels)
 }
 
 
@@ -311,75 +335,95 @@ for (loc in unique(df_top3_summary$location)) {
 ### FUNCTIONS PLOT INDICATORS IN THE PAST YEAR FOR THE TOP3 NATIONS ###
 
 plot_conflict_analysis <- function(
-  conflict_wrangle,
-  iso3 = "MOZ",
-  date_start = as.Date("2024-09-10"),
-  date_end = as.Date("2025-09-10"),
-  indicator_name = "conflict",
-  title = "Monthly Rolling Sum of Conflict Fatalities",
-  x_label = NULL,
-  y_label = "Conflict Fatalities (monthly)",
-  df_top3 = NULL,
-  date_breaks = "2 months"
+    conflict_wrangle,
+    iso3 = "MOZ",
+    date_start = as.Date("2024-09-10"),
+    date_end = as.Date("2025-09-10"),
+    indicator_name = "conflict",
+    title = "Monthly Rolling Sum of Conflict Fatalities",
+    x_label = NULL,
+    y_label = "Conflict Fatalities (k)",
+    df_top3 = NULL,
+    date_breaks = "2 months"
 ) {
-
   conflict_wrangle_filtered <- conflict_wrangle |>
     dplyr$filter(iso3 == !!iso3 & date >= !!date_start & date < !!date_end)
-
-
   p <- gg$ggplot(conflict_wrangle_filtered, gg$aes(x = date, y = fatalities_30d)) +
-    gg$geom_line(color = "steelblue", linewidth = 1) +
+    gg$geom_line(color = "#0063B3", linewidth = 1) +
     gg$labs(
       title = title,
       x = x_label,
       y = y_label
     ) +
     gg$scale_y_continuous(
-      labels = scales$label_number(scale_cut = scales$cut_short_scale())
+      labels = scales$label_number(scale_cut = scales$cut_short_scale()),
+      limits = c(0, NA),
+      expand = gg$expansion(mult = c(0, 0.05))
     ) +
     gg$scale_x_date(
-      date_labels = "%b %Y",
-      date_breaks = date_breaks
+      labels = date_label_func,
+      date_breaks = date_breaks,
+      expand = c(0.02, 0)
     ) +
     gg$theme_minimal() +
     gg$theme(
-      plot.margin = gg$margin(t = 25, r = 10, b = 10, l = 10),
+      plot.margin = gg$margin(t = 50, r = 10, b = 10, l = 10),
       # Simpler grid style
       panel.grid.major.x = gg$element_blank(),
       panel.grid.minor.x = gg$element_blank(),
       panel.grid.major.y = gg$element_line(color = "grey85", linewidth = 0.3),
       panel.grid.minor.y = gg$element_blank(),
       # Axis styling
-      axis.text.x = gg$element_text(angle = 45, hjust = 1, size = 10),
-      axis.text.y = gg$element_text(size = 10),
+      axis.text.x = gg$element_text(size = 10, color = "grey60"),
+      axis.text.y = gg$element_text(size = 10, color = "grey60"),
       axis.title.y = gg$element_text(size = 12, margin = gg$margin(r = 15, l = 0)),
       plot.title = gg$element_text(hjust = 0.5, size = 14, face = "bold", margin = gg$margin(b = 15))
     )
-
-
   if (!is.null(df_top3)) {
     conflict_filtered <- df_top3[df_top3$iso3 == iso3 & df_top3$indicator_name == indicator_name, ]
     if (nrow(conflict_filtered) > 0) {
       conflict_dates <- unique(conflict_filtered$date)
       conflict_dates <- conflict_dates[conflict_dates >= date_start & conflict_dates < date_end]
       if (length(conflict_dates) > 0) {
+        # calculate offset x short date diff (less than 60 days)
+        x_offsets <- rep(0, length(conflict_dates))
+        if (length(conflict_dates) > 1) {
+          for (i in 1:(length(conflict_dates) - 1)) {
+            if (as.numeric(conflict_dates[i + 1] - conflict_dates[i]) < 60) {
+              x_offsets[i] <- -15
+            }
+          }
+        }
+
         p <- p + gg$geom_vline(
           xintercept = conflict_dates,
           color = "red",
           linetype = "dashed",
           alpha = 0.7
         ) +
-          # Signal lines label
+          # Date labels - horizontal, to the left of the line
           gg$annotate(
             "text",
-            x = conflict_dates,
+            x = conflict_dates + x_offsets,
             y = Inf,
-            label = format(conflict_dates, "%d %b"),
-            vjust = 1.5,
-            hjust = 0.5,
-            size = 2.5,
+            label = toupper(format(conflict_dates, "%d %b")),
+            vjust = 0.5,
+            hjust = 1.1,
+            size = 3.5,
             color = "red",
-            angle = 90
+            fontface = "bold"
+          ) +
+          # "Signal" label only on the first line
+          gg$annotate(
+            "text",
+            x = conflict_dates[1] + x_offsets[1],
+            y = Inf,
+            label = "Signal",
+            vjust = 2,
+            hjust = 1.1,
+            size = 3,
+            color = "red",
+            fontface = "bold"
           ) +
           gg$coord_cartesian(clip = "off")
       }
@@ -440,27 +484,28 @@ plot_displacement_analysis <- function(
 
   # Create base plot
   p <- gg$ggplot(displacement_data, gg$aes(x = date, y = displacement_30d)) +
-    gg$geom_line(color = "steelblue", linewidth = 1) +
+    gg$geom_line(color = "#0063B3", linewidth = 1) +
     gg$labs(
       title = title,
       x = x_label,
       y = y_label
     ) +
     gg$scale_x_date(
-      date_labels = "%b %Y",
-      date_breaks = date_breaks
+      labels = date_label_func,
+      date_breaks = date_breaks,
+      expand = c(0.02, 0)
     ) +
     gg$theme_minimal() +
     gg$theme(
-      plot.margin = gg$margin(t = 25, r = 10, b = 10, l = 10),
+      plot.margin = gg$margin(t = 50, r = 10, b = 10, l = 10),
       # Simplified grid - only major horizontal lines, lighter color
       panel.grid.major.x = gg$element_blank(),
       panel.grid.minor.x = gg$element_blank(),
       panel.grid.major.y = gg$element_line(color = "grey85", linewidth = 0.3),
       panel.grid.minor.y = gg$element_blank(),
       # Axis styling
-      axis.text.x = gg$element_text(angle = 45, hjust = 1, size = 10),
-      axis.text.y = gg$element_text(size = 10),
+      axis.text.x = gg$element_text(size = 10, color = "grey60"),
+      axis.text.y = gg$element_text(size = 10, color = "grey60"),
       axis.title.y = gg$element_text(size = 12, margin = gg$margin(r = 15, l = 0)),
       plot.title = gg$element_text(hjust = 0.5, size = 14, face = "bold", margin = gg$margin(b = 15)),
       # Legend styling
@@ -484,41 +529,62 @@ plot_displacement_analysis <- function(
       displacement_dates <- unique(displacement_filtered$date)
       displacement_dates <- displacement_dates[displacement_dates >= date_start & displacement_dates < date_end]
       if (length(displacement_dates) > 0) {
+        # calculate offset x short date diff (less than 60 days)
+        x_offsets <- rep(0, length(displacement_dates))
+        if (length(displacement_dates) > 1) {
+          for (i in 1:(length(displacement_dates) - 1)) {
+            if (as.numeric(displacement_dates[i + 1] - displacement_dates[i]) < 60) {
+              x_offsets[i] <- -15
+            }
+          }
+        }
+
         p <- p + gg$geom_vline(
           xintercept = displacement_dates,
           color = "red",
           linetype = "dashed",
           alpha = 0.7
         ) +
-          # Adding label to Signal lines to show the date
+          # Date labels - horizontal, to the left of the line
           gg$annotate(
             "text",
-            x = displacement_dates,
+            x = displacement_dates + x_offsets,
             y = Inf,
-            label = format(displacement_dates, "%d %b"),
-            vjust = 1.5,
-            hjust = 0.5,
-            size = 2.5,
+            label = toupper(format(displacement_dates, "%d %b")),
+            vjust = 0.5,
+            hjust = 1.1,
+            size = 3.5,
             color = "red",
-            angle = 90
+            fontface = "bold"
+          ) +
+          # "Signal" label only on the first line
+          gg$annotate(
+            "text",
+            x = displacement_dates[1] + x_offsets[1],
+            y = Inf,
+            label = "Signal",
+            vjust = 2,
+            hjust = 1.1,
+            size = 3,
+            color = "red",
+            fontface = "bold"
           ) +
           gg$coord_cartesian(clip = "off")
       }
     }
   }
-
   return(p)
 }
 
 
 plot_agricultural_hotspot <- function(
-  agri_wrangle,
-  df_top3,
-  iso3_code = "MOZ",
-  start_date = "2024-09-10",
-  end_date = "2025-09-10",
-  title = "Agricultural Hotspot Timeline",
-  date_breaks = "2 months"
+    agri_wrangle,
+    df_top3,
+    iso3_code = "MOZ",
+    start_date = "2024-09-10",
+    end_date = "2025-09-10",
+    title = "Agricultural Hotspot Timeline",
+    date_breaks = "2 months"
 ) {
   # Input validation
   if (!is.data.frame(agri_wrangle) || !is.data.frame(df_top3)) {
@@ -527,13 +593,11 @@ plot_agricultural_hotspot <- function(
   if (!iso3_code %in% agri_wrangle$iso3) {
     warning(paste("ISO3 code", iso3_code, "not found in data"))
   }
-
   # Filter data for country and date range
   agri_wrangle_filtered <- agri_wrangle |>
     dplyr$filter(iso3 == iso3_code &
                    date >= as.Date(start_date) &
                    date < as.Date(end_date))
-
   # Monthly aggregation
   agri_wrangle_monthly <- agri_wrangle_filtered |>
     dplyr$mutate(
@@ -541,30 +605,25 @@ plot_agricultural_hotspot <- function(
     ) |>
     dplyr$group_by(month) |>
     dplyr$summarise(hs_code = dplyr$first(hs_code), .groups = "drop")
-
   # Create complete sequence of months
   start_month <- as.Date(format(as.Date(start_date), "%Y-%m-11"))
   end_month <- as.Date(format(as.Date(end_date), "%Y-%m-11"))
   all_months <- data.frame(
     month = seq(start_month, end_month, by = "month")
   )
-
   # Join and identify missing values
   agri_complete <- all_months |>
     dplyr$left_join(agri_wrangle_monthly, by = "month") |>
     dplyr$mutate(missing = is.na(hs_code))
-
   # Convert to factor with missing value handling
   agri_complete$hs_code <- factor(agri_complete$hs_code, levels = c(0, 1, 2))
-
   # Filter for agricultural hotspot dates
   agri_filtered <- df_top3[df_top3$iso3 == iso3_code &
                              df_top3$indicator_name == "agricultural_hotspots", ]
   agri_dates <- as.Date(unique(agri_filtered$date))
-
+  agri_dates <- agri_dates[agri_dates >= as.Date(start_date) & agri_dates < as.Date(end_date)]
   # Calculate uniform tile width based on time range
-  tile_width <- 25  # Width in days - adjust as needed for better spacing
-
+  tile_width <- 25
   # Create the plot
   plot <- gg$ggplot(agri_complete, gg$aes(x = month, y = 1)) +
     ggpattern$geom_tile_pattern(
@@ -574,139 +633,183 @@ plot_agricultural_hotspot <- function(
       ),
       color = "white",
       width = tile_width,
-      height = 0.5,
-      pattern_fill = "black",
+      height = 0.8,
+      pattern_fill = "grey50",
+      pattern_colour = "grey50",
       pattern_density = 0.4,
-      pattern_spacing = 0.05,
-    ) +
-    gg$geom_vline(
-      xintercept = agri_dates,
-      color = "black",
-      linetype = "dashed",
-      alpha = 1
+      pattern_spacing = 0.05
     ) +
     gg$scale_fill_manual(
-      values = c("0" = "lightgray", "1" = "orange", "2" = "red"),
-      name = "Hotspot level",
+      values = c("0" = "#A5D6A7", "1" = "#FFE082", "2" = "#8D6E63"),
+      name = NULL,
       na.value = "white",
       na.translate = FALSE,
-      labels = c("0" = "No hotspot", "1" = "Moderate", "2" = "Severe")
+      labels = c("0" = "No hotspot", "1" = "Moderate", "2" = "Severe"),
+      drop = FALSE
+    ) +
+    ggpattern$scale_pattern_manual(
+      values = c("none" = "none", "stripe" = "stripe"),
+      name = NULL,
+      breaks = "stripe",
+      labels = c("stripe" = "No data"),
+      guide = gg$guide_legend(
+        override.aes = list(
+          fill = "white",
+          colour = "grey70",
+          pattern_fill = "grey50",
+          pattern_colour = "grey50",
+          pattern_density = 0.4,
+          pattern_spacing = 0.05
+        )
+      )
     ) +
     gg$guides(
-      fill = gg$guide_legend(override.aes = list(pattern = "none"))
+      fill = gg$guide_legend(order = 1, override.aes = list(pattern = "none")),
+      pattern = gg$guide_legend(order = 2)
     ) +
     gg$scale_x_date(
-      date_labels = "%b %Y",
+      labels = date_label_func,
       date_breaks = date_breaks,
       expand = c(0.02, 0)
     ) +
     gg$coord_cartesian(
       xlim = c(start_month - 15, end_month + 15),
+      ylim = c(0.4, 2),
       clip = "off"
     ) +
     gg$labs(
       title = title,
-      caption = "Striped pattern = No data available | Dashed line = Signal",
       x = NULL,
       y = NULL
     ) +
     gg$theme_minimal() +
     gg$theme(
-      plot.margin = gg$margin(t = 15, r = 10, b = 10, l = 10),
-      # Simplified grid
+      plot.margin = gg$margin(t = 50, r = 10, b = 10, l = 10),
       panel.grid.major.x = gg$element_blank(),
       panel.grid.minor.x = gg$element_blank(),
       panel.grid.major.y = gg$element_blank(),
       panel.grid.minor.y = gg$element_blank(),
-      # Axis styling
-      axis.text.x = gg$element_text(angle = 45, hjust = 1, size = 10),
+      axis.text.x = gg$element_text(size = 10, color = "grey60"),
       axis.text.y = gg$element_blank(),
       axis.ticks.y = gg$element_blank(),
-      # Title styling
       plot.title = gg$element_text(hjust = 0.5, size = 14, face = "bold", margin = gg$margin(b = 15)),
-      # Legend styling
       legend.position = "bottom",
       legend.justification = "center",
       legend.margin = gg$margin(t = 0, r = 0, b = 0, l = 0),
       legend.text = gg$element_text(size = 10),
-      legend.title = gg$element_text(size = 11, face = "bold"),
-      # Caption on the right
-      plot.caption = gg$element_text(hjust = 0.5, size = 9, color = "grey40")
+      legend.title = gg$element_blank()
     )
+
+  # Add signal lines with annotations
+  if (length(agri_dates) > 0) {
+    # Calcola offset x per date vicine (meno di 60 giorni)
+    x_offsets <- rep(0, length(agri_dates))
+    if (length(agri_dates) > 1) {
+      for (i in 1:(length(agri_dates) - 1)) {
+        if (as.numeric(agri_dates[i + 1] - agri_dates[i]) < 60) {
+          x_offsets[i] <- -15
+        }
+      }
+    }
+
+    plot <- plot +
+      gg$geom_vline(
+        xintercept = agri_dates,
+        color = "red",
+        linetype = "dashed",
+        alpha = 0.7
+      ) +
+      gg$annotate(
+        "text",
+        x = agri_dates + x_offsets,
+        y = 1.7,
+        label = toupper(format(agri_dates, "%d %b")),
+        hjust = 1.1,
+        size = 3.5,
+        color = "red",
+        fontface = "bold"
+      ) +
+      gg$annotate(
+        "text",
+        x = agri_dates[1] + x_offsets[1],
+        y = 1.55,
+        label = "Signal",
+        hjust = 1.1,
+        size = 3,
+        color = "red",
+        fontface = "bold"
+      )
+  }
+
   return(plot)
 }
 
 
 plot_inform_severity <- function(
-  infsev_wrangle,
-  iso3 = "HTI",
-  date_start = as.Date("2024-09-10"),
-  date_end = as.Date("2025-09-10"),
-  indicator_name = "inform_severity",
-  title = NULL,
-  x_label = NULL,
-  y_label = "INFORM Severity Index",
-  df_top3 = NULL,
-  line_color = "steelblue",
-  date_breaks = "2 months"
+    infsev_wrangle,
+    iso3 = "HTI",
+    date_start = as.Date("2024-09-10"),
+    date_end = as.Date("2025-09-10"),
+    indicator_name = "inform_severity",
+    title = NULL,
+    x_label = NULL,
+    y_label = "INFORM Severity Index",
+    df_top3 = NULL,
+    line_color = "#0063B3",
+    date_breaks = "2 months"
 ) {
-
   # Auto-generate title if not provided
   if (is.null(title)) {
     title <- paste("INFORM Severity Index in", iso3)
   }
-
   # Filter data for specified country and time period
   infsev_data <- infsev_wrangle |>
     dplyr$filter(iso3 == !!iso3 & date >= !!date_start & date <= !!date_end) |>
-    # Ensure data is properly sorted and handle potential duplicates
     dplyr$arrange(date) |>
     dplyr$group_by(date, iso3) |>
     dplyr$summarise(inform_severity_index = mean(inform_severity_index, na.rm = TRUE),
                     .groups = "drop") |>
-    # Remove any remaining NA values that could cause plotting issues
     dplyr$filter(!is.na(inform_severity_index))
-
   # Check if there's data after filtering
   if (nrow(infsev_data) == 0) {
     warning(paste("No INFORM Severity data found for", iso3, "in the specified period"))
     return(NULL)
   }
 
+  y_min <- min(infsev_data$inform_severity_index, na.rm = TRUE)
+  y_max <- max(infsev_data$inform_severity_index, na.rm = TRUE)
+  y_range <- y_max - y_min
+  y_padding <- y_range * 0.2
+
   # Create base plot
   p <- gg$ggplot(infsev_data, gg$aes(x = date, y = inform_severity_index)) +
     gg$geom_line(color = line_color, linewidth = 1) +
     gg$labs(
       title = title,
-      caption = "Dashed line = Signal",
       x = x_label,
       y = y_label
     ) +
     gg$scale_y_continuous(
-      labels = scales$label_number(scale_cut = scales$cut_short_scale())
+      labels = scales$label_number(scale_cut = scales$cut_short_scale()),
+      limits = c(max(0, y_min - y_padding), y_max + y_padding)
     ) +
     gg$scale_x_date(
-      date_labels = "%b %Y",
+      labels = date_label_func,
       date_breaks = date_breaks,
       expand = c(0.02, 0)
     ) +
     gg$theme_minimal() +
     gg$theme(
-      plot.margin = gg$margin(t = 25, r = 10, b = 10, l = 10),
-      # Simplified grid
+      plot.margin = gg$margin(t = 50, r = 10, b = 10, l = 10),
       panel.grid.major.x = gg$element_blank(),
       panel.grid.minor.x = gg$element_blank(),
       panel.grid.major.y = gg$element_line(color = "grey85", linewidth = 0.3),
       panel.grid.minor.y = gg$element_blank(),
-      # Axis styling
-      axis.text.x = gg$element_text(angle = 45, hjust = 1, size = 10),
-      axis.text.y = gg$element_text(size = 10),
+      axis.text.x = gg$element_text(size = 10, color = "grey60"),
+      axis.text.y = gg$element_text(size = 10, color = "grey60"),
       axis.title.y = gg$element_text(size = 12, margin = gg$margin(r = 15, l = 0)),
-      # Title styling
-      plot.title = gg$element_text(hjust = 0.5, size = 14, face = "bold", margin = gg$margin(b = 15)),
-      plot.caption = gg$element_text(hjust = 0.5, size = 9, color = "grey40")
+      plot.title = gg$element_text(hjust = 0.5, size = 14, face = "bold", margin = gg$margin(b = 15))
     )
-
   # Add vertical lines if df_top3 is provided
   if (!is.null(df_top3)) {
     if (all(c("iso3", "indicator_name", "date") %in% names(df_top3))) {
@@ -714,47 +817,68 @@ plot_inform_severity <- function(
         dplyr$filter(iso3 == !!iso3 & indicator_name == !!indicator_name) |>
         dplyr$pull(date) |>
         unique()
-      infsev_filtered <- dates[dates >= date_start & dates <= date_end]
-      if (length(infsev_filtered) > 0) {
+      infsev_dates <- dates[dates >= date_start & dates <= date_end]
+      if (length(infsev_dates) > 0) {
+        # calculate offset x short date diff (less than 60 days)
+        x_offsets <- rep(0, length(infsev_dates))
+        if (length(infsev_dates) > 1) {
+          for (i in 1:(length(infsev_dates) - 1)) {
+            if (as.numeric(infsev_dates[i + 1] - infsev_dates[i]) < 60) {
+              x_offsets[i] <- -15
+            }
+          }
+        }
+
         p <- p + gg$geom_vline(
-          xintercept = infsev_filtered,
+          xintercept = infsev_dates,
           color = "red",
           linetype = "dashed",
-          linewidth = 0.8,
-          alpha = 0.8
+          alpha = 0.7
         ) +
           gg$annotate(
             "text",
-            x = infsev_filtered,
+            x = infsev_dates + x_offsets,
             y = Inf,
-            label = format(infsev_filtered, "%d %b"),
-            vjust = 1.5,
-            hjust = 0.5,
-            size = 2.5,
+            label = toupper(format(infsev_dates, "%d %b")),
+            vjust = 0.5,
+            hjust = 1.1,
+            size = 3.5,
             color = "red",
-            angle = 90
+            fontface = "bold"
+          ) +
+          gg$annotate(
+            "text",
+            x = infsev_dates[1] + x_offsets[1],
+            y = Inf,
+            label = "Signal",
+            vjust = 2,
+            hjust = 1.1,
+            size = 3,
+            color = "red",
+            fontface = "bold"
           ) +
           gg$coord_cartesian(clip = "off")
       }
     }
   }
-
   return(p)
 }
 
+
 plot_food_insecurity <- function(
-  iso3_code,
-  df_top3,
-  food_wrangle,
-  start_date,
-  end_date,
-  title = "Food Insecurity Phases: Current Data and Projections",
-  date_breaks = "2 months"
+    iso3_code,
+    df_top3,
+    food_wrangle,
+    start_date,
+    end_date,
+    title = "IPC Food Insecurity: Population in Crisis Phases",
+    date_breaks = "2 months"
 ) {
 
   # 1. INITIAL DATA FILTERING
   food_filtered <- df_top3[df_top3$iso3 == iso3_code & df_top3$indicator_name == "food_insecurity", ]
   food_dates <- as.Date(unique(food_filtered$date))
+  food_dates <- food_dates[food_dates >= as.Date(start_date) & food_dates < as.Date(end_date)]
 
   # Filter data for the country and critical phases
   food_wrangle_country_p <- food_wrangle |>
@@ -763,145 +887,80 @@ plot_food_insecurity <- function(
                    date < as.Date(end_date) &
                    phase %in% c("phase3", "phase4", "phase5"))
 
-  # Check if data exists
+  # Check if data exists - return empty plot
   if (nrow(food_wrangle_country_p) == 0) {
-    # Create empty dataset with correct structure instead of stopping
-    empty_plot_data <- data.frame(
-      phase_label = character(0),
-      plot_date = as.Date(character(0)),
-      percentage = numeric(0),
-      type = character(0),
-      line_type = character(0),
-      stringsAsFactors = FALSE
-    )
-
-    # Create empty plot
-    p <- gg$ggplot(empty_plot_data, gg$aes(x = plot_date, y = percentage)) +
+    p <- gg$ggplot() +
       gg$labs(
         title = title,
         subtitle = "No Food Insecurity data available for this country/period",
         x = NULL,
-        y = "Percentage (%)"
+        y = "Population (%)"
       ) +
       gg$theme_minimal() +
       gg$theme(
+        plot.margin = gg$margin(t = 50, r = 10, b = 10, l = 10),
         panel.grid.major.x = gg$element_blank(),
         panel.grid.minor.x = gg$element_blank(),
         panel.grid.major.y = gg$element_line(color = "grey85", linewidth = 0.3),
         panel.grid.minor.y = gg$element_blank(),
         plot.title = gg$element_text(size = 14, face = "bold", hjust = 0.5),
-        plot.caption = gg$element_text(size = 9, hjust = 0.5, color = "gray60"),
+        axis.text.x = gg$element_text(size = 10, color = "grey60"),
+        axis.text.y = gg$element_text(size = 10, color = "grey60"),
         axis.title.y = gg$element_text(size = 12, margin = gg$margin(r = 15, l = 0))
       ) +
-      # Set some reasonable axis limits for empty plot
       gg$xlim(as.Date(start_date), as.Date(end_date)) +
       gg$ylim(0, 100)
-
     return(p)
   }
 
   # 2. FUNCTION TO BUILD DATASET FOR A SINGLE PHASE
   construct_final_dataset <- function(data) {
-
-    # REAL DATA (current)
     current_data <- data |>
       dplyr$filter(!is.na(`percentage-current`) & !is.na(`plot_date-current`)) |>
       dplyr$arrange(`plot_date-current`) |>
-      dplyr$select(
-        plot_date = `plot_date-current`,
-        percentage = `percentage-current`,
-        date
-      ) |>
+      dplyr$select(plot_date = `plot_date-current`, percentage = `percentage-current`, date) |>
       dplyr$mutate(type = "current")
 
-    # Find the last real date
-    if (nrow(current_data) > 0) {
-      last_current_date <- max(current_data$plot_date, na.rm = TRUE)
-    } else {
-      last_current_date <- as.Date("1900-01-01")
-    }
+    last_current_date <- if (nrow(current_data) > 0) max(current_data$plot_date, na.rm = TRUE) else as.Date("1900-01-01")
 
-    # PROJECTIONS (projected)
     projected_data <- data |>
-      dplyr$filter(
-        !is.na(`percentage-projected`) &
-          !is.na(`plot_date-projected`) &
-          `plot_date-projected` > last_current_date
-      ) |>
+      dplyr$filter(!is.na(`percentage-projected`) & !is.na(`plot_date-projected`) & `plot_date-projected` > last_current_date) |>
       dplyr$group_by(`plot_date-projected`) |>
       dplyr$arrange(dplyr$desc(date)) |>
       dplyr$slice(1) |>
       dplyr$ungroup() |>
-      dplyr$select(
-        plot_date = `plot_date-projected`,
-        percentage = `percentage-projected`,
-        date
-      ) |>
+      dplyr$select(plot_date = `plot_date-projected`, percentage = `percentage-projected`, date) |>
       dplyr$mutate(type = "projected") |>
       dplyr$arrange(plot_date)
 
-    # Find the last projection date
-    if (nrow(projected_data) > 0) {
-      last_projected_date <- max(projected_data$plot_date, na.rm = TRUE)
-    } else {
-      last_projected_date <- last_current_date
-    }
+    last_projected_date <- if (nrow(projected_data) > 0) max(projected_data$plot_date, na.rm = TRUE) else last_current_date
 
-    # SECOND PROJECTION (second_projected)
     second_projected_data <- data |>
-      dplyr$filter(
-        !is.na(`percentage-second_projected`) &
-          !is.na(`plot_date-second_projected`) &
-          `plot_date-second_projected` > last_projected_date
-      ) |>
+      dplyr$filter(!is.na(`percentage-second_projected`) & !is.na(`plot_date-second_projected`) & `plot_date-second_projected` > last_projected_date) |>
       dplyr$group_by(`plot_date-second_projected`) |>
       dplyr$arrange(dplyr$desc(date)) |>
       dplyr$slice(1) |>
       dplyr$ungroup() |>
-      dplyr$select(
-        plot_date = `plot_date-second_projected`,
-        percentage = `percentage-second_projected`,
-        date
-      ) |>
+      dplyr$select(plot_date = `plot_date-second_projected`, percentage = `percentage-second_projected`, date) |>
       dplyr$mutate(type = "second_projected") |>
       dplyr$arrange(plot_date)
 
-    # COMBINE ALL DATA
-    final_dataset <- dplyr$bind_rows(
-      current_data,
-      projected_data,
-      second_projected_data
-    ) |>
+    dplyr$bind_rows(current_data, projected_data, second_projected_data) |>
       dplyr$arrange(plot_date) |>
       dplyr$select(plot_date, percentage, type)
-
   }
 
-  # 3. FUNCTION TO PROCESS ALL PHASES TOGETHER
+  # 3. PROCESS ALL PHASES
   construct_all_phases_dataset <- function(data) {
-
     phases <- unique(data$phase)
-    all_datasets <- list()
-
-    for (phase_name in phases) {
-      # Filter for the current phase
-      phase_data <- data |> dplyr$filter(phase == phase_name)
-
-      # Build the dataset for this phase
-      phase_final <- construct_final_dataset(phase_data)
-
-      # Add the phase column
+    all_datasets <- lapply(phases, function(phase_name) {
+      phase_final <- construct_final_dataset(data |> dplyr$filter(phase == phase_name))
       phase_final$phase <- phase_name
-
-      # Add to the list
-      all_datasets[[phase_name]] <- phase_final
-    }
-
-    # Combine all datasets
-    combined_dataset <- dplyr$bind_rows(all_datasets) |>
+      phase_final
+    })
+    dplyr$bind_rows(all_datasets) |>
       dplyr$select(phase, plot_date, percentage, type) |>
       dplyr$arrange(phase, plot_date)
-
   }
 
   # 4. CREATE THE COMBINED DATASET
@@ -910,13 +969,6 @@ plot_food_insecurity <- function(
   # 5. PREPARE DATA FOR PLOTTING
   plot_data <- final_dataset_all_phases |>
     dplyr$mutate(
-      # Create a variable for line type
-      line_type = dplyr$case_when(
-        type == "current" ~ "solid",
-        type %in% c("projected", "second_projected") ~ "dashed",
-        TRUE ~ "solid"
-      ),
-      # Create more readable labels for phases
       phase_label = dplyr$case_when(
         phase == "phase3" ~ "Phase 3 (Crisis)",
         phase == "phase4" ~ "Phase 4 (Emergency)",
@@ -925,47 +977,30 @@ plot_food_insecurity <- function(
       )
     )
 
-  # Prepare separate data for line type
-  current_data <- plot_data |>
-    dplyr$filter(type == "current")
+  current_data <- plot_data |> dplyr$filter(type == "current")
+  projected_data <- plot_data |> dplyr$filter(type %in% c("projected", "second_projected"))
 
-  projected_data <- plot_data |>
-    dplyr$filter(type %in% c("projected", "second_projected"))
+  projection_start <- if (nrow(projected_data) > 0) min(projected_data$plot_date, na.rm = TRUE) else NULL
 
-  # Find projection start date for shading
-  projection_start <- NULL
-  if (nrow(projected_data) > 0) {
-    projection_start <- min(projected_data$plot_date, na.rm = TRUE)
-  }
-
-  # Create transition points ONLY if we have both current and projected data
+  # Create transition points
   transition_points <- NULL
-
-  # Check if we need transition points (both current and projected data exist)
   if (nrow(current_data) > 0 && nrow(projected_data) > 0) {
-
-    # Get last current data point for each phase
     last_current_by_phase <- current_data |>
       dplyr$group_by(phase_label) |>
       dplyr$arrange(plot_date) |>
       dplyr$slice_tail(n = 1) |>
-      dplyr$select(phase_label, plot_date, percentage) |>
-      dplyr$rename(last_current_date = plot_date, last_current_perc = percentage)
+      dplyr$select(phase_label, last_current_date = plot_date, last_current_perc = percentage)
 
-    # Get first projected data point for each phase
     first_projected_by_phase <- projected_data |>
       dplyr$group_by(phase_label) |>
       dplyr$arrange(plot_date) |>
       dplyr$slice_head(n = 1) |>
-      dplyr$select(phase_label, plot_date, percentage) |>
-      dplyr$rename(first_proj_date = plot_date, first_proj_perc = percentage)
+      dplyr$select(phase_label, first_proj_date = plot_date, first_proj_perc = percentage)
 
-    # Join and create transition points only where both exist
     transitions_joined <- last_current_by_phase |>
       dplyr$inner_join(first_projected_by_phase, by = "phase_label") |>
       dplyr$filter(!is.na(first_proj_date) & !is.na(last_current_date))
 
-    # Create transition points if we have valid transitions
     if (nrow(transitions_joined) > 0) {
       transition_points <- transitions_joined |>
         dplyr$rowwise() |>
@@ -982,7 +1017,7 @@ plot_food_insecurity <- function(
   # 6. CREATE THE PLOT
   p <- gg$ggplot(plot_data, gg$aes(x = plot_date, y = percentage, color = phase_label))
 
-  # Add shaded area for projected period
+  # Add shaded area for projected period with fill aesthetic for legend
   if (!is.null(projection_start)) {
     p <- p + gg$annotate(
       "rect",
@@ -995,135 +1030,78 @@ plot_food_insecurity <- function(
     )
   }
 
-  # Add solid lines for current data if exists
+  # Add lines
   if (nrow(current_data) > 0) {
-    p <- p + gg$geom_line(
-      data = current_data,
-      gg$aes(group = phase_label),
-      linewidth = 1.2,
-      linetype = "solid"
-    )
+    p <- p + gg$geom_line(data = current_data, gg$aes(group = phase_label), linewidth = 1.2, linetype = "solid")
   }
-
-  # Add dashed lines for projected data if exists
   if (nrow(projected_data) > 0) {
-    p <- p + gg$geom_line(
-      data = projected_data,
-      gg$aes(group = phase_label),
-      linewidth = 1,
-      linetype = "solid"
-    )
+    p <- p + gg$geom_line(data = projected_data, gg$aes(group = phase_label), linewidth = 1, linetype = "dashed")
   }
-
-  # Add dashed transition lines if they exist
   if (!is.null(transition_points) && nrow(transition_points) > 0) {
-    p <- p + gg$geom_line(
-      data = transition_points,
-      gg$aes(group = transition_id),
-      linewidth = 1.2,
-      linetype = "solid"
-    )
+    p <- p + gg$geom_line(data = transition_points, gg$aes(group = transition_id), linewidth = 1.2, linetype = "dashed")
   }
 
-  # Signal lines
-  if (length(food_dates) > 0) {
-    p <- p + gg$geom_vline(
-      xintercept = food_dates,
-      color = "red",
-      linetype = "dashed",
-      linewidth = 0.8,
-      alpha = 0.8
-    ) +
-      gg$annotate(
-        "text",
-        x = food_dates,
-        y = Inf,
-        label = format(food_dates, "%d %b"),
-        vjust = 1.5,
-        hjust = 0.5,
-        size = 2.5,
-        color = "red",
-        angle = 90
-      ) +
-      gg$coord_cartesian(clip = "off")
+  # Add points (with colors, but hide shape from legend)
+  if (nrow(current_data) > 0) {
+    p <- p + gg$geom_point(data = current_data, size = 2.5, alpha = 0.9, show.legend = FALSE)
+  }
+  if (nrow(projected_data) > 0) {
+    p <- p + gg$geom_point(data = projected_data, size = 2.5, alpha = 0.9, show.legend = FALSE)
   }
 
-  # Complete the plot
+  # Complete the plot with scales and theme
   p <- p +
-    # Add points - current with color
-    gg$geom_point(
-      data = current_data,
-      gg$aes(shape = type),
-      size = 2.5,
-      alpha = 0.9
-    ) +
-
-    # Add points - projected in black
-    gg$geom_point(
-      data = projected_data,
-      gg$aes(shape = type),
-      color = "black",
-      size = 2.5,
-      alpha = 0.9
-    ) +
-
-    # Standard IPC colors
     gg$scale_color_manual(
-      values = c("Phase 3 (Crisis)" = "#E67800",
-                 "Phase 4 (Emergency)" = "#C80000",
-                 "Phase 5 (Famine)" = "#640000"),
+      values = c("Phase 3 (Crisis)" = "#E67800", "Phase 4 (Emergency)" = "#C80000", "Phase 5 (Famine)" = "#640000"),
       name = "IPC Phase"
     ) +
-
-    # Point shapes
-    gg$scale_shape_manual(
-      values = c("current" = 16, "projected" = 17, "second_projected" = 15),
-      labels = c("current" = "Current", "projected" = "Projected", "second_projected" = "Second Projection"),
-      name = "Data Type"
-    ) +
-
-    gg$scale_x_date(
-      date_labels = "%b %Y",
-      date_breaks = date_breaks
-    ) +
-
-    # Custom labels
-    gg$labs(
-      title = title,
-      caption = "Shaded area = Projections | Dashed line = Signal",
-      x = NULL,
-      y = "Percentage (%)"
-    ) +
-
-    # Clean theme
+    gg$scale_x_date(labels = date_label_func, date_breaks = date_breaks) +
+    gg$scale_y_continuous(limits = c(0, NA), expand = gg$expansion(mult = c(0, 0.05))) +
+    gg$labs(title = title, x = NULL, y = "Population (%)") +
     gg$theme_minimal() +
     gg$theme(
-      plot.margin = gg$margin(t = 25, r = 10, b = 10, l = 10),
-      # Simplified grid
+      plot.margin = gg$margin(t = 50, r = 10, b = 10, l = 10),
       panel.grid.major.x = gg$element_blank(),
       panel.grid.minor.x = gg$element_blank(),
       panel.grid.major.y = gg$element_line(color = "grey85", linewidth = 0.3),
       panel.grid.minor.y = gg$element_blank(),
-      # Axis styling
-      axis.text.x = gg$element_text(angle = 45, hjust = 1),
-      axis.text.y = gg$element_text(size = 10),
+      axis.text.x = gg$element_text(size = 10, color = "grey60"),
+      axis.text.y = gg$element_text(size = 10, color = "grey60"),
       axis.title.y = gg$element_text(size = 12, margin = gg$margin(r = 15, l = 0)),
-      # Title styling
       plot.title = gg$element_text(hjust = 0.5, size = 14, face = "bold", margin = gg$margin(b = 15)),
-      plot.caption = gg$element_text(size = 9, hjust = 0.5, color = "grey40"),
-      # Legend
       legend.position = "bottom",
       legend.box = "horizontal",
       legend.text = gg$element_text(size = 10),
       legend.title = gg$element_text(size = 11, face = "bold")
     ) +
-
-    # Guidelines to facilitate reading
     gg$guides(
-      color = gg$guide_legend(override.aes = list(linewidth = 2, linetype = "solid"))
+      color = gg$guide_legend(order = 1, override.aes = list(linewidth = 2, linetype = "solid")),
+      fill = gg$guide_legend(order = 2)
     )
 
-  # 7. RETURN THE PLOT
+  # 7. ADD SIGNAL ANNOTATIONS
+  if (length(food_dates) > 0) {
+    x_offsets <- rep(0, length(food_dates))
+    if (length(food_dates) > 1) {
+      for (i in 1:(length(food_dates) - 1)) {
+        if (as.numeric(food_dates[i + 1] - food_dates[i]) < 60) {
+          x_offsets[i] <- -15
+        }
+      }
+    }
+
+    p <- p +
+      gg$geom_vline(xintercept = food_dates, color = "red", linetype = "dashed", alpha = 0.7) +
+      gg$annotate("text", x = food_dates + x_offsets, y = Inf, label = toupper(format(food_dates, "%d %b")),
+                  vjust = 0.5, hjust = 1.1, size = 3.5, color = "red", fontface = "bold") +
+      gg$annotate("text", x = food_dates[1] + x_offsets[1], y = Inf, label = "Signal",
+                  vjust = 2, hjust = 1.1, size = 3, color = "red", fontface = "bold") +
+      gg$coord_cartesian(clip = "off")
+  }
+
+  last_data_point <- max(plot_data$plot_date, na.rm = TRUE)
+  p <- p + gg$coord_cartesian(xlim = c(as.Date(start_date), last_data_point), clip = "off")
+
   return(p)
 }
 
@@ -1145,6 +1123,12 @@ plot_market_change <- function(
   # Filter df_top3 for market monitor data
   market_filtered <- df_top3[df_top3$iso3 == iso3_code & df_top3$indicator_name == "market_monitor", ]
   market_dates <- as.Date(unique(market_filtered$date))
+  market_dates <- market_dates[market_dates >= as.Date(start_date) & market_dates < as.Date(end_date)]
+
+  # Calculate min y for text positioning
+  min_y <- min(market_wrangle_filtered$basket_change, na.rm = TRUE)
+  text_y <- min(min_y * 0.8, -5)  # Position text in the negative area
+
   # Create the plot
   plot <- gg$ggplot(market_wrangle_filtered, gg$aes(x = date, y = basket_change)) +
     # Shaded area below 0
@@ -1155,58 +1139,202 @@ plot_market_change <- function(
       ymin = -Inf,
       ymax = 0,
       fill = "lightcoral",
-      alpha = 0.2
+      alpha = 0.15
+    ) +
+    # Label for shaded area
+    gg$annotate(
+      "text",
+      x = as.Date(start_date) + 30,
+      y = text_y,
+      label = "Negative change",
+      hjust = 0,
+      size = 3.5,
+      color = "grey40",
+      fontface = "italic"
     ) +
     # Reference line at 0 (solid)
     gg$geom_hline(yintercept = 0, linetype = "solid", color = "grey50", linewidth = 0.5) +
-    # Data line and points
-    gg$geom_line(color = "steelblue", linewidth = 1) +
-    gg$geom_point(color = "black", size = 2) +
-    # Signal lines
-    gg$geom_vline(
-      xintercept = market_dates,
-      color = "red",
-      linetype = "dashed",
-      linewidth = 0.8,
-      alpha = 0.8
-    ) +
-    gg$annotate(
-      "text",
-      x = market_dates,
-      y = Inf,
-      label = format(market_dates, "%d %b"),
-      vjust = 1.5,
-      hjust = 0.5,
-      size = 2.5,
-      color = "red",
-      angle = 90
-    ) +
-    gg$coord_cartesian(clip = "off") +
+    # Data line and points (same color)
+    gg$geom_line(color = "#0063B3", linewidth = 1) +
+    gg$geom_point(color = "#0063B3", size = 2) +
     gg$labs(
       title = title,
-      caption = "Shaded area = Negative change | Dashed line = Signal | Black dots = Data points",
       x = NULL,
       y = "% Change Monthly"
     ) +
-    gg$scale_x_date(date_labels = "%b %Y", date_breaks = date_breaks) +
+    gg$scale_x_date(labels = date_label_func, date_breaks = date_breaks) +
     gg$theme_minimal() +
     gg$theme(
-      plot.margin = gg$margin(t = 25, r = 10, b = 10, l = 10),
-      # Simplified grid
+      plot.margin = gg$margin(t = 50, r = 10, b = 10, l = 10),
       panel.grid.major.x = gg$element_blank(),
       panel.grid.minor.x = gg$element_blank(),
       panel.grid.major.y = gg$element_line(color = "grey85", linewidth = 0.3),
       panel.grid.minor.y = gg$element_blank(),
-      # Axis styling
-      axis.text.x = gg$element_text(angle = 45, hjust = 1, size = 10),
-      axis.text.y = gg$element_text(size = 10),
+      axis.text.x = gg$element_text(size = 10, color = "grey60"),
+      axis.text.y = gg$element_text(size = 10, color = "grey60"),
       axis.title.y = gg$element_text(size = 12, margin = gg$margin(r = 15, l = 0)),
-      # Title styling
-      plot.title = gg$element_text(hjust = 0.5, size = 14, face = "bold", margin = gg$margin(b = 15)),
-      plot.caption = gg$element_text(hjust = 0.5, size = 9, color = "grey40")
+      plot.title = gg$element_text(hjust = 0.5, size = 14, face = "bold", margin = gg$margin(b = 15))
     )
 
+  # Add signal lines with annotations
+  if (length(market_dates) > 0) {
+    x_offsets <- rep(0, length(market_dates))
+    if (length(market_dates) > 1) {
+      for (i in 1:(length(market_dates) - 1)) {
+        if (as.numeric(market_dates[i + 1] - market_dates[i]) < 60) {
+          x_offsets[i] <- -15
+        }
+      }
+    }
+
+    plot <- plot +
+      gg$geom_vline(
+        xintercept = market_dates,
+        color = "red",
+        linetype = "dashed",
+        alpha = 0.7
+      ) +
+      gg$annotate(
+        "text",
+        x = market_dates + x_offsets,
+        y = Inf,
+        label = toupper(format(market_dates, "%d %b")),
+        vjust = 0.5,
+        hjust = 1.1,
+        size = 3.5,
+        color = "red",
+        fontface = "bold"
+      ) +
+      gg$annotate(
+        "text",
+        x = market_dates[1] + x_offsets[1],
+        y = Inf,
+        label = "Signal",
+        vjust = 2,
+        hjust = 1.1,
+        size = 3,
+        color = "red",
+        fontface = "bold"
+      ) +
+      gg$coord_cartesian(clip = "off")
+  }
+
   return(plot)
+}
+
+plot_signals_timeline <- function(
+    df_top3,
+    iso3_code,
+    start_date,
+    end_date,
+    title = "Signals Overview",
+    date_breaks = "2 months"
+) {
+  # Filter for the country and date range
+  signals_data <- df_top3 |>
+    dplyr$filter(iso3 == iso3_code &
+                   date >= as.Date(start_date) &
+                   date < as.Date(end_date))
+
+  # Check if data exists
+  if (nrow(signals_data) == 0) {
+    p <- gg$ggplot() +
+      gg$labs(
+        title = title,
+        subtitle = "No signals detected for this country/period",
+        x = NULL,
+        y = NULL
+      ) +
+      gg$theme_minimal() +
+      gg$theme(
+        plot.title = gg$element_text(hjust = 0.5, size = 14, face = "bold"),
+        plot.subtitle = gg$element_text(hjust = 0.5, size = 11, color = "grey50")
+      ) +
+      gg$xlim(as.Date(start_date), as.Date(end_date))
+    return(p)
+  }
+
+  # Create readable indicator labels
+  signals_data <- signals_data |>
+    dplyr$mutate(
+      indicator_label = dplyr$case_when(
+        indicator_name == "displacement_disaster" ~ "Displacement (Disaster)",
+        indicator_name == "displacement_conflict" ~ "Displacement (Conflict)",
+        indicator_name == "conflict" ~ "Conflict Fatalities",
+        indicator_name == "agricultural_hotspots" ~ "Agricultural Hotspots",
+        indicator_name == "food_insecurity" ~ "Food Insecurity",
+        indicator_name == "inform_severity" ~ "INFORM Severity",
+        indicator_name == "market_monitor" ~ "Market Monitor",
+        TRUE ~ indicator_name
+      )
+    )
+
+  # Define order for indicators (top to bottom)
+  indicator_order <- c(
+    "Displacement (Disaster)",
+    "Displacement (Conflict)",
+    "Conflict Fatalities",
+    "Agricultural Hotspots",
+    "Food Insecurity",
+    "INFORM Severity",
+    "Market Monitor"
+  )
+
+  # Filter to only include indicators present in data and set factor order
+  present_indicators <- indicator_order[indicator_order %in% unique(signals_data$indicator_label)]
+  signals_data$indicator_label <- factor(signals_data$indicator_label, levels = rev(present_indicators))
+
+  # Get unique dates for vertical lines
+  unique_dates <- unique(signals_data$date)
+
+  # Create plot
+  # Create plot
+  p <- gg$ggplot(signals_data, gg$aes(x = date, y = indicator_label)) +
+    # Vertical dashed lines
+    gg$geom_vline(
+      xintercept = unique_dates,
+      color = "red",
+      linetype = "dashed",
+      alpha = 0.7
+    ) +
+    # Points at intersection of date and indicator
+    gg$geom_point(
+      size = 4,
+      color = "red",
+      alpha = 0.9
+    ) +
+    # Day number near the point
+    gg$geom_text(
+      gg$aes(label = toupper(format(date, "%d %b"))),
+      nudge_y = 0.35,
+      size = 2,
+      color = "red",
+      fontface = "bold"
+    ) +
+    gg$scale_x_date(
+      labels = date_label_func,
+      date_breaks = date_breaks,
+      limits = c(as.Date(start_date), as.Date(end_date)),
+      expand = c(0.02, 0)
+    ) +
+    gg$labs(
+      title = title,
+      x = NULL,
+      y = NULL
+    ) +
+    gg$theme_minimal() +
+    gg$theme(
+      plot.margin = gg$margin(t = 20, r = 10, b = 10, l = 10),
+      panel.grid.major.x = gg$element_blank(),
+      panel.grid.minor.x = gg$element_blank(),
+      panel.grid.major.y = gg$element_line(color = "grey90", linewidth = 0.3),
+      panel.grid.minor.y = gg$element_blank(),
+      axis.text.x = gg$element_text(size = 10, color = "grey60"),
+      axis.text.y = gg$element_text(size = 10, color = "grey30"),
+      plot.title = gg$element_text(hjust = 0.5, size = 14, face = "bold", margin = gg$margin(b = 15))
+    )
+
+  return(p)
 }
 
 
@@ -1234,6 +1362,16 @@ report_by_country <- function(
     occ <- top3$freq[i]
 
     logger$log_info("Processing plots for: {location} ({current_iso3})")
+
+    # Add p0
+    p0 <- plot_signals_timeline(
+      df_top3 = df_top3,
+      iso3_code = current_iso3,
+      start_date = start_date,
+      end_date = end_date,
+      title = "Signals Overview",
+      date_breaks = "2 months"
+    )
 
     # Create all plots
     p1 <- plot_displacement_analysis(
@@ -1267,7 +1405,7 @@ report_by_country <- function(
       date_end = end_date,
       title = "Monthly Rolling Sum of Conflict Fatalities",
       x_label = NULL,
-      y_label = "Conflict Fatalities (monthly)",
+      y_label = "Conflict Fatalities (k)",
       df_top3 = df_top3
     )
 
@@ -1286,7 +1424,7 @@ report_by_country <- function(
       food_wrangle = food_wrangle,
       start_date = start_date,
       end_date = end_date,
-      title = "Food Insecurity Phases"
+      title = "Population in Food Insecurity Phases (3-5)"
     )
 
     p6 <- plot_inform_severity(
@@ -1309,8 +1447,8 @@ report_by_country <- function(
 
     # Combined plot - simple vertical stacking
     combined_plot <- cowplot$plot_grid(
-      p1, p2, p3, p4, p5, p6, p7,
-      nrow = 7,
+      p0, p1, p2, p3, p4, p5, p6, p7,
+      nrow = 8,
       ncol = 1,
       align = "hv",
       axis = "tblr"
@@ -1351,7 +1489,7 @@ report_by_country <- function(
     # Fix dimensions
     if (file_type == "pdf") {
       width  <- 12     # for in
-      height <- 24
+      height <- 36
       units  <- "in"
     } else if (file_type == "png") {
       width  <- 800    # in px
@@ -1413,7 +1551,7 @@ plot_signals_overvew_pdf(df_dist,
                          indicator_labels,
                          effective_start_year,
                          end_year,
-                         save_azure = TRUE)
+                         save_azure = FALSE)
 
 report_by_country(top3,
                   df_top3,
@@ -1426,4 +1564,5 @@ report_by_country(top3,
                   food_wrangle,
                   infsev_wrangle,
                   market_wrangle,
-                  save_azure = TRUE)
+                  save_azure = FALSE)
+
