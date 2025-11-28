@@ -7,7 +7,8 @@ box::use(
 box::use(
   src/utils/ai_summarizer,
   src/utils/get_prompts,
-  src/utils/get_manual_info
+  src/utils/get_manual_info,
+  src/signals/track_summary_input
 )
 
 #' Add campaign info to ACLED conflict data
@@ -82,11 +83,29 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
     )
 
   # ensuring the output matches the original input
-  df_alerts |>
+  result <- df_alerts |>
     dplyr$left_join(
       df_summary,
       by = c("iso3", "location", "date")
-    ) |>
+    )
+
+  # track summarizer input
+  tracking_data <- result |>
+    dplyr$transmute(
+      location_iso3 = iso3,
+      date_generated = date,
+      indicator_id = "acled_conflict",
+      info = event_info,
+      manual_info = manual_info,
+      use_manual_info = !is.na(manual_info),
+      summary_long = summary_long,
+      summary_short = summary_short,
+      summary_source = summary_source
+    )
+
+  track_summary_input$append_tracking_data(tracking_data)
+
+  result |>
     dplyr$select(
       summary_long,
       summary_short,

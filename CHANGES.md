@@ -1,5 +1,11 @@
 # Changes
 
+## 0.2.20.0 (24 November 2025)
+
+### Track AI summary inputs
+
+- Track AI summarizer inputs, manual info, and outputs for debugging and checks.
+
 ## 0.2.19.0 (12 November 2025)
 
 ### Add extreme_case column in alert dataframes for all indicators.
