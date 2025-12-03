@@ -1290,13 +1290,6 @@ plot_signals_timeline <- function(
   # Create plot
   # Create plot
   p <- gg$ggplot(signals_data, gg$aes(x = date, y = indicator_label)) +
-    # Vertical dashed lines
-    gg$geom_vline(
-      xintercept = unique_dates,
-      color = "red",
-      linetype = "dashed",
-      alpha = 0.7
-    ) +
     # Points at intersection of date and indicator
     gg$geom_point(
       size = 4,
