@@ -116,8 +116,6 @@ filter_adm0_sf <- function(sf_adm0, iso3) {
     sf_adm0 <- st_crop_adj_bbox$st_crop_adj_bbox(sf_adm0, ymax = -0.05, ymin = 0.5)
   } else if (iso3 == "GNQ") {
     sf_adm0 <- st_crop_adj_bbox$st_crop_adj_bbox(sf_adm0, ymin = 0.5)
-  } else if (iso3 == "JAM") {
-    sf_adm0 <- st_crop_adj_bbox$st_crop_adj_bbox(sf_adm0, ymin = 0.5)
   } else if (iso3 == "NZL") {
     sf_adm0 <- st_crop_adj_bbox$st_crop_adj_bbox(sf_adm0, xmin = 1)
   } else if (iso3 == "PRT") {
