@@ -1,5 +1,11 @@
 # Changes
 
+## 0.2.21.0 (04 December 2025)
+
+### Improve visualization styling and consistency for overview report
+
+- Improve plots in overview report for adhoc/run_overview_analysis.R
+
 ## 0.2.20.0 (24 November 2025)
 
 ### Track AI summary inputs
