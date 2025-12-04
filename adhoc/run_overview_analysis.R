@@ -344,10 +344,12 @@ plot_conflict_analysis <- function(
     x_label = NULL,
     y_label = "Conflict Fatalities (k)",
     df_top3 = NULL,
-    date_breaks = "2 months"
+    date_breaks = "2 months",
+    line_extension_above = 0.05 # standardized extension above plot (as fraction of y-range)
 ) {
   conflict_wrangle_filtered <- conflict_wrangle |>
     dplyr$filter(iso3 == !!iso3 & date >= !!date_start & date < !!date_end)
+
   p <- gg$ggplot(conflict_wrangle_filtered, gg$aes(x = date, y = fatalities_30d)) +
     gg$geom_line(color = "#0063B3", linewidth = 1) +
     gg$labs(
@@ -379,50 +381,67 @@ plot_conflict_analysis <- function(
       axis.title.y = gg$element_text(size = 12, margin = gg$margin(r = 15, l = 0)),
       plot.title = gg$element_text(hjust = 0.5, size = 14, face = "bold", margin = gg$margin(b = 15))
     )
+
   if (!is.null(df_top3)) {
     conflict_filtered <- df_top3[df_top3$iso3 == iso3 & df_top3$indicator_name == indicator_name, ]
     if (nrow(conflict_filtered) > 0) {
       conflict_dates <- unique(conflict_filtered$date)
       conflict_dates <- conflict_dates[conflict_dates >= date_start & conflict_dates < date_end]
       if (length(conflict_dates) > 0) {
-        # calculate offset x short date diff (less than 60 days)
+        # Get y-axis range for standardized extension
+        y_range <- range(conflict_wrangle_filtered$fatalities_30d, na.rm = TRUE)
+        y_max <- y_range[2]
+        y_extension <- (y_range[2] - y_range[1]) * line_extension_above
+        line_top <- y_max + y_extension
+
+        # Calculate horizontal offsets for close dates (less than 60 days apart)
         x_offsets <- rep(0, length(conflict_dates))
         if (length(conflict_dates) > 1) {
+          conflict_dates <- sort(conflict_dates) # ensure sorted
           for (i in 1:(length(conflict_dates) - 1)) {
             if (as.numeric(conflict_dates[i + 1] - conflict_dates[i]) < 60) {
-              x_offsets[i] <- -15
+              # Alternate offsets for consecutive close dates
+              if (i %% 2 == 1) {
+                x_offsets[i] <- -15
+              } else {
+                x_offsets[i + 1] <- 15
+              }
             }
           }
         }
 
-        p <- p + gg$geom_vline(
-          xintercept = conflict_dates,
-          color = "red",
-          linetype = "dashed",
-          alpha = 0.7
-        ) +
-          # Date labels - horizontal, to the left of the line
+        # Add vertical dashed lines from x-axis to standardized top
+        p <- p +
+          gg$geom_segment(
+            gg$aes(x = conflict_dates, xend = conflict_dates,
+                   y = 0, yend = line_top),
+            color = "#F2645A",
+            linetype = "dashed",
+            alpha = 0.7,
+            inherit.aes = FALSE
+          ) +
+          # Date labels - positioned at the top of the line
           gg$annotate(
             "text",
             x = conflict_dates + x_offsets,
-            y = Inf,
+            y = line_top,
             label = toupper(format(conflict_dates, "%d %b")),
-            vjust = 0.5,
-            hjust = 1.1,
+            vjust = -0.3,
+            hjust = 0.5,
             size = 3.5,
-            color = "red",
+            color = "#F2645A",
             fontface = "bold"
           ) +
           # "Signal" label only on the first line
           gg$annotate(
             "text",
             x = conflict_dates[1] + x_offsets[1],
-            y = Inf,
+            y = line_top,
             label = "Signal",
-            vjust = 2,
-            hjust = 1.1,
+            vjust = -1.8,
+            hjust = 0.5,
             size = 3,
-            color = "red",
+            color = "#F2645A",
             fontface = "bold"
           ) +
           gg$coord_cartesian(clip = "off")
@@ -435,20 +454,20 @@ plot_conflict_analysis <- function(
 
 
 plot_displacement_analysis <- function(
-  disp_wrangle,
-  iso3 = "MOZ",
-  date_start = as.Date("2024-09-10"),
-  date_end = as.Date("2025-09-10"),
-  displacement_type = "Disaster", # "Disaster" or "Conflict"
-  indicator_name = NULL, # will be auto-set based on displacement_type if NULL
-  title = NULL, # will be auto-generated if NULL
-  x_label = NULL,
-  y_label = "30-Day Rolling Sum (k)",
-  df_top3 = NULL,
-  use_k_scale = TRUE, # whether to scale y-axis to thousands
-  date_breaks = "2 months"
+    disp_wrangle,
+    iso3 = "MOZ",
+    date_start = as.Date("2024-09-10"),
+    date_end = as.Date("2025-09-10"),
+    displacement_type = "Disaster", # "Disaster" or "Conflict"
+    indicator_name = NULL, # will be auto-set based on displacement_type if NULL
+    title = NULL, # will be auto-generated if NULL
+    x_label = NULL,
+    y_label = "30-Day Rolling Sum (k)",
+    df_top3 = NULL,
+    use_k_scale = TRUE, # whether to scale y-axis to thousands
+    date_breaks = "2 months",
+    line_extension_above = 0.05 # standardized extension above plot (as fraction of y-range)
 ) {
-
 
   # Validate displacement_type
   if (!displacement_type %in% c("Disaster", "Conflict")) {
@@ -529,44 +548,60 @@ plot_displacement_analysis <- function(
       displacement_dates <- unique(displacement_filtered$date)
       displacement_dates <- displacement_dates[displacement_dates >= date_start & displacement_dates < date_end]
       if (length(displacement_dates) > 0) {
-        # calculate offset x short date diff (less than 60 days)
+        # Get y-axis range for standardized extension
+        y_range <- range(displacement_data$displacement_30d, na.rm = TRUE)
+        y_max <- y_range[2]
+        y_extension <- (y_range[2] - y_range[1]) * line_extension_above
+        line_top <- y_max + y_extension
+
+        # Calculate horizontal offsets for close dates (less than 60 days apart)
         x_offsets <- rep(0, length(displacement_dates))
         if (length(displacement_dates) > 1) {
+          displacement_dates <- sort(displacement_dates) # ensure sorted
           for (i in 1:(length(displacement_dates) - 1)) {
             if (as.numeric(displacement_dates[i + 1] - displacement_dates[i]) < 60) {
-              x_offsets[i] <- -15
+              # Alternate offsets for consecutive close dates
+              if (i %% 2 == 1) {
+                x_offsets[i] <- -15
+              } else {
+                x_offsets[i + 1] <- 15
+              }
             }
           }
         }
 
-        p <- p + gg$geom_vline(
-          xintercept = displacement_dates,
-          color = "red",
-          linetype = "dashed",
-          alpha = 0.7
-        ) +
-          # Date labels - horizontal, to the left of the line
+        # Add vertical dashed lines from x-axis to standardized top
+        p <- p +
+          gg$geom_segment(
+            gg$aes(x = displacement_dates, xend = displacement_dates,
+                   y = 0, yend = line_top),
+            color = "#F2645A",
+            linetype = "dashed",
+            alpha = 0.7,
+            inherit.aes = FALSE
+          ) +
+          # Date labels - positioned at the top of the line
           gg$annotate(
             "text",
             x = displacement_dates + x_offsets,
-            y = Inf,
+            y = line_top,
             label = toupper(format(displacement_dates, "%d %b")),
-            vjust = 0.5,
-            hjust = 1.1,
+            vjust = -0.3,
+            hjust = 0.5,
             size = 3.5,
-            color = "red",
+            color = "#F2645A",
             fontface = "bold"
           ) +
           # "Signal" label only on the first line
           gg$annotate(
             "text",
             x = displacement_dates[1] + x_offsets[1],
-            y = Inf,
+            y = line_top,
             label = "Signal",
-            vjust = 2,
-            hjust = 1.1,
+            vjust = -1.8,
+            hjust = 0.5,
             size = 3,
-            color = "red",
+            color = "#F2645A",
             fontface = "bold"
           ) +
           gg$coord_cartesian(clip = "off")
@@ -636,11 +671,12 @@ plot_agricultural_hotspot <- function(
       height = 0.8,
       pattern_fill = "grey50",
       pattern_colour = "grey50",
-      pattern_density = 0.4,
-      pattern_spacing = 0.05
+      pattern_density = 0.2,
+      pattern_spacing = 0.03,
+      pattern_angle = 45
     ) +
     gg$scale_fill_manual(
-      values = c("0" = "#A5D6A7", "1" = "#FFE082", "2" = "#8D6E63"),
+      values = c("0" = "#CCCCCC", "1" = "#B87E8C", "2" = "#673868"),
       name = NULL,
       na.value = "white",
       na.translate = FALSE,
@@ -658,8 +694,8 @@ plot_agricultural_hotspot <- function(
           colour = "grey70",
           pattern_fill = "grey50",
           pattern_colour = "grey50",
-          pattern_density = 0.4,
-          pattern_spacing = 0.05
+          pattern_density = 0.2,
+          pattern_spacing = 0.03
         )
       )
     ) +
@@ -702,48 +738,60 @@ plot_agricultural_hotspot <- function(
 
   # Add signal lines with annotations
   if (length(agri_dates) > 0) {
-    # Calcola offset x per date vicine (meno di 60 giorni)
+    # Calculate horizontal offsets for close dates (less than 60 days apart)
     x_offsets <- rep(0, length(agri_dates))
     if (length(agri_dates) > 1) {
+      agri_dates <- sort(agri_dates) # ensure sorted
       for (i in 1:(length(agri_dates) - 1)) {
         if (as.numeric(agri_dates[i + 1] - agri_dates[i]) < 60) {
-          x_offsets[i] <- -15
+          # Alternate offsets for consecutive close dates
+          if (i %% 2 == 1) {
+            x_offsets[i] <- -15
+          } else {
+            x_offsets[i + 1] <- 15
+          }
         }
       }
     }
 
+    # Add vertical dashed lines - shortened to not extend far beyond bars
     plot <- plot +
-      gg$geom_vline(
-        xintercept = agri_dates,
-        color = "red",
+      gg$geom_segment(
+        gg$aes(x = agri_dates, xend = agri_dates,
+               y = 0.5, yend = 1.65),  # Shortened range: just slightly beyond the bars
+        color = "#F2645A",
         linetype = "dashed",
-        alpha = 0.7
+        alpha = 0.7,
+        inherit.aes = FALSE
       ) +
+      # Date labels - positioned at the top of the line
       gg$annotate(
         "text",
         x = agri_dates + x_offsets,
-        y = 1.7,
+        y = 1.65,
         label = toupper(format(agri_dates, "%d %b")),
-        hjust = 1.1,
+        vjust = -0.3,
+        hjust = 0.5,
         size = 3.5,
-        color = "red",
+        color = "#F2645A",
         fontface = "bold"
       ) +
+      # "Signal" label - tighter spacing with vjust
       gg$annotate(
         "text",
         x = agri_dates[1] + x_offsets[1],
-        y = 1.55,
+        y = 1.65,
         label = "Signal",
-        hjust = 1.1,
+        vjust = -1.3,  # Tighter spacing - reduced from -1.8
+        hjust = 0.5,
         size = 3,
-        color = "red",
+        color = "#F2645A",
         fontface = "bold"
       )
   }
 
   return(plot)
 }
-
 
 plot_inform_severity <- function(
     infsev_wrangle,
@@ -756,12 +804,14 @@ plot_inform_severity <- function(
     y_label = "INFORM Severity Index",
     df_top3 = NULL,
     line_color = "#0063B3",
-    date_breaks = "2 months"
+    date_breaks = "2 months",
+    line_extension_above = 0.05 # standardized extension above plot (as fraction of y-range)
 ) {
   # Auto-generate title if not provided
   if (is.null(title)) {
     title <- paste("INFORM Severity Index in", iso3)
   }
+
   # Filter data for specified country and time period
   infsev_data <- infsev_wrangle |>
     dplyr$filter(iso3 == !!iso3 & date >= !!date_start & date <= !!date_end) |>
@@ -770,6 +820,7 @@ plot_inform_severity <- function(
     dplyr$summarise(inform_severity_index = mean(inform_severity_index, na.rm = TRUE),
                     .groups = "drop") |>
     dplyr$filter(!is.na(inform_severity_index))
+
   # Check if there's data after filtering
   if (nrow(infsev_data) == 0) {
     warning(paste("No INFORM Severity data found for", iso3, "in the specified period"))
@@ -810,6 +861,7 @@ plot_inform_severity <- function(
       axis.title.y = gg$element_text(size = 12, margin = gg$margin(r = 15, l = 0)),
       plot.title = gg$element_text(hjust = 0.5, size = 14, face = "bold", margin = gg$margin(b = 15))
     )
+
   # Add vertical lines if df_top3 is provided
   if (!is.null(df_top3)) {
     if (all(c("iso3", "indicator_name", "date") %in% names(df_top3))) {
@@ -817,50 +869,70 @@ plot_inform_severity <- function(
         dplyr$filter(iso3 == !!iso3 & indicator_name == !!indicator_name) |>
         dplyr$pull(date) |>
         unique()
+
       infsev_dates <- dates[dates >= date_start & dates <= date_end]
+
       if (length(infsev_dates) > 0) {
-        # calculate offset x short date diff (less than 60 days)
+        # Get y-axis range for standardized extension (use the data range, not the padded range)
+        data_y_range <- c(y_min, y_max)
+        y_extension <- (data_y_range[2] - data_y_range[1]) * line_extension_above
+        line_top <- data_y_range[2] + y_extension
+
+        # Calculate horizontal offsets for close dates (less than 60 days apart)
         x_offsets <- rep(0, length(infsev_dates))
         if (length(infsev_dates) > 1) {
+          infsev_dates <- sort(infsev_dates) # ensure sorted
           for (i in 1:(length(infsev_dates) - 1)) {
             if (as.numeric(infsev_dates[i + 1] - infsev_dates[i]) < 60) {
-              x_offsets[i] <- -15
+              # Alternate offsets for consecutive close dates
+              if (i %% 2 == 1) {
+                x_offsets[i] <- -15
+              } else {
+                x_offsets[i + 1] <- 15
+              }
             }
           }
         }
 
-        p <- p + gg$geom_vline(
-          xintercept = infsev_dates,
-          color = "red",
-          linetype = "dashed",
-          alpha = 0.7
-        ) +
+        # Add vertical dashed lines from bottom to standardized top
+        p <- p +
+          gg$geom_segment(
+            gg$aes(x = infsev_dates, xend = infsev_dates,
+                   y = max(0, y_min - y_padding), yend = line_top),
+            color = "#F2645A",
+            linetype = "dashed",
+            alpha = 0.7,
+            inherit.aes = FALSE
+          ) +
+          # Date labels - positioned at the top of the line
           gg$annotate(
             "text",
             x = infsev_dates + x_offsets,
-            y = Inf,
+            y = line_top,
             label = toupper(format(infsev_dates, "%d %b")),
-            vjust = 0.5,
-            hjust = 1.1,
+            vjust = -0.3,
+            hjust = 0.5,
             size = 3.5,
-            color = "red",
+            color = "#F2645A",
             fontface = "bold"
           ) +
+          # "Signal" label only on the first line
           gg$annotate(
             "text",
             x = infsev_dates[1] + x_offsets[1],
-            y = Inf,
+            y = line_top,
             label = "Signal",
-            vjust = 2,
-            hjust = 1.1,
+            vjust = -1.8,
+            hjust = 0.5,
             size = 3,
-            color = "red",
+            color = "#F2645A",
             fontface = "bold"
           ) +
           gg$coord_cartesian(clip = "off")
       }
     }
   }
+
   return(p)
 }
 
@@ -1028,6 +1100,26 @@ plot_food_insecurity <- function(
       fill = "grey90",
       alpha = 0.5
     )
+
+    # Add "Projected" label in the center of the projected area
+    # Calculate center x position
+    last_data_point <- max(plot_data$plot_date, na.rm = TRUE)
+    center_x <- projection_start + (last_data_point - projection_start) / 2
+
+    # Get y range for vertical centering
+    y_max <- max(plot_data$percentage, na.rm = TRUE)
+    center_y <- y_max / 2
+
+    p <- p + gg$annotate(
+      "text",
+      x = center_x,
+      y = center_y,
+      label = "Projected",
+      size = 5,
+      color = "#888888",
+      fontface = "bold",
+      alpha = 0.7
+    )
   }
 
   # Add lines
@@ -1035,10 +1127,10 @@ plot_food_insecurity <- function(
     p <- p + gg$geom_line(data = current_data, gg$aes(group = phase_label), linewidth = 1.2, linetype = "solid")
   }
   if (nrow(projected_data) > 0) {
-    p <- p + gg$geom_line(data = projected_data, gg$aes(group = phase_label), linewidth = 1, linetype = "dashed")
+    p <- p + gg$geom_line(data = projected_data, gg$aes(group = phase_label), linewidth = 1, linetype = "solid")
   }
   if (!is.null(transition_points) && nrow(transition_points) > 0) {
-    p <- p + gg$geom_line(data = transition_points, gg$aes(group = transition_id), linewidth = 1.2, linetype = "dashed")
+    p <- p + gg$geom_line(data = transition_points, gg$aes(group = transition_id), linewidth = 1.2, linetype = "solid")
   }
 
   # Add points (with colors, but hide shape from legend)
@@ -1081,21 +1173,63 @@ plot_food_insecurity <- function(
 
   # 7. ADD SIGNAL ANNOTATIONS
   if (length(food_dates) > 0) {
+    # Get y-axis range for standardized extension
+    y_range <- range(plot_data$percentage, na.rm = TRUE)
+    y_max <- y_range[2]
+    line_extension_above <- 0.05  # 5% extension
+    y_extension <- (y_range[2] - y_range[1]) * line_extension_above
+    line_top <- y_max + y_extension
+
+    # Calculate horizontal offsets for close dates (less than 60 days apart)
     x_offsets <- rep(0, length(food_dates))
     if (length(food_dates) > 1) {
+      food_dates <- sort(food_dates) # ensure sorted
       for (i in 1:(length(food_dates) - 1)) {
         if (as.numeric(food_dates[i + 1] - food_dates[i]) < 60) {
-          x_offsets[i] <- -15
+          # Alternate offsets for consecutive close dates
+          if (i %% 2 == 1) {
+            x_offsets[i] <- -15
+          } else {
+            x_offsets[i + 1] <- 15
+          }
         }
       }
     }
 
+    # Add vertical dashed lines from x-axis to standardized top
     p <- p +
-      gg$geom_vline(xintercept = food_dates, color = "red", linetype = "dashed", alpha = 0.7) +
-      gg$annotate("text", x = food_dates + x_offsets, y = Inf, label = toupper(format(food_dates, "%d %b")),
-                  vjust = 0.5, hjust = 1.1, size = 3.5, color = "red", fontface = "bold") +
-      gg$annotate("text", x = food_dates[1] + x_offsets[1], y = Inf, label = "Signal",
-                  vjust = 2, hjust = 1.1, size = 3, color = "red", fontface = "bold") +
+      gg$geom_segment(
+        gg$aes(x = food_dates, xend = food_dates,
+               y = 0, yend = line_top),
+        color = "#F2645A",
+        linetype = "dashed",
+        alpha = 0.7,
+        inherit.aes = FALSE
+      ) +
+      # Date labels - positioned at the top of the line
+      gg$annotate(
+        "text",
+        x = food_dates + x_offsets,
+        y = line_top,
+        label = toupper(format(food_dates, "%d %b")),
+        vjust = -0.3,
+        hjust = 0.5,
+        size = 3.5,
+        color = "#F2645A",
+        fontface = "bold"
+      ) +
+      # "Signal" label only on the first line
+      gg$annotate(
+        "text",
+        x = food_dates[1] + x_offsets[1],
+        y = line_top,
+        label = "Signal",
+        vjust = -1.8,
+        hjust = 0.5,
+        size = 3,
+        color = "#F2645A",
+        fontface = "bold"
+      ) +
       gg$coord_cartesian(clip = "off")
   }
 
@@ -1113,13 +1247,16 @@ plot_market_change <- function(
     start_date,
     end_date,
     title,
-    date_breaks = "2 months"
+    date_breaks = "2 months",
+    line_extension_above = 0.05 # standardized extension above plot (as fraction of y-range)
 ) {
   # Filter market data for the specified country and date range
   market_wrangle_filtered <- market_wrangle |>
     dplyr$filter(iso3 == iso3_code & date >= as.Date(start_date) & date < as.Date(end_date))
+
   # Remove NA values from basket_change
   market_wrangle_filtered <- market_wrangle_filtered[!is.na(market_wrangle_filtered$basket_change), ]
+
   # Filter df_top3 for market monitor data
   market_filtered <- df_top3[df_top3$iso3 == iso3_code & df_top3$indicator_name == "market_monitor", ]
   market_dates <- as.Date(unique(market_filtered$date))
@@ -1178,156 +1315,66 @@ plot_market_change <- function(
 
   # Add signal lines with annotations
   if (length(market_dates) > 0) {
+    # Get y-axis range for standardized extension
+    y_range <- range(market_wrangle_filtered$basket_change, na.rm = TRUE)
+    y_max <- y_range[2]
+    y_extension <- (y_range[2] - y_range[1]) * line_extension_above
+    line_top <- y_max + y_extension
+
+    # Calculate horizontal offsets for close dates (less than 60 days apart)
     x_offsets <- rep(0, length(market_dates))
     if (length(market_dates) > 1) {
+      market_dates <- sort(market_dates) # ensure sorted
       for (i in 1:(length(market_dates) - 1)) {
         if (as.numeric(market_dates[i + 1] - market_dates[i]) < 60) {
-          x_offsets[i] <- -15
+          # Alternate offsets for consecutive close dates
+          if (i %% 2 == 1) {
+            x_offsets[i] <- -15
+          } else {
+            x_offsets[i + 1] <- 15
+          }
         }
       }
     }
 
+    # Add vertical dashed lines from bottom of y-range to standardized top
     plot <- plot +
-      gg$geom_vline(
-        xintercept = market_dates,
-        color = "red",
+      gg$geom_segment(
+        gg$aes(x = market_dates, xend = market_dates,
+               y = y_range[1], yend = line_top),
+        color = "#F2645A",
         linetype = "dashed",
-        alpha = 0.7
+        alpha = 0.7,
+        inherit.aes = FALSE
       ) +
+      # Date labels - positioned at the top of the line
       gg$annotate(
         "text",
         x = market_dates + x_offsets,
-        y = Inf,
+        y = line_top,
         label = toupper(format(market_dates, "%d %b")),
-        vjust = 0.5,
-        hjust = 1.1,
+        vjust = -0.3,
+        hjust = 0.5,
         size = 3.5,
-        color = "red",
+        color = "#F2645A",
         fontface = "bold"
       ) +
+      # "Signal" label only on the first line
       gg$annotate(
         "text",
         x = market_dates[1] + x_offsets[1],
-        y = Inf,
+        y = line_top,
         label = "Signal",
-        vjust = 2,
-        hjust = 1.1,
+        vjust = -1.8,
+        hjust = 0.5,
         size = 3,
-        color = "red",
+        color = "#F2645A",
         fontface = "bold"
       ) +
       gg$coord_cartesian(clip = "off")
   }
 
   return(plot)
-}
-
-plot_signals_timeline <- function(
-    df_top3,
-    iso3_code,
-    start_date,
-    end_date,
-    title = "Signals Overview",
-    date_breaks = "2 months"
-) {
-  # Filter for the country and date range
-  signals_data <- df_top3 |>
-    dplyr$filter(iso3 == iso3_code &
-                   date >= as.Date(start_date) &
-                   date < as.Date(end_date))
-
-  # Check if data exists
-  if (nrow(signals_data) == 0) {
-    p <- gg$ggplot() +
-      gg$labs(
-        title = title,
-        subtitle = "No signals detected for this country/period",
-        x = NULL,
-        y = NULL
-      ) +
-      gg$theme_minimal() +
-      gg$theme(
-        plot.title = gg$element_text(hjust = 0.5, size = 14, face = "bold"),
-        plot.subtitle = gg$element_text(hjust = 0.5, size = 11, color = "grey50")
-      ) +
-      gg$xlim(as.Date(start_date), as.Date(end_date))
-    return(p)
-  }
-
-  # Create readable indicator labels
-  signals_data <- signals_data |>
-    dplyr$mutate(
-      indicator_label = dplyr$case_when(
-        indicator_name == "displacement_disaster" ~ "Displacement (Disaster)",
-        indicator_name == "displacement_conflict" ~ "Displacement (Conflict)",
-        indicator_name == "conflict" ~ "Conflict Fatalities",
-        indicator_name == "agricultural_hotspots" ~ "Agricultural Hotspots",
-        indicator_name == "food_insecurity" ~ "Food Insecurity",
-        indicator_name == "inform_severity" ~ "INFORM Severity",
-        indicator_name == "market_monitor" ~ "Market Monitor",
-        TRUE ~ indicator_name
-      )
-    )
-
-  # Define order for indicators (top to bottom)
-  indicator_order <- c(
-    "Displacement (Disaster)",
-    "Displacement (Conflict)",
-    "Conflict Fatalities",
-    "Agricultural Hotspots",
-    "Food Insecurity",
-    "INFORM Severity",
-    "Market Monitor"
-  )
-
-  # Filter to only include indicators present in data and set factor order
-  present_indicators <- indicator_order[indicator_order %in% unique(signals_data$indicator_label)]
-  signals_data$indicator_label <- factor(signals_data$indicator_label, levels = rev(present_indicators))
-
-  # Get unique dates for vertical lines
-  unique_dates <- unique(signals_data$date)
-
-  # Create plot
-  # Create plot
-  p <- gg$ggplot(signals_data, gg$aes(x = date, y = indicator_label)) +
-    # Points at intersection of date and indicator
-    gg$geom_point(
-      size = 4,
-      color = "red",
-      alpha = 0.9
-    ) +
-    # Day number near the point
-    gg$geom_text(
-      gg$aes(label = toupper(format(date, "%d %b"))),
-      nudge_y = 0.35,
-      size = 2,
-      color = "red",
-      fontface = "bold"
-    ) +
-    gg$scale_x_date(
-      labels = date_label_func,
-      date_breaks = date_breaks,
-      limits = c(as.Date(start_date), as.Date(end_date)),
-      expand = c(0.02, 0)
-    ) +
-    gg$labs(
-      title = title,
-      x = NULL,
-      y = NULL
-    ) +
-    gg$theme_minimal() +
-    gg$theme(
-      plot.margin = gg$margin(t = 20, r = 10, b = 10, l = 10),
-      panel.grid.major.x = gg$element_blank(),
-      panel.grid.minor.x = gg$element_blank(),
-      panel.grid.major.y = gg$element_line(color = "grey90", linewidth = 0.3),
-      panel.grid.minor.y = gg$element_blank(),
-      axis.text.x = gg$element_text(size = 10, color = "grey60"),
-      axis.text.y = gg$element_text(size = 10, color = "grey30"),
-      plot.title = gg$element_text(hjust = 0.5, size = 14, face = "bold", margin = gg$margin(b = 15))
-    )
-
-  return(p)
 }
 
 
@@ -1362,7 +1409,7 @@ report_by_country <- function(
       iso3_code = current_iso3,
       start_date = start_date,
       end_date = end_date,
-      title = "Signals Overview",
+      title = "Timeline of Signals for all indicators",
       date_breaks = "2 months"
     )
 
@@ -1455,13 +1502,13 @@ report_by_country <- function(
     title_plot <- cowplot$ggdraw() +
       # Main title (centered)
       cowplot$draw_label(final_title,
-                         x = 0.5, y = 0.65,
+                         x = 0.5, y = 0.60,
                          size = 16,
                          fontface = "bold",
                          hjust = 0.5, vjust = 0.5) +
       # Subtitle below title (centered)
       cowplot$draw_label(subtitle,
-                         x = 0.5, y = 0.35,
+                         x = 0.5, y = 0.40,
                          size = 12,
                          fontface = "italic",
                          hjust = 0.5, vjust = 0.5,
