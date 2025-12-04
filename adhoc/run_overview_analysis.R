@@ -1029,7 +1029,11 @@ plot_food_insecurity <- function(
       dplyr$mutate(type = "projected") |>
       dplyr$arrange(plot_date)
 
-    last_projected_date <- if (nrow(projected_data) > 0) max(projected_data$plot_date, na.rm = TRUE) else last_current_date
+    last_projected_date <- if (nrow(projected_data) > 0) {
+      max(projected_data$plot_date, na.rm = TRUE)
+    } else {
+      last_current_date
+    }
 
     second_projected_data <- data |>
       dplyr$filter(
@@ -1273,14 +1277,14 @@ plot_food_insecurity <- function(
 
 
 plot_market_change <- function(
-    iso3_code,
-    market_wrangle,
-    df_top3,
-    start_date,
-    end_date,
-    title,
-    date_breaks = "2 months",
-    line_extension_above = 0.05 # standardized extension above plot (as fraction of y-range)
+  iso3_code,
+  market_wrangle,
+  df_top3,
+  start_date,
+  end_date,
+  title,
+  date_breaks = "2 months",
+  line_extension_above = 0.05 # standardized extension above plot (as fraction of y-range)
 ) {
   # Filter market data for the specified country and date range
   market_wrangle_filtered <- market_wrangle |>
@@ -1426,12 +1430,12 @@ plot_market_change <- function(
 }
 
 plot_signals_timeline <- function(
-    df_top3,
-    iso3_code,
-    start_date,
-    end_date,
-    title = "Timeline of Signals for all indicators",
-    date_breaks = "2 months"
+  df_top3,
+  iso3_code,
+  start_date,
+  end_date,
+  title = "Timeline of Signals for all indicators",
+  date_breaks = "2 months"
 ) {
   # Filter for the country and date range
   signals_data <- df_top3 |>
