@@ -1020,7 +1020,11 @@ plot_food_insecurity <- function(
     }
 
     projected_data <- data |>
-      dplyr$filter(!is.na(`percentage-projected`) & !is.na(`plot_date-projected`) & `plot_date-projected` > last_current_date) |>
+      dplyr$filter(
+        !is.na(`percentage-projected`) &
+          !is.na(`plot_date-projected`) &
+          `plot_date-projected` > last_current_date
+      ) |>
       dplyr$group_by(`plot_date-projected`) |>
       dplyr$arrange(dplyr$desc(date)) |>
       dplyr$slice(1) |>
