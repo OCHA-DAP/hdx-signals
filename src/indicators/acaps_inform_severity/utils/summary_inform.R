@@ -9,7 +9,8 @@ box::use(
   src/utils/ai_summarizer,
   src/utils/get_prompts,
   src/utils/get_env,
-  src/utils/get_manual_info
+  src/utils/get_manual_info,
+  src/signals/track_summary_input
 )
 
 #' Add campaign info to ACAPS inform data
@@ -150,13 +151,10 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
       # Always add manual_info if available
       text = paste(text, manual_info, sep = " ")
     )
-
   # now join together and get summarizations
   df_summary <- df_text |>
     dplyr$group_by(iso3, location, date) |>
-    dplyr$filter(
-      !is.na(text)
-    ) |>
+    dplyr$filter(!is.na(text)) |>
     dplyr$mutate(
       summary_long = purrr$map2_chr(
         .x = prompts$long,
@@ -176,19 +174,41 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
         )
       ),
       summary_source = "ACAPS reporting"
-    )
+    ) |>
+    dplyr$ungroup() |>
+    dplyr$select(iso3, location, date, text, manual_info, summary_long, summary_short, summary_source)
+
   # ensuring the output matches the original input
-  df_alerts |>
+  result <- df_alerts |>
     dplyr$left_join(
       df_summary,
       by = c("iso3", "location", "date")
-    ) |>
+    )
+
+  # tracking summarizer input
+  tracking_data <- result |>
+    dplyr$transmute(
+      location_iso3 = iso3,
+      date_generated = date,
+      indicator_id = "acaps_inform_severity",
+      info = text,
+      manual_info = manual_info,
+      use_manual_info = !is.na(manual_info),
+      summary_long = summary_long,
+      summary_short = summary_short,
+      summary_source = summary_source
+    )
+
+  track_summary_input$append_tracking_data(tracking_data)
+
+  result |>
     dplyr$select(
       summary_long,
       summary_short,
       summary_source
     )
 }
+
 
 get_inform_justification <- function(iso3_param, date_param, country_param) {
   indicators <- c("People exposed",
