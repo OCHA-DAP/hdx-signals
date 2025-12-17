@@ -46,6 +46,7 @@ plot <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
 #'
 #' @returns Plot of cholera for that wrangled data
 inform_ts <- function(df_wrangled, df_raw, title, date) {
+  browser()
   caption <- caption$caption(
     indicator_id = "acaps_inform_severity",
     iso3 = unique(df_wrangled$iso3)

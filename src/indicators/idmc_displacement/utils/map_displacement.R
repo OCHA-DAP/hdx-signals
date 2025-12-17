@@ -88,7 +88,7 @@ displacement_map <- function(df_wrangled, df_raw, title, date) {
     sf_points = sf_raw,
     val_col = "figure",
     size = "Displacements",
-    action = "error",
+    action = "nothing",
     title = title,
     caption = caption
   )

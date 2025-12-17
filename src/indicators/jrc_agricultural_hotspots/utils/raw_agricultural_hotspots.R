@@ -12,7 +12,7 @@ box::use(src/utils/location_codes)
 #'
 #' @export
 raw <- function() {
-  utils$download.file(
+  curl::curl_download(
     url = "https://agricultural-production-hotspots.ec.europa.eu/files/hotspots_html_ts.zip",
     destfile = zf <- tempfile(fileext = ".zip"),
     quiet = TRUE

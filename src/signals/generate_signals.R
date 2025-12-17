@@ -77,7 +77,6 @@ generate_signals <- function(
     indicator_id = ind_module$indicator_id,
     fn_signals = fn_signals
   )
-
   # generate the new alerts that will receive a campaign
   # filter out the data before generating new alerts
   df_alerts <- df_wrangled |>
