@@ -13,7 +13,6 @@ box::use(src/utils/location_codes)
 #'
 #' @export
 raw <- function() {
-  browser()
   ripc$ipc_get_population()$country |>
     dplyr$filter(
       condition == "A" # only use acute for now, chronic doesn't have date info
