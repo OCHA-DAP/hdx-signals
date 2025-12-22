@@ -68,7 +68,7 @@ validate_dates <- function(dates,
     })
   }
 
-  return(date_valid)
+  date_valid
 }
 
 

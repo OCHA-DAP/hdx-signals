@@ -341,7 +341,7 @@ plot_conflict_analysis <- function(
     }
   }
 
-  return(p)
+  p
 }
 
 
@@ -441,7 +441,7 @@ plot_displacement_analysis <- function(
     }
   }
 
-  return(p)
+  p
 }
 
 
@@ -552,7 +552,7 @@ plot_agricultural_hotspot <- function(
       legend.title = gg$element_text(size = 11, face = "bold")                   # Legend title size
     )
 
-  return(plot)
+  plot
 }
 
 
@@ -636,7 +636,7 @@ plot_inform_severity <- function(
     }
   }
 
-  return(p)
+  p
 }
 
 
@@ -963,7 +963,7 @@ plot_food_insecurity <- function(
     )
 
   # 7. RETURN THE PLOT
-  return(p)
+  p
 }
 
 
