@@ -62,7 +62,6 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
     .x = df_joined$event_url[valid_pdfs],
     .f = parse_pdf$parse_pdf
   )
-
   # now group and summarize
   df_summary <- df_joined |>
     dplyr$group_by(iso3, location, date) |>
@@ -82,6 +81,8 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
                 ". Here is additional raw text sourced directly from original PDFs --> ",
                 sep = " ")
       ),
+      # ensure valid UTF-8
+      overall_info = stringi::stri_encode(overall_info, from = "", to = "UTF-8"),
       summary_long = purrr$map2_chr(
         .x = prompts$long,
         .y = overall_info,

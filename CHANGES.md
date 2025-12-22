@@ -1,4 +1,9 @@
 # Changes
+## 0.2.21.0 (22 December 2025)
+
+### Ensure UTF 8 encoding for summary (displacement)
+
+- Ensure UTF 8 encoding when processing info in summary_displacement.
 
 ## 0.2.20.0 (24 November 2025)
 
