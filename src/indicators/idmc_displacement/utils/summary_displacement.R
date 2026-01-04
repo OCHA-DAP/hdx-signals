@@ -6,7 +6,6 @@ box::use(
 )
 
 box::use(
-  src/utils/ai_summarizer,
   src/utils/get_prompts,
   src/utils/parse_pdf,
   src/utils/get_manual_info,
