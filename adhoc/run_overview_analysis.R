@@ -744,7 +744,7 @@ plot_food_insecurity <- function(
     # SECOND PROJECTION (second_projected)
     second_projected_data <- data |>
       dplyr$filter(
-        !is.na(`percentage-second_projected`) &
+        !is.na(`percentage-projected2`) &
           !is.na(`plot_date-second_projected`) &
           `plot_date-second_projected` > last_projected_date
       ) |>
@@ -754,7 +754,7 @@ plot_food_insecurity <- function(
       dplyr$ungroup() |>
       dplyr$select(
         plot_date = `plot_date-second_projected`,
-        percentage = `percentage-second_projected`,
+        percentage = `percentage-projected2`,
         date
       ) |>
       dplyr$mutate(type = "second_projected") |>
