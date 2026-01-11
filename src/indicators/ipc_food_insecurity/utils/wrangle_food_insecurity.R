@@ -107,4 +107,4 @@ wrangle <- function(df_raw) {
         abs(`coverage-current` - `coverage-current_lag`) <= 0.1 # if we can draw comparisons
     ) |>
     dplyr$ungroup()
-  }
+}
