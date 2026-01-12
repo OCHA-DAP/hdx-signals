@@ -4444,7 +4444,7 @@
         "callr",
         "knitr",
         "glue",
-        "cli",\
+        "cli",
         "rmarkdown",
         "pillar",
         "testthat"

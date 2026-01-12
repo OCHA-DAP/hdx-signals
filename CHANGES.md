@@ -1,4 +1,10 @@
 # Changes
+## 0.3.0.0 (9 January 2026)
+
+### Modified IPC Column names
+
+- Modified IPC data column name to refelct API changes
+
 ## 0.2.21.0 (22 December 2025)
 
 ### Ensure UTF 8 encoding for summary (displacement)
