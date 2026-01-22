@@ -4498,7 +4498,7 @@
     },
     "ripc": {
       "Package": "ripc",
-      "Version": "0.3.2",
+      "Version": "1.0.0",
       "Source": "Repository",
       "Title": "Download and Tidy IPC and CH Data",
       "Authors@R": "person( given = \"Giulia\", family = \"Martini\",  email = \"giulia.martini@un.org\", role = c(\"aut\", \"cre\", \"cph\") )",
