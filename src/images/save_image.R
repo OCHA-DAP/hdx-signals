@@ -61,18 +61,32 @@ save_image <- function(p, iso3, indicator_id, date, width, height, crop = FALSE,
 #'
 #' @export
 save_map <- function(p, iso3, indicator_id, date, crop = FALSE) {
+  # manual overrides for countries with extreme aspect ratios
+  # these don't render well with auto-calculated dimensions
+  map_overrides <- list(
+    CHL = list(width = 6, height = 6)
+  )
 
   # get the width and height
   df_ms <- cs$read_az_file_cached("input/iso3_map_settings.json") |>
     dplyr$filter(iso3 == !!iso3)
+
+  # apply override if exists, otherwise use settings from file
+  if (iso3 %in% names(map_overrides)) {
+    width <- map_overrides[[iso3]]$width
+    height <- map_overrides[[iso3]]$height
+  } else {
+    width <- df_ms$width
+    height <- df_ms$height
+  }
 
   save_image(
     p = p,
     iso3 = iso3,
     indicator_id = indicator_id,
     date = date,
-    width = df_ms$width,
-    height = df_ms$height,
+    width = width,
+    height = height,
     crop = crop
   )
 }

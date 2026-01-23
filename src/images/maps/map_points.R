@@ -80,7 +80,8 @@ map_points <- function(
     ) +
     gg$coord_sf(
       clip = "off",
-      crs = "OGC:CRS84"
+      crs = "OGC:CRS84",
+      expand = FALSE
     ) +
     gg$labs(
       x = "",
@@ -90,5 +91,10 @@ map_points <- function(
       subtitle = subtitle,
       caption = caption
     ) +
-    map_theme$map_theme(iso3 = iso3, use_map_settings = use_map_settings)
+    map_theme$map_theme(iso3 = iso3, use_map_settings = use_map_settings)+
+    gg$theme(
+      panel.border = gg$element_blank(),
+      panel.background = gg$element_blank(),
+      plot.margin = gg$margin(t = 5, r = 80, b = 5, l = 5)
+    )
 }
