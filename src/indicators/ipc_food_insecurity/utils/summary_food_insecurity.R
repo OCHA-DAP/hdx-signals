@@ -9,10 +9,10 @@ box::use(
 )
 
 box::use(
-  src/utils/ai_summarizer,
   src/utils/get_prompts,
   src/utils/parse_pdf,
   src/utils/get_manual_info,
+  src/utils/python_setup,
   src/signals/track_summary_input
 )
 
@@ -40,20 +40,25 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
         is.na(summary_long),
         plot_title,
         purrr$pmap_chr(
-          .l = list(prompt = prompts$short, info = summary_long, location = location),
-          .f = ai_summarizer$ai_summarizer_without_location
-        )
-      ),
-      summary_short = ifelse(
+          .l = list(
+            system_prompt = prompts$system,
+            user_prompt = prompts$short,
+            location = location,
+            info = summary_long
+            ),
+          .f = python_setup$get_summary_r
+          ),
+        summary_short = ifelse(
         phase_level == "5",
         paste0("<b><i>Phase 5 alert<b></i> - ", summary_short),
         summary_short
-      ),
-      summary_source = dplyr$case_when(
+        ),
+        summary_source = dplyr$case_when(
         is.na(summary_long) ~ NA_character_,
         ch ~ "CH reports",
         .default = "IPC analyses"
       )
+    )
     )
 
   # tracking summarizer input
@@ -198,13 +203,15 @@ text_summarizer_manual <- function(txt_c) {
   )
 
   # Process situation and recommendations using AI
-  sit_rep <- ai_summarizer$ai_summarizer(
-    prompt = glue$glue(prompts[[1]]),
+  sit_rep <- python_setup$get_summary_r(
+    system_prompt = prompts$system,
+    user_prompt = glue$glue(prompts[[1]]),
     info = txt_c[[1]]  # First string for situation
   )
 
-  recs <- ai_summarizer$ai_summarizer(
-    prompt = glue$glue(prompts[[2]]),
+  recs <- python_setup$get_summary_r(
+    system_prompt = prompts$system,
+    user_prompt = glue$glue(prompts[[2]]),
     info = txt_c[[2]]  # Second string for recommendations
   )
 
@@ -258,13 +265,15 @@ text_summarizer <- function(txt, org) {
   )
 
   # feed these to the AI to get a summarization
-  sit_rep <- ai_summarizer$ai_summarizer(
-    prompt = glue$glue(prompts[[1]]),
+  sit_rep <- python_setup$get_summary_r(
+    system_prompt = prompts$system,
+    user_prompt = glue$glue(prompts[[1]]),
     info = txt[1]
   )
 
-  recs <- ai_summarizer$ai_summarizer(
-    prompt = glue$glue(prompts[[2]]),
+  recs <- python_setup$get_summary_r(
+    system_prompt = prompts$system,
+    user_prompt = glue$glue(prompts[[2]]),
     info = txt[2]
   )
 

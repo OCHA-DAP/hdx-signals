@@ -96,7 +96,13 @@ mc_upload_table <- function(table, name, folder, height, width, crop = FALSE, pr
   gt$gtsave(data = table, filename = fp)
   # Optionally crop the image
   if (crop) {
-    knitr$plot_crop(fp)
+    crop_white_margins(
+      fp,
+      top = 10,
+      bottom = 10,
+      left = 20,
+      right = 20
+    )
   }
 
   # Upload the image
@@ -145,9 +151,16 @@ mc_upload_plot <- function(plot, name, folder, height, width, crop = FALSE, prev
     dpi = 300,
     ...
   )
+  browser()
 
   if (crop) {
-    knitr$plot_crop(fp)
+    crop_white_margins(
+      fp,
+      top = 20,
+      bottom = 20,
+      left = 10,
+      right = 10
+    )
   }
 
   mc_upload_image(
@@ -193,3 +206,23 @@ mc_test_image_view <- function(fp, preview = FALSE) {
 
   paste0("file://", fp)
 }
+
+crop_white_margins <- function(fp, top = 0, right = 0, bottom = 0, left = 0) {
+  img <- magick::image_read(fp)
+
+  # Trim white space conservatively
+  img <- magick::image_trim(img, fuzz = 5)
+
+  # Add back controlled margins (prevents over-cropping)
+  img <- magick::image_extent(
+    img,
+    geometry = paste0(
+      magick::image_info(img)$width  + left + right, "x",
+      magick::image_info(img)$height + top  + bottom
+    ),
+    gravity = "center",
+  )
+
+  magick::image_write(img, fp)
+}
+

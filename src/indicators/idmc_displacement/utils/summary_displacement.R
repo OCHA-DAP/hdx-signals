@@ -10,6 +10,7 @@ box::use(
   src/utils/get_prompts,
   src/utils/parse_pdf,
   src/utils/get_manual_info,
+  src/utils/python_setup,
   src/signals/track_summary_input
 )
 
@@ -83,22 +84,24 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
       ),
       # ensure valid UTF-8
       overall_info = stringi::stri_encode(overall_info, from = "", to = "UTF-8"),
-      summary_long = purrr$map2_chr(
-        .x = prompts$long,
-        .y = overall_info,
-        .f = ai_summarizer$ai_summarizer
-      ),
-      summary_short = purrr$pmap_chr(
+      summary_long =purrr$pmap_chr(
         .l = list(
-          prompt = prompts$short,
-          info = summary_long,
-          location = location
+          system_prompt = prompts$system,
+          user_prompt = prompts$long,
+          info = overall_info
         ),
-        .f = ai_summarizer$ai_summarizer_without_location
+        .f = python_setup$get_summary_r),
+      summary_short =purrr$pmap_chr(
+        .l = list(
+          system_prompt = prompts$system,
+          user_prompt = prompts$short,
+          location = location,
+          info = summary_long
+        ),
+        .f = python_setup$get_summary_r
       ),
       summary_source = "IDMC analysis and source reports"
     )
-
 
   # ensuring the output matches the original input
   result <- df_alerts |>
