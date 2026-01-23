@@ -25,21 +25,21 @@ alert <- function(df_wrangled) {
     dplyr$mutate(
       any_p5 = phase == "phase5" & `percentage-current` > 0 |
         phase == "phase5" & `percentage-projected` > 0 |
-        phase == "phase5" & `percentage-projected2` > 0
+        phase == "phase5" & `percentage-second_projected` > 0
     ) |>
     dplyr$filter(
       phase == "p3plus" & `percentage-current` >= 0.2 |
         phase == "p3plus" & `percentage-projected` >= 0.2 |
-        phase == "p3plus" & `percentage-projected2` >= 0.2 |
+        phase == "p3plus" & `percentage-second_projected` >= 0.2 |
         phase == "p4plus" & `percentage-current` >= 0.05 |
         phase == "p4plus" & `percentage-projected` >= 0.05 |
-        phase == "p4plus" & `percentage-projected2` >= 0.05 |
+        phase == "p4plus" & `percentage-second_projected` >= 0.05 |
         any_p5
     ) |>
     dplyr$filter(
       `percentage-current` > `percentage-current_lag` & compare_current |
         `percentage-current` < `percentage-projected` |
-        `percentage-current` < `percentage-projected2` |
+        `percentage-current` < `percentage-second_projected` |
         any_p5
     ) |>
     dplyr$select(
