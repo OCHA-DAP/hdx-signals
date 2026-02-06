@@ -2665,7 +2665,7 @@
     },
     "idmc": {
       "Package": "idmc",
-      "Version": "0.4.0",
+      "Version": "0.4.1",
       "Source": "GitHub",
       "Title": "Load and Wrangle IDMC Displacement Data",
       "Authors@R": "person( given = \"Giulia\", family = \"Martini\",  email = \"giulia.martini@un.org\", role = c(\"aut\", \"cre\", \"cph\") )",

@@ -1,4 +1,12 @@
 # Changes
+## 0.4.0.0 (6 February 2026)
+
+### Improved Map plotting, updated requirements, improved track summary input
+
+- Improved map plotting functions for better aesthetics (no box).
+- Updated requirements for the IDMC package
+- Improved tracking of manual summary to run locally on Windows machines.
+
 ## 0.3.0.0 (9 January 2026)
 
 ### Modified IPC Column names
