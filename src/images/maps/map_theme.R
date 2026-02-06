@@ -45,6 +45,8 @@ map_theme <- function(iso3, use_map_settings = TRUE, margin_location = c("title"
       axis.text.y = gg$element_blank(),
       panel.grid.major = gg$element_blank(),
       panel.grid.minor = gg$element_blank(),
+      panel.border = gg$element_blank(),
+      panel.background = gg$element_blank(),
       axis.line.x = gg$element_blank(),
       legend.position = df_ms$legend_position,
       legend.direction = df_ms$direction,
