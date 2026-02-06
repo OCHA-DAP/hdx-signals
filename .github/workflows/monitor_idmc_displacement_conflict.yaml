@@ -58,12 +58,9 @@ jobs:
             - name: Set up environment
               uses: ocha-dap/hdx-signals-actions@v3
 
-            - name: Run R monitoring script
-              uses: nick-fields/retry@v3
-              with:
-                max_attempts: 2
-                timeout_minutes: 20
-                retry_on: error
-                retry_wait_seconds: 120
-                shell: bash
-                command: Rscript ./src/indicators/idmc_displacement/conflict/__init__.R
+            - name: Debug renv
+              run: |
+                R -e 'renv::status()'
+                R -e 'packageVersion("yourpackage")'
+
+
