@@ -61,6 +61,6 @@ jobs:
             - name: Debug renv
               run: |
                 R -e 'renv::status()'
-                R -e 'packageVersion("yourpackage")'
+                R -e 'packageVersion("idmc")'
 
 
