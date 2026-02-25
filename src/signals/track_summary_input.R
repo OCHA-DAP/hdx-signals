@@ -38,7 +38,7 @@ read_tracking_file <- function() {
 
   if (hs_local$hs_local()) {
     if (!file.exists(path)) return(NULL)
-    read_parquet(path)
+    read_parquet(path, memory_map = FALSE)
   } else {
     tryCatch(
       cs$read_az_file(path),
@@ -88,6 +88,9 @@ append_tracking_data <- function(new_data) {
     combined_data <- dplyr$bind_rows(existing_data, new_data)
     log_info("Appending {nrow(new_data)} rows to tracking file")
   }
+
+  rm(existing_data)
+  gc()
 
   if (hs_local$hs_local()) {
     write_parquet(combined_data, path)
