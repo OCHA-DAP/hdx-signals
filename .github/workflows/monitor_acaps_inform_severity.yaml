@@ -58,6 +58,14 @@ jobs:
             - name: Checkout repository
               uses: actions/checkout@v3
 
+            - name: Set up Python
+            uses: actions/setup-python@v5
+            with:
+              python-version: "3.11"
+
+            - name: Export Python path
+              run: echo "PYTHON_BIN=$(which python)" >> $GITHUB_ENV
+
             - name: Set up environment
               uses: ocha-dap/hdx-signals-actions@v3
 
