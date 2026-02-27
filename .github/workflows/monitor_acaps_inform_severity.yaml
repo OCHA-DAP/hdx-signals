@@ -51,6 +51,9 @@ jobs:
           HS_FIRST_RUN: ${{ inputs.HS_FIRST_RUN || 'FALSE' }}
           HS_DRY_RUN: ${{ inputs.HS_DRY_RUN || 'FALSE' }}
           LOG_LEVEL: ${{ inputs.LOG_LEVEL || 'INFO' }}
+          AZURE_OPENAI_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}
+          AZURE_OPENAI_API_VERSION: ${{ secrets.AZURE_OPENAI_API_VERSION }}
+          AZURE_OPENAI_ENDPOINT: ${{ secrets.AZURE_OPENAI_ENDPOINT }}
         steps:
             - name: Checkout repository
               uses: actions/checkout@v3
