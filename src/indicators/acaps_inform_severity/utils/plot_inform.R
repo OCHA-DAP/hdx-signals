@@ -70,7 +70,7 @@ inform_ts <- function(df_wrangled, df_raw, title, date) {
     gg$geom_ribbon(gg$aes(ymin = 4, ymax = 5), fill = "#FDEFEF", alpha = 0.5) +
 
     # Inform Severity Index line
-    gg$geom_line(gg$aes(y = inform_severity_index), color = "#5D3779", size = 1.5) +
+    gg$geom_line(gg$aes(y = inform_severity_index), color = "#5D3779", linewidth = 1.5) +
 
     # Add points for min, max, and latest data points
     gg$geom_point(data = min_point, gg$aes(x = date, y = inform_severity_index), color = "#5D3779", size = 3) +

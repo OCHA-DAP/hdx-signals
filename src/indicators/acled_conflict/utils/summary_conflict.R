@@ -1,13 +1,14 @@
 box::use(
   dplyr,
   lubridate,
-  purrr
+  purrr,
+  reticulate
 )
 
 box::use(
-  src/utils/ai_summarizer,
   src/utils/get_prompts,
   src/utils/get_manual_info,
+  src/utils/python_setup,
   src/signals/track_summary_input
 )
 
@@ -62,23 +63,26 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
     dplyr$mutate(
       # Combine event_info with manual_info if present
       event_info = paste(event_info, manual_info, sep = " "),
-      summary_long = purrr$map2_chr(
-        .x = prompts$long,
-        .y = event_info,
-        .f = ai_summarizer$ai_summarizer
-      ),
+      summary_long =purrr$pmap_chr(
+        .l = list(
+          system_prompt = prompts$system,
+          user_prompt = prompts$long,
+          info = event_info
+          ),
+        .f = python_setup$get_summary_r),
       summary_short = ifelse(
         is.na(summary_long) | summary_long == "",
         plot_title,
         purrr$pmap_chr(
           .l = list(
-            prompt = prompts$short,
-            info = summary_long,
-            location = location
-          ),
-          .f = ai_summarizer$ai_summarizer_without_location
-        )
-      ),
+            system_prompt = prompts$system,
+            user_prompt = prompts$short,
+            location = location,
+            info = summary_long
+            ),
+            .f = python_setup$get_summary_r
+          )
+        ),
       summary_source = "ACLED reporting"
     )
 

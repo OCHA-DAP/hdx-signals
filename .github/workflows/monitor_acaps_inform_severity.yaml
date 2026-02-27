@@ -44,16 +44,32 @@ jobs:
           HS_SURVEY_LINK: ${{ secrets.HS_SURVEY_LINK}}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           DSCI_AZ_BLOB_DEV_SAS_WRITE: ${{ secrets.DSCI_AZ_BLOB_DEV_SAS_WRITE }}
-          DSCI_AZ_BLOB_PROD_SAS_WRITE: ${{ secrets.DSCI_AZ_BLOB_PROD_SAS_WRITE }}
+          DSCI_AZ_BLOB_PROD_SIGNALS_SAS_WRITE: ${{ secrets.DSCI_AZ_BLOB_PROD_SAS_WRITE }}
           MAILCHIMP_API_KEY: ${{ secrets.MAILCHIMP_API_KEY }}
           ACAPS_TOKEN: ${{ secrets.ACAPS_TOKEN }}
           HS_LOCAL: ${{ inputs.HS_LOCAL || 'FALSE' }}
           HS_FIRST_RUN: ${{ inputs.HS_FIRST_RUN || 'FALSE' }}
           HS_DRY_RUN: ${{ inputs.HS_DRY_RUN || 'FALSE' }}
           LOG_LEVEL: ${{ inputs.LOG_LEVEL || 'INFO' }}
+          AZURE_OPENAI_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}
+          AZURE_OPENAI_API_VERSION: ${{ secrets.AZURE_OPENAI_API_VERSION }}
+          AZURE_OPENAI_ENDPOINT: ${{ secrets.AZURE_OPENAI_ENDPOINT }}
         steps:
             - name: Checkout repository
               uses: actions/checkout@v3
+
+            - name: Set up Python
+              uses: actions/setup-python@v5
+              with:
+                python-version: "3.11"
+
+            - name: Install Python dependencies
+              run: |
+                python -m pip install --upgrade pip
+                pip install openai azure-identity azure-ai-textanalytics pandas
+
+            - name: Export Python path
+              run: echo "PYTHON_BIN=$(which python)" >> $GITHUB_ENV
 
             - name: Set up environment
               uses: ocha-dap/hdx-signals-actions@v3
