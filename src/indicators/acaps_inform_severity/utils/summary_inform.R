@@ -163,7 +163,7 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
           user_prompt = prompts$long,
           info = text
         ),
-        .f = get_summary
+        .f = python_setup$get_summary_r
       ),
       summary_short = ifelse(
         is.na(summary_long) | summary_long == "",
@@ -175,7 +175,7 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
             location = location,
             info = summary_long
           ),
-          .f = get_summary
+          .f = python_setup$get_summary_r
         )
       ),
       summary_source = "ACAPS reporting"

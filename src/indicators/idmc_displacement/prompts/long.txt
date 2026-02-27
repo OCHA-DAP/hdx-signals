@@ -1,7 +1,7 @@
 In three sentences or less, please summarize the main reasons for and locations of displacement
 reported in the following text. The information is a summary of displacement events. In some cases, you will also be provided raw text extracted from PDF documents that were the original source for the reports. They may not be in the English language, even though the overall summary is in English. Here are three rules:
 
-- Avoid providing specific numbers or dates.
+- Maintain strict neutrality: do not express opinions, assign responsibility, attribute blame, justify actions, or use evaluative or emotive language related to any party in a conflict. Do not include specific numbers or dates.
 - Only use the information provided to you. If the information is limited, keep
 the summarization brief.
 - The output should be in the English language.

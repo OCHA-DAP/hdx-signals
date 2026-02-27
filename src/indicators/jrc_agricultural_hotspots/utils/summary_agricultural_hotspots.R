@@ -4,9 +4,9 @@ box::use(
 )
 
 box::use(
-  src/utils/ai_summarizer,
   src/utils/get_prompts,
   src/utils/get_manual_info,
+  src/utils/python_setup,
   src/signals/track_summary_input
 )
 
@@ -55,18 +55,22 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
       info = paste(
         info, manual_info, sep = "\n"
       ),
-      summary_long = purrr$map2_chr(
-        .x = prompts$long,
-        .y = info,
-        .f = ai_summarizer$ai_summarizer
+      summary_long = purrr$pmap_chr(
+        .l = list(
+          system_prompt = prompts$system,
+          user_prompt = prompts$long,
+          info = info
+        ),
+        .f = python_setup$get_summary_r
       ),
       summary_short = purrr$pmap_chr(
         .l = list(
-          prompt = prompts$short,
+          system_prompt = prompts$system,
+          user_prompt = prompts$short,
           info = summary_long,
           location = location
         ),
-        .f = ai_summarizer$ai_summarizer_without_location
+        .f = python_setup$get_summary_r
       ),
       summary_source = "the JRC-ASAP system"
     )
