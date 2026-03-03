@@ -1,8 +1,7 @@
 box::use(
   dplyr,
   lubridate,
-  purrr,
-  reticulate
+  purrr
 )
 
 box::use(
