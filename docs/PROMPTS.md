@@ -41,6 +41,10 @@
 > and punchy. Use only the information below in your summary -->
 > 
 
+#### system.txt
+
+> You are a neutral assistant.
+
 ### acled_conflict<a name='acled_conflict'></a>
 
 #### long.txt
@@ -70,6 +74,10 @@
 > and punchy. Use only the information below in your summary -->
 > 
 
+#### system.txt
+
+> You are a neutral assistant.
+
 ### idmc_displacement<a name='idmc_displacement'></a>
 
 #### long.txt
@@ -77,7 +85,7 @@
 > In three sentences or less, please summarize the main reasons for and locations of displacement
 > reported in the following text. The information is a summary of displacement events. In some cases, you will also be provided raw text extracted from PDF documents that were the original source for the reports. They may not be in the English language, even though the overall summary is in English. Here are three rules:
 > 
-> - Avoid providing specific numbers or dates.
+> - Maintain strict neutrality: do not express opinions, assign responsibility, attribute blame, justify actions, or use evaluative or emotive language related to any party in a conflict. Do not include specific numbers or dates.
 > - Only use the information provided to you. If the information is limited, keep
 > the summarization brief.
 > - The output should be in the English language.
@@ -100,6 +108,10 @@
 > Expect the reader to have no context, but this is
 > intended to capture their attention, so keep the messaging simple, clear
 > and punchy. Use only the information below in your summary -->
+
+#### system.txt
+
+> You are a neutral assistant.
 
 ### ipc_food_insecurity<a name='ipc_food_insecurity'></a>
 
@@ -183,6 +195,10 @@
 > intended to capture their attention, so keep the messaging simple, clear
 > and punchy. Use only the information below in your summary: --> 
 
+#### system.txt
+
+> You are a neutral assistant.
+
 ### jrc_agricultural_hotspots<a name='jrc_agricultural_hotspots'></a>
 
 #### long.txt
@@ -217,3 +233,7 @@
 > and punchy.
 > 
 > Only use the following information in your summary --> 
+
+#### system.txt
+
+> You are a neutral assistant.

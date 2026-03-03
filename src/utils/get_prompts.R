@@ -16,7 +16,7 @@ box::use(
 #' @returns A list all prompts found in `prompts`.
 #'
 #' @export
-get_prompts <- function(indicator_id, prompts = c("short", "long")) {
+get_prompts <- function(indicator_id, prompts = c("short", "long", "system")) {
   fp <- file.path(
     "src",
     "indicators",

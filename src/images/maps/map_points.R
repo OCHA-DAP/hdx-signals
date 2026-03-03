@@ -93,5 +93,5 @@ map_points <- function(
     map_theme$map_theme(
       iso3 = iso3,
       use_map_settings = use_map_settings
-    ) 
+    )
 }

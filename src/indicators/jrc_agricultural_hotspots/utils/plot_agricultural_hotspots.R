@@ -112,7 +112,6 @@ hotspots_ts <- function(df_wrangled, df_raw, title, date) {
     gg$guides(
       fill = gg$guide_legend(
         byrow = TRUE,
-        show.legend = TRUE
       )
     ) +
     gg$theme(
