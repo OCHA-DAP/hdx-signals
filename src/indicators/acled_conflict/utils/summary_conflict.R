@@ -62,7 +62,7 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
     dplyr$mutate(
       # Combine event_info with manual_info if present
       event_info = paste(event_info, manual_info, sep = " "),
-      summary_long =purrr$pmap_chr(
+      summary_long = purrr$pmap_chr(
         .l = list(
           system_prompt = prompts$system,
           user_prompt = prompts$long,
@@ -78,7 +78,7 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
             user_prompt = prompts$short,
             location = location,
             info = summary_long
-            ),
+          ),
             .f = python_setup$get_summary_r
           )
         ),

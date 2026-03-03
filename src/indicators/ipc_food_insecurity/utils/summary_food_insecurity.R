@@ -40,7 +40,10 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
         is.na(summary_long),
         plot_title,
         purrr$pmap_chr(
-          .l = list(system_prompt=prompts$system, user_prompt = prompts$short, info = summary_long, location = location),
+          .l = list(system_prompt = prompts$system,
+                    user_prompt = prompts$short,
+                    info = summary_long,
+                    location = location),
           .f = python_setup$get_summary_r
         )
       ),

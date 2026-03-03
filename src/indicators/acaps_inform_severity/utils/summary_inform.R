@@ -3,8 +3,7 @@ box::use(
   dplyr,
   lubridate,
   tidyr,
-  purrr,
-  reticulate
+  purrr
 )
 box::use(
   src/utils/get_prompts,
@@ -157,7 +156,7 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
     dplyr$group_by(iso3, location, date) |>
     dplyr$filter(!is.na(text)) |>
     dplyr$mutate(
-      summary_long =purrr$pmap_chr(
+      summary_long = purrr$pmap_chr(
         .l = list(
           system_prompt = prompts$system,
           user_prompt = prompts$long,

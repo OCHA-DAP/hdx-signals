@@ -17,7 +17,7 @@ if (!is.na(python_path) && nzchar(python_path)) {
 reticulate$source_python("src/python_scripts/azure_script.py")
 
 #' @export
-get_summary_r <- function(system_prompt, user_prompt, info, location=NULL) {
+get_summary_r <- function(system_prompt, user_prompt, info, location = NULL) {
   if (hs_local$hs_local()) {
     logger$log_debug(
       "`get_summary_r()` returning static output as `hs_local()` is `TRUE`. ",
@@ -28,10 +28,10 @@ get_summary_r <- function(system_prompt, user_prompt, info, location=NULL) {
     "Test output."
   } else {
     reticulate::py$get_summary(
-    system_prompt = system_prompt,
-    user_prompt   = user_prompt,
-    info          = info,
-    location = location
+      system_prompt = system_prompt,
+      user_prompt = user_prompt,
+      info = info,
+      location = location
     )
   }
 }
