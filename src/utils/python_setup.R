@@ -1,5 +1,8 @@
 box::use(reticulate)
 
+box::use(
+  src/utils/hs_local
+)
 # Decide Python dynamically
 python_path <- Sys.getenv("PYTHON_BIN", unset = NA)
 
