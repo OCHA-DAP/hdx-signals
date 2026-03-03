@@ -1,4 +1,5 @@
-box::use(reticulate)
+box::use(reticulate,
+         logger)
 
 box::use(
   src/utils/hs_local
