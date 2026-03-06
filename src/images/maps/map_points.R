@@ -93,5 +93,10 @@ map_points <- function(
     map_theme$map_theme(
       iso3 = iso3,
       use_map_settings = use_map_settings
-    ) 
+    )+
+    gg$theme(
+      panel.border = gg$element_blank(),
+      panel.background = gg$element_blank(),
+      #plot.margin = gg$margin(t = 5, r = 30, b = 5, l = 5)
+    )
 }
