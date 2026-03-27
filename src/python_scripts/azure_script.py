@@ -8,7 +8,7 @@ def get_summary(
     info: str,
     location: str | None = None,
     system_prompt: str = "You are a helpful assistant",
-    model: str = "gpt-4o",
+    model: str = "gpt-5",
     temperature: float = 1,
 ):
     required_envs = [
