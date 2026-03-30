@@ -12,19 +12,14 @@ test_that("get_summary_r returns mocked value", {
   mock_py_get_summary <- mock("Result from Python")
 
   fake_py <- list(
-    get_summary = mock_py_get_summary
+    get_summary = function(...) stop("Python error")
   )
 
-  with_mocked_bindings(
-    reticulate = list(py = fake_py),
-    {
-      result <- fn(
-        system_prompt = "sys",
-        user_prompt   = "user",
-        info          = "info",
-        location      = NULL
-      )
-    }
+  result <- fn(
+    system_prompt = "sys",
+    user_prompt   = "user",
+    info          = "info",
+    location      = NULL
   )
 
   expect_equal(result, "Result from Python")
