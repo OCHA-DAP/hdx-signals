@@ -1,6 +1,7 @@
 # Changes
 ## 0.5.0.0 (3 March 2026)
 - Switch to Azure for the summarization module
+- Switched to gpt-5
 - Modified prompt for IDMC
 - Adjusted tests
 
