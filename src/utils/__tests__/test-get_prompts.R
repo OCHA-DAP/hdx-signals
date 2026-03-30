@@ -1,5 +1,10 @@
 test_that("get_prompts works correctly", {
-  mock_readLines <- mock(c("a", "b"), c("c", "d"))
+  mock_readLines <- mock(
+    c("a", "b"),
+    c("c", "d"),
+    c("e", "f"),
+    cycle = TRUE
+  )
   stub(get_prompts, "readLines", mock_readLines)
 
   result <- get_prompts("abc")
