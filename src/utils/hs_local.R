@@ -9,7 +9,7 @@
 #' By default, if `HS_LOCAL` is not set, then it defaults to `TRUE`. This
 #' means in interactive development sessions you do not need to worry about
 #' accidentally running something. It is used in:
-#' * `python_setup()` to return a standard string instead of pinging the OpenAI
+#' * `ai_summarizer()` to return a standard string instead of pinging the OpenAI
 #'     API for summarization.
 #' * `update_az_file()` to prevent saving data back to the Google Cloud Storage
 #'     buckets.

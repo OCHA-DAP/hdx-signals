@@ -1,6 +1,7 @@
 #' @export
 box::use(
   src/utils/add_locations_metadata[...],
+  src/utils/ai_summarizer[...],
   src/utils/alert_daily_ts[...],
   src/utils/all_iso3_codes[...],
   src/utils/cloud_storage[...],
@@ -16,7 +17,6 @@ box::use(
   src/utils/iso3_shift_longitude[...],
   src/utils/location_codes[...],
   src/utils/parse_pdf[...],
-  src/utils/python_setup[...],
   src/utils/push_hdx[...],
   src/utils/st_crop_adj_bbox[...],
   src/utils/temp_file[...],

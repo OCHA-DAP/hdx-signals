@@ -52,25 +52,9 @@ jobs:
           HS_FIRST_RUN: ${{ inputs.HS_FIRST_RUN || 'FALSE' }}
           HS_DRY_RUN: ${{ inputs.HS_DRY_RUN || 'FALSE' }}
           LOG_LEVEL: ${{ inputs.LOG_LEVEL || 'DEBUG' }}
-          AZURE_OPENAI_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}
-          AZURE_OPENAI_API_VERSION: ${{ secrets.AZURE_OPENAI_API_VERSION }}
-          AZURE_OPENAI_ENDPOINT: ${{ secrets.AZURE_OPENAI_ENDPOINT }}
         steps:
             - name: Checkout repository
               uses: actions/checkout@v3
-
-            - name: Set up Python
-              uses: actions/setup-python@v5
-              with:
-                python-version: "3.11"
-
-            - name: Install Python dependencies
-              run: |
-                python -m pip install --upgrade pip
-                pip install openai azure-identity azure-ai-textanalytics pandas
-
-            - name: Export Python path
-              run: echo "PYTHON_BIN=$(which python)" >> $GITHUB_ENV
 
             - name: Set up environment
               uses: ocha-dap/hdx-signals-actions@v3

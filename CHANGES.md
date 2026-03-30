@@ -1,9 +1,4 @@
 # Changes
-## 0.5.0.0 (3 March 2026)
-- Switch to Azure for the summarization module
-- Modified prompt for IDMC
-- Adjusted tests
-
 ## 0.4.0.0 (6 February 2026)
 
 ### Improved Map plotting, updated requirements, improved track summary input

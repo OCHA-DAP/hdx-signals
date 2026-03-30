@@ -9,10 +9,10 @@ box::use(
 )
 
 box::use(
+  src/utils/ai_summarizer,
   src/utils/get_prompts,
   src/utils/parse_pdf,
   src/utils/get_manual_info,
-  src/utils/python_setup,
   src/signals/track_summary_input
 )
 
@@ -24,7 +24,7 @@ box::use(
 summary <- function(df_alerts, df_wrangled, df_raw) {
   prompts <- get_prompts$get_prompts(
     indicator_id = "ipc_food_insecurity",
-    prompts = c("short", "system")
+    prompts = "short"
   )
 
   result <- df_alerts |>
@@ -40,11 +40,8 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
         is.na(summary_long),
         plot_title,
         purrr$pmap_chr(
-          .l = list(system_prompt = prompts$system,
-                    user_prompt = prompts$short,
-                    info = summary_long,
-                    location = location),
-          .f = python_setup$get_summary_r
+          .l = list(prompt = prompts$short, info = summary_long, location = location),
+          .f = ai_summarizer$ai_summarizer_without_location
         )
       ),
       summary_short = ifelse(
@@ -201,15 +198,13 @@ text_summarizer_manual <- function(txt_c) {
   )
 
   # Process situation and recommendations using AI
-  sit_rep <- python_setup$get_summary_r(
-    system_prompt = prompts$system,
-    user_prompt   = glue::glue(prompts[[1]]),
+  sit_rep <- ai_summarizer$ai_summarizer(
+    prompt = glue$glue(prompts[[1]]),
     info = txt_c[[1]]  # First string for situation
   )
 
-  recs <- python_setup$get_summary_r(
-    system_prompt = prompts$system,
-    user_prompt   = glue::glue(prompts[[2]]),
+  recs <- ai_summarizer$ai_summarizer(
+    prompt = glue$glue(prompts[[2]]),
     info = txt_c[[2]]  # Second string for recommendations
   )
 
@@ -259,19 +254,17 @@ text_summarizer_combined <- function(scraper_result, manual_result, org) {
 text_summarizer <- function(txt, org) {
   prompts <- get_prompts$get_prompts(
     indicator_id = "ipc_food_insecurity",
-    prompts = c(paste0(org, c("_sit_rep", "_recs")), "system")
+    prompts = paste0(org, c("_sit_rep", "_recs"))
   )
 
   # feed these to the AI to get a summarization
-  sit_rep <- python_setup$get_summary_r(
-    system_prompt = prompts$system,
-    user_prompt = glue$glue(prompts[[1]]),
+  sit_rep <- ai_summarizer$ai_summarizer(
+    prompt = glue$glue(prompts[[1]]),
     info = txt[1]
   )
 
-  recs <- python_setup$get_summary_r(
-    system_prompt = prompts$system,
-    user_prompt = glue$glue(prompts[[2]]),
+  recs <- ai_summarizer$ai_summarizer(
+    prompt = glue$glue(prompts[[2]]),
     info = txt[2]
   )
 
