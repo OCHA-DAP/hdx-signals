@@ -14,4 +14,9 @@ test_that("get_prompts works correctly", {
     n = 2,
     con = file.path("src", "indicators", "abc", "prompts", "long.txt")
   )
+  expect_args(
+    mock_object = mock_readLines,
+    n = 3,
+    con = file.path("src", "indicators", "abc", "prompts", "system.txt")
+  )
 })

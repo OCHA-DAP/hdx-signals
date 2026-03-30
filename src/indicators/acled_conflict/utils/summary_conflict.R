@@ -79,7 +79,7 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
             location = location,
             info = summary_long
           ),
-            .f = python_setup$get_summary_r
+          .f = python_setup$get_summary_r
           )
         ),
       summary_source = "ACLED reporting"
