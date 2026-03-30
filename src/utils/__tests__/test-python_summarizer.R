@@ -11,8 +11,10 @@ test_that("get_summary_r returns mocked value", {
 
   mock_py_get_summary <- mock("Result from Python")
 
-  fake_py <- list(
-    get_summary = function(...) stop("Python error")
+  impl$reticulate <- list(
+    py = list(
+      get_summary = mock_py_get_summary
+    )
   )
 
   result <- fn(
