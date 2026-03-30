@@ -2,6 +2,8 @@ box::use(
   src/utils/python_setup,
   reticulate
 )
+impl <- attr(python_setup, "namespace")
+
 test_that("get_summary_r propagates python errors", {
 
   fn <- impl$get_summary_r
