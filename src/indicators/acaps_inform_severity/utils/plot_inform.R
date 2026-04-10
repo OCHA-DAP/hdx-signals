@@ -46,6 +46,8 @@ plot <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
 #'
 #' @returns Plot of cholera for that wrangled data
 inform_ts <- function(df_wrangled, df_raw, title, date) {
+  max_value_inform <- 10
+  min_value_high_severity <- 8
   caption <- caption$caption(
     indicator_id = "acaps_inform_severity",
     iso3 = unique(df_wrangled$iso3)
@@ -67,7 +69,7 @@ inform_ts <- function(df_wrangled, df_raw, title, date) {
   # Create the plot
   gg$ggplot(df_plot, gg$aes(x = date)) +
     # Background shading for High Severity range
-    gg$geom_ribbon(gg$aes(ymin = 4, ymax = 5), fill = "#FDEFEF", alpha = 0.5) +
+    gg$geom_ribbon(gg$aes(ymin = min_value_high_severity, ymax = max_value_inform), fill = "#FDEFEF", alpha = 0.5) +
 
     # Inform Severity Index line
     gg$geom_line(gg$aes(y = inform_severity_index), color = "#5D3779", linewidth = 1.5) +
@@ -96,7 +98,7 @@ inform_ts <- function(df_wrangled, df_raw, title, date) {
     gg$scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
 
     # Set y-axis limits dynamically
-    gg$coord_cartesian(ylim = c(y_min, 5)) +
+    gg$coord_cartesian(ylim = c(y_min, max_value_inform)) +
     gg$scale_y_continuous(expand = c(0, 0)) +
 
     # Custom theme
