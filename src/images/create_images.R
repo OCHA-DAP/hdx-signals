@@ -92,6 +92,12 @@ create_image <- function(
     date = date,
     df = df_wrangled
   )
+
+  # only in this case print warnings instead of turning them into errors,
+  # since some image functions can return warnings that don't affect the output
+  # of the image and we don't want to stop the whole process for those error
+  options(warn = 2)
+
   p <- image_fn(df_wrangled, df_raw, title, date)
   # allow `image_fn` to return NA if some maps can fail to generate without error
   if (is.null(p)) {
