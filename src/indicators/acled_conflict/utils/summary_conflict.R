@@ -1,7 +1,8 @@
 box::use(
   dplyr,
   lubridate,
-  purrr
+  purrr,
+  stringi
 )
 
 box::use(
@@ -62,6 +63,9 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
     dplyr$mutate(
       # Combine event_info with manual_info if present
       event_info = paste(event_info, manual_info, sep = " "),
+      # ensure valid UTF-8 and truncate to avoid API token limit errors
+      event_info = stringi$stri_encode(event_info, from = "", to = "UTF-8"),
+      event_info = substr(event_info, 1, 50000),
       summary_long = purrr$pmap_chr(
         .l = list(
           system_prompt = prompts$system,
