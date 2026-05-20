@@ -145,7 +145,7 @@ food_insecurity_ts <- function(df_wrangled, df_raw, title, date) {
   }
 
   # some analyses don't have projections, so don't plot line or points in this case
-  if  ("projected" %in% df_projected$type){
+  if  ("projected" %in% df_projected$type) {
     p <- p +
       gg$geom_line(
         data = df_projected,

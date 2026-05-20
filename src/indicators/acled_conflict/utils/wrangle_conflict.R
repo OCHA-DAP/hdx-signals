@@ -30,7 +30,7 @@ wrangle <- function(df_raw) {
 
   df_raw |>
     dplyr$filter(
-      iso<=999
+      iso <= 999
     ) |>
     dplyr$mutate(
       iso3 = location_codes$ison_to_iso3(as.numeric(iso)),
