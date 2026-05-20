@@ -29,6 +29,9 @@ wrangle <- function(df_raw) {
   df_info <- cs$read_az_file("input/acled_info.parquet")
 
   df_raw |>
+    dplyr$filter(
+      iso<=999
+    ) |>
     dplyr$mutate(
       iso3 = location_codes$ison_to_iso3(as.numeric(iso)),
       fatalities = as.numeric(fatalities)
