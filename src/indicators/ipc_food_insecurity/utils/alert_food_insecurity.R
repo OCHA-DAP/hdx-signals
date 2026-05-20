@@ -19,9 +19,15 @@ box::use(
 #'
 #' @export
 alert <- function(df_wrangled) {
-
-  # get general alerts
+  # get general alerts and if current value is missing get the previous one (updates have only new projections)
   df_alerts <- df_wrangled |>
+    dplyr$mutate(
+      `percentage-current` = ifelse(
+        is.na(`coverage-current`),
+        `percentage-current_lag`,
+        `percentage-current`
+      )
+    ) |>
     dplyr$mutate(
       any_p5 = phase == "phase5" & `percentage-current` > 0 |
         phase == "phase5" & `percentage-projected` > 0 |
