@@ -135,7 +135,7 @@ create_image <- function(
 
 
 #' Generate errors upon image creation but still create data frame
-create_image_poss <- purrr$possibly(create_image, data.frame(id = "ERROR", url = "ERROR"))
+create_image_poss <- purrr$possibly(create_image, data.frame(id = "ERROR", url = "ERROR"), quiet = FALSE)
 
 
 #' Filters data frame for image generation
