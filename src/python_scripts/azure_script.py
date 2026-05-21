@@ -1,5 +1,6 @@
-from openai import AzureOpenAI
+from openai import AzureOpenAI, BadRequestError
 import os
+import logging
 
 
 def get_summary(
@@ -26,27 +27,36 @@ def get_summary(
         azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
     )
 
-    response = client.chat.completions.create(
-        model=model,
-        temperature=temperature,
-        messages=[
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": user_prompt + "" + info},
-        ],
-    )
+    try:
+        response = client.chat.completions.create(
+            model=model,
+            temperature=temperature,
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_prompt + "" + info},
+            ],
+        )
+    except BadRequestError as e:
+        logging.warning(f"OpenAI BadRequestError (request skipped): {e}")
+        return ""
+
     txt = response.choices[0].message.content
     if location is not None:
         if location in txt:
             prompt_adjusted=(f"Please rewrite this short text to exclude the name {location}."
                              f" Keep the output the same length or shorter than the original input."
                              f" Here is the text to rewrite --> {txt}")
-            response = client.chat.completions.create(
-                model=model,
-                temperature=temperature,
-                messages=[
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": prompt_adjusted },
-                ],
-            )
+            try:
+                response = client.chat.completions.create(
+                    model=model,
+                    temperature=temperature,
+                    messages=[
+                        {"role": "system", "content": system_prompt},
+                        {"role": "user", "content": prompt_adjusted },
+                    ],
+                )
+            except BadRequestError as e:
+                logging.warning(f"OpenAI BadRequestError on location rewrite (skipped): {e}")
+                return txt
             txt = response.choices[0].message.content
     return txt
