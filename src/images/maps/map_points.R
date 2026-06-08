@@ -43,7 +43,6 @@ map_points <- function(
   } else {
     use_map_settings <- FALSE
   }
-
   num_unique_vals <- length(unique(sf_points[[val_col]]))
   sf_list <- sf_adm0$sf_adm0(
     iso3 = iso3,
@@ -91,5 +90,13 @@ map_points <- function(
       subtitle = subtitle,
       caption = caption
     ) +
-    map_theme$map_theme(iso3 = iso3, use_map_settings = use_map_settings)
+    map_theme$map_theme(
+      iso3 = iso3,
+      use_map_settings = use_map_settings
+    ) +
+    gg$theme(
+      panel.border = gg$element_blank(),
+      panel.background = gg$element_blank(),
+      #plot.margin = gg$margin(t = 5, r = 30, b = 5, l = 5)
+    )
 }

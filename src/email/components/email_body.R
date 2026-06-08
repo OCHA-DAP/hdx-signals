@@ -74,6 +74,9 @@ create_body <- function(
     ),
     text_block$add_text(
       text = glue$glue(
+        "Signals represent significant changes in data shared by organizations on the Humanitarian ",
+        "Data Exchange platform. The United Nations does not endorse the accuracy or reliability ",
+        "of information represented in Signals. <br>",
         "Read more about Signals on HDX's <a href='https://data.humdata.org/signals'>",
         "website</a> and find all source code on ",
         "<a href='https://github.com/OCHA-DAP/hdx-signals'>GitHub</a>. Provide ",

@@ -113,8 +113,9 @@ food_insecurity_map <- function(df_wrangled, df_raw, title, date) {
 
   # if points available, separate those out
   geom_type <- sf$st_geometry_type(sf_ipc)
-  sf_points <- dplyr$filter(sf_ipc, geom_type == "POINT")
-  sf_areas <- dplyr$filter(sf_ipc, geom_type != "POINT")
+  sf_points <- dplyr$filter(sf_ipc, geom_type %in% c("POINT", "MULTIPOINT"))
+  sf_points <- sf::st_cast(sf_points, "POINT", warn = TRUE)
+  sf_areas <- dplyr$filter(sf_ipc, geom_type %in% c("POLYGON", "MULTIPOLYGON"))
 
   sf_list <- sf_adm0$sf_adm0(iso3 = iso3)
 
@@ -147,7 +148,6 @@ food_insecurity_map <- function(df_wrangled, df_raw, title, date) {
         }
       )
   }
-
   # only map points if there are any, avoids warnings for missing scales
   if (nrow(sf_points) > 0) {
     p <- p +

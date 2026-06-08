@@ -11,7 +11,7 @@ box::use(
 # the highest in the last 3 years. The INFORM index should be at least 3 to alert
 #' @export
 alert <- function(df_wrangled) {
-  df_wrangled |>
+  df_alert <- df_wrangled |>
     dplyr$filter(
       country_level == "Yes"
     ) |>
@@ -28,9 +28,10 @@ alert <- function(df_wrangled) {
         higher_3yr ~ "3 year",
         higher_1yr ~ "1 year"
       ),
+      extreme_case = FALSE
     ) |>
     dplyr$filter(
-      inform_severity_index >= 3
+      inform_severity_index >= 6
     ) |>
     dplyr$filter(
       higher_1yr
@@ -46,6 +47,7 @@ alert <- function(df_wrangled) {
         is.na(higher_3yr) ~ 1,
         higher_3yr ~ 2,
         .default = 1
-      ))
+      )),
+      extreme_case
     )
 }

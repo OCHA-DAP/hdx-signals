@@ -61,7 +61,7 @@ filter_alerts <- function(df_alerts, indicator_id) {
 #' Filter alerts for ongoing monitoring
 #'
 #' Used to filter alerts to find new ones, when a campaigns file already exists.
-#' Finds alerts in the past 60 days that have not seen previous alerts in the
+#' Finds alerts in the past 90 days that have not seen previous alerts in the
 #' past 180 days.
 #'
 #' Comparisons are done against the existing campaigns data because for some
@@ -76,15 +76,14 @@ filter_alerts_ongoing <- function(df_alerts, indicator_id) {
       indicator_id == !!indicator_id,
       Sys.Date() - campaign_date <= 180
     )
-
   # first we get the highest priority and latest alerts from the new data frame
-  # that are found in the past 2 months
+  # that are found in the past 3 months
   df_new_alerts <- df_alerts |>
     dplyr$group_by(
       iso3
     ) |>
     dplyr$filter(
-      Sys.Date() - date <= 60
+      Sys.Date() - date <= 90
     ) |>
     dplyr$filter(
       alert_level == "High concern" | all(alert_level == "Medium concern")
@@ -98,13 +97,30 @@ filter_alerts_ongoing <- function(df_alerts, indicator_id) {
       location
     )
 
-  # drop new high alerts only if another high alert in the past 6 months
-  df_new_alerts_high <- df_new_alerts |>
+  # EXCEPT when extreme_case == TRUE (these are always kept)
+  df_new_alerts_high_e <- df_new_alerts |>
     dplyr$filter(
-      alert_level == "High concern"
+      alert_level == "High concern",
+      extreme_case == TRUE,
+    )
+
+  # drop new high alerts only if another high alert in the past 6 months
+  df_new_alerts_high_n <- df_new_alerts |>
+    dplyr$filter(
+      alert_level == "High concern",
+      extreme_case != TRUE | is.na(extreme_case)
     ) |>
     dplyr$anti_join(
       dplyr$filter(df_signals, alert_level == "High concern"),
+      by = "iso3"
+    )
+
+  df_new_alerts_high <- dplyr$bind_rows(
+    df_new_alerts_high_e,
+    df_new_alerts_high_n
+  ) |>
+    dplyr$anti_join(
+      df_signals,
       by = "iso3"
     )
 

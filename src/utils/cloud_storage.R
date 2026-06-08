@@ -166,6 +166,7 @@ az_file_detect_cached <- memoise$memoise(az_file_detect)
 #'     container in `dev`.
 #'
 #' @returns Correct blob to read and write from
+#' @export
 get_container <- function(container = c("prod", "dev", "wfp")) {
   container <- rlang$arg_match(container)
   switch(

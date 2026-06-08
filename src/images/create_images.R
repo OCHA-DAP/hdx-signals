@@ -55,7 +55,7 @@ create_images <- function(
         df_raw = df_raw,
         image_fn = image_fn,
         width = width,
-        heigh = height,
+        height = height,
         settings = settings,
         crop = crop
       )
@@ -92,6 +92,12 @@ create_image <- function(
     date = date,
     df = df_wrangled
   )
+
+  # only in this case print warnings instead of turning them into errors,
+  # since some image functions can return warnings that don't affect the output
+  # of the image and we don't want to stop the whole process for those error
+  options(warn = 1)
+
   p <- image_fn(df_wrangled, df_raw, title, date)
   # allow `image_fn` to return NA if some maps can fail to generate without error
   if (is.null(p)) {
@@ -133,8 +139,10 @@ create_image <- function(
   }
 }
 
+
 #' Generate errors upon image creation but still create data frame
-create_image_poss <- purrr$possibly(create_image, data.frame(id = "ERROR", url = "ERROR"))
+create_image_poss <- purrr$possibly(create_image, data.frame(id = "ERROR", url = "ERROR"), quiet = FALSE)
+
 
 #' Filters data frame for image generation
 #'

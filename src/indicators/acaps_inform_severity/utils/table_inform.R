@@ -49,13 +49,11 @@ inform_table <- function(df_wrangled, df_raw, title, date) {
   wrap_text <- function(x, width = 15) {
     sapply(x, function(y) paste(strwrap(y, width = width), collapse = "\n"))
   }
-
   # Select and process columns
   df_table <- df_wrangled[!duplicated(df_wrangled$crisis_id), ]
   df_table <- df_table[df_table$date == max(df_table$date), c("crisis_name", "drivers")]
   df_table <- as.data.frame(lapply(df_table, wrap_text, width = 40))  # Wrap text to fit cell width
   colnames(df_table) <- c("Crisis name", "Drivers")
-
   # Generate the table
   df_table |>
     gt$gt() |>

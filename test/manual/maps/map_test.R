@@ -58,7 +58,7 @@ map_test <- function(
       bg = "white"
     )
   }
-  return(p)
+  p
 }
 
 #' Plot randomly generated points over basemap created from in map_points.R

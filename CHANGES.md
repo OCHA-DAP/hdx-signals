@@ -1,6 +1,146 @@
 # Changes
+## 0.5.0.0 (3 March 2026)
+- Switch to Azure for the summarization module
+- Switched to gpt-5
+- Modified prompt for IDMC
+- Adjusted tests
 
-## 0.2.1.0 (19 March 2024)
+## 0.4.0.0 (6 February 2026)
+
+### Improved Map plotting, updated requirements, improved track summary input
+
+- Improved map plotting functions for better aesthetics (no box).
+- Updated requirements for the IDMC package
+- Improved tracking of manual summary to run locally on Windows machines.
+
+## 0.3.0.0 (9 January 2026)
+
+### Modified IPC Column names
+
+- Modified IPC data column name to refelct API changes
+
+## 0.2.21.0 (22 December 2025)
+
+### Ensure UTF 8 encoding for summary (displacement)
+
+- Ensure UTF 8 encoding when processing info in summary_displacement.
+
+## 0.2.20.0 (24 November 2025)
+
+### Track AI summary inputs
+
+- Track AI summarizer inputs, manual info, and outputs for debugging and checks.
+
+## 0.2.19.0 (12 November 2025)
+
+### Add extreme_case column in alert dataframes for all indicators.
+
+- Bypass 180-day filter if `extreme_case` flag is `TRUE` in alert dataframes for all indicators.
+
+## 0.2.18.0 (6 November 2025)
+
+### Add extreme_case flag for Phase 5 alert exceptions in IPC Food Insecurity
+
+- Bypass 180-day filter for IPC Food Insecurity Phase 5 increases using `extreme_case` flag.
+
+## 0.2.17.0 (5 November 2025)
+
+### Add manual context update script
+
+- Added script to incrementally update manual context information by appending new rows to `input/manual_context_info.csv`.
+
+## 0.2.16.0 (3 November 2025)
+
+### Fix upload blob on Azure container for PDF reports in run_overview_analysis
+
+- The container parameter now correctly uses a container object instead of a string in upload_blob.
+
+## 0.2.15.0 (30 October 2025)
+
+### Bug Fix
+
+- Ensure manual_info is preserved in summary for multiple indicators.
+
+## 0.2.14.0 (30 October 2025)
+
+### Improve get manual contextual information
+
+- Improve get manual information.
+
+## 0.2.13.0 (30 October 2025)
+
+### Fix import error 
+
+- Add module import in summary_displacement.
+
+## 0.2.12.0 (16 October 2025)
+
+### Add manual contextual information 
+
+- Add manual contextual information injection system 
+
+## 0.2.11.0 (19 September 2025)
+
+### Signals overview analysis
+
+- Generate reports on generated signals in general and by country in the last X years. 
+
+## 0.2.10.0 (5 September 2025)
+
+### Fix IPC scraping
+
+- Add user agent to scrape IPC information
+
+## 0.2.9.0 (1 September 2025)
+
+### Modify campaign template
+
+- Modify campaign template adding additional disclaimer
+
+## 0.2.8.0 (31 August 2025)
+
+### Modify ACAPS data update frequency
+
+- Modify ACAPS data update frequency to weekly from monthly
+
+## 0.2.7.0 (31 July 2025)
+
+### Add Run folder
+
+- Create Run folder for facilitating the running of the Signals code in GitHub Actions
+
+## 0.2.6.0 (30 July 2025)
+
+### ACLED API update
+
+- Update ACLED data fetching using OAuth
+
+## 0.2.5.0 (25 July 2025)
+
+### Added workflow
+
+- Add workflow to triage Signals
+
+
+## 0.2.4.0 (18 June 2025)
+
+### Template modification
+
+- remove Centre address from campaign template
+
+## 0.2.3.0 (22 May 2025)
+
+### Map improvement
+
+- Add XAP to IND in `update_adm0_sf`
+
+## 0.2.2.0 (24 April 2025)
+
+### Bug fix
+
+- Add missing library to be imported in `update_adm0_sf`
+
+## 0.2.1.0 (19 March 2025)
 
 ### Dataset
 
@@ -58,7 +198,6 @@ passing indicators to `generate_signals()`, to mirror OOP class/method approache
 
 - Small fix to `triage_signals()` to check for environment variable presence prior
 to sending emails
->>>>>>> 5973d675e2be9aa37935a347bb7e5b7163373a99
 
 ## 0.1.14.3 (29 October 2024)
 

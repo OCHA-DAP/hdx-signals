@@ -6,9 +6,11 @@ box::use(
   purrr
 )
 box::use(
-  src/utils/ai_summarizer,
   src/utils/get_prompts,
-  src/utils/get_env
+  src/utils/get_env,
+  src/utils/get_manual_info,
+  src/utils/python_setup,
+  src/signals/track_summary_input
 )
 
 #' Add campaign info to ACAPS inform data
@@ -22,7 +24,9 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
   #Call api for each alert to get Justification
   df_wrangled$date <- as.Date(df_wrangled$date)
   df_alerts$date <- as.Date(df_alerts$date)
-  df_wrangled_national <- df_wrangled |> dplyr$filter(country_level=="Yes") |> dplyr$rename(value=inform_severity_index)
+  df_wrangled_national <- df_wrangled |>
+    dplyr$filter(country_level == "Yes") |>
+    dplyr$rename(value = inform_severity_index)
   df_wrangled_alerting <- dplyr$right_join(df_wrangled_national, df_alerts, by = c("iso3", "date", "value"))
 
   df_justification <- dplyr$tibble(
@@ -54,18 +58,27 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
     overview = character(),
     date_request = as.Date(character())
   )
+
+  df_manual <- dplyr$tibble(
+    iso3 = character(),
+    date = as.Date(character()),
+    manual_info = character()
+  )
+
   for (ii in seq_len(nrow(df_wrangled_alerting))){
     date_param <- df_wrangled_alerting[[ii, "date"]]
     iso3_param <- df_wrangled_alerting[[ii, "iso3"]]
-    crisis_id_param <- df_wrangled_alerting[[ii, "crisis_id"]]
+    country_param <- df_wrangled_alerting[[ii, "country"]]
 
-    df_justification_single <- get_inform_justification(iso3_param, crisis_id_param, date_param)
+    df_justification_single <- get_inform_justification(iso3_param, date_param, country_param)
     df_country_single <- get_country_info(iso3_param, date_param)
-    df_daily_monitoring_single <- get_daily_monitoring(date_param, iso3_param, crisis_id_param)
+    df_daily_monitoring_single <- get_daily_monitoring(date_param, iso3_param)
+    df_manual_single <- get_manual_info$get_manual_info(iso3_param, "acaps_inform_severity", date_param)
 
     df_justification <- dplyr$bind_rows(df_justification, df_justification_single)
     df_country <- dplyr$bind_rows(df_country, df_country_single)
     df_daily_monitoring <- dplyr$bind_rows(df_daily_monitoring, df_daily_monitoring_single)
+    df_manual <- dplyr$bind_rows(df_manual, df_manual_single)
   }
 
   df_justification <- df_justification |>
@@ -76,7 +89,7 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
     ) |>
     dplyr$filter(internal_date >= first_day_of_max_month) |>
     dplyr$select(-max_date, -first_day_of_max_month)
-  id_cols <- c("iso3", "country", "crisis_id", "crisis_name", "date")
+  id_cols <- c("iso3", "date", "crisis_id", "country")
 
   df_justification <- df_justification |>
     dplyr$mutate(text = paste(indicator, figure, justification, sep = ": ")) |>
@@ -86,77 +99,121 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
       paste,
       c(dplyr$across(-dplyr$all_of(id_cols)), sep = " ")
     )) |>
-    dplyr$select(c("iso3", "date", "crisis_id", "text"))
+    dplyr$group_by(iso3, date) |>
+    dplyr$summarize(text = paste(text, collapse = " "), .groups = "drop") |>
+    dplyr$select(c("iso3", "date", "text"))
 
   df_daily_monitoring <- df_daily_monitoring |>
-    dplyr$group_by(iso3)|>
+    dplyr$group_by(iso3) |>
     dplyr$filter(internal_date == max(internal_date))
   df_daily_monitoring <- df_daily_monitoring[!duplicated(df_daily_monitoring), ]
 
-  df_country <- df_country[!duplicated(df_country), ]|>
-    dplyr$mutate(overview= paste("date request:", date_request, ".", overview, sep = " "))|>
-    dplyr$rename(crisis_id=crises, date=date_request)
+  df_country <- df_country[!duplicated(df_country), ] |>
+    dplyr$mutate(overview = paste("date request:", date_request, ".", overview, sep = " ")) |>
+    dplyr$rename(crisis_id = crises, date = date_request)
+
+  df_country <- df_country |>
+    dplyr$distinct(iso3, date, overview, .keep_all = TRUE) |>
+    dplyr$group_by(iso3, date) |>
+    dplyr$summarize(overview = paste(overview, collapse = " "), .groups = "drop") |>
+    dplyr$select(c("iso3", "date", "overview"))
+
   df_text <- df_alerts |>
-    dplyr$left_join(df_justification, by = c("iso3", "date"))
+    dplyr$left_join(df_justification, by = c("iso3", "date")) |>
+    dplyr$select(c("iso3", "date", "text", "location"))
 
   df_text <- df_text |>
     dplyr$left_join(df_daily_monitoring, by = c("iso3", "date")) |>
-    dplyr$select(c("iso3", "date", "text", "latest_developments", "crisis_id", "location"))
+    dplyr$select(c("iso3", "date", "text", "latest_developments", "location"))
 
   df_text <- df_text |>
-    dplyr$left_join(df_country, by = c("iso3", "crisis_id", "date")) |>
+    dplyr$left_join(df_country, by = c("iso3", "date")) |>
     dplyr$select(c("iso3", "date", "text", "latest_developments", "overview", "location"))
 
   df_text <- df_text |>
-    dplyr$mutate(
-      text = dplyr$if_else(
-        text == "" | is.na(text),  # Check if `text` is empty or NA
-        dplyr$coalesce(latest_developments, overview),
-        text  # Keep original `text` if not empty
-      )
-    )
+    dplyr$left_join(df_manual, by = c("iso3", "date")) |>
+    dplyr$select(c("iso3",
+                   "date",
+                   "text",
+                   "latest_developments",
+                   "overview",
+                   "manual_info",
+                   "location"))
 
+  df_text <- df_text |>
+    dplyr$mutate(
+      # Fallback
+      text = dplyr$if_else(
+        text == "" | is.na(text),
+        dplyr$coalesce(latest_developments, overview),
+        text
+      ),
+      # Always add manual_info if available
+      text = paste(text, manual_info, sep = " ")
+    )
   # now join together and get summarizations
   df_summary <- df_text |>
     dplyr$group_by(iso3, location, date) |>
-    dplyr$filter(
-      !is.na(text)
-    ) |>
+    dplyr$filter(!is.na(text)) |>
     dplyr$mutate(
-      summary_long = purrr$map2_chr(
-        .x = prompts$long,
-        .y = text,
-        .f = ai_summarizer$ai_summarizer
+      summary_long = purrr$pmap_chr(
+        .l = list(
+          system_prompt = prompts$system,
+          user_prompt = prompts$long,
+          info = text
+        ),
+        .f = python_setup$get_summary_r
       ),
       summary_short = ifelse(
         is.na(summary_long) | summary_long == "",
         plot_title,
         purrr$pmap_chr(
           .l = list(
-            prompt = prompts$short,
-            info = summary_long,
-            location = location
+            system_prompt = prompts$system,
+            user_prompt = prompts$short,
+            location = location,
+            info = summary_long
           ),
-          .f = ai_summarizer$ai_summarizer_without_location
+          .f = python_setup$get_summary_r
         )
       ),
       summary_source = "ACAPS reporting"
-    )
+    ) |>
+    dplyr$ungroup() |>
+    dplyr$select(iso3, location, date, text, manual_info, summary_long, summary_short, summary_source)
   # ensuring the output matches the original input
-  df_alerts |>
+  result <- df_alerts |>
     dplyr$left_join(
       df_summary,
       by = c("iso3", "location", "date")
-    ) |>
+    )
+
+  # tracking summarizer input
+  tracking_data <- result |>
+    dplyr$transmute(
+      location_iso3 = iso3,
+      date_generated = date,
+      indicator_id = "acaps_inform_severity",
+      info = text,
+      manual_info = manual_info,
+      use_manual_info = !is.na(manual_info),
+      summary_long = summary_long,
+      summary_short = summary_short,
+      summary_source = summary_source
+    )
+
+  track_summary_input$append_tracking_data(tracking_data)
+
+  result |>
     dplyr$select(
       summary_long,
       summary_short,
       summary_source
     )
-
 }
 
-get_inform_justification <- function(iso3_param, crisis_id_param, date_param){
+
+get_inform_justification <- function(iso3_param, date_param, country_param) {
   indicators <- c("People exposed",
                   "People affected",
                   "People displaced",
@@ -164,12 +221,12 @@ get_inform_justification <- function(iso3_param, crisis_id_param, date_param){
                   "Crisis affected groups")
 
   last_day_month <- as.character(format(lubridate$ceiling_date(date_param, "month") - lubridate$days(1), "%Y-%m-%d"))
-  df_event_info <- httr2$request("https://api.acaps.org/api/v1/inform-severity-index/log") |>
+  httr2$request("https://api.acaps.org/api/v1/inform-severity-index/log") |>
     httr2$req_headers(
       Authorization = paste("Token", get_env$get_env("ACAPS_TOKEN"))
     ) |>
     httr2$req_url_query(
-      crisis_id = as.character(crisis_id_param),
+      country = as.character(country_param),
       iso3 = as.character(iso3_param),
       `_internal_filter_date_lte` = last_day_month,
       `_internal_filter_date_gte` = as.character(format(date_param - 365, "%Y-%m-%d")),
@@ -204,8 +261,8 @@ get_inform_justification <- function(iso3_param, crisis_id_param, date_param){
     purrr$list_rbind()
 }
 
-get_country_info <- function(iso3_param, date_param){
-  df_country_info <- httr2$request("https://api.acaps.org/api/v1/countries/") |>
+get_country_info <- function(iso3_param, date_param) {
+  httr2$request("https://api.acaps.org/api/v1/countries/") |>
     httr2$req_headers(
       Authorization = paste("Token", get_env$get_env("ACAPS_TOKEN"))
     ) |>
@@ -237,7 +294,8 @@ get_country_info <- function(iso3_param, date_param){
     purrr$list_rbind()
 }
 
-get_daily_monitoring<- function(date_param, iso3_param, crisis_id_param){
+
+get_daily_monitoring <- function(date_param, iso3_param) {
   last_day_month <- as.character(format(lubridate$ceiling_date(date_param, "month") - lubridate$days(1), "%Y-%m-%d"))
   df_daily_monitoring <- httr2$request("https://api.acaps.org/api/v1/daily-monitoring/") |>
     httr2$req_headers(
