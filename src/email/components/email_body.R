@@ -59,6 +59,8 @@ create_body <- function(
           map_url = df_campaign_content$map_url,
           plot2_title = df_campaign_content$plot2_title,
           plot2_url = df_campaign_content$plot2_url,
+          table_title = df_campaign_content$table_title,
+          table_url = df_campaign_content$table_url,
           other_images_urls = df_campaign_content$other_images_urls,
           other_images_captions = df_campaign_content$other_images_captions,
           summary_long = df_campaign_content$summary_long,
@@ -72,6 +74,9 @@ create_body <- function(
     ),
     text_block$add_text(
       text = glue$glue(
+        "Signals represent significant changes in data shared by organizations on the Humanitarian ",
+        "Data Exchange platform. The United Nations does not endorse the accuracy or reliability ",
+        "of information represented in Signals. <br>",
         "Read more about Signals on HDX's <a href='https://data.humdata.org/signals'>",
         "website</a> and find all source code on ",
         "<a href='https://github.com/OCHA-DAP/hdx-signals'>GitHub</a>. Provide ",

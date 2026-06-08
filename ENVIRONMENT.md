@@ -37,8 +37,8 @@ transferred automatically from Azure into [HDX](https://data.humdata.org).
 
 To read to and from the Azure storage containers, you need the following two permissions:
 
-- `DSCI_AZ_SAS_PROD`: SAS token for access to the production stage container.
-- `DSCI_AZ_SAS_DEV`: SAS token for access to the development stage container. Not
+- `DSCI_AZ_BLOB_PROD_SAS_WRITE`: SAS token for access to the production stage container.
+- `DSCI_AZ_BLOB_DEV_SAS_WRITE`: SAS token for access to the development stage container. Not
 currently used, but historically some data was stored on `dev`.
 
 ### HDX
@@ -72,6 +72,7 @@ This requires:
 - `HS_EMAIL`: HDX Signals email used as the sender in any Mailchimp campaigns.
 - `HS_SURVEY_LINK`: Link to the Mailchimp feedback survey contained at the bottom of
 all emails.
+- `HS_ADMIN_NAME`: Name to be recorded for user who triaged and sent email. It's required to complete the triaging process
 
 ## OpenAI
 
@@ -88,7 +89,7 @@ primarily to provide access to APIs.
 
 ### `acled_conflict`
 
-- `ACLED_ACCESS_KEY`: ACLED access key provisioned upon request to ACLED.
+- `ACLED_PASSWORD`: ACLED password to access ACLED data.
 - `ACLED_EMAIL_ADDRESS`: Email address used to register the key.
 
 ### `idmc_displacement_{shock}`

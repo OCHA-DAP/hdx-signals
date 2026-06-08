@@ -34,7 +34,7 @@ on:
             - "WARNING"
             - "ERROR"
     schedule:
-      - cron: "0 8 * * 1-5"
+      - cron: "0 7 * * 1-5"
 
 jobs:
     run:
@@ -42,9 +42,8 @@ jobs:
         env:
           HS_EMAIL: ${{ secrets.HS_EMAIL}}
           HS_SURVEY_LINK: ${{ secrets.HS_SURVEY_LINK}}
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          DSCI_AZ_SAS_DEV: ${{ secrets.DSCI_AZ_SAS_DEV }}
-          DSCI_AZ_SAS_PROD: ${{ secrets.DSCI_AZ_SAS_PROD }}
+          DSCI_AZ_BLOB_DEV_SAS_WRITE: ${{ secrets.DSCI_AZ_BLOB_DEV_SAS_WRITE }}
+          DSCI_AZ_BLOB_PROD_SAS_WRITE: ${{ secrets.DSCI_AZ_BLOB_PROD_SAS_WRITE }}
           MAILCHIMP_API_KEY: ${{ secrets.MAILCHIMP_API_KEY }}
           HS_LOCAL: ${{ inputs.HS_LOCAL || 'FALSE' }}
           HS_FIRST_RUN: ${{ inputs.HS_FIRST_RUN || 'FALSE' }}
@@ -58,5 +57,11 @@ jobs:
               uses: ocha-dap/hdx-signals-actions@v3
 
             - name: Run R monitoring script
-              shell: bash
-              run: Rscript ./src/indicators/wfp_market_monitor/__init__.R
+              uses: nick-fields/retry@v3
+              with:
+                max_attempts: 2
+                timeout_minutes: 20
+                retry_on: error
+                retry_wait_seconds: 120
+                shell: bash
+                command: Rscript ./src/indicators/wfp_market_monitor/__init__.R

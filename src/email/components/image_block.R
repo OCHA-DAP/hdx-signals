@@ -15,7 +15,7 @@ box::use(src/email/components/missing[missing_text])
 #' @returns Full image block HTML
 #'
 #' @export
-add_image <- function(src, alt = "", caption = "") {
+add_image <- function(src, alt = "", caption = "", img_width = "660px") {
   if (missing_text(src)) {
     ""
   } else {
@@ -23,11 +23,10 @@ add_image <- function(src, alt = "", caption = "") {
       # nolint start
       '
 <tr>
-    <td style="padding-top:10px;padding-bottom:10px;padding-right:0;padding-left:0" class="mceBlockContainer" align="full" valign="top">
-        <span class="mceImageBorder" style="border:0;vertical-align:top;margin:0">
+    <td style="padding-top:10px;padding-bottom:10px;text-align:center;" class="mceBlockContainer" valign="top">
+        <span class="mceImageBorder" style="border:0;vertical-align:top;margin:0;">
             <img
-                width="660" height="auto"
-                style="width:660px;height:auto;max-width:1800px !important;display:block"
+                style="width:{img_width};height:auto;max-width:1800px !important;display:block"
                 alt="{alt}"
                 src="{src}"
                 class="mceImage" />

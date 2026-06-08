@@ -36,12 +36,14 @@ generate_campaign_content <- function(
     df_raw,
     ind_module,
     empty = FALSE) {
-  df_alerts |>
+  df_alerts <- df_alerts |>
     generate_images(df_wrangled, df_raw, ind_module, "plot", empty) |>
     generate_images(df_wrangled, df_raw, ind_module, "map", empty) |>
-    generate_images(df_wrangled, df_raw, ind_module, "plot2", empty) |>
-    generate_other_images(df_wrangled, df_raw, ind_module, empty) |>
-    generate_summary(df_wrangled, df_raw, ind_module, empty) |>
+    generate_images(df_wrangled, df_raw, ind_module, "plot2", empty)
+  df_alerts <- df_alerts |> generate_images(df_wrangled, df_raw, ind_module, "table", empty)
+  df_alerts <- df_alerts |> generate_other_images(df_wrangled, df_raw, ind_module, empty)
+  df_alerts <- df_alerts |> generate_summary(df_wrangled, df_raw, ind_module, empty)
+  df_alerts |>
     generate_info(df_wrangled, df_raw, ind_module, empty) |>
     validate_campaign_content()
 }
@@ -68,7 +70,7 @@ generate_images <- function(
     df_wrangled,
     df_raw,
     ind_module,
-    image_name = c("plot", "map", "plot2"),
+    image_name = c("plot", "map", "plot2", "table"),
     empty = FALSE) {
   image_name <- rlang$arg_match(image_name)
   generate_section(
@@ -219,13 +221,15 @@ generate_section <- function(
   }
 
   # if we error out, ensure previously generated content is deleted from Mailchimp
-
   if (any(section == "ERROR", na.rm = TRUE)) {
     delete_campaign_content$delete_campaign_content(df_alerts)
     delete_campaign_content$delete_campaign_content(section)
+    row_numbers <- which(apply(section, 1, function(row) any(row == "ERROR")))
     stop(
       "Errors generated in ",
       fn_name,
+      " for",
+      df_alerts[row_numbers, c("iso3", "date")],
       ". All generated campaign content deleted. Please fix and start again.",
       call. = FALSE
     )
@@ -236,7 +240,6 @@ generate_section <- function(
     fn_name,
     "()."
   )
-
   dplyr$bind_cols(df_alerts, section)
 }
 

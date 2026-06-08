@@ -84,6 +84,16 @@ df <- dplyr$bind_rows(
     static_segment = 25117,
     banner_url = "https://mcusercontent.com/ea3f905d50ea939780139789d/images/86ba2e73-ddc6-5555-b903-6de9cfb82ec1.png", #nolint
     data_source = "Armed conflict - ACLED"
+  ),
+  dplyr$tibble( # ACAPS inform severity
+    indicator_id = "acaps_inform_severity",
+    mc_interest = "INFORM Severity - ACAPS",
+    mc_tag = NA_character_,
+    mc_folder = "HDX Signals - INFORM Severity",
+    indicator_subject = "INFORM Severity",
+    static_segment = 7392229,
+    banner_url = "https://mcusercontent.com/ea3f905d50ea939780139789d/images/b21825e8-0197-dfdf-b99a-ec498308f7b8.png", #nolint
+    data_source = "INFORM Severity - ACAPS"
   )
 )
 

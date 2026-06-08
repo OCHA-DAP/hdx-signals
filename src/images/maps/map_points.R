@@ -21,7 +21,7 @@ box::use(
 #' @param action Passed to `sf_adm0::sf_adm0()`
 #' @param subtitle Subtitle for the plot, no title used
 #' @param caption Caption for the plot
-#' @param use_map_settings Whether or not to use map settings in `input/iso3_map_settings.json`
+#' @param settings Whether or not to use map settings in `input/iso3_map_settings.json`
 #'     to position the legend.
 #'
 #' @returns Map plot
@@ -36,8 +36,13 @@ map_points <- function(
     action = c("error", "filter", "nothing"),
     subtitle = gg$waiver(),
     caption = gg$waiver(),
-    use_map_settings = TRUE) {
+    settings = "map") {
 
+  if (settings == "map") {
+    use_map_settings <- TRUE
+  } else {
+    use_map_settings <- FALSE
+  }
   num_unique_vals <- length(unique(sf_points[[val_col]]))
   sf_list <- sf_adm0$sf_adm0(
     iso3 = iso3,
@@ -85,5 +90,13 @@ map_points <- function(
       subtitle = subtitle,
       caption = caption
     ) +
-    map_theme$map_theme(iso3 = iso3, use_map_settings = use_map_settings)
+    map_theme$map_theme(
+      iso3 = iso3,
+      use_map_settings = use_map_settings
+    ) +
+    gg$theme(
+      panel.border = gg$element_blank(),
+      panel.background = gg$element_blank(),
+      #plot.margin = gg$margin(t = 5, r = 30, b = 5, l = 5)
+    )
 }

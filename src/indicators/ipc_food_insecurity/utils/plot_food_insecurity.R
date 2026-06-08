@@ -110,11 +110,12 @@ food_insecurity_ts <- function(df_wrangled, df_raw, title, date) {
       type == "current"
     )
 
-  # plot the projected values in dotted lines
-  df_projected <- df_plot |>
-    dplyr$filter(
-      date == max(date, as.Date("1500-01-01"))
-    )
+  # plot the projected values in dotted lines (to be verified)
+  df_projected <- dplyr$bind_rows(
+    dplyr$filter(df_current, plot_date == max(plot_date, as.Date("1500-01-01"))),
+    dplyr$filter(df_plot, date == max(date, as.Date("1500-01-01")))
+  ) |>
+    dplyr$arrange(plot_date)
 
   # get the phase text for the dataset
   df_phase_labels <- df_projected |>
@@ -144,7 +145,7 @@ food_insecurity_ts <- function(df_wrangled, df_raw, title, date) {
   }
 
   # some analyses don't have projections, so don't plot line or points in this case
-  if (length(unique(df_projected$type)) > 1) {
+  if  ("projected" %in% df_projected$type) {
     p <- p +
       gg$geom_line(
         data = df_projected,
@@ -188,7 +189,9 @@ food_insecurity_ts <- function(df_wrangled, df_raw, title, date) {
       x_axis_ticks = TRUE
     ) +
     gg$theme(
-      legend.position = "none"
+      legend.position = "none",
+      axis.ticks.length.x = gg$unit(5, "pt"),
+      axis.text.x = gg$element_text(margin = gg$margin(t = 5))
     ) +
     gg$scale_color_manual(
       values = c(

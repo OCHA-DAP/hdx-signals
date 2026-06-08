@@ -12,6 +12,7 @@ configure_logger <- function() {
 #'
 #' @export
 monitoring_log_setup <- function(indicator_id) {
+  configure_logger()
   logger$log_info(paste0("Checking ", indicator_id, "..."))
   logger$log_debug(paste0("HS_LOCAL = ", Sys.getenv("HS_LOCAL")))
   logger$log_debug(paste0("HS_DRY_RUN = ", Sys.getenv("HS_DRY_RUN")))

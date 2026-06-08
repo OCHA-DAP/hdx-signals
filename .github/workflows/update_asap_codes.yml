@@ -16,8 +16,8 @@ jobs:
         runs-on: ubuntu-latest
         env:
           HS_LOCAL: ${{ inputs.HS_LOCAL || 'FALSE' }}
-          DSCI_AZ_SAS_DEV: ${{ secrets.DSCI_AZ_SAS_DEV }}
-          DSCI_AZ_SAS_PROD: ${{ secrets.DSCI_AZ_SAS_PROD }}
+          DSCI_AZ_BLOB_DEV_SAS_WRITE: ${{ secrets.DSCI_AZ_BLOB_DEV_SAS_WRITE }}
+          DSCI_AZ_BLOB_PROD_SAS_WRITE: ${{ secrets.DSCI_AZ_BLOB_PROD_SAS_WRITE }}
         steps:
             - name: Checkout repository
               uses: actions/checkout@v3

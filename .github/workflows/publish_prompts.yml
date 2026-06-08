@@ -17,7 +17,8 @@ jobs:
           - name: Checkout repository
             uses: actions/checkout@v4
             with:
-              ref: ${{ github.event.pull_request.head.ref }} # ensures we can commit
+              ref: ${{ github.event.pull_request.head.sha }}
+              fetch-depth: 0 # Ensures the full commit history is available
 
           - name: Check that txt files for prompts have been changed
             uses: tj-actions/changed-files@v44

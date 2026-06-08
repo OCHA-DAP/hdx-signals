@@ -62,9 +62,25 @@ save_image <- function(p, iso3, indicator_id, date, width, height, crop = FALSE,
 #' @export
 save_map <- function(p, iso3, indicator_id, date, crop = FALSE) {
 
+  # manual overrides for countries with extreme aspect ratios
+  # these don't render well with auto-calculated dimensions
+  map_overrides <- list(
+    CHL = list(width = 6, height = 6)
+  )
+
   # get the width and height
   df_ms <- cs$read_az_file_cached("input/iso3_map_settings.json") |>
     dplyr$filter(iso3 == !!iso3)
+
+  # apply override if exists, otherwise use settings from file
+  if (iso3 %in% names(map_overrides)) {
+    width <- map_overrides[[iso3]]$width
+    height <- map_overrides[[iso3]]$height
+  } else {
+    width <- df_ms$width
+    height <- df_ms$height
+  }
+
 
   save_image(
     p = p,
@@ -74,5 +90,46 @@ save_map <- function(p, iso3, indicator_id, date, crop = FALSE) {
     width = df_ms$width,
     height = df_ms$height,
     crop = crop
+  )
+}
+
+#' Save table produced by HDX Signals
+#'
+#' Saves table produced for HDX signals. Takes in an object `p`, gives it a
+#' name based on the location, indicator, and date, then uploads it. The returned
+#' data frame of ID and URL has names based on `image_use`, whether they are the
+#' initial `plot`, the `map`, `plot2` or the `table` image for the campaign.
+#'
+#' @param p table object
+#' @param iso3 ISO3 code
+#' @param indicator_id Indicator ID
+#' @param date Date of the alert
+#' @param width Width of the image (in inches)
+#' @param height Height of the image (in inches)
+#' @param crop Whether or not to run `knitr::plot_crop()` is run on the image
+#'     to crop white space around the image automatically.
+#'
+#' @export
+save_table <- function(p, iso3, indicator_id, date, width, height, crop = FALSE) {
+  name <- paste(tolower(iso3), indicator_id, format(date, "%Y_%m_%b.png"), sep = "_")
+
+  # get the folder name for the indicator ID
+  folder <- cs$read_az_file_cached("input/indicator_mapping.parquet") |>
+    dplyr$filter(
+      indicator_id == !!indicator_id
+    ) |>
+    dplyr$pull(
+      mc_folder
+    )
+
+  # Call the function
+  images$mc_upload_table(
+    table = p,
+    name = name,
+    folder = folder,
+    width = width,
+    height = height,
+    crop = crop,
+    preview = FALSE
   )
 }

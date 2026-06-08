@@ -3,7 +3,9 @@ box::use(
   readr,
   tidyr,
   stringr,
-  rvest
+  rvest,
+  httr,
+  logger
 )
 
 #' Creates food insecurity alerts dataset
@@ -17,8 +19,15 @@ box::use(
 #'
 #' @export
 alert <- function(df_wrangled) {
-  # get general alerts
+  # get general alerts and if current value is missing get the previous one (updates have only new projections)
   df_alerts <- df_wrangled |>
+    dplyr$mutate(
+      `percentage-current` = ifelse(
+        is.na(`coverage-current`),
+        `percentage-current_lag`,
+        `percentage-current`
+      )
+    ) |>
     dplyr$mutate(
       any_p5 = phase == "phase5" & `percentage-current` > 0 |
         phase == "phase5" & `percentage-projected` > 0 |
@@ -43,7 +52,8 @@ alert <- function(df_wrangled) {
       -dplyr$starts_with("plot_date")
     ) |>
     dplyr$mutate(
-      phase_level = readr$parse_number(phase)
+      phase_level = readr$parse_number(phase),
+      extreme_case = phase == "phase5"
     ) |>
     dplyr$group_by(
       iso3, date
@@ -76,7 +86,8 @@ alert <- function(df_wrangled) {
       phase_level = ifelse(phase_level == 5, "5", paste0(phase_level, "+")),
       analysis_id,
       analysis_area = `analysis_area-current`,
-      link
+      link,
+      extreme_case
     )
 
   # now bring in the URLs closest matching
@@ -112,7 +123,16 @@ alert <- function(df_wrangled) {
 #' data.
 ch_scraper <- function() {
   # extract list of publications from the CH landing page
-  ch_list <- rvest$read_html("https://www.ipcinfo.org/cadre-harmonise") |>
+  url <- "https://www.ipcinfo.org/cadre-harmonise"
+
+  user_agent <- Sys.getenv("IPC_USER_AGENT")
+  debug_print <- stringr$str_sub(user_agent, start = 1, end = 2)
+  logger$log_info("ch scraper,Start of user agent code: ", debug_print)
+
+  session <- rvest$session(url, httr$user_agent(Sys.getenv("IPC_USER_AGENT")))
+
+  # Read the page
+  ch_list <- rvest$read_html(session) |>
     rvest$html_elements(".list-details2")
 
   # get dates of publication, only look at first dates to match up publications

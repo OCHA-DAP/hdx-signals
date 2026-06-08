@@ -46,6 +46,8 @@ add_location <- function(
     map_url = "",
     plot2_title = "",
     plot2_url = "",
+    table_title = "",
+    table_url = "",
     other_images_urls = "",
     other_images_captions = "",
     summary_long = "",
@@ -57,6 +59,7 @@ add_location <- function(
     image_block$add_image(src = plot_url, alt = plot_title),
     image_block$add_image(src = map_url, alt = map_title),
     image_block$add_image(src = plot2_url, alt = plot2_title),
+    image_block$add_image(src = table_url, alt = table_title, img_width = "500px"),
     purrr$map2_chr(
       .x = stringr$str_split(other_images_urls, ";"),
       .y = stringr$str_split(other_images_captions, ";"),
