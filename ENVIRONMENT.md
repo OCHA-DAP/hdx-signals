@@ -79,7 +79,7 @@ all emails.
 OpenAI's API is used to generate text summarizations. This requires:
 
 - `OPENAI_API_KEY`: Project API key with access to chat completion models and
-`gpt-4o` specifically. This incurs costs, so there is an organisation key
+`gpt-5` specifically. This incurs costs, so there is an organisation key
 available upon request and approval.
 
 ## Datasets
