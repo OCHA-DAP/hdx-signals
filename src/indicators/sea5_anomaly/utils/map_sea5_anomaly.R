@@ -99,16 +99,13 @@ sea5_anomaly_map <- function(df_wrangled, df_raw, title, date) {
     gg$labs(
       x = "",
       y = "",
-      title = paste0(
-        "Probability of exceeding 5-year return period (",
-        trimester_label,
-        ")"
-      ),
+      title = "Probability of exceeding 5-year return period",
+      subtitle = trimester_label,
       caption = map_caption
     ) +
     map_theme$map_theme(
       iso3 = unique(df_wrangled$iso3),
       use_map_settings = FALSE,
-      margin_location = "title"
+      margin_location = "subtitle"
     )
 }
