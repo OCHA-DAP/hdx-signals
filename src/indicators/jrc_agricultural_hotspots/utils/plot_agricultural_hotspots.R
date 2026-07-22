@@ -77,10 +77,13 @@ hotspots_ts <- function(df_wrangled, df_raw, title, date) {
       max(year, -Inf) - year < 5
     )
 
+  # `.env$date` is required here: `df_plot` already has its own `date` column,
+  # which would otherwise shadow the `date` argument inside the data mask and
+  # match every row instead of just the declared one.
   declared <- dplyr$filter(
     df_plot,
-    year == lubridate$year(date),
-    month == lubridate$month(date, label = TRUE)
+    year == lubridate$year(.env$date),
+    month == lubridate$month(.env$date, label = TRUE)
   )
 
   df_plot |>
