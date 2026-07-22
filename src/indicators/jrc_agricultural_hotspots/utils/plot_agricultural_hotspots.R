@@ -2,7 +2,8 @@ box::use(
   dplyr,
   forcats,
   gg = ggplot2,
-  lubridate
+  lubridate,
+  tidyr
 )
 
 box::use(
@@ -75,6 +76,15 @@ hotspots_ts <- function(df_wrangled, df_raw, title, date) {
     ) |>
     dplyr$filter(
       max(year, -Inf) - year < 5
+    ) |>
+    # every year x month cell should render its grey grid border, even where
+    # the underlying data has gaps (e.g. dates before JRC ASAP coverage
+    # started) - `month` already carries all 12 levels via lubridate, so this
+    # only needs to fill in any missing years.
+    tidyr$complete(
+      year = seq(min(year), max(year)),
+      month,
+      fill = list(hs_name = "No hotspot")
     )
 
   # `.env$date` is required here: `df_plot` already has its own `date` column,
