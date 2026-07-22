@@ -134,7 +134,13 @@ hotspots_ts <- function(df_wrangled, df_raw, title, date) {
     gg$theme(
       legend.title = gg$element_blank(),
       axis.title = gg$element_blank(),
-      panel.grid = gg$element_blank(),
+      # blank the major/minor elements directly: theme_signals() now sets an
+      # explicit panel.grid.major line (for the line/bar charts), and an
+      # explicit child element survives a later parent-level
+      # `panel.grid = element_blank()` in ggplot2's theme inheritance - it
+      # would otherwise show through wherever a tile is missing.
+      panel.grid.major = gg$element_blank(),
+      panel.grid.minor = gg$element_blank(),
       legend.position = "left",
       legend.direction = "vertical",
       legend.spacing.y = gg$unit(x = 0.1, units = "in"),
