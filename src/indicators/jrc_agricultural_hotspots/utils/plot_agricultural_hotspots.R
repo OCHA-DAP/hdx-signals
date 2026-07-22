@@ -2,14 +2,14 @@ box::use(
   dplyr,
   forcats,
   gg = ggplot2,
-  gghdx,
   lubridate
 )
 
 box::use(
   src/images/plots/theme_signals,
   src/images/create_images,
-  src/images/plots/caption
+  src/images/plots/caption,
+  src/images/plots/hdx_signals_palette
 )
 
 #' Plot JRC ASAP
@@ -56,7 +56,8 @@ plot <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
 #' @param df_raw Raw data frame for plotting, not used to plot displacement time
 #'     series
 #' @param title Plot title.
-#' @param date Date of the alert. Not used in the plot.
+#' @param date Date of the alert. Used to draw a focus ring around the
+#'     declared month.
 #'
 #' @returns Plot of cholera for that wrangled data
 hotspots_ts <- function(df_wrangled, df_raw, title, date) {
@@ -76,6 +77,12 @@ hotspots_ts <- function(df_wrangled, df_raw, title, date) {
       max(year, -Inf) - year < 5
     )
 
+  declared <- dplyr$filter(
+    df_plot,
+    year == lubridate$year(date),
+    month == lubridate$month(date, label = TRUE)
+  )
+
   df_plot |>
     gg$ggplot(
       mapping = gg$aes(
@@ -85,7 +92,14 @@ hotspots_ts <- function(df_wrangled, df_raw, title, date) {
       )
     ) +
     gg$geom_tile(
-      color = gghdx$hdx_hex("grey-dark")
+      color = hdx_signals_palette$hairline
+    ) +
+    # focus ring calling out the month the hotspot/alert was declared
+    gg$geom_tile(
+      data = declared,
+      fill = NA,
+      color = hdx_signals_palette$primary_blue,
+      linewidth = 0.8
     ) +
     gg$scale_x_discrete(
       breaks = c("Jan", "Apr", "Jul", "Oct")
@@ -100,8 +114,8 @@ hotspots_ts <- function(df_wrangled, df_raw, title, date) {
     gg$scale_fill_manual(
       values = c(
         "No hotspot" = "#FFFFFF",
-        "Hotspot" = gghdx$hdx_hex("sapphire-light"),
-        "Major hotspot" = gghdx$hdx_hex("sapphire-hdx")
+        "Hotspot" = hdx_signals_palette$data_grid_blue,
+        "Major hotspot" = hdx_signals_palette$primary_blue_dark
       )
     ) +
     gg$labs(

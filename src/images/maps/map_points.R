@@ -7,7 +7,8 @@ box::use(
 box::use(
   src/images/maps/sf_adm0,
   src/images/maps/geom_cities,
-  src/images/maps/map_theme
+  src/images/maps/map_theme,
+  src/images/plots/hdx_signals_palette
 )
 
 #' Map points data
@@ -59,7 +60,7 @@ map_points <- function(
       mapping = gg$aes(
         size = .data[[val_col]]
       ),
-      color = gghdx$hdx_hex("sapphire-hdx"),
+      color = hdx_signals_palette$primary_blue,
       alpha = 0.6
     ) +
     gg$geom_sf(
@@ -67,7 +68,7 @@ map_points <- function(
       mapping = gg$aes(
         size = .data[[val_col]]
       ),
-      color = gghdx$hdx_hex("sapphire-dark"),
+      color = hdx_signals_palette$primary_blue_dark,
       shape = 1,
       stroke = 0.1
     ) +

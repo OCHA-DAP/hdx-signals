@@ -7,7 +7,8 @@ box::use(
 
 box::use(
   src/images/plots/theme_signals,
-  src/images/plots/breaks_date
+  src/images/plots/breaks_date,
+  src/images/plots/hdx_signals_palette
 )
 
 #' Plot time series data
@@ -47,16 +48,31 @@ plot_ts <- function(
         y = .data[[val_col]]
       )
     ) +
+    gg$geom_area(
+      fill = hdx_signals_palette$primary_blue,
+      alpha = 0.16,
+      color = NA
+    ) +
     gg$geom_line(
       linewidth = 0.7,
-      color = gghdx$hdx_hex("sapphire-hdx")
+      color = hdx_signals_palette$primary_blue
     )
 
-  p <- p + gg$geom_point(
-    data = dplyr$filter(df, date == max(date, as.Date("1500-01-01"))),
-    size = 3,
-    color = gghdx$hdx_hex("sapphire-hdx")
-  )
+  endpoint <- dplyr$filter(df, date == max(date, as.Date("1500-01-01")))
+
+  # signature endpoint dot: solid marker over a soft halo, per HDX redesign
+  p <- p +
+    gg$geom_point(
+      data = endpoint,
+      size = 8,
+      alpha = 0.18,
+      color = hdx_signals_palette$primary_blue
+    ) +
+    gg$geom_point(
+      data = endpoint,
+      size = 3,
+      color = hdx_signals_palette$primary_blue
+    )
   p <- p +
     gghdx$scale_y_continuous_hdx(
       labels = gghdx$label_number_hdx(),
@@ -85,13 +101,5 @@ plot_ts <- function(
     theme_signals$theme_signals(
       margin_location = margin_location,
       x_axis_ticks = TRUE
-    ) +
-    gg$theme(
-      axis.ticks.x.bottom = gg$element_line(
-        colour = gghdx$hdx_hex("gray-dark"),
-        linewidth = gg$rel(1)
-      ),
-      axis.ticks.length = gg$unit(-0.05, "in"),
     )
-
 }
