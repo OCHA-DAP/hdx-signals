@@ -23,3 +23,23 @@ hairline <- "#D8E0E1"
 #' @rdname primary_blue
 #' @export
 text_muted <- "#9DB1B3"
+
+#' @rdname primary_blue
+#' @export
+text_headline <- "#101212"
+
+#' @rdname primary_blue
+#' @export
+danger_red <- "#C44536"
+
+#' @rdname primary_blue
+#' @export
+map_fill <- "#EBEFF0"
+
+#' @rdname primary_blue
+#' @export
+map_boundary <- "#C4D0D1"
+
+#' @rdname primary_blue
+#' @export
+map_label <- "#3F4748"

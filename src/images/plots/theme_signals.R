@@ -13,10 +13,12 @@ box::use(
 gghdx$gghdx()
 
 # HDX 2025 redesign fonts: Merriweather for titles, Roboto for everything
-# else. Loaded alongside (not replacing) gghdx's Source Sans 3 since gghdx
-# still depends on it internally (e.g. geom_text_hdx()).
+# else, Roboto Mono for numeric legend/axis values. Loaded alongside (not
+# replacing) gghdx's Source Sans 3 since gghdx still depends on it
+# internally (e.g. geom_text_hdx()).
 sysfonts$font_add_google("Merriweather", "Merriweather")
 sysfonts$font_add_google("Roboto", "Roboto")
+sysfonts$font_add_google("Roboto Mono", "Roboto Mono")
 showtext$showtext_auto()
 
 #' HDX Signals theme
