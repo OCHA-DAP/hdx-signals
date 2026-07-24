@@ -36,7 +36,15 @@ jobs:
 
           - name: Install extra dependencies
             shell: Rscript {0}
-            run: install.packages(c("lintr", "box.linters"))
+            # pinned to the versions in renv.lock: installing "latest" here let
+            # new lintr/box.linters CRAN releases break this workflow
+            # independently of any code change (e.g. lintr 3.4.0 introduced an
+            # indentation_linter crash - "replacement has length zero" - not
+            # present in the pinned 3.3.0-1)
+            run: |
+              install.packages("remotes")
+              remotes::install_version("lintr", version = "3.3.0-1", repos = "https://cloud.r-project.org")
+              remotes::install_version("box.linters", version = "0.10.7", repos = "https://cloud.r-project.org")
 
           - name: Lint
             run: lintr::lint_dir()

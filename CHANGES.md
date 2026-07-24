@@ -1,4 +1,10 @@
 # Changes
+## 0.6.0.0 (24 July 2026)
+- Restyled Signals line/fatalities charts, the JRC hotspot matrix, point maps, the market monitor bar chart, and the Mailchimp email template to match the HDX website 2025 redesign (Merriweather/Roboto typography, new primary blue and neutral tokens).
+- Fixed a heatmap bug where a stray grid line could show through months with no data, and where the declared-month focus ring matched every tile instead of just one.
+- Fixed the heatmap dropping missing months entirely instead of rendering them as empty "No hotspot" cells.
+- Pinned the lint workflow's `lintr`/`box.linters` versions to match `renv.lock`, instead of always installing the latest CRAN release.
+
 ## 0.5.0.0 (3 March 2026)
 - Switch to Azure for the summarization module
 - Switched to gpt-5
