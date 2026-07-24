@@ -11,7 +11,7 @@ box::use(
 # the highest in the last 3 years. The INFORM index should be at least 3 to alert
 #' @export
 alert <- function(df_wrangled) {
-  df_alert <- df_wrangled |>
+  df_wrangled |>
     dplyr$filter(
       country_level == "Yes"
     ) |>

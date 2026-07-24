@@ -201,13 +201,13 @@ text_summarizer_manual <- function(txt_c) {
   )
 
   # Process situation and recommendations using AI
-  sit_rep <- python_setup$get_summary_r(
+  sit_rep <- python_setup$get_summary_r( # nolint: box_usage_linter.
     system_prompt = prompts$system,
     user_prompt   = glue::glue(prompts[[1]]),
     info = txt_c[[1]]  # First string for situation
   )
 
-  recs <- python_setup$get_summary_r(
+  recs <- python_setup$get_summary_r( # nolint: box_usage_linter.
     system_prompt = prompts$system,
     user_prompt   = glue::glue(prompts[[2]]),
     info = txt_c[[2]]  # Second string for recommendations
@@ -263,13 +263,13 @@ text_summarizer <- function(txt, org) {
   )
 
   # feed these to the AI to get a summarization
-  sit_rep <- python_setup$get_summary_r(
+  sit_rep <- python_setup$get_summary_r( # nolint: box_usage_linter.
     system_prompt = prompts$system,
     user_prompt = glue$glue(prompts[[1]]),
     info = txt[1]
   )
 
-  recs <- python_setup$get_summary_r(
+  recs <- python_setup$get_summary_r( # nolint: box_usage_linter.
     system_prompt = prompts$system,
     user_prompt = glue$glue(prompts[[2]]),
     info = txt[2]
