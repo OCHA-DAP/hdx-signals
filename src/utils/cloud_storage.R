@@ -35,12 +35,13 @@ box::use(
 #'
 #' @param name Name of the file to read, including directory prefixes (`input/` or `output/`)
 #'     and file extension, such as `.parquet`.
-#' @param container Container in the Azure storage to read from, either `prod`, `dev`, or `wfp`.
+#' @param container Container in the Azure storage to read from, either `prod`, `dev`, `wfp`,
+#'     or `seas5` to read from the shared `projects` container used by `ds-seas5-skill`.
 #'
 #' @returns Data frame.
 #'
 #' @export
-read_az_file <- function(name, container = c("prod", "dev", "wfp")) {
+read_az_file <- function(name, container = c("prod", "dev", "wfp", "seas5")) {
   container <- get_container(container)
   fileext <- tools$file_ext(name)
   tf <- tempfile(fileext = paste0(".", fileext))
@@ -90,12 +91,13 @@ read_az_file_cached <- memoise$memoise(read_az_file)
 #' @param df Data frame or simple features to save out.
 #' @param name Name of the file to write, including prefix (`input/` or `output/`)
 #'     and filetype `.parquet`.
-#' @param container Container in the Azure storage to write to, either `prod`, `dev`, or `wfp`.
+#' @param container Container in the Azure storage to write to, either `prod`, `dev`, `wfp`,
+#'     or `seas5` to write to the shared `projects` container used by `ds-seas5-skill`.
 #'
 #' @returns Nothing, but file is written to the `hdx-signals` container.
 #'
 #' @export
-update_az_file <- function(df, name, container = c("prod", "dev", "wfp")) {
+update_az_file <- function(df, name, container = c("prod", "dev", "wfp", "seas5")) {
   container <- get_container(container)
   fileext <- tools$file_ext(name)
   tf <- tempfile(fileext = paste0(".", fileext))
@@ -135,10 +137,11 @@ update_az_file <- function(df, name, container = c("prod", "dev", "wfp")) {
 #' then all files in the bucket are returned.
 #'
 #' @param pattern Pattern to look for. Passed to [stringr::str_detect()]
-#' @param container Container in the Azure storage to read from, either `prod`, `dev`, or `wfp`.
+#' @param container Container in the Azure storage to read from, either `prod`, `dev`, `wfp`,
+#'     or `seas5` to read from the shared `projects` container used by `ds-seas5-skill`.
 #'
 #' @export
-az_file_detect <- function(pattern = NULL, container = c("prod", "dev", "wfp")) {
+az_file_detect <- function(pattern = NULL, container = c("prod", "dev", "wfp", "seas5")) {
   container <- get_container(container)
   # get blob files in container but don't return dirs
   blob_df <- az$list_blobs(container)
@@ -162,18 +165,20 @@ az_file_detect_cached <- memoise$memoise(az_file_detect)
 #' Get blob container
 #'
 #' @param container Container in the Azure store to read from, either `prod` or `dev`,
-#'     to access the primary `hdx-signals` containers, or `wfp` to read from the WFP
-#'     container in `dev`.
+#'     to access the primary `hdx-signals` containers, `wfp` to read from the WFP
+#'     container in `dev`, or `seas5` to read from the shared `projects` container
+#'     (dev) that `ds-seas5-skill` writes its processed output to.
 #'
 #' @returns Correct blob to read and write from
 #' @export
-get_container <- function(container = c("prod", "dev", "wfp")) {
+get_container <- function(container = c("prod", "dev", "wfp", "seas5")) {
   container <- rlang$arg_match(container)
   switch(
     container,
     prod = container_prod(),
     dev = container_dev(),
-    wfp = container_wfp()
+    wfp = container_wfp(),
+    seas5 = container_seas5()
   )
 }
 
