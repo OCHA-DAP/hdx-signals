@@ -70,7 +70,7 @@ map_points <- function(
       shape = 21,
       fill = scales$alpha(symbol_color, 0.5),
       color = symbol_color,
-      stroke = 0.5
+      stroke = 1
     ) +
     geom_cities$geom_cities(iso3) +
     gg$scale_size_continuous(

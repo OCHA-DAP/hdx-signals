@@ -34,7 +34,7 @@ danger_red <- "#C44536"
 
 #' @rdname primary_blue
 #' @export
-map_fill <- "#EBEFF0"
+map_fill <- "#F1F1EE"
 
 #' @rdname primary_blue
 #' @export
