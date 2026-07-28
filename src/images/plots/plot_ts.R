@@ -2,7 +2,9 @@ box::use(
   gg = ggplot2,
   scales,
   gghdx,
-  dplyr
+  dplyr,
+  grid,
+  grDevices
 )
 
 box::use(
@@ -41,6 +43,16 @@ plot_ts <- function(
     )
 
 
+  # area fill fades from 16% opacity at the line down to fully transparent,
+  # per the HDX dataviz style guide
+  area_fill <- grid$linearGradient(
+    colours = c(
+      grDevices$adjustcolor(hdx_signals_palette$primary_blue, alpha.f = 0.16),
+      grDevices$adjustcolor(hdx_signals_palette$primary_blue, alpha.f = 0)
+    ),
+    x1 = 0, y1 = 1, x2 = 0, y2 = 0
+  )
+
   p <- plot_df |>
     gg$ggplot(
       mapping = gg$aes(
@@ -49,12 +61,11 @@ plot_ts <- function(
       )
     ) +
     gg$geom_area(
-      fill = hdx_signals_palette$primary_blue,
-      alpha = 0.16,
+      fill = area_fill,
       color = NA
     ) +
     gg$geom_line(
-      linewidth = 0.7,
+      linewidth = 1.1,
       color = hdx_signals_palette$primary_blue
     )
 
@@ -64,13 +75,13 @@ plot_ts <- function(
   p <- p +
     gg$geom_point(
       data = endpoint,
-      size = 8,
+      size = 4.4,
       alpha = 0.18,
       color = hdx_signals_palette$primary_blue
     ) +
     gg$geom_point(
       data = endpoint,
-      size = 3,
+      size = 2,
       color = hdx_signals_palette$primary_blue
     )
   p <- p +
