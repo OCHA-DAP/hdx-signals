@@ -1,7 +1,8 @@
 box::use(
   gg = ggplot2,
   scales,
-  gghdx
+  gghdx,
+  stringr
 )
 
 box::use(
@@ -87,9 +88,12 @@ map_points <- function(
       x = "",
       y = "",
       size = size,
-      title = title,
+      # bold 20px titles and 12px captions (per the style guide) are wider
+      # than the fixed map canvas for longer strings, so wrap both - without
+      # this, text renders past the device edge and gets cropped on export
+      title = stringr$str_wrap(title, width = 22),
       subtitle = subtitle,
-      caption = caption
+      caption = wrap_caption(caption)
     ) +
     map_theme$map_theme(
       iso3 = iso3,
@@ -99,4 +103,28 @@ map_points <- function(
       panel.border = gg$element_blank(),
       panel.background = gg$element_blank()
     )
+}
+
+#' Wrap each line of a caption to fit the fixed map canvas width
+#'
+#' Wraps line-by-line rather than as a whole paragraph, since captions already
+#' arrive with intentional line breaks (source, location/date, UN disclaimer)
+#' that should stay separate rather than being reflowed together.
+#'
+#' @param caption Caption text, or `ggplot2::waiver()` if none was passed
+#'
+#' @returns Wrapped caption text, or `caption` unchanged if it is a `waiver`
+wrap_caption <- function(caption) {
+  if (inherits(caption, "waiver")) {
+    caption
+  } else {
+    paste(
+      vapply(
+        strsplit(caption, "\n")[[1]],
+        \(line) stringr$str_wrap(line, width = 40),
+        character(1)
+      ),
+      collapse = "\n"
+    )
+  }
 }
