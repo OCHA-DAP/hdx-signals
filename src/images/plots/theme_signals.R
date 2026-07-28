@@ -42,13 +42,29 @@ theme_signals <- function(margin_location = c("title", "subtitle"), x_axis_ticks
   title_family <- "Merriweather"
   body_family <- "Roboto"
 
+  # per the HDX dataviz style guide: display serif titles are bold, 22px,
+  # 1.3 line-height, text_headline grey
   theme_margins <- switch(
     margin_location,
     "title" = gg$theme(
-      plot.title = gg$element_text(family = title_family, size = 14, margin = gg$margin(b = 0.2, unit = "in"))
+      plot.title = gg$element_text(
+        family = title_family,
+        face = "bold",
+        size = 22,
+        lineheight = 1.3,
+        color = hdx_signals_palette$text_headline,
+        margin = gg$margin(b = 0.2, unit = "in")
+      )
     ),
     "subtitle" = gg$theme(
-      plot.title = gg$element_text(family = title_family, size = 14, margin = gg$margin(b = 0.1, unit = "in")),
+      plot.title = gg$element_text(
+        family = title_family,
+        face = "bold",
+        size = 22,
+        lineheight = 1.3,
+        color = hdx_signals_palette$text_headline,
+        margin = gg$margin(b = 0.1, unit = "in")
+      ),
       plot.subtitle = gg$element_text(family = body_family, margin = gg$margin(b = 0.2, unit = "in"))
     )
   )
@@ -59,7 +75,14 @@ theme_signals <- function(margin_location = c("title", "subtitle"), x_axis_ticks
       axis.text.x = gg$element_text(vjust = 1),
       axis.title = gg$element_text(size = 12, color = hdx_signals_palette$text_muted),
       axis.text = gg$element_text(size = 11, color = hdx_signals_palette$text_muted),
-      plot.caption = gg$element_text(size = 8, hjust = 0, margin = gg$margin(t = 0.1, unit = "in")),
+      # source line/provenance: Roboto 12px muted grey, per the style guide
+      plot.caption = gg$element_text(
+        family = body_family,
+        size = 12,
+        hjust = 0,
+        color = hdx_signals_palette$text_muted,
+        margin = gg$margin(t = 0.1, unit = "in")
+      ),
       plot.caption.position = "plot",
       legend.text = gg$element_text(size = 9),
       legend.title = gg$element_text(size = 11),
