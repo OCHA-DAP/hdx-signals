@@ -17,6 +17,7 @@ box::use(
   src/utils/location_codes[...],
   src/utils/parse_pdf[...],
   src/utils/python_setup[...],
+  src/utils/push_google_drive[...],
   src/utils/push_hdx[...],
   src/utils/st_crop_adj_bbox[...],
   src/utils/temp_file[...],

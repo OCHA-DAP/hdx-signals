@@ -11,6 +11,7 @@ box::use(
   src/email/mailchimp/campaigns,
   cs = src/utils/cloud_storage,
   src/utils/get_env,
+  src/utils/push_google_drive,
   src/utils/push_hdx
 )
 
@@ -312,7 +313,8 @@ read_core_signals <- function() {
 #' Save core signals data for HDX
 #'
 #' Filters the core signals data for HDX, saves to `prod` container in Azure
-#' and then pushes to HDX.
+#' and then pushes to HDX. Also uploads the three most recent signals to
+#' Google Drive via `save_latest_signals_gdrive()`.
 #'
 #' This just drops a few columns, and
 #' renames some for the final output data CSV that goes onto HDX. The data is
@@ -338,10 +340,30 @@ save_core_signals_hdx <- function(df) {
     campaign_url = campaign_url_archive
   )
 
+  df_hdx <- df[df$indicator_id %in% df_hdx_ind$indicator_id, names(template_data$signals_hdx_template)]
+
   cs$update_az_file(
-    df = df[df$indicator_id %in% df_hdx_ind$indicator_id, names(template_data$signals_hdx_template)],
+    df = df_hdx,
     name = "output/signals.csv"
   )
 
   push_hdx$push_hdx()
+
+  save_latest_signals_gdrive(df_hdx)
+}
+
+#' Save the most recent signals to Google Drive
+#'
+#' Takes the same data just saved to `output/signals.csv` and uploads only the
+#' three most recently dated rows to Google Drive, as a lightweight feed other
+#' tools can poll without downloading the full signals history. Runs every
+#' time a signal is triaged with `APPROVE` or `ARCHIVE`, since both commands
+#' route through `save_core_signals_hdx()`.
+#'
+#' @param df_hdx Data frame in the `signals_hdx_template` shape, as saved to
+#'     `output/signals.csv`.
+save_latest_signals_gdrive <- function(df_hdx) {
+  df_latest <- dplyr$slice_max(df_hdx, order_by = date, n = 3, with_ties = FALSE)
+
+  push_google_drive$push_google_drive(df_latest, "hdx_signals_latest.csv")
 }

@@ -1,4 +1,7 @@
 # Changes
+## 0.7.0.0 (29 July 2026)
+- Added a Google Drive export of the three most recently dated rows of `output/signals.csv`, refreshed automatically whenever a signal is triaged with `APPROVE` or `ARCHIVE`.
+
 ## 0.6.0.0 (24 July 2026)
 - Restyled Signals line/fatalities charts, the JRC hotspot matrix, point maps, the market monitor bar chart, and the Mailchimp email template to match the HDX website 2025 redesign (Merriweather/Roboto typography, new primary blue and neutral tokens).
 - Fixed a heatmap bug where a stray grid line could show through months with no data, and where the declared-month focus ring matched every tile instead of just one.

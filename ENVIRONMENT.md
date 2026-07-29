@@ -50,6 +50,18 @@ requires:
 - `HS_HDX_BEARER`: Bearer token to trigger the webhook to transfer from Azure to
 HDX.
 
+### Google Drive
+
+The three most recently dated rows of `output/signals.csv` are also uploaded to a
+Google Drive folder whenever a signal is triaged with `APPROVE` or `ARCHIVE`. This
+requires:
+
+- `HS_GDRIVE_SERVICE_ACCOUNT`: JSON key for a Google service account with edit
+access to the destination Drive folder, stored as the raw JSON text (not a file
+path).
+- `HS_GDRIVE_FOLDER_ID`: ID of the Google Drive folder (from its URL) to upload
+`hdx_signals_latest.csv` to.
+
 ## Run notifications in Slack
 
 Notifications of dataset runs and updates are done by accessing the GitHub API to
