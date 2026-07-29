@@ -151,14 +151,11 @@ hotspots_ts <- function(df_wrangled, df_raw, title, date) {
       # would otherwise show through wherever a tile is missing.
       panel.grid.major = gg$element_blank(),
       panel.grid.minor = gg$element_blank(),
-      # hairline frame around the whole grid, per the style guide - ggplot2
-      # has no rounded-rect panel border, so this is a square approximation
-      panel.border = gg$element_rect(color = hdx_signals_palette$hairline, fill = NA, linewidth = 0.75),
       legend.position = "left",
       legend.direction = "vertical",
       legend.spacing.y = gg$unit(x = 0.1, units = "in"),
-      # legend swatches get a hairline border (square, not rounded - see
-      # panel.border above) and muted grey labels, per the style guide
+      # legend swatches get a hairline border and muted grey labels, per the
+      # style guide
       legend.key = gg$element_rect(color = hdx_signals_palette$hairline, fill = NA),
       legend.text = gg$element_text(color = hdx_signals_palette$map_label),
       axis.line.x = gg$element_blank()

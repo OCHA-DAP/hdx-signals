@@ -42,15 +42,14 @@ theme_signals <- function(margin_location = c("title", "subtitle"), x_axis_ticks
   title_family <- "Merriweather"
   body_family <- "Roboto"
 
-  # per the HDX dataviz style guide: display serif titles are bold, 22px,
-  # 1.3 line-height, text_headline grey
+  # display serif titles are bold, 16px, 1.3 line-height, text_headline grey
   theme_margins <- switch(
     margin_location,
     "title" = gg$theme(
       plot.title = gg$element_text(
         family = title_family,
         face = "bold",
-        size = 22,
+        size = 16,
         lineheight = 1.3,
         color = hdx_signals_palette$text_headline,
         margin = gg$margin(b = 0.2, unit = "in")
@@ -60,7 +59,7 @@ theme_signals <- function(margin_location = c("title", "subtitle"), x_axis_ticks
       plot.title = gg$element_text(
         family = title_family,
         face = "bold",
-        size = 22,
+        size = 16,
         lineheight = 1.3,
         color = hdx_signals_palette$text_headline,
         margin = gg$margin(b = 0.1, unit = "in")
