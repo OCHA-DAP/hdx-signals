@@ -50,6 +50,23 @@ requires:
 - `HS_HDX_BEARER`: Bearer token to trigger the webhook to transfer from Azure to
 HDX.
 
+### Google Drive
+
+The three most recently dated rows of `output/signals.csv` are also uploaded to a
+Google Drive folder whenever a signal is triaged with `APPROVE` or `ARCHIVE`. The
+destination folder ID is hardcoded in `src/utils/push_google_drive.R` (it's not a
+credential, so doesn't need to be an environment variable). This requires:
+
+- `HS_GDRIVE_SERVICE_ACCOUNT`: JSON key for a Google service account with edit
+access to the destination Drive folder (must be added as a member of the Shared
+Drive that folder lives in, not just shared on the folder itself - a bare service
+account has no storage quota outside a Shared Drive). Accepts either the raw JSON
+as a string (how the GitHub Actions secret is set) or a path to a local key file.
+The file-path form is strongly recommended for local development in an
+`.Renviron`, since that file only supports one `NAME=value` pair per line and
+treats `"` as a quoting character wherever it appears - a JSON blob full of
+internal quotes can't be pasted in directly.
+
 ## Run notifications in Slack
 
 Notifications of dataset runs and updates are done by accessing the GitHub API to

@@ -157,6 +157,8 @@ src/email/figure/*
 # auth
 global_monitoring_auth.json
 hdx_signals_auth.json
+winged-line-504007-c9-fa530c443265.json
+winged-line-504007-c9-fa530c443265.min.json
 
 # Other R files
 .Rhistory
