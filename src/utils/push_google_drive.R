@@ -16,16 +16,15 @@ gdrive_folder_id <- "1R5wbgrKJLOfkGvEUqSeSh17Rm7ovd2Mw"
 #' Authenticate with Google Drive
 #'
 #' Authenticates {googledrive} non-interactively using a service account key.
-#' `HS_GDRIVE_SERVICE_ACCOUNT` holds the service account JSON directly (not a
-#' file path), but it's written out to a session tempfile rather than passed
-#' to [googledrive::drive_auth()] as a raw string, because environments that
-#' shell out to pass env vars to R (e.g. Windows `.bat` wrappers) can silently
-#' truncate a multi-line string value. The tempfile lives in `.temp_dir`,
-#' which is cleared out on every module load (see `temp_file.R`).
+#' `HS_GDRIVE_SERVICE_ACCOUNT` is passed straight through to
+#' [googledrive::drive_auth()]'s `path` argument, which accepts either the
+#' service account JSON as a raw string (how the GitHub Actions secret is
+#' set) or a path to a local key file. The file-path form is the practical
+#' option for local development, since `.Renviron` parses one `NAME=value`
+#' per line and treats `"` as a quoting character wherever it appears, so a
+#' JSON blob full of internal quotes can't survive being pasted in directly.
 gdrive_auth <- function() {
-  key_path <- temp_file$temp_file(".json")
-  writeLines(get_env$get_env("HS_GDRIVE_SERVICE_ACCOUNT"), key_path)
-  googledrive$drive_auth(path = key_path)
+  googledrive$drive_auth(path = get_env$get_env("HS_GDRIVE_SERVICE_ACCOUNT"))
 }
 
 #' Write a data frame to Google Drive as a CSV

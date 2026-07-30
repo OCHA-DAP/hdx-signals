@@ -2,20 +2,15 @@ box::use(src/utils/push_google_drive)
 
 impl <- attr(push_google_drive, "namespace")
 
-test_that("gdrive_auth writes the key to a file rather than passing it as a raw string", {
-  stub(impl$gdrive_auth, "get_env$get_env", \(x) "{\"type\": \"service_account\"}")
-  stub(impl$gdrive_auth, "temp_file$temp_file", \(fileext) paste0("key", fileext))
-
-  mock_write_lines <- mock()
-  stub(impl$gdrive_auth, "writeLines", mock_write_lines)
+test_that("gdrive_auth passes the env var straight through to drive_auth", {
+  stub(impl$gdrive_auth, "get_env$get_env", \(x) "some/key.json")
 
   mock_auth <- mock()
   stub(impl$gdrive_auth, "googledrive$drive_auth", mock_auth)
 
   impl$gdrive_auth()
 
-  expect_args(mock_write_lines, 1, "{\"type\": \"service_account\"}", "key.json")
-  expect_args(mock_auth, 1, path = "key.json")
+  expect_args(mock_auth, 1, path = "some/key.json")
 })
 
 test_that("push_google_drive skips upload when hs_local() is TRUE", {
