@@ -11,7 +11,7 @@ box::use(
 )
 
 #' ID of the Google Drive folder that receives the latest signals export
-gdrive_folder_id <- "1R5wbgrKJLOfkGvEUqSeSh17Rm7ovd2Mw"
+gdrive_folder_id <- "10I6mRYva82EPJ_BJ3IcOpUeMDb-nRd5w"
 
 #' Authenticate with Google Drive
 #'
