@@ -10,6 +10,9 @@ box::use(
   src/utils/temp_file
 )
 
+#' ID of the Google Drive folder that receives the latest signals export
+gdrive_folder_id <- "1R5wbgrKJLOfkGvEUqSeSh17Rm7ovd2Mw"
+
 #' Authenticate with Google Drive
 #'
 #' Authenticates {googledrive} non-interactively using a service account key.
@@ -23,10 +26,10 @@ gdrive_auth <- function() {
 
 #' Write a data frame to Google Drive as a CSV
 #'
-#' Writes `df` to a temporary CSV and uploads it to the Google Drive folder
-#' identified by `HS_GDRIVE_FOLDER_ID`. If a file called `name` already exists
-#' in that folder, its content is replaced in place so the same file/link is
-#' reused rather than creating a duplicate each time.
+#' Writes `df` to a temporary CSV and uploads it to the `gdrive_folder_id`
+#' Google Drive folder. If a file called `name` already exists in that
+#' folder, its content is replaced in place so the same file/link is reused
+#' rather than creating a duplicate each time.
 #'
 #' If `hs_local()` is `TRUE`, the upload is skipped, matching the behaviour of
 #' `cloud_storage$update_az_file()`.
@@ -53,7 +56,7 @@ push_google_drive <- function(df, name) {
   tf <- temp_file$temp_file(".csv")
   readr$write_csv(x = df, file = tf, na = "")
 
-  folder_id <- googledrive$as_id(get_env$get_env("HS_GDRIVE_FOLDER_ID"))
+  folder_id <- googledrive$as_id(gdrive_folder_id)
   existing_file <- googledrive$drive_ls(
     path = folder_id,
     pattern = paste0("^", name, "$")

@@ -28,9 +28,7 @@ test_that("push_google_drive updates an existing file in place", {
   stub(impl$push_google_drive, "googledrive$drive_update", mock_update)
   stub(impl$push_google_drive, "googledrive$drive_upload", mock_upload)
 
-  with_envvar(new = c(HS_GDRIVE_FOLDER_ID = "folder123"), {
-    impl$push_google_drive(mtcars, "a.csv")
-  })
+  impl$push_google_drive(mtcars, "a.csv")
 
   expect_called(mock_update, 1)
   expect_args(mock_update, 1, file = "existing_id", media = "file.csv")
@@ -53,11 +51,12 @@ test_that("push_google_drive uploads a new file when none exists", {
   stub(impl$push_google_drive, "googledrive$drive_update", mock_update)
   stub(impl$push_google_drive, "googledrive$drive_upload", mock_upload)
 
-  with_envvar(new = c(HS_GDRIVE_FOLDER_ID = "folder123"), {
-    impl$push_google_drive(mtcars, "b.csv")
-  })
+  impl$push_google_drive(mtcars, "b.csv")
 
   expect_called(mock_upload, 1)
-  expect_args(mock_upload, 1, media = "file.csv", path = "folder123", name = "b.csv")
+  expect_args(
+    mock_upload, 1,
+    media = "file.csv", path = impl$gdrive_folder_id, name = "b.csv"
+  )
   expect_called(mock_update, 0)
 })

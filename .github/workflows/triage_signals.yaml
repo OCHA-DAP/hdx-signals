@@ -86,7 +86,6 @@ jobs:
       HS_ADMIN_NAME: ${{ secrets.HS_ADMIN_NAME }}
       HS_HDX_BEARER: ${{ secrets.HS_HDX_BEARER }}
       HS_GDRIVE_SERVICE_ACCOUNT: ${{ secrets.HS_GDRIVE_SERVICE_ACCOUNT }}
-      HS_GDRIVE_FOLDER_ID: ${{ secrets.HS_GDRIVE_FOLDER_ID }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3

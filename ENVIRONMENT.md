@@ -53,14 +53,13 @@ HDX.
 ### Google Drive
 
 The three most recently dated rows of `output/signals.csv` are also uploaded to a
-Google Drive folder whenever a signal is triaged with `APPROVE` or `ARCHIVE`. This
-requires:
+Google Drive folder whenever a signal is triaged with `APPROVE` or `ARCHIVE`. The
+destination folder ID is hardcoded in `src/utils/push_google_drive.R` (it's not a
+credential, so doesn't need to be an environment variable). This requires:
 
 - `HS_GDRIVE_SERVICE_ACCOUNT`: JSON key for a Google service account with edit
 access to the destination Drive folder, stored as the raw JSON text (not a file
 path).
-- `HS_GDRIVE_FOLDER_ID`: ID of the Google Drive folder (from its URL) to upload
-`hdx_signals_latest.csv` to.
 
 ## Run notifications in Slack
 
