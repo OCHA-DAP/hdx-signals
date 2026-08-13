@@ -67,12 +67,12 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
       event_info = stringi$stri_encode(event_info, from = "", to = "UTF-8"),
       event_info = substr(event_info, 1, 50000),
       summary_long = purrr$pmap_chr(
-        .l = list(
+        .l = list( # nolint: indentation_linter.
           system_prompt = prompts$system,
           user_prompt = prompts$long,
           info = event_info
-          ),
-        .f = python_setup$get_summary_r),
+          ), # nolint: indentation_linter.
+        .f = python_setup$get_summary_r), # nolint: indentation_linter.
       summary_short = ifelse(
         is.na(summary_long) | summary_long == "",
         plot_title,
@@ -84,8 +84,8 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
             info = summary_long
           ),
           .f = python_setup$get_summary_r
-          )
-        ),
+        )
+      ),
       summary_source = "ACLED reporting"
     )
 

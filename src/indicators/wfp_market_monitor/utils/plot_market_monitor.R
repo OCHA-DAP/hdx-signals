@@ -1,14 +1,14 @@
 box::use(
   dplyr,
   scales,
-  gg = ggplot2,
-  gghdx
+  gg = ggplot2
 )
 
 box::use(
   src/images/create_images,
   src/images/plots/theme_signals,
-  src/images/plots/caption
+  src/images/plots/caption,
+  src/images/plots/hdx_signals_palette
 )
 
 #' Plot WFP market monitor food basket price changes
@@ -79,13 +79,13 @@ food_basket_ts <- function(df_wrangled, df_raw, title, date) {
     ) +
     gg$geom_hline(
       yintercept = 0,
-      color = gghdx$hdx_hex("grey-dark"),
+      color = hdx_signals_palette$hairline,
       linewidth = 0.5
     ) +
     gg$geom_bar(
       stat = "identity",
-      fill = gghdx$hdx_hex("sapphire-hdx"),
-      color = gghdx$hdx_hex("sapphire-hdx") # so 0 values appear
+      fill = hdx_signals_palette$primary_blue,
+      color = hdx_signals_palette$primary_blue # so 0 values appear
     ) +
     gg$scale_y_continuous(
       labels = scales$label_percent(

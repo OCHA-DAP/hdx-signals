@@ -9,7 +9,8 @@ box::use(
   src/utils/formatters,
   src/images/maps/map_points,
   src/images/plots/caption,
-  src/images/create_images
+  src/images/create_images,
+  src/images/plots/hdx_signals_palette
 )
 
 #' Map conflict events
@@ -92,6 +93,9 @@ conflict_map <- function(df_wrangled, df_raw, title, date) {
     action = "nothing",
     title = title,
     caption = caption,
-    settings = "map"
+    settings = "map",
+    # explicitly a fatalities map, so use the danger red per the HDX dataviz
+    # style guide's rule (blue for neutral counts, red for harm/fatalities)
+    symbol_color = hdx_signals_palette$danger_red
   )
 }

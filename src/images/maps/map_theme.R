@@ -5,7 +5,8 @@ box::use(
 
 box::use(
   cs = src/utils/cloud_storage,
-  src/images/plots/theme_signals
+  src/images/plots/theme_signals,
+  src/images/plots/hdx_signals_palette
 )
 
 
@@ -51,6 +52,27 @@ map_theme <- function(iso3, use_map_settings = TRUE, margin_location = c("title"
       legend.position = df_ms$legend_position,
       legend.direction = df_ms$direction,
       legend.justification = df_ms$justification,
-      legend.location = df_ms$location
+      legend.location = df_ms$location,
+      # per the HDX dataviz style guide's map annotations: legend heading in
+      # Roboto 16px, legend values in Roboto Mono 13px, both map_label grey
+      legend.title = gg$element_text(family = "Roboto", size = 16, color = hdx_signals_palette$map_label),
+      legend.text = gg$element_text(family = "Roboto Mono", size = 13, color = hdx_signals_palette$map_label),
+      # font/color per the HDX dataviz style guide, but sized to match the
+      # main branch so the map keeps its original proportions within the
+      # fixed canvas
+      plot.title = gg$element_text(
+        family = "Merriweather",
+        face = "bold",
+        size = 14,
+        lineheight = 1.3,
+        color = hdx_signals_palette$text_headline
+      ),
+      plot.caption = gg$element_text(
+        family = "Roboto",
+        size = 8,
+        hjust = 0,
+        color = hdx_signals_palette$text_muted,
+        margin = gg$margin(t = 0.1, unit = "in")
+      )
     )
 }

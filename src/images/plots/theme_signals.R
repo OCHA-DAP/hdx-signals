@@ -2,10 +2,24 @@ box::use(
   gghdx,
   gg = ggplot2,
   showtext,
+  sysfonts,
   rlang
 )
 
+box::use(
+  src/images/plots/hdx_signals_palette
+)
+
 gghdx$gghdx()
+
+# HDX 2025 redesign fonts: Merriweather for titles, Roboto for everything
+# else, Roboto Mono for numeric legend/axis values. Loaded alongside (not
+# replacing) gghdx's Source Sans 3 since gghdx still depends on it
+# internally (e.g. geom_text_hdx()).
+sysfonts$font_add_google("Merriweather", "Merriweather")
+sysfonts$font_add_google("Roboto", "Roboto")
+sysfonts$font_add_google("Roboto Mono", "Roboto Mono")
+showtext$showtext_auto()
 
 #' HDX Signals theme
 #'
@@ -24,28 +38,56 @@ theme_signals <- function(margin_location = c("title", "subtitle"), x_axis_ticks
   showtext$showtext_opts(dpi = 300)
 
   # use different margins depending on if subtitle or title is passed
+  # HDX 2025 redesign: display serif for titles, Roboto for everything else
+  title_family <- "Merriweather"
+  body_family <- "Roboto"
+
+  # display serif titles are bold, 16px, 1.3 line-height, text_headline grey
   theme_margins <- switch(
     margin_location,
     "title" = gg$theme(
-      plot.title = gg$element_text(size = 14, margin = gg$margin(b = 0.2, unit = "in"))
+      plot.title = gg$element_text(
+        family = title_family,
+        face = "bold",
+        size = 16,
+        lineheight = 1.3,
+        color = hdx_signals_palette$text_headline,
+        margin = gg$margin(b = 0.2, unit = "in")
+      )
     ),
     "subtitle" = gg$theme(
-      plot.title = gg$element_text(size = 14, margin = gg$margin(b = 0.1, unit = "in")),
-      plot.subtitle = gg$element_text(margin = gg$margin(b = 0.2, unit = "in"))
+      plot.title = gg$element_text(
+        family = title_family,
+        face = "bold",
+        size = 16,
+        lineheight = 1.3,
+        color = hdx_signals_palette$text_headline,
+        margin = gg$margin(b = 0.1, unit = "in")
+      ),
+      plot.subtitle = gg$element_text(family = body_family, margin = gg$margin(b = 0.2, unit = "in"))
     )
   )
 
   theme_obj <- gghdx$theme_hdx() +
     gg$theme(
+      text = gg$element_text(family = body_family),
       axis.text.x = gg$element_text(vjust = 1),
-      axis.title = gg$element_text(size = 12),
-      axis.text = gg$element_text(size = 11),
-      plot.caption = gg$element_text(size = 8, hjust = 0, margin = gg$margin(t = 0.1, unit = "in")),
+      axis.title = gg$element_text(size = 12, color = hdx_signals_palette$text_muted),
+      axis.text = gg$element_text(size = 11, color = hdx_signals_palette$text_muted),
+      # source line/provenance: Roboto 12px muted grey, per the style guide
+      plot.caption = gg$element_text(
+        family = body_family,
+        size = 12,
+        hjust = 0,
+        color = hdx_signals_palette$text_muted,
+        margin = gg$margin(t = 0.1, unit = "in")
+      ),
       plot.caption.position = "plot",
       legend.text = gg$element_text(size = 9),
       legend.title = gg$element_text(size = 11),
       panel.background = gg$element_rect(fill = "white", linewidth = 0),
       plot.background = gg$element_rect(fill = "white", linewidth = 0),
+      panel.grid.major = gg$element_line(color = hdx_signals_palette$hairline),
     ) +
     theme_margins
 
@@ -53,7 +95,7 @@ theme_signals <- function(margin_location = c("title", "subtitle"), x_axis_ticks
     theme_obj <- theme_obj +
       gg$theme(
         axis.ticks.x.bottom = gg$element_line(
-          colour = gghdx$hdx_hex("gray-dark"),
+          colour = hdx_signals_palette$hairline,
           linewidth = gg$rel(1)
         ),
         axis.ticks.length = gg$unit(-0.05, "in")

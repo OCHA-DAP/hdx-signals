@@ -18,7 +18,7 @@ add_banner <- function(src) {
       # nolint start
       '
 <tr>
-    <td style="background-color:#007ce0;padding-top:0;padding-bottom:0;padding-right:0;padding-left:0"
+    <td style="background-color:#1862d8;padding-top:0;padding-bottom:0;padding-right:0;padding-left:0"
         class="mceBlockContainer" align="full" valign="top"><a href="https://data.humdata.org/" style="display:block"
             target="_blank" data-block-id="3"><span class="mceImageBorder"
                 style="border:0;vertical-align:top;margin:0"><img width="660" height="auto"

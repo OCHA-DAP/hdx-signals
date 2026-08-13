@@ -7,7 +7,8 @@ box::use(
 box::use(
   src/images/maps/sf_adm0,
   src/images/maps/geom_cities,
-  src/images/maps/map_theme
+  src/images/maps/map_theme,
+  src/images/plots/hdx_signals_palette
 )
 
 #' Map points data
@@ -23,6 +24,9 @@ box::use(
 #' @param caption Caption for the plot
 #' @param settings Whether or not to use map settings in `input/iso3_map_settings.json`
 #'     to position the legend.
+#' @param symbol_color Hex color for the event symbols. Defaults to the
+#'     neutral primary blue; per the HDX dataviz style guide, pass the danger
+#'     red token instead when the map is explicitly about fatalities or harm.
 #'
 #' @returns Map plot
 #'
@@ -36,7 +40,8 @@ map_points <- function(
     action = c("error", "filter", "nothing"),
     subtitle = gg$waiver(),
     caption = gg$waiver(),
-    settings = "map") {
+    settings = "map",
+    symbol_color = hdx_signals_palette$primary_blue) {
 
   if (settings == "map") {
     use_map_settings <- TRUE
@@ -52,24 +57,20 @@ map_points <- function(
 
   gg$ggplot() +
     gg$geom_sf(
-      data = sf_list$sf_adm0
+      data = sf_list$sf_adm0,
+      fill = hdx_signals_palette$map_fill,
+      color = hdx_signals_palette$map_boundary,
+      linewidth = 0.3
     ) +
     gg$geom_sf(
       data = sf_list$additional_geoms[[1]],
       mapping = gg$aes(
         size = .data[[val_col]]
       ),
-      color = gghdx$hdx_hex("sapphire-hdx"),
-      alpha = 0.6
-    ) +
-    gg$geom_sf(
-      data = sf_list$additional_geoms[[1]],
-      mapping = gg$aes(
-        size = .data[[val_col]]
-      ),
-      color = gghdx$hdx_hex("sapphire-dark"),
-      shape = 1,
-      stroke = 0.1
+      shape = 21,
+      fill = scales$alpha(symbol_color, 0.5),
+      color = symbol_color,
+      stroke = 1
     ) +
     geom_cities$geom_cities(iso3) +
     gg$scale_size_continuous(
@@ -96,7 +97,6 @@ map_points <- function(
     ) +
     gg$theme(
       panel.border = gg$element_blank(),
-      panel.background = gg$element_blank(),
-      #plot.margin = gg$margin(t = 5, r = 30, b = 5, l = 5)
+      panel.background = gg$element_blank()
     )
 }

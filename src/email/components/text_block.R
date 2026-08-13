@@ -16,6 +16,8 @@ box::use(src/email/components/missing)
 #' @param header_id ID for the header, which can be used in `href` blocks to
 #'     place jump links in the email. If `NULL`, then random UUID used since
 #'     HTML requires unique IDs.
+#' @param header_style Inline CSS applied to the header tag, e.g. to override
+#'     the Mailchimp template's per-level font family. Skipped if missing.
 #'
 #' @returns Full text block HTML
 #'
@@ -25,6 +27,7 @@ add_text <- function(
     header = "",
     header_level = 2,
     header_id = NULL,
+    header_style = "",
     pre_header_text = "",
     background_color = "#ffffff") {
   if (is.null(header_id)) {
@@ -53,6 +56,7 @@ add_text <- function(
       header = header,
       header_level = header_level,
       header_id = header_id,
+      header_style = header_style,
       header_missing = header_missing
     )
 
@@ -99,14 +103,20 @@ add_text <- function(
 #'
 #' For the header block, uses <a> and <h> blocks separately so that anchor blocks
 #' work across a wider range of browsers.
-conditional_header <- function(header, header_level, header_id, header_missing) {
+conditional_header <- function(header, header_level, header_id, header_style, header_missing) {
   if (header_missing) {
     ""
   } else {
+    style_attr <- if (missing$missing_text(header_style)) {
+      ""
+    } else {
+      glue$glue(' style="{header_style}"')
+    }
+
     glue$glue(
       '
       <a name="{header_id}"></a><h{header_level} id="{header_id}" ',
-      'class="last-child">{header}</h{header_level}>'
+      'class="last-child"{style_attr}>{header}</h{header_level}>'
     )
   }
 }
