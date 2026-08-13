@@ -1,4 +1,8 @@
 # Changes
+## 0.6.1.0 (13 August 2026)
+- Fixed the IDMC disaster/conflict map generation erroring out and deleting all campaign content whenever a real displacement point fell inside a location's remote territory that's deliberately trimmed from its display basemap (e.g. Hawaii and Guam for the USA, Easter Island for Chile). The boundary check now falls back to the location's full, untrimmed boundary before treating a point as bad data, instead of the previous one-off per-country hotfix approach.
+- Added test coverage and a CI test entry for `src/images/maps`, which previously had none.
+
 ## 0.6.0.0 (24 July 2026)
 - Restyled Signals line/fatalities charts, the JRC hotspot matrix, point maps, the market monitor bar chart, and the Mailchimp email template to match the HDX website 2025 redesign (Merriweather/Roboto typography, new primary blue and neutral tokens).
 - Fixed a heatmap bug where a stray grid line could show through months with no data, and where the declared-month focus ring matched every tile instead of just one.
