@@ -13,6 +13,8 @@ exclusions:
     "src/email/mailchimp/__tests__",
     "src/utils/__init__.R",
     "src/utils/__tests__",
+    "src/images/maps/__init__.R",
+    "src/images/maps/__tests__",
     "src/signals/__init__.R",
     "src/signals/__tests__",
     "src/indicators/wfp_market_monitor/__init__.R",
