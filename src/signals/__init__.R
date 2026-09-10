@@ -8,5 +8,10 @@ box::use(
   src/signals/generate_alerts[...],
   src/signals/generate_campaign_content[...],
   src/signals/generate_signals[...],
-  src/signals/triage_signals[...]
+  src/signals/triage_signals[...],
+  src/signals/update_homepage_signals[...]
 )
+
+if (is.null(box::name())) {
+  box::use(src/signals/`__tests__`)
+}

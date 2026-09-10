@@ -25,6 +25,11 @@ If approved, then the data is removed from the staging
 dataset `ouput/signals.parquet` and pushed to HDX. The draft campaigns are
 sent from Mailchimp.
 
+One of the approved signals is also added to `output/hdx_signals_latest3.csv`,
+the rolling window of the latest three signals displayed on the HDX homepage.
+Unlike the other outputs this is a local repository file, so it needs to be
+committed after triaging for the homepage to display the new signal.
+
 If during triage the campaigns need to be fixed, then they can be deleted,
 with all content on Mailchimp deleted. Since there are numerous files stored up on
 Mailchimp, from files to templates to campaigns, it is always better to delete

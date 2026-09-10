@@ -68,6 +68,8 @@ on:
 jobs:
   run:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     env:
       HS_EMAIL: ${{ secrets.HS_EMAIL }}
       HS_SURVEY_LINK: ${{ secrets.HS_SURVEY_LINK }}
@@ -101,3 +103,23 @@ jobs:
           retry_wait_seconds: 120
           shell: bash
           command: Rscript ./src/run/run_triage_signals.R
+
+      # `update_homepage_signals()` writes to a repository file rather than to
+      # Azure, so the approved signal is only displayed on the HDX homepage once
+      # it is committed. Restricted to manual runs so a commit here can never
+      # retrigger this workflow through its own `push` trigger.
+      - name: Commit the latest signals for the HDX homepage
+        if: github.event_name == 'workflow_dispatch'
+        shell: bash
+        env:
+          HOMEPAGE_SIGNALS_FILE: output/hdx_signals_latest3.csv
+        run: |
+          if [ -z "$(git status --porcelain "$HOMEPAGE_SIGNALS_FILE")" ]; then
+            echo "No changes to $HOMEPAGE_SIGNALS_FILE, nothing to commit."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$HOMEPAGE_SIGNALS_FILE"
+          git commit -m "Data: update latest signals for the HDX homepage"
+          git push
