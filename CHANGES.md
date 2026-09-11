@@ -1,4 +1,7 @@
 # Changes
+## 0.6.2.0 (11 September 2026)
+- Fixed the IDMC disaster/conflict map generation erroring out and deleting all campaign content whenever a real displacement point fell inside a location's remote territory that's deliberately trimmed from its display basemap (e.g. Hawaii and Guam for the USA, Easter Island for Chile). The boundary check now falls back to the location's full, untrimmed boundary before treating a point as bad data, instead of the previous one-off per-country hotfix approach.
+- Added test coverage and a CI test entry for `src/images/maps`, which previously had none.
 ## 0.6.1.1 (11 September 2026)
 - Added `src/signals/__init__.R` to the `test_signals.yml` CI matrix, so the `src/signals` tests added alongside `update_homepage_signals()` actually run on pull requests.
 
