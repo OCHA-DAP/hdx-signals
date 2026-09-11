@@ -1,4 +1,7 @@
 # Changes
+## 0.6.1.1 (11 September 2026)
+- Added `src/signals/__init__.R` to the `test_signals.yml` CI matrix, so the `src/signals` tests added alongside `update_homepage_signals()` actually run on pull requests.
+
 ## 0.6.1.0 (10 September 2026)
 - Added `update_homepage_signals()`, which maintains `output/hdx_signals_latest3.csv`, the rolling window of the latest three signals displayed on the HDX homepage. On each approved triage one signal is added below the header and the oldest is dropped. Where a campaign covers several locations, the signal is chosen by preferring HRP locations, then `High concern` alerts, and picking at random among whatever remains.
 - Moved the renaming of signals columns for HDX outputs into `format_signals_hdx()`, shared by the HDX dataset and the homepage file.
