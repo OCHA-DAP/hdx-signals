@@ -2,7 +2,7 @@
 ## 0.6.1.0 (10 September 2026)
 - Added `update_homepage_signals()`, which maintains `output/hdx_signals_latest3.csv`, the rolling window of the latest three signals displayed on the HDX homepage. On each approved triage one signal is added below the header and the oldest is dropped. Where a campaign covers several locations, the signal is chosen by preferring HRP locations, then `High concern` alerts, and picking at random among whatever remains.
 - Moved the renaming of signals columns for HDX outputs into `format_signals_hdx()`, shared by the HDX dataset and the homepage file.
-- Added a step to the triage workflow that commits the updated homepage file, since it is a repository file rather than an Azure output. It only runs on manual triage runs, so it cannot retrigger the workflow through its own `push` trigger.
+- Added a step to the triage workflow that opens a pull request with the updated homepage file, since it is a repository file rather than an Azure output and `main` requires a pull request that the Actions token cannot bypass. It only runs on manual triage runs.
 
 ## 0.6.0.0 (24 July 2026)
 - Restyled Signals line/fatalities charts, the JRC hotspot matrix, point maps, the market monitor bar chart, and the Mailchimp email template to match the HDX website 2025 redesign (Merriweather/Roboto typography, new primary blue and neutral tokens).

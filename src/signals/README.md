@@ -27,8 +27,10 @@ sent from Mailchimp.
 
 One of the approved signals is also added to `output/hdx_signals_latest3.csv`,
 the rolling window of the latest three signals displayed on the HDX homepage.
-Unlike the other outputs this is a local repository file, so it needs to be
-committed after triaging for the homepage to display the new signal.
+Unlike the other outputs this is a local repository file. Triaging through the
+`Triage Signals` workflow opens a pull request with the updated file, which has
+to be merged for the homepage to display the new signal. Triaging locally leaves
+the file changed in your working directory for you to commit.
 
 If during triage the campaigns need to be fixed, then they can be deleted,
 with all content on Mailchimp deleted. Since there are numerous files stored up on

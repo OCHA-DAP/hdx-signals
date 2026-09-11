@@ -17,8 +17,9 @@ box::use(
 #' header, and the oldest signal is dropped so only `n_signals` remain.
 #'
 #' Unlike the other signals outputs, this is a local repository file and not
-#' stored on Azure, so the updated CSV has to be committed for the homepage to
-#' display the new signal. Nothing is written if `hs_local()` is `TRUE`, matching
+#' stored on Azure, so the updated CSV has to be committed, or the pull request
+#' opened by the triage workflow merged, for the homepage to display the new
+#' signal. Nothing is written if `hs_local()` is `TRUE`, matching
 #' the behaviour of `update_az_file()`, because approved signals are not stored
 #' in local runs.
 #'
