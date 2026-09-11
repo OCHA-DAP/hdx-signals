@@ -142,3 +142,28 @@ signals_hdx_template <- signals_template |>
     campaign_date,
     signals_version
   )
+
+#' Format signals data for HDX
+#'
+#' Renames and selects the columns of a signals data frame so they match
+#' `signals_hdx_template`, used for the signals data published on HDX and
+#' displayed on the HDX homepage.
+#'
+#' @param df Signals data frame with the columns of `signals_template`.
+#'
+#' @returns Data frame with the columns of `signals_hdx_template`.
+#'
+#' @export
+format_signals_hdx <- function(df) {
+  df |>
+    dplyr$rename(
+      plot = plot_url,
+      map = map_url,
+      plot2 = plot2_url,
+      other_images = other_images_urls,
+      campaign_url = campaign_url_archive
+    ) |>
+    dplyr$select(
+      dplyr$all_of(names(signals_hdx_template))
+    )
+}

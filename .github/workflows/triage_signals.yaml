@@ -68,6 +68,9 @@ on:
 jobs:
   run:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
     env:
       HS_EMAIL: ${{ secrets.HS_EMAIL }}
       HS_SURVEY_LINK: ${{ secrets.HS_SURVEY_LINK }}
@@ -101,3 +104,46 @@ jobs:
           retry_wait_seconds: 120
           shell: bash
           command: Rscript ./src/run/run_triage_signals.R
+
+      # `update_homepage_signals()` writes to a repository file rather than to
+      # Azure, so the approved signal is only displayed on the HDX homepage once
+      # it is merged. `main` requires a pull request, which the Actions token
+      # cannot bypass, so the run opens one instead of pushing. Restricted to
+      # manual runs, where the triaged branch is the one to update.
+      - name: Open a pull request with the latest signals for the HDX homepage
+        if: github.event_name == 'workflow_dispatch'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          HOMEPAGE_SIGNALS_FILE: output/hdx_signals_latest3.csv
+          HOMEPAGE_SIGNALS_BRANCH: homepage-signals/${{ github.run_id }}
+          TRIAGED_BRANCH: ${{ github.ref_name }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          if [ -z "$(git status --porcelain "$HOMEPAGE_SIGNALS_FILE")" ]; then
+            echo "No changes to $HOMEPAGE_SIGNALS_FILE, nothing to open a pull request for."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$HOMEPAGE_SIGNALS_BRANCH"
+          git add "$HOMEPAGE_SIGNALS_FILE"
+          git commit -m "Data: update latest signals for the HDX homepage"
+          git push origin "$HOMEPAGE_SIGNALS_BRANCH"
+
+          cat > pr_body.md <<BODY
+          Adds the signal approved when triaging \`$INDICATOR_ID\` to
+          \`$HOMEPAGE_SIGNALS_FILE\`, dropping the oldest so the three latest
+          remain. Merge to update the HDX homepage.
+
+          Opened automatically by [this triage run]($RUN_URL).
+          BODY
+
+          gh pr create \
+            --base "$TRIAGED_BRANCH" \
+            --head "$HOMEPAGE_SIGNALS_BRANCH" \
+            --title "Data: update latest signals for the HDX homepage ($INDICATOR_ID)" \
+            --body-file pr_body.md
+
+          rm pr_body.md

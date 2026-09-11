@@ -8,6 +8,7 @@ box::use(
 box::use(
   src/signals/delete_campaign_content,
   src/signals/template_data,
+  src/signals/update_homepage_signals,
   src/email/mailchimp/campaigns,
   cs = src/utils/cloud_storage,
   src/utils/get_env,
@@ -23,7 +24,9 @@ box::use(
 #'
 #' - `APPROVE`: Approve the campaign, in which case the campaign is sent
 #' (if necessary), the rows are deleted from
-#' `output/{indicator_id}/signals.parquet` and added to `output/signals.parquet`
+#' `output/{indicator_id}/signals.parquet` and added to `output/signals.parquet`,
+#' and one of the approved signals is added to the homepage file with
+#' `update_homepage_signals()`
 #'
 #' - `DELETE` the campaign content, which will delete the campaign content but
 #' leave the alerts information. This is so you don't recalculate when we would
@@ -230,6 +233,7 @@ dispatch_signals <- function(df, fn_signals, test, user_command) {
       # and then empties the indicator one
       cs$update_az_file(df_core_signals, "output/signals.parquet")
       save_core_signals_hdx(df_core_signals)
+      update_homepage_signals$update_homepage_signals(df)
       cs$update_az_file(df[0, ], fn_signals)
     } else {
       if (user_command == "ARCHIVE") {
@@ -328,18 +332,11 @@ save_core_signals_hdx <- function(df) {
   df_hdx_ind <- cs$read_az_file("input/indicator_mapping.parquet") |>
     dplyr$filter(!is.na(mc_interest))
 
-  # rename specific columns for use in HDX output
-  df <- dplyr$rename(
-    df,
-    plot = plot_url,
-    map = map_url,
-    plot2 = plot2_url,
-    other_images = other_images_urls,
-    campaign_url = campaign_url_archive
-  )
+  # rename and select specific columns for use in HDX output
+  df_hdx <- template_data$format_signals_hdx(df)
 
   cs$update_az_file(
-    df = df[df$indicator_id %in% df_hdx_ind$indicator_id, names(template_data$signals_hdx_template)],
+    df = df_hdx[df_hdx$indicator_id %in% df_hdx_ind$indicator_id, ],
     name = "output/signals.csv"
   )
 
