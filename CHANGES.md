@@ -2,6 +2,8 @@
 ## 0.6.2.0 (11 September 2026)
 - Fixed the IDMC disaster/conflict map generation erroring out and deleting all campaign content whenever a real displacement point fell inside a location's remote territory that's deliberately trimmed from its display basemap (e.g. Hawaii and Guam for the USA, Easter Island for Chile). The boundary check now falls back to the location's full, untrimmed boundary before treating a point as bad data, instead of the previous one-off per-country hotfix approach.
 - Added test coverage and a CI test entry for `src/images/maps`, which previously had none.
+## 0.6.1.1 (11 September 2026)
+- Added `src/signals/__init__.R` to the `test_signals.yml` CI matrix, so the `src/signals` tests added alongside `update_homepage_signals()` actually run on pull requests.
 
 ## 0.6.1.0 (10 September 2026)
 - Added `update_homepage_signals()`, which maintains `output/hdx_signals_latest3.csv`, the rolling window of the latest three signals displayed on the HDX homepage. On each approved triage one signal is added below the header and the oldest is dropped. Where a campaign covers several locations, the signal is chosen by preferring HRP locations, then `High concern` alerts, and picking at random among whatever remains.
