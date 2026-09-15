@@ -6,9 +6,22 @@ box::use(
 
 box::use(cs = src/utils/cloud_storage)
 
-#' Add campaign info to cholera alerts
+#' Add campaign info to IDMC displacement alerts
 #'
-#' @returns Data frame with campaign information
+#' Builds the campaign links shown to Signals subscribers for an IDMC
+#' displacement alert: the HDX dataset the signal was detected in, the IDMC
+#' country page, and up to three of the most recent source reports behind the
+#' displacement figures.
+#'
+#' @param df_alerts Data frame of alerts, one row per `iso3` and `date`.
+#' @param df_wrangled Data frame of wrangled displacement data. Unused, kept for
+#'   consistency with the `info()` signature shared by all indicators.
+#' @param df_raw Data frame of raw IDMC IDU events, providing the
+#'   `event_url`/`sources` pairs used as source reports.
+#'
+#' @returns Data frame with campaign information, one row per row of
+#'   `df_alerts`, with columns `hdx_url`, `source_url`, `other_urls` and
+#'   `further_information`.
 #'
 #' @export
 info <- function(df_alerts, df_wrangled, df_raw) {
@@ -73,7 +86,11 @@ info <- function(df_alerts, df_wrangled, df_raw) {
       by = "iso3"
     ) |>
     dplyr$mutate(
-      hdx_url = as.character(glue$glue("https://data.humdata.org/dataset/idmc-event-data-for-{tolower(iso3)}")),
+      # IDMC IDU datasets are published on HDX under the slug
+      # "{iso3}-idmc-idu-events", lowercased (e.g. mmr-idmc-idu-events)
+      hdx_url = as.character(
+        glue$glue("https://data.humdata.org/dataset/{tolower(iso3)}-idmc-idu-events")
+      ),
       source_url = url,
       source_url_info = ifelse(
         is.na(url),
