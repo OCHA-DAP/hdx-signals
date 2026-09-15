@@ -1,4 +1,7 @@
 # Changes
+## 0.6.2.2 (15 September 2026)
+- Removed the `push` trigger from the Triage Signals workflow, so it only runs on `workflow_dispatch` like every other run workflow. The trigger dated from the workflow's initial setup and fired on every push to every branch, where the required `INDICATOR_ID` input is unset, so the job failed with `Environment variable 'INDICATOR_ID' is empty or not set.` on each push to `main` and to every pull request branch.
+
 ## 0.6.2.1 (15 September 2026)
 - Fixed the HDX dataset link in IDMC displacement campaigns. `info()` built `hdx_url` from the retired `idmc-event-data-for-{iso3}` slug, which now 404s on HDX; it uses the current `{iso3}-idmc-idu-events` slug instead. This affected both the `hdx_url` column and the "Access the data directly on HDX" link in the email body.
 
