@@ -32,6 +32,6 @@ raw <- function() {
     delim = ";"
   ) |>
     dplyr$mutate(
-      iso3 = location_codes$asap_to_iso3(asap0_id)
+      iso3 = location_codes$names_to_iso3(asap0_name)
     )
 }

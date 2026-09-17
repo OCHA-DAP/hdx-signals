@@ -1,4 +1,6 @@
 # Changes
+## 0.6.2.1 (17 September 2026)
+- Fixed the JRC agricultural hotspots pipeline failing with `Missing location information`. JRC renumbered their ASAP0 country ids, so the `input/asap_iso3.parquet` mapping matched every country to the wrong ISO3 code and six to none. ISO3 codes are now derived from the `asap0_name` column of the JRC file via `names_to_iso3()`, and the stale ASAP id mapping (`asap_to_iso3()`, `src-static/update_asap_codes.R` and its workflow) has been removed.
 ## 0.6.2.2 (15 September 2026)
 - Removed the `push` trigger from the Triage Signals workflow, so it only runs on `workflow_dispatch` like every other run workflow. The trigger dated from the workflow's initial setup and fired on every push to every branch, where the required `INDICATOR_ID` input is unset, so the job failed with `Environment variable 'INDICATOR_ID' is empty or not set.` on each push to `main` and to every pull request branch.
 
