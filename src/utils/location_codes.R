@@ -103,13 +103,3 @@ iso3_to_regions <- function(iso3) {
   df_metadata <- cs$read_az_file_cached("input/locations_metadata.parquet")
   df_metadata$region[match(iso3, df_metadata$iso3)]
 }
-
-#' Get ISO3 code from ASAP0 ID
-#'
-#' Gets ISO3 code from ASAP0 id. Uses the `asap_iso3.parquet` file for coding.
-#'
-#' @export
-asap_to_iso3 <- function(asap0_id) {
-  df_asap <- cs$read_az_file_cached("input/asap_iso3.parquet")
-  df_asap$iso3[match(asap0_id, df_asap$asap0_id)]
-}

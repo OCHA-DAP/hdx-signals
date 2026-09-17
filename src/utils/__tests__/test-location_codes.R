@@ -77,16 +77,3 @@ test_that("iso3_to_regions works correctly", {
     c("N-reg", "X-reg")
   )
 })
-
-test_that("asap_to_iso3 works correctly", {
-  stub(asap_to_iso3, "cs$read_az_file_cached", data.frame(
-    asap0_id = 1:10,
-    iso3 = letters[1:10]
-  ))
-
-  expect_equal(
-    asap_to_iso3(c(1, 5, 3)),
-    c("a", "e", "c")
-  )
-})
-
