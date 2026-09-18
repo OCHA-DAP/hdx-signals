@@ -267,7 +267,7 @@ container_wfp <- function() {
 #'
 #' Holds output written by other team pipelines, each under its own prefix,
 #' rather than by this repo. Currently used for `ds-seas5-skill/`, whose
-#' processed SEAS5 forecast skill statistics feed the `sea5_anomaly` indicator.
+#' latest processed SEAS5 signal inputs feed the `sea5_anomaly` indicator.
 #'
 #' @returns The `projects` blob container
 container_projects <- function() {
