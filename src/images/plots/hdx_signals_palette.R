@@ -43,3 +43,23 @@ map_boundary <- "#C4D0D1"
 #' @rdname primary_blue
 #' @export
 map_label <- "#3F4748"
+
+#' @rdname primary_blue
+#' @export
+primary_blue_light <- "#74A1E8"
+
+#' @rdname primary_blue
+#' @export
+warning_orange_light <- "#E5BC7F"
+
+#' @rdname primary_blue
+#' @export
+warning_orange <- "#D48F2A"
+
+#' @rdname primary_blue
+#' @export
+warning_orange_dark <- "#7F5619"
+
+#' @rdname primary_blue
+#' @export
+neutral_grey_dark <- "#7E8E8F"
