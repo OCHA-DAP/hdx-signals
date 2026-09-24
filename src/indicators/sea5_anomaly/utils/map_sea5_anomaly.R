@@ -1,6 +1,7 @@
 box::use(
   dplyr,
   gg = ggplot2,
+  ggpattern,
   glue,
   logger,
   stats
@@ -13,19 +14,22 @@ box::use(
   src/images/maps/sf_adm0,
   src/images/maps/map_theme,
   src/indicators/sea5_anomaly/utils/alert_sea5_anomaly,
+  src/indicators/sea5_anomaly/utils/palette_sea5_anomaly,
   src/utils/download_shapefile,
   src/utils/iso3_shift_longitude
 )
 
-# Return period classes for alerting units, light to dark within each direction
-rp_breaks <- c(5, 10, 20, Inf)
+# Return period classes for alerting units, light to dark within each direction.
+# In-season units that do not qualify (return period below the threshold or low
+# hindcast skill) and off-season units get their own neutral classes so every
+# unit on the map is accounted for in the legend. Off-season units are striped.
+rp_breaks <- c(alert_sea5_anomaly$seas5_rp_years, 10, 20, Inf)
 rp_labels <- c("5 to 10 years", "10 to 20 years", "20 years or more")
-not_alerting_label <- "Not alerting"
-
-direction_palettes <- list(
-  dry = c("#DDA555", "#B07A2F", "#7F5619"),
-  wet = c("#74A1E8", hdx_signals_palette$primary_blue, hdx_signals_palette$primary_blue_dark)
-)
+# wrapped so the legend stays narrow enough for the small map canvases
+not_alerting_label <- paste0("RP under ", alert_sea5_anomaly$seas5_rp_years, "\nor low skill")
+off_season_label <- "Off season"
+class_levels <- c(rp_labels, not_alerting_label, off_season_label)
+class_patterns <- stats$setNames(c(rep("none", 4), "stripe"), class_levels)
 
 #' Map SEA5 anomaly
 #'
@@ -41,8 +45,9 @@ direction_palettes <- list(
 map <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
   df_map <- df_alerts |>
     dplyr$mutate(
+      # two lines so the title fits the narrower map canvases
       title = paste0(
-        "Areas forecasting an unusually ", direction, " ",
+        "Areas forecasting an unusually\n", direction, " ",
         trimester, " ", season_year, " season"
       )
     )
@@ -63,7 +68,10 @@ map <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
 #'
 #' Recomputes the firing signal for the latest issuance up to the alert date
 #' with `alert_sea5_anomaly$signal_shares()`, then shades every admin 1 unit
-#' that qualifies for that trimester and direction by its return period class.
+#' that qualifies for that trimester and direction by its return period class,
+#' using the direction's colour scale from `palette_sea5_anomaly`. Units
+#' outside their rainy season for that trimester are greyed out and striped;
+#' in-season units that do not qualify are shown in the neutral map fill.
 #' Boundaries come from the OCHA CODs on fieldmaps.io, the same source as the
 #' pcodes in the data. Returns `NULL` when the boundaries cannot be downloaded
 #' so the campaign is generated without a map.
@@ -99,12 +107,13 @@ sea5_anomaly_map <- function(df_wrangled, df_raw, title, date) {
     dplyr$filter(trimester == signal$trimester) |>
     dplyr$mutate(
       rp = if (signal$direction == "dry") dry_rp else wet_rp,
-      rp_class = dplyr$if_else(
-        alert_sea5_anomaly$unit_qualifies(rp, pearson_r, in_season_flat),
-        as.character(cut(rp, breaks = rp_breaks, labels = rp_labels, right = FALSE)),
-        not_alerting_label
+      rp_class = dplyr$case_when(
+        !(in_season_flat %in% TRUE) ~ off_season_label,
+        alert_sea5_anomaly$unit_qualifies(rp, pearson_r, in_season_flat) ~
+          as.character(cut(rp, breaks = rp_breaks, labels = rp_labels, right = FALSE)),
+        .default = not_alerting_label
       ),
-      rp_class = factor(rp_class, levels = c(rp_labels, not_alerting_label))
+      rp_class = factor(rp_class, levels = class_levels)
     )
 
   sf_units <- sf_adm1 |>
@@ -114,25 +123,40 @@ sea5_anomaly_map <- function(df_wrangled, df_raw, title, date) {
 
   sf_list <- sf_adm0$sf_adm0(iso3 = iso3, action = "nothing")
 
+  class_fills <- stats$setNames(
+    c(
+      palette_sea5_anomaly$direction_palettes[[signal$direction]],
+      hdx_signals_palette$map_fill,
+      hdx_signals_palette$map_boundary
+    ),
+    class_levels
+  )
+
   gg$ggplot() +
     gg$geom_sf(
       data = sf_list$sf_adm0
     ) +
-    gg$geom_sf(
+    ggpattern$geom_sf_pattern(
       data = sf_units,
-      mapping = gg$aes(fill = rp_class),
+      mapping = gg$aes(fill = rp_class, pattern = rp_class),
       color = "white",
       linewidth = 0.1,
+      pattern_fill = hdx_signals_palette$neutral_grey_dark,
+      pattern_colour = hdx_signals_palette$neutral_grey_dark,
+      pattern_angle = 45,
+      pattern_density = 0.3,
+      pattern_spacing = 0.02,
+      pattern_key_scale_factor = 0.5,
       # draw a swatch for every class, including those absent from this
       # country, so the legend reads the same across campaigns
-      key_glyph = "rect",
       show.legend = TRUE
     ) +
     gg$scale_fill_manual(
-      values = stats$setNames(
-        c(direction_palettes[[signal$direction]], hdx_signals_palette$map_fill),
-        c(rp_labels, not_alerting_label)
-      ),
+      values = class_fills,
+      drop = FALSE
+    ) +
+    ggpattern$scale_pattern_manual(
+      values = class_patterns,
       drop = FALSE
     ) +
     gg$coord_sf(
@@ -143,6 +167,7 @@ sea5_anomaly_map <- function(df_wrangled, df_raw, title, date) {
       x = "",
       y = "",
       fill = "Return period",
+      pattern = "Return period",
       title = title,
       caption = caption$caption(
         indicator_id = "sea5_anomaly",

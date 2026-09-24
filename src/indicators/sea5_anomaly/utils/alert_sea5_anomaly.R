@@ -8,6 +8,7 @@ box::use(
 # (https://ocha-dap.github.io/ds-seas5-skill/hdx-signal/). Leads below 0 are
 # in-season trimesters that blend observations into the forecast; they are
 # excluded so alerts stay anticipatory and avoid the inflated in-season skill.
+#' @export
 seas5_frac_units <- 0.6
 
 #' @export
