@@ -94,6 +94,16 @@ df <- dplyr$bind_rows(
     static_segment = 7392229,
     banner_url = "https://mcusercontent.com/ea3f905d50ea939780139789d/images/b21825e8-0197-dfdf-b99a-ec498308f7b8.png", #nolint
     data_source = "INFORM Severity - ACAPS"
+  ),
+  dplyr$tibble( # ECMWF SEAS5 seasonal rainfall anomaly
+    indicator_id = "seas5_anomaly",
+    mc_interest = NA_character_,
+    mc_tag = NA_character_,
+    mc_folder = "HDX Signals - SEA5 Anomaly",
+    indicator_subject = "Seasonal rainfall forecast",
+    static_segment = NA_real_,
+    banner_url = NA_character_,
+    data_source = "Seasonal rainfall forecast - ECMWF SEAS5"
   )
 )
 
