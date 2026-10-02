@@ -99,7 +99,7 @@ df <- dplyr$bind_rows(
     indicator_id = "seas5_anomaly",
     mc_interest = NA_character_,
     mc_tag = NA_character_,
-    mc_folder = "HDX Signals - SEA5 Anomaly",
+    mc_folder = "HDX Signals - SEAS5 Anomaly",
     indicator_subject = "Seasonal rainfall forecast",
     static_segment = NA_real_,
     banner_url = NA_character_,
