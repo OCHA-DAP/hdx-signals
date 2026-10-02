@@ -1,0 +1,14 @@
+Please condense the following information into a single 10 word line,
+similar to text you might see on a news ticker. Outputs could look like
+the following 2 examples:
+'Unusually dry October to December rains forecast across most of the country' or
+'Exceptionally wet main season expected, strongest in the south'.
+
+Do not include the country name in the output. This output is invalid:
+'Unusually wet short rains forecast for Somalia'.
+
+Make clear that this is a forecast, not observed rainfall. Expect the reader to
+have no context, but this is intended to capture their attention, so keep the
+messaging simple, clear and punchy.
+
+Only use the following information in your summary -->
