@@ -11,8 +11,8 @@ box::use(
 
 
 # Widest map canvas in inches, which the title size is tuned for
-MAX_MAP_WIDTH <- 6
-TITLE_SIZE <- 14
+max_map_width <- 6
+base_title_size <- 14
 
 #' Produces theme changes specific to maps
 #'
@@ -39,13 +39,13 @@ map_theme <- function(iso3, use_map_settings = TRUE, margin_location = c("title"
       justification = "top",
       location = "plot",
       direction = "vertical",
-      width = MAX_MAP_WIDTH
+      width = max_map_width
     )
   }
 
   # keep the one-line title inside the canvas: narrow maps (down to 4 inches
   # wide) scale the title down in proportion to the width
-  title_size <- TITLE_SIZE * min(df_ms$width, MAX_MAP_WIDTH) / MAX_MAP_WIDTH
+  title_size <- base_title_size * min(df_ms$width, max_map_width) / max_map_width
 
   theme_signals$theme_signals(margin_location = margin_location, x_axis_ticks = FALSE) +
     gg$theme(
