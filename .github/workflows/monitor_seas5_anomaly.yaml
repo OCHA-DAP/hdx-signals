@@ -1,4 +1,4 @@
-name: Monitor SEA5 anomaly
+name: Monitor SEAS5 anomaly
 
 on:
     workflow_dispatch:
@@ -80,4 +80,4 @@ jobs:
                 retry_on: error
                 retry_wait_seconds: 120
                 shell: bash
-                command: Rscript ./src/indicators/sea5_anomaly/__init__.R
+                command: Rscript ./src/indicators/seas5_anomaly/__init__.R

@@ -3,7 +3,7 @@ box::use(
   glue
 )
 
-#' Add campaign info to SEA5 anomaly alerts
+#' Add campaign info to SEAS5 anomaly alerts
 #'
 #' @returns Data frame with campaign information
 #'

@@ -1,6 +1,6 @@
 box::use(cs = src/utils/cloud_storage)
 
-#' Download raw SEA5 anomaly data
+#' Download raw SEAS5 anomaly data
 #'
 #' Reads the latest ADM1-level HDX Signals inputs written by the
 #' `ds-seas5-skill` pipeline to the shared `projects` container on the dev

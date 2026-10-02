@@ -6,19 +6,19 @@ box::use(
 )
 
 box::use(
-  src/indicators/sea5_anomaly/utils/alert_sea5_anomaly,
-  src/indicators/sea5_anomaly/utils/plot_sea5_anomaly,
+  src/indicators/seas5_anomaly/utils/alert_seas5_anomaly,
+  src/indicators/seas5_anomaly/utils/plot_seas5_anomaly,
   src/signals/track_summary_input,
   src/utils/get_prompts,
   src/utils/python_setup
 )
 
-sea5_anomaly <- "sea5_anomaly"
+seas5_anomaly <- "seas5_anomaly"
 
 # admin 1 areas named in the summariser input, strongest anomaly first
 max_units <- 5L
 
-#' Add summary to SEA5 anomaly alerts
+#' Add summary to SEAS5 anomaly alerts
 #'
 #' Generates the long and short AI summaries for every alert. Unlike the other
 #' indicators there is no narrative source text: the model is given only a
@@ -27,7 +27,7 @@ max_units <- 5L
 #' with `track_summary_input`.
 #'
 #' @param df_alerts Data frame of alerts, with `location` and the signal columns
-#'     carried by `alert_sea5_anomaly$alert()`
+#'     carried by `alert_seas5_anomaly$alert()`
 #' @param df_wrangled Wrangled data frame
 #' @param df_raw Raw data frame, not used
 #'
@@ -35,7 +35,7 @@ max_units <- 5L
 #'
 #' @export
 summary <- function(df_alerts, df_wrangled, df_raw) {
-  prompts <- get_prompts$get_prompts(sea5_anomaly)
+  prompts <- get_prompts$get_prompts(seas5_anomaly)
 
   df_summary <- df_alerts |>
     dplyr$mutate(
@@ -74,7 +74,7 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
     dplyr$transmute(
       location_iso3 = iso3,
       date_generated = date,
-      indicator_id = sea5_anomaly,
+      indicator_id = seas5_anomaly,
       info,
       manual_info = NA_character_,
       use_manual_info = FALSE,
@@ -104,7 +104,7 @@ few_units_caveat <- function(n_units) {
 #'
 #' Builds the plain-text input for the AI summary of one alert: the signal
 #' (share of admin 1 areas, direction, trimester), the outlook for every
-#' forecast trimester from `plot_sea5_anomaly$summarise_trimesters()` and the
+#' forecast trimester from `plot_seas5_anomaly$summarise_trimesters()` and the
 #' `max_units` alerting admin 1 areas with the largest return period.
 #'
 #' @param alert Single-row alerts data frame
@@ -115,7 +115,7 @@ alert_info <- function(alert, df_wrangled) {
   df_country <- dplyr$filter(df_wrangled, iso3 == alert$iso3, date == alert$date)
 
   trimester_lines <- df_country |>
-    plot_sea5_anomaly$summarise_trimesters() |>
+    plot_seas5_anomaly$summarise_trimesters() |>
     dplyr$mutate(
       status = dplyr$case_when(
         alerting ~ "in season, alerting",
@@ -125,7 +125,7 @@ alert_info <- function(alert, df_wrangled) {
       line = glue$glue(
         "- {trimester} {season_year} ({status}): forecast {round(forecast_mm)} mm ",
         "vs {round(hist_mean_mm)} mm historical average, {direction}, ",
-        "return period {alert_sea5_anomaly$format_rp(rp)} years."
+        "return period {alert_seas5_anomaly$format_rp(rp)} years."
       )
     ) |>
     dplyr$pull(line)
@@ -133,9 +133,9 @@ alert_info <- function(alert, df_wrangled) {
   unit_line <- df_country |>
     dplyr$filter(trimester == alert$trimester) |>
     dplyr$mutate(rp = if (alert$direction == "dry") dry_rp else wet_rp) |>
-    dplyr$filter(alert_sea5_anomaly$unit_qualifies(rp, pearson_r, in_season_flat)) |>
+    dplyr$filter(alert_seas5_anomaly$unit_qualifies(rp, pearson_r, in_season_flat)) |>
     dplyr$slice_max(rp, n = max_units, with_ties = FALSE) |>
-    dplyr$mutate(unit = paste0(name, " (", alert_sea5_anomaly$format_rp(rp), " years)")) |>
+    dplyr$mutate(unit = paste0(name, " (", alert_seas5_anomaly$format_rp(rp), " years)")) |>
     dplyr$pull(unit) |>
     paste(collapse = ", ")
 
@@ -150,7 +150,7 @@ alert_info <- function(alert, df_wrangled) {
       "{alert$trimester} {alert$season_year} rainy season, a 1-in-{rp_years}-year ",
       "event or rarer with at least moderate forecast skill.",
       share = scales$label_percent(accuracy = 1)(alert$value),
-      rp_years = alert_sea5_anomaly$seas5_rp_years
+      rp_years = alert_seas5_anomaly$seas5_rp_years
     ),
     paste(
       "Outlook by trimester (mean over the admin 1 areas in season, or all areas",

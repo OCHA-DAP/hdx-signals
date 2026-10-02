@@ -1,9 +1,9 @@
 box::use(
   src/images/plots/hdx_signals_palette,
-  src/indicators/sea5_anomaly/utils/alert_sea5_anomaly
+  src/indicators/seas5_anomaly/utils/alert_seas5_anomaly
 )
 
-#' Return period classes and colours shared by the SEA5 anomaly plot and map
+#' Return period classes and colours shared by the SEAS5 anomaly plot and map
 #'
 #' Return periods at or above the signal threshold fall in three classes, light
 #' to dark. Dry anomalies use the HDX warning (orange) scale and wet anomalies
@@ -12,7 +12,7 @@ box::use(
 #' share the neutral `below_threshold_fill`.
 #'
 #' @export
-rp_breaks <- c(alert_sea5_anomaly$seas5_rp_years, 10, 20, Inf)
+rp_breaks <- c(alert_seas5_anomaly$seas5_rp_years, 10, 20, Inf)
 
 #' @rdname rp_breaks
 #' @export

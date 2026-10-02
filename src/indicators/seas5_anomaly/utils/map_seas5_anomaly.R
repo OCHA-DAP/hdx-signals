@@ -13,24 +13,24 @@ box::use(
   src/images/plots/hdx_signals_palette,
   src/images/maps/sf_adm0,
   src/images/maps/map_theme,
-  src/indicators/sea5_anomaly/utils/alert_sea5_anomaly,
-  src/indicators/sea5_anomaly/utils/palette_sea5_anomaly,
+  src/indicators/seas5_anomaly/utils/alert_seas5_anomaly,
+  src/indicators/seas5_anomaly/utils/palette_seas5_anomaly,
   src/utils/download_shapefile,
   src/utils/iso3_shift_longitude
 )
 
-# Return period classes for alerting units come from `palette_sea5_anomaly`,
+# Return period classes for alerting units come from `palette_seas5_anomaly`,
 # light to dark within each direction. In-season units that do not qualify
 # (return period below the threshold or low hindcast skill) and off-season
 # units get their own neutral classes so every unit on the map is accounted for
 # in the legend. Off-season units are striped.
 # wrapped so the legend stays narrow enough for the small map canvases
-not_alerting_label <- paste0("RP under ", alert_sea5_anomaly$seas5_rp_years, "\nor low skill")
+not_alerting_label <- paste0("RP under ", alert_seas5_anomaly$seas5_rp_years, "\nor low skill")
 off_season_label <- "Off season"
-class_levels <- c(palette_sea5_anomaly$rp_labels, not_alerting_label, off_season_label)
+class_levels <- c(palette_seas5_anomaly$rp_labels, not_alerting_label, off_season_label)
 class_patterns <- stats$setNames(c(rep("none", 4), "stripe"), class_levels)
 
-#' Map SEA5 anomaly
+#' Map SEAS5 anomaly
 #'
 #' Maps the admin 1 units alerting for the country's firing trimester, coloured
 #' by the return period of the forecast anomaly in the signal direction.
@@ -55,7 +55,7 @@ map <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
     df_alerts = df_map,
     df_wrangled = df_wrangled,
     df_raw = df_raw,
-    image_fn = sea5_anomaly_map,
+    image_fn = seas5_anomaly_map,
     image_use = "map",
     width = 6,
     height = 4,
@@ -63,12 +63,12 @@ map <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
   )
 }
 
-#' Map SEA5 anomaly data for a single country
+#' Map SEAS5 anomaly data for a single country
 #'
 #' Recomputes the firing signal for the latest issuance up to the alert date
-#' with `alert_sea5_anomaly$signal_shares()`, then shades every admin 1 unit
+#' with `alert_seas5_anomaly$signal_shares()`, then shades every admin 1 unit
 #' that qualifies for that trimester and direction by its return period class,
-#' using the direction's colour scale from `palette_sea5_anomaly`. Units
+#' using the direction's colour scale from `palette_seas5_anomaly`. Units
 #' outside their rainy season for that trimester are greyed out and striped;
 #' in-season units that do not qualify are shown in the neutral map fill.
 #' Boundaries come from the OCHA CODs on fieldmaps.io, the same source as the
@@ -81,11 +81,11 @@ map <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
 #' @param date Date of the alert.
 #'
 #' @returns Admin 1 choropleth ggplot object, or `NULL`
-sea5_anomaly_map <- function(df_wrangled, df_raw, title, date) {
+seas5_anomaly_map <- function(df_wrangled, df_raw, title, date) {
   iso3 <- unique(df_wrangled$iso3)
   df_issuance <- dplyr$filter(df_wrangled, date == max(date))
   signal <- df_issuance |>
-    alert_sea5_anomaly$signal_shares() |>
+    alert_seas5_anomaly$signal_shares() |>
     dplyr$slice_head(n = 1)
 
   sf_adm1 <- tryCatch(
@@ -108,8 +108,8 @@ sea5_anomaly_map <- function(df_wrangled, df_raw, title, date) {
       rp = if (signal$direction == "dry") dry_rp else wet_rp,
       rp_class = dplyr$case_when(
         !(in_season_flat %in% TRUE) ~ off_season_label,
-        alert_sea5_anomaly$unit_qualifies(rp, pearson_r, in_season_flat) ~
-          as.character(palette_sea5_anomaly$rp_class(rp)),
+        alert_seas5_anomaly$unit_qualifies(rp, pearson_r, in_season_flat) ~
+          as.character(palette_seas5_anomaly$rp_class(rp)),
         .default = not_alerting_label
       ),
       rp_class = factor(rp_class, levels = class_levels)
@@ -124,13 +124,13 @@ sea5_anomaly_map <- function(df_wrangled, df_raw, title, date) {
 
   # the data source name is long, so the boundary source goes on its own line
   # to keep the caption inside the narrow map canvases
-  map_caption <- caption$caption(indicator_id = "sea5_anomaly", iso3 = iso3, map = TRUE) |>
+  map_caption <- caption$caption(indicator_id = "seas5_anomaly", iso3 = iso3, map = TRUE) |>
     sub(pattern = "; Boundaries", replacement = "\nBoundaries", fixed = TRUE)
 
   class_fills <- stats$setNames(
     c(
-      palette_sea5_anomaly$direction_palettes[[signal$direction]],
-      palette_sea5_anomaly$below_threshold_fill,
+      palette_seas5_anomaly$direction_palettes[[signal$direction]],
+      palette_seas5_anomaly$below_threshold_fill,
       hdx_signals_palette$map_boundary
     ),
     class_levels

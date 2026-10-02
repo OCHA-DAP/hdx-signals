@@ -13,8 +13,8 @@ box::use(
   src/images/plots/caption,
   src/images/plots/hdx_signals_palette,
   src/images/plots/theme_signals,
-  src/indicators/sea5_anomaly/utils/alert_sea5_anomaly,
-  src/indicators/sea5_anomaly/utils/palette_sea5_anomaly
+  src/indicators/seas5_anomaly/utils/alert_seas5_anomaly,
+  src/indicators/seas5_anomaly/utils/palette_seas5_anomaly
 )
 
 # Bars are positioned by `series` (two per trimester). Forecast bars are filled
@@ -25,12 +25,12 @@ box::use(
 # gradient).
 series_levels <- c("Historical average", "Forecast")
 rp_limit <- 20 # the gradient saturates here, matching the map's darkest class
-threshold <- alert_sea5_anomaly$seas5_rp_years
+threshold <- alert_seas5_anomaly$seas5_rp_years
 gradient_stops <- c(-rp_limit, -10, -threshold, 0, threshold, 10, rp_limit)
 gradient_colors <- c(
-  rev(palette_sea5_anomaly$direction_palettes$dry),
+  rev(palette_seas5_anomaly$direction_palettes$dry),
   hdx_signals_palette$hairline,
-  palette_sea5_anomaly$direction_palettes$wet
+  palette_seas5_anomaly$direction_palettes$wet
 )
 gradient_breaks <- c(-rp_limit, -10, -threshold, threshold, 10, rp_limit)
 gradient_labels <- c(paste0("Dry ", rp_limit, "+"), "10", threshold, threshold, "10", paste0("Wet ", rp_limit, "+"))
@@ -49,7 +49,7 @@ season_patterns <- c("TRUE" = "none", "FALSE" = "stripe")
 dodge_width <- 0.85
 bar_width <- 0.8 # halved by the dodge, so each bar is 0.4 wide with a 0.025 gap
 
-#' Plot SEA5 anomaly
+#' Plot SEAS5 anomaly
 #'
 #' Plots the forecast and historical average rainfall of the country for every
 #' trimester of the issuance.
@@ -70,7 +70,7 @@ plot <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
     df_alerts = df_plot,
     df_wrangled = df_wrangled,
     df_raw = df_raw,
-    image_fn = sea5_anomaly_plot,
+    image_fn = seas5_anomaly_plot,
     image_use = "plot",
     height = 4,
     width = 6
@@ -87,7 +87,7 @@ plot <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
 #' it can still be drawn, and the signal does not assess it. The return period
 #' shown for a trimester is in the direction of the country signal when the
 #' trimester alerts (60% or more of in-season units qualifying, see
-#' `alert_sea5_anomaly$alert()`), otherwise in the direction of the mean
+#' `alert_seas5_anomaly$alert()`), otherwise in the direction of the mean
 #' forecast relative to the historical average.
 #'
 #' @param df_wrangled Wrangled data frame for a single country
@@ -101,12 +101,12 @@ summarise_trimesters <- function(df_wrangled) {
   df_issuance <- dplyr$filter(
     df_wrangled,
     date == max(date),
-    lead >= alert_sea5_anomaly$seas5_min_lead
+    lead >= alert_seas5_anomaly$seas5_min_lead
   )
 
   df_alerting <- df_issuance |>
-    alert_sea5_anomaly$signal_shares() |>
-    dplyr$filter(frac_qualifying >= alert_sea5_anomaly$seas5_frac_units) |>
+    alert_seas5_anomaly$signal_shares() |>
+    dplyr$filter(frac_qualifying >= alert_seas5_anomaly$seas5_frac_units) |>
     dplyr$distinct(trimester, alert_direction = direction)
 
   df_issuance |>
@@ -134,7 +134,7 @@ summarise_trimesters <- function(df_wrangled) {
     dplyr$arrange(lead)
 }
 
-#' Plot SEA5 anomaly data for a single country
+#' Plot SEAS5 anomaly data for a single country
 #'
 #' Grouped bar chart with, for every trimester of the issuance, the historical
 #' average rainfall next to the forecast rainfall, both as means of the admin 1
@@ -150,7 +150,7 @@ summarise_trimesters <- function(df_wrangled) {
 #' @param date Date of the alert.
 #'
 #' @returns Bar chart of forecast against historical rainfall by trimester
-sea5_anomaly_plot <- function(df_wrangled, df_raw, title, date) {
+seas5_anomaly_plot <- function(df_wrangled, df_raw, title, date) {
   df_bars <- summarise_trimesters(df_wrangled) |>
     dplyr$mutate(
       trimester = forcats$fct_reorder(paste(trimester, season_year, sep = "\n"), lead)
@@ -184,7 +184,7 @@ sea5_anomaly_plot <- function(df_wrangled, df_raw, title, date) {
 
   df_labels <- df_bars |>
     dplyr$filter(series == "Forecast") |>
-    dplyr$mutate(label = paste(alert_sea5_anomaly$format_rp(rp), "y RP"))
+    dplyr$mutate(label = paste(alert_seas5_anomaly$format_rp(rp), "y RP"))
 
   gg$ggplot(
     data = df_bars,
@@ -249,7 +249,7 @@ sea5_anomaly_plot <- function(df_wrangled, df_raw, title, date) {
       color = "",
       title = title,
       caption = caption$caption(
-        indicator_id = "sea5_anomaly",
+        indicator_id = "seas5_anomaly",
         iso3 = unique(df_wrangled$iso3),
         extra_caption = "Means over the admin 1 areas in season each trimester."
       )
