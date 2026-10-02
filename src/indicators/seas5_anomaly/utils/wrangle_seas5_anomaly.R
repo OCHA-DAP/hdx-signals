@@ -1,6 +1,6 @@
 box::use(dplyr)
 
-#' Wrangle SEA5 anomaly data
+#' Wrangle SEAS5 anomaly data
 #'
 #' Adds the SEAS5 issuance `date` (first of `issued_month` in `issued_year`),
 #' which the signals framework uses to filter and join alerts, converts the
@@ -8,7 +8,7 @@ box::use(dplyr)
 #' drops the pandas index column written by the upstream pipeline. All other
 #' columns keep the names they have in the source file.
 #'
-#' @param df_raw Raw SEA5 anomaly data frame
+#' @param df_raw Raw SEAS5 anomaly data frame
 #'
 #' @returns Wrangled data frame, one row per (`pcode`, `trimester`)
 #'

@@ -92,7 +92,7 @@ signal_shares <- function(df_wrangled) {
     dplyr$arrange(iso3, date, dplyr$desc(frac_qualifying), lead, direction)
 }
 
-#' Creates SEA5 anomaly alerts dataset
+#' Creates SEAS5 anomaly alerts dataset
 #'
 #' Evaluates the dry and wet signals separately for every country, issuance and
 #' forecast trimester with `signal_shares()`. A signal fires when at least 60% of
@@ -118,7 +118,7 @@ alert <- function(df_wrangled) {
     dplyr$transmute(
       iso3,
       indicator_name = "anomaly",
-      indicator_source = "sea5",
+      indicator_source = "seas5",
       indicator_id = paste(indicator_source, indicator_name, sep = "_"),
       date,
       alert_level_numeric = 1L,
