@@ -19,6 +19,20 @@ seas5_r_min <- 0.3
 #' @export
 seas5_min_lead <- 0L
 
+#' @export
+seas5_min_units <- 3L
+
+#' Format a return period for labels and text
+#'
+#' @param rp Return period in years
+#'
+#' @returns Character vector, one decimal at most, e.g. `"7.7"` or `"46"`
+#'
+#' @export
+format_rp <- function(rp) {
+  scales$number(rp, accuracy = 0.1, drop0trailing = TRUE)
+}
+
 #' Does an admin 1 unit qualify for the signal
 #'
 #' A unit qualifies when its return period in the signal direction is at least
@@ -36,18 +50,23 @@ unit_qualifies <- function(rp, pearson_r, in_season_flat) {
   (rp >= seas5_rp_years & pearson_r >= seas5_r_min & in_season_flat) %in% TRUE
 }
 
-#' Share of admin 1 units qualifying for each candidate signal
+#' Share of in-season admin 1 units qualifying for each candidate signal
 #'
 #' Pivots `dry_rp` and `wet_rp` into a `direction` column and, for every
 #' country, issuance, trimester and direction, counts the units that satisfy
-#' `unit_qualifies()`. Only leads of at least `seas5_min_lead` are kept. Rows
-#' are ordered so the first row per `iso3` and `date` is the strongest signal:
-#' largest qualifying share, then shortest lead, then dry before wet.
+#' `unit_qualifies()` as a share of the units in their rainy season for that
+#' trimester, so a country only partly in season can still signal. Trimesters
+#' with no unit in season are dropped. `few_units` flags signals resting on
+#' fewer than `seas5_min_units` in-season units. Only leads of at least
+#' `seas5_min_lead` are kept. Rows are ordered so the first row per `iso3` and
+#' `date` is the strongest signal: largest qualifying share, then shortest
+#' lead, then dry before wet.
 #'
 #' @param df_wrangled Wrangled data frame
 #'
 #' @returns Data frame with `iso3`, `date`, `trimester`, `season_year`, `lead`,
-#'     `direction`, `n_units`, `n_qualifying` and `frac_qualifying`
+#'     `direction`, `n_units` (in season), `n_qualifying`, `frac_qualifying`
+#'     and `few_units`
 #'
 #' @export
 signal_shares <- function(df_wrangled) {
@@ -61,11 +80,15 @@ signal_shares <- function(df_wrangled) {
     ) |>
     dplyr$group_by(iso3, date, trimester, season_year, lead, direction) |>
     dplyr$summarise(
-      n_units = dplyr$n(),
+      n_units = sum(in_season_flat %in% TRUE),
       n_qualifying = sum(unit_qualifies(rp, pearson_r, in_season_flat)),
       .groups = "drop"
     ) |>
-    dplyr$mutate(frac_qualifying = n_qualifying / n_units) |>
+    dplyr$filter(n_units > 0) |>
+    dplyr$mutate(
+      frac_qualifying = n_qualifying / n_units,
+      few_units = n_units < seas5_min_units
+    ) |>
     dplyr$arrange(iso3, date, dplyr$desc(frac_qualifying), lead, direction)
 }
 
@@ -73,12 +96,14 @@ signal_shares <- function(df_wrangled) {
 #'
 #' Evaluates the dry and wet signals separately for every country, issuance and
 #' forecast trimester with `signal_shares()`. A signal fires when at least 60% of
-#' the country's admin 1 units qualify.
+#' the country's in-season admin 1 units qualify. Signals resting on fewer than
+#' `seas5_min_units` in-season units still fire but are flagged with
+#' `few_units`, which the title and the summary caveat.
 #'
 #' Since campaigns are keyed on `iso3` and `date`, a country that fires for
 #' several trimesters or both directions in one issuance keeps only its
-#' strongest signal. The chosen `direction`, `trimester`, `season_year`, `lead`
-#' and unit counts are carried alongside the required alert columns.
+#' strongest signal. The chosen `direction`, `trimester`, `season_year`, `lead`,
+#' unit counts and `few_units` are carried alongside the required alert columns.
 #'
 #' @param df_wrangled Wrangled data frame
 #'
@@ -104,11 +129,13 @@ alert <- function(df_wrangled) {
       lead,
       n_units,
       n_qualifying,
+      few_units,
       title = paste0(
         scales$label_percent(accuracy = 1)(value),
-        " of admin 1 areas forecast an unusually ", direction, " ",
+        " of in-season admin 1 areas forecast an unusually ", direction, " ",
         trimester, " ", season_year, " season (1-in-", seas5_rp_years,
-        "-year event or rarer)"
+        "-year event or rarer)",
+        dplyr$if_else(few_units, paste0(" - only ", n_units, " in season"), "")
       ),
       extreme_case = FALSE
     )

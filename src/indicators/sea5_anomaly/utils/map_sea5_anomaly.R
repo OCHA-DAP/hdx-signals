@@ -19,16 +19,15 @@ box::use(
   src/utils/iso3_shift_longitude
 )
 
-# Return period classes for alerting units, light to dark within each direction.
-# In-season units that do not qualify (return period below the threshold or low
-# hindcast skill) and off-season units get their own neutral classes so every
-# unit on the map is accounted for in the legend. Off-season units are striped.
-rp_breaks <- c(alert_sea5_anomaly$seas5_rp_years, 10, 20, Inf)
-rp_labels <- c("5 to 10 years", "10 to 20 years", "20 years or more")
+# Return period classes for alerting units come from `palette_sea5_anomaly`,
+# light to dark within each direction. In-season units that do not qualify
+# (return period below the threshold or low hindcast skill) and off-season
+# units get their own neutral classes so every unit on the map is accounted for
+# in the legend. Off-season units are striped.
 # wrapped so the legend stays narrow enough for the small map canvases
 not_alerting_label <- paste0("RP under ", alert_sea5_anomaly$seas5_rp_years, "\nor low skill")
 off_season_label <- "Off season"
-class_levels <- c(rp_labels, not_alerting_label, off_season_label)
+class_levels <- c(palette_sea5_anomaly$rp_labels, not_alerting_label, off_season_label)
 class_patterns <- stats$setNames(c(rep("none", 4), "stripe"), class_levels)
 
 #' Map SEA5 anomaly
@@ -110,7 +109,7 @@ sea5_anomaly_map <- function(df_wrangled, df_raw, title, date) {
       rp_class = dplyr$case_when(
         !(in_season_flat %in% TRUE) ~ off_season_label,
         alert_sea5_anomaly$unit_qualifies(rp, pearson_r, in_season_flat) ~
-          as.character(cut(rp, breaks = rp_breaks, labels = rp_labels, right = FALSE)),
+          as.character(palette_sea5_anomaly$rp_class(rp)),
         .default = not_alerting_label
       ),
       rp_class = factor(rp_class, levels = class_levels)
@@ -123,10 +122,15 @@ sea5_anomaly_map <- function(df_wrangled, df_raw, title, date) {
 
   sf_list <- sf_adm0$sf_adm0(iso3 = iso3, action = "nothing")
 
+  # the data source name is long, so the boundary source goes on its own line
+  # to keep the caption inside the narrow map canvases
+  map_caption <- caption$caption(indicator_id = "sea5_anomaly", iso3 = iso3, map = TRUE) |>
+    sub(pattern = "; Boundaries", replacement = "\nBoundaries", fixed = TRUE)
+
   class_fills <- stats$setNames(
     c(
       palette_sea5_anomaly$direction_palettes[[signal$direction]],
-      hdx_signals_palette$map_fill,
+      palette_sea5_anomaly$below_threshold_fill,
       hdx_signals_palette$map_boundary
     ),
     class_levels
@@ -169,12 +173,7 @@ sea5_anomaly_map <- function(df_wrangled, df_raw, title, date) {
       fill = "Return period",
       pattern = "Return period",
       title = title,
-      caption = caption$caption(
-        indicator_id = "sea5_anomaly",
-        iso3 = iso3,
-        map = TRUE,
-        extra_boundary_source = "OCHA CODs via fieldmaps.io"
-      )
+      caption = map_caption
     ) +
     map_theme$map_theme(
       iso3 = iso3,
@@ -182,6 +181,10 @@ sea5_anomaly_map <- function(df_wrangled, df_raw, title, date) {
       margin_location = "title"
     ) +
     gg$theme(
-      legend.key = gg$element_rect(color = hdx_signals_palette$hairline, fill = NA)
+      legend.key = gg$element_rect(color = hdx_signals_palette$hairline, fill = NA),
+      # the class labels are words rather than the short numeric values the
+      # shared map theme is sized for, so step the legend text down a little
+      legend.title = gg$element_text(size = 14),
+      legend.text = gg$element_text(size = 11)
     )
 }

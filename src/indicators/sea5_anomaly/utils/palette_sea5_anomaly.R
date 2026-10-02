@@ -1,12 +1,24 @@
-box::use(src/images/plots/hdx_signals_palette)
+box::use(
+  src/images/plots/hdx_signals_palette,
+  src/indicators/sea5_anomaly/utils/alert_sea5_anomaly
+)
 
-#' Direction colours shared by the SEA5 anomaly plot and map
+#' Return period classes and colours shared by the SEA5 anomaly plot and map
 #'
-#' Dry anomalies use the HDX warning (orange) scale and wet anomalies the HDX
-#' primary (blue) scale, at matching depths (steps 3, 5 and 7) so neither
-#' direction reads as more severe. The plot uses the middle step; the map uses
-#' all three, light to dark, for increasing return period classes.
+#' Return periods at or above the signal threshold fall in three classes, light
+#' to dark. Dry anomalies use the HDX warning (orange) scale and wet anomalies
+#' the HDX primary (blue) scale, at matching depths (steps 3, 5 and 7) so
+#' neither direction reads as more severe. Return periods below the threshold
+#' share the neutral `below_threshold_fill`.
 #'
+#' @export
+rp_breaks <- c(alert_sea5_anomaly$seas5_rp_years, 10, 20, Inf)
+
+#' @rdname rp_breaks
+#' @export
+rp_labels <- c("5 to 10 years", "10 to 20 years", "20 years or more")
+
+#' @rdname rp_breaks
 #' @export
 direction_palettes <- list(
   dry = c(
@@ -21,6 +33,17 @@ direction_palettes <- list(
   )
 )
 
-#' @rdname direction_palettes
+#' @rdname rp_breaks
 #' @export
-direction_colors <- vapply(direction_palettes, `[`, character(1), 2)
+below_threshold_fill <- hdx_signals_palette$map_fill
+
+#' Classify return periods
+#'
+#' @param rp Return period in years
+#'
+#' @returns Factor with levels `rp_labels`, `NA` below the signal threshold
+#'
+#' @export
+rp_class <- function(rp) {
+  cut(rp, breaks = rp_breaks, labels = rp_labels, right = FALSE)
+}
