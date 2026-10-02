@@ -10,6 +10,10 @@ box::use(
 )
 
 
+# Widest map canvas in inches, which the title size is tuned for
+MAX_MAP_WIDTH <- 6
+TITLE_SIZE <- 14
+
 #' Produces theme changes specific to maps
 #'
 #' Produces theme changes specific to maps. `iso3` code is used to pull in the
@@ -34,9 +38,14 @@ map_theme <- function(iso3, use_map_settings = TRUE, margin_location = c("title"
       legend_position = "left",
       justification = "top",
       location = "plot",
-      direction = "vertical"
+      direction = "vertical",
+      width = MAX_MAP_WIDTH
     )
   }
+
+  # keep the one-line title inside the canvas: narrow maps (down to 4 inches
+  # wide) scale the title down in proportion to the width
+  title_size <- TITLE_SIZE * min(df_ms$width, MAX_MAP_WIDTH) / MAX_MAP_WIDTH
 
   theme_signals$theme_signals(margin_location = margin_location, x_axis_ticks = FALSE) +
     gg$theme(
@@ -60,10 +69,11 @@ map_theme <- function(iso3, use_map_settings = TRUE, margin_location = c("title"
       # font/color per the HDX dataviz style guide, but sized to match the
       # main branch so the map keeps its original proportions within the
       # fixed canvas
+      plot.title.position = "plot",
       plot.title = gg$element_text(
         family = "Merriweather",
         face = "bold",
-        size = 14,
+        size = title_size,
         lineheight = 1.3,
         color = hdx_signals_palette$text_headline
       ),

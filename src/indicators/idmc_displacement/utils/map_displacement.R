@@ -24,9 +24,8 @@ box::use(
 map <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
   df_map <- df_alerts |>
     dplyr$mutate(
-      # two lines so the title fits the narrower map canvases
       title = paste0(
-        "Displacement events\nsince ",
+        "Displacement events since ",
         formatters$format_date(date - lubridate$days(30))
       )
     )
