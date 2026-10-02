@@ -17,32 +17,37 @@ box::use(
   src/indicators/sea5_anomaly/utils/palette_sea5_anomaly
 )
 
-# Bars are positioned by `series` (two per trimester) and coloured by
-# `fill_class`, which splits the forecast by anomaly direction. Alerting
-# forecast bars are outlined in red on top of their direction colour, and
-# off-season trimesters are striped.
+# Bars are positioned by `series` (two per trimester). Forecast bars are filled
+# on a continuous gradient of the signed return period (negative for dry,
+# positive for wet): grey at zero, the map's light direction shade at the
+# signal threshold and its darkest shade at `rp_limit`, so a weak anomaly is a
+# grey-tinted orange or blue. Historical bars are a constant grey (`NA` on the
+# gradient).
 series_levels <- c("Historical average", "Forecast")
-direction_labels <- c(dry = "Dry forecast", wet = "Wet forecast")
-season_patterns <- c("TRUE" = "none", "FALSE" = "stripe")
-alert_outline <- c("TRUE" = hdx_signals_palette$danger_red)
+rp_limit <- 20 # the gradient saturates here, matching the map's darkest class
+threshold <- alert_sea5_anomaly$seas5_rp_years
+gradient_stops <- c(-rp_limit, -10, -threshold, 0, threshold, 10, rp_limit)
+gradient_colors <- c(
+  rev(palette_sea5_anomaly$direction_palettes$dry),
+  hdx_signals_palette$hairline,
+  palette_sea5_anomaly$direction_palettes$wet
+)
+gradient_breaks <- c(-rp_limit, -10, -threshold, threshold, 10, rp_limit)
+gradient_labels <- c(paste0("Dry ", rp_limit, "+"), "10", threshold, threshold, "10", paste0("Wet ", rp_limit, "+"))
+historical_fill <- hdx_signals_palette$text_muted
 
-# The outline and stripe encodings are folded into the fill legend as two extra
-# keys ("Alerting", "Off season") so the plot carries a single legend row.
-# `legend_keys` sets the outline and pattern of each key in `fill_colors` order.
-fill_colors <- c(
-  "Historical" = hdx_signals_palette$map_boundary,
-  "Dry forecast" = palette_sea5_anomaly$direction_colors[["dry"]],
-  "Wet forecast" = palette_sea5_anomaly$direction_colors[["wet"]],
-  "Alerting" = "white",
-  "Off season" = hdx_signals_palette$map_boundary
-)
+# The outline, stripe and historical encodings share one small legend driven by
+# the `colour` aesthetic; `legend_keys` sets each key's look in `key_levels` order
+key_levels <- c("Historical", "Alerting", "Off season")
+key_outline <- c("Historical" = NA, "Alerting" = hdx_signals_palette$danger_red, "Off season" = NA)
 legend_keys <- list(
-  colour = c(NA, NA, NA, alert_outline[["TRUE"]], NA),
-  pattern = c("none", "none", "none", "none", "stripe"),
-  linewidth = 0.8
+  fill = c(historical_fill, "white", hdx_signals_palette$map_boundary),
+  colour = key_outline,
+  pattern = c("none", "none", "stripe")
 )
-dodge_width <- 0.9
-bar_width <- 0.42
+season_patterns <- c("TRUE" = "none", "FALSE" = "stripe")
+dodge_width <- 0.85
+bar_width <- 0.8 # halved by the dodge, so each bar is 0.4 wide with a 0.025 gap
 
 #' Plot SEA5 anomaly
 #'
@@ -74,20 +79,24 @@ plot <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
 
 #' Summarise the issuance to one row per trimester
 #'
-#' Averages `forecast_mm` and `hist_mean_mm` across the country's admin 1 units
-#' and takes the median dry and wet return periods, for the latest issuance up
-#' to the alert date and fully forecast trimesters only. The return period shown
-#' for a trimester is in the direction of the country signal when the trimester
-#' alerts (60% or more of units qualifying, see `alert_sea5_anomaly$alert()`),
-#' otherwise in the direction of the mean forecast relative to the historical
-#' average. A trimester is off season when fewer than half of the units are in
-#' their rainy season.
+#' Averages `forecast_mm` and `hist_mean_mm` and takes the median dry and wet
+#' return periods across the admin 1 units in their rainy season for each
+#' trimester, the same units the signal assesses, for the latest issuance up to
+#' the alert date and fully forecast trimesters only. A trimester is off season
+#' when no unit is in its rainy season; it is then summarised over all units so
+#' it can still be drawn, and the signal does not assess it. The return period
+#' shown for a trimester is in the direction of the country signal when the
+#' trimester alerts (60% or more of in-season units qualifying, see
+#' `alert_sea5_anomaly$alert()`), otherwise in the direction of the mean
+#' forecast relative to the historical average.
 #'
 #' @param df_wrangled Wrangled data frame for a single country
 #'
-#' @returns Data frame with `trimester` (ordered factor for the x axis),
+#' @returns Data frame ordered by `lead` with `trimester`, `season_year`,
 #'     `forecast_mm`, `hist_mean_mm`, `in_season`, `direction`, `rp` and
 #'     `alerting`
+#'
+#' @export
 summarise_trimesters <- function(df_wrangled) {
   df_issuance <- dplyr$filter(
     df_wrangled,
@@ -102,12 +111,15 @@ summarise_trimesters <- function(df_wrangled) {
 
   df_issuance |>
     dplyr$group_by(lead, trimester, season_year) |>
+    dplyr$mutate(in_season = any(in_season_flat %in% TRUE)) |>
+    # in-season units only, unless the whole country is off season
+    dplyr$filter(!in_season | in_season_flat %in% TRUE) |>
     dplyr$summarise(
       forecast_mm = mean(forecast_mm, na.rm = TRUE),
       hist_mean_mm = mean(hist_mean_mm, na.rm = TRUE),
       dry_rp = stats$median(dry_rp, na.rm = TRUE),
       wet_rp = stats$median(wet_rp, na.rm = TRUE),
-      in_season = mean(in_season_flat, na.rm = TRUE) >= 0.5,
+      in_season = dplyr$first(in_season),
       .groups = "drop"
     ) |>
     dplyr$left_join(df_alerting, by = "trimester") |>
@@ -117,19 +129,20 @@ summarise_trimesters <- function(df_wrangled) {
         alert_direction,
         dplyr$if_else(forecast_mm < hist_mean_mm, "dry", "wet")
       ),
-      rp = dplyr$if_else(direction == "dry", dry_rp, wet_rp),
-      trimester = forcats$fct_reorder(paste(trimester, season_year, sep = "\n"), lead)
-    )
+      rp = dplyr$if_else(direction == "dry", dry_rp, wet_rp)
+    ) |>
+    dplyr$arrange(lead)
 }
 
 #' Plot SEA5 anomaly data for a single country
 #'
 #' Grouped bar chart with, for every trimester of the issuance, the historical
-#' average rainfall next to the forecast rainfall, both as country means of the
-#' admin 1 trimester totals in mm. Forecast bars are filled by anomaly
-#' direction, labelled with the median return period of the anomaly and
-#' outlined in red when the trimester alerts. Off-season trimesters are
-#' striped. See `summarise_trimesters()` for the aggregation.
+#' average rainfall next to the forecast rainfall, both as means of the admin 1
+#' trimester totals in mm over the areas in season. Forecast bars are coloured
+#' on a continuous dry-to-wet gradient of the return period of their anomaly,
+#' grey below the signal threshold, labelled with the median return period and
+#' outlined in red when the trimester alerts. Off-season trimesters are striped.
+#' See `summarise_trimesters()` for the aggregation.
 #'
 #' @param df_wrangled Wrangled data frame for plotting (single alerted country).
 #' @param df_raw Raw data frame, not used.
@@ -138,9 +151,10 @@ summarise_trimesters <- function(df_wrangled) {
 #'
 #' @returns Bar chart of forecast against historical rainfall by trimester
 sea5_anomaly_plot <- function(df_wrangled, df_raw, title, date) {
-  df_trimesters <- summarise_trimesters(df_wrangled)
-
-  df_bars <- df_trimesters |>
+  df_bars <- summarise_trimesters(df_wrangled) |>
+    dplyr$mutate(
+      trimester = forcats$fct_reorder(paste(trimester, season_year, sep = "\n"), lead)
+    ) |>
     tidyr$pivot_longer(
       cols = c(hist_mean_mm, forecast_mm),
       names_to = "series",
@@ -151,37 +165,44 @@ sea5_anomaly_plot <- function(df_wrangled, df_raw, title, date) {
         dplyr$if_else(series == "forecast_mm", "Forecast", "Historical average"),
         levels = series_levels
       ),
-      fill_class = factor(
-        dplyr$if_else(series == "Forecast", direction_labels[direction], "Historical"),
-        levels = names(fill_colors)
+      # historical bars sit outside the gradient and take `na.value`
+      rp_signed = dplyr$case_when(
+        series == "Historical average" ~ NA_real_,
+        direction == "dry" ~ -rp,
+        .default = rp
       ),
-      # only forecast bars can alert; NA draws no outline
-      outline = dplyr$if_else(series == "Forecast" & alerting, "TRUE", NA_character_)
+      key = factor(
+        dplyr$case_when(
+          series == "Forecast" & alerting ~ "Alerting",
+          series == "Historical average" ~ "Historical",
+          !in_season ~ "Off season",
+          .default = NA_character_
+        ),
+        levels = key_levels
+      )
     )
 
   df_labels <- df_bars |>
     dplyr$filter(series == "Forecast") |>
-    dplyr$mutate(
-      label = paste(scales$number(rp, accuracy = 0.1, drop0trailing = TRUE), "RP")
-    )
+    dplyr$mutate(label = paste(alert_sea5_anomaly$format_rp(rp), "y RP"))
 
   gg$ggplot(
     data = df_bars,
     mapping = gg$aes(x = trimester, y = mm, group = series)
   ) +
     ggpattern$geom_col_pattern(
-      mapping = gg$aes(fill = fill_class, color = outline, pattern = as.character(in_season)),
+      mapping = gg$aes(fill = rp_signed, color = key, pattern = as.character(in_season)),
       position = gg$position_dodge(width = dodge_width),
       width = bar_width,
-      linewidth = 0.8,
+      linewidth = 0.7,
       pattern_fill = "white",
       pattern_colour = "white",
       pattern_angle = 45,
       pattern_density = 0.3,
       pattern_spacing = 0.03,
       pattern_key_scale_factor = 0.5,
-      # draw a swatch for every class, including those absent from this
-      # country, so the legend reads the same across campaigns
+      # draw every legend key, including those absent from this country, so
+      # the legend reads the same across campaigns
       show.legend = TRUE
     ) +
     gg$geom_text(
@@ -199,14 +220,19 @@ sea5_anomaly_plot <- function(df_wrangled, df_raw, title, date) {
         hdx_signals_palette$text_muted
       )
     ) +
-    gg$scale_fill_manual(
-      values = fill_colors,
-      drop = FALSE
+    gg$scale_fill_gradientn(
+      colours = gradient_colors,
+      values = scales$rescale(gradient_stops, from = c(-rp_limit, rp_limit)),
+      limits = c(-rp_limit, rp_limit),
+      oob = scales$squish,
+      breaks = gradient_breaks,
+      labels = gradient_labels,
+      na.value = historical_fill
     ) +
     gg$scale_color_manual(
-      values = alert_outline,
-      na.value = NA,
-      guide = "none"
+      values = key_outline,
+      limits = key_levels,
+      na.value = NA
     ) +
     ggpattern$scale_pattern_manual(
       values = season_patterns,
@@ -219,26 +245,35 @@ sea5_anomaly_plot <- function(df_wrangled, df_raw, title, date) {
     gg$labs(
       x = "",
       y = "Rainfall (mm, trimester total)",
-      fill = "",
+      fill = "Forecast return period (years)",
+      color = "",
       title = title,
       caption = caption$caption(
         indicator_id = "sea5_anomaly",
         iso3 = unique(df_wrangled$iso3),
-        extra_caption = paste(
-          "Country means of admin 1 trimester totals.",
-          "Labels: median return period (years) of the forecast anomaly.",
-          sep = "\n"
-        )
+        extra_caption = "Means over the admin 1 areas in season each trimester."
       )
     ) +
     gg$guides(
-      fill = gg$guide_legend(override.aes = legend_keys)
+      fill = gg$guide_colourbar(
+        order = 1,
+        theme = gg$theme(
+          legend.key.width = gg$unit(1.8, "in"),
+          legend.key.height = gg$unit(0.12, "in"),
+          legend.title.position = "top"
+        ),
+        frame.colour = hdx_signals_palette$hairline,
+        ticks.colour = hdx_signals_palette$map_label
+      ),
+      color = gg$guide_legend(order = 2, override.aes = legend_keys)
     ) +
     theme_signals$theme_signals() +
     gg$theme(
       axis.line.x = gg$element_blank(),
       panel.grid.major.x = gg$element_blank(),
       legend.position = "top",
-      legend.justification = "left"
+      legend.justification = "left",
+      legend.box = "horizontal",
+      legend.box.just = "bottom"
     )
 }

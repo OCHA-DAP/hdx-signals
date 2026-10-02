@@ -1,4 +1,5 @@
 # Changes
+<<<<<<< HEAD
 ## 0.6.3.0 (22 October 2026)
 - Removed the `Publish PROMPTS.md` workflow (`.github/workflows/publish_prompts.yml`) and its `src/repo/publish_prompts.R` script. The `docs/` folder was removed from the repo in July, but the script still wrote to `docs/PROMPTS.md`, so the workflow failed with `cannot open file 'docs/PROMPTS.md': No such file or directory` on any pull request that added or changed an indicator prompt file (first hit by #362).
 ## 0.6.2.9 (20 October 2026)
@@ -14,6 +15,12 @@
 ## 0.6.2.5 (19 October 2026)
 - Fixed the IPC/CH food insecurity map legends running outside the map canvas in campaigns. Maps with both an area phase and a settlement legend placed them side by side, which overflowed wide bottom legends. Map legends are now stacked vertically and left-aligned.
 - Fixed `save_map()` ignoring its per-country size overrides: it computed them but saved with the `iso3_map_settings.json` dimensions, so the Chile (CHL) 6x6 override never applied. Chile maps now render at 6x6.
+=======
+## 0.7.0.0 (2 October 2026)
+- Added the `sea5_anomaly` indicator, which signals unusually dry or wet seasonal rainfall forecasts from ECMWF SEAS5. It reads the processed signal inputs written by `ds-seas5-skill` from the projects blob container and fires per country when at least 60% of in-season admin 1 areas have a return period of 5 years or more with moderate forecast skill. Signals resting on fewer than 3 in-season areas are flagged in the title and summary.
+- Added a rainfall bar chart, a redesigned return-period map and a palette for the indicator, plus AI-generated long and short summaries built from the structured signal data (`src/indicators/sea5_anomaly/prompts`).
+- Added a `monitor_sea5_anomaly` workflow and a `cloud_storage` container helper for the SEAS5 inputs.
+>>>>>>> 7680cd2 (feat(sea5_anomaly): in-season signals, summaries, chart and map updates)
 ## 0.6.2.4 (2 October 2026)
 - Fixed point map titles (e.g. IDMC displacement for Cameroon) running outside the map canvas and truncating the year on narrow maps (#359). The title is now aligned to the left edge of the canvas and its font size scales with the canvas width, so it stays on one line.
 ## 0.6.2.3 (17 September 2026)
