@@ -148,7 +148,7 @@ alert_info <- function(alert, df_wrangled) {
       "Signal: {alert$n_qualifying} of the {alert$n_units} admin 1 areas in ",
       "season ({share}) forecast an unusually {alert$direction} ",
       "{alert$trimester} {alert$season_year} rainy season, a 1-in-{rp_years}-year ",
-      "event or rarer with at least moderate forecast skill.",
+      "occurrence or rarer with at least moderate forecast skill.",
       share = scales$label_percent(accuracy = 1)(alert$value),
       rp_years = alert_seas5_anomaly$seas5_rp_years
     ),
