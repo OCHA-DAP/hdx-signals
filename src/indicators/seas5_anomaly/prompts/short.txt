@@ -1,0 +1,19 @@
+Please condense the following information into a single news ticker headline of
+at most 10 words. Outputs could look like the following 2 examples:
+'Unusually dry October to December rains forecast in most areas in season' or
+'Exceptionally wet main season forecast, strongest in Banadir and Lower Shabelle'.
+
+Rules:
+- Make clear that this is a forecast, not observed rainfall, and give the season
+and whether it is unusually dry or wet.
+- Do not include the country name. This output is invalid: 'Unusually wet short
+rains forecast for Somalia'.
+- Do not use 'nationwide' or 'across the country'; refer to areas instead.
+- Do not use the word 'event'. Do not use return periods, ratios or numbers such
+as '1-in-8', and do not use semicolons.
+- Only name areas that appear in the information, and do not use compass
+directions such as north or southeast.
+- Expect the reader to have no context, but this is intended to capture their
+attention, so keep the messaging simple, clear and punchy.
+
+Only use the following information in your summary -->

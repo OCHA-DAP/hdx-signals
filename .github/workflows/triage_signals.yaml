@@ -55,6 +55,7 @@ on:
           - "jrc_agricultural_hotspots"
           - "wfp_market_monitor"
           - "who_cholera"
+          - "seas5_anomaly"
       TEST:
         required: true
         type: choice

@@ -35,12 +35,14 @@ box::use(
 #'
 #' @param name Name of the file to read, including directory prefixes (`input/` or `output/`)
 #'     and file extension, such as `.parquet`.
-#' @param container Container in the Azure storage to read from, either `prod`, `dev`, or `wfp`.
+#' @param container Container in the Azure storage to read from, either `prod`, `dev`, `wfp`,
+#'     or `projects` to read from the shared `projects` container (dev) that
+#'     `ds-seas5-skill` writes its processed output to.
 #'
 #' @returns Data frame.
 #'
 #' @export
-read_az_file <- function(name, container = c("prod", "dev", "wfp")) {
+read_az_file <- function(name, container = c("prod", "dev", "wfp", "projects")) {
   container <- get_container(container)
   fileext <- tools$file_ext(name)
   tf <- tempfile(fileext = paste0(".", fileext))
@@ -90,12 +92,14 @@ read_az_file_cached <- memoise$memoise(read_az_file)
 #' @param df Data frame or simple features to save out.
 #' @param name Name of the file to write, including prefix (`input/` or `output/`)
 #'     and filetype `.parquet`.
-#' @param container Container in the Azure storage to write to, either `prod`, `dev`, or `wfp`.
+#' @param container Container in the Azure storage to write to, either `prod`, `dev`, `wfp`,
+#'     or `projects` to write to the shared `projects` container (dev) that
+#'     `ds-seas5-skill` writes its processed output to.
 #'
 #' @returns Nothing, but file is written to the `hdx-signals` container.
 #'
 #' @export
-update_az_file <- function(df, name, container = c("prod", "dev", "wfp")) {
+update_az_file <- function(df, name, container = c("prod", "dev", "wfp", "projects")) {
   container <- get_container(container)
   fileext <- tools$file_ext(name)
   tf <- tempfile(fileext = paste0(".", fileext))
@@ -135,10 +139,12 @@ update_az_file <- function(df, name, container = c("prod", "dev", "wfp")) {
 #' then all files in the bucket are returned.
 #'
 #' @param pattern Pattern to look for. Passed to [stringr::str_detect()]
-#' @param container Container in the Azure storage to read from, either `prod`, `dev`, or `wfp`.
+#' @param container Container in the Azure storage to read from, either `prod`, `dev`, `wfp`,
+#'     or `projects` to read from the shared `projects` container (dev) that
+#'     `ds-seas5-skill` writes its processed output to.
 #'
 #' @export
-az_file_detect <- function(pattern = NULL, container = c("prod", "dev", "wfp")) {
+az_file_detect <- function(pattern = NULL, container = c("prod", "dev", "wfp", "projects")) {
   container <- get_container(container)
   # get blob files in container but don't return dirs
   blob_df <- az$list_blobs(container)
@@ -162,18 +168,20 @@ az_file_detect_cached <- memoise$memoise(az_file_detect)
 #' Get blob container
 #'
 #' @param container Container in the Azure store to read from, either `prod` or `dev`,
-#'     to access the primary `hdx-signals` containers, or `wfp` to read from the WFP
-#'     container in `dev`.
+#'     to access the primary `hdx-signals` containers, `wfp` to read from the WFP
+#'     container in `dev`, or `projects` to read from the shared `projects` container
+#'     (dev) that `ds-seas5-skill` writes its processed output to.
 #'
 #' @returns Correct blob to read and write from
 #' @export
-get_container <- function(container = c("prod", "dev", "wfp")) {
+get_container <- function(container = c("prod", "dev", "wfp", "projects")) {
   container <- rlang$arg_match(container)
   switch(
     container,
     prod = container_prod(),
     dev = container_dev(),
-    wfp = container_wfp()
+    wfp = container_wfp(),
+    projects = container_projects()
   )
 }
 
@@ -252,5 +260,23 @@ container_wfp <- function() {
   az$blob_container(
     endpoint = container_endpoint_dev,
     name = "wfp"
+  )
+}
+
+#' Connects to the shared `projects` container on the dev storage account
+#'
+#' Holds output written by other team pipelines, each under its own prefix,
+#' rather than by this repo. Currently used for `ds-seas5-skill/`, whose
+#' latest processed SEAS5 signal inputs feed the `seas5_anomaly` indicator.
+#'
+#' @returns The `projects` blob container
+container_projects <- function() {
+  container_endpoint_dev <- az$blob_endpoint(
+    endpoint = azure_endpoint_url("blob", "dev"),
+    sas = get_env$get_env("DSCI_AZ_BLOB_DEV_SAS_WRITE")
+  )
+  az$blob_container(
+    endpoint = container_endpoint_dev,
+    name = "projects"
   )
 }
