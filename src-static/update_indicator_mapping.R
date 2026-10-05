@@ -102,7 +102,7 @@ df <- dplyr$bind_rows(
     mc_folder = "HDX Signals - SEAS5 Anomaly",
     indicator_subject = "Seasonal rainfall forecast",
     static_segment = NA_real_,
-    banner_url = NA_character_,
+    banner_url = "https://mcusercontent.com/ea3f905d50ea939780139789d/images/4fd42546-f9db-cd0f-1a20-6c00283aadf3.png", #nolint
     data_source = "Seasonal rainfall forecast - ECMWF SEAS5"
   )
 )
