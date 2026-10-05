@@ -4,16 +4,21 @@ admin 1 areas driving the signal. There is no narrative text, only these
 numbers. Write a summary of two sentences following these rules:
 
 - Say that this is a forecast, which season it covers, whether it points to
-unusually dry or wet conditions, how widespread this is across the country and
-how rare it is. Express rarity as 'a 1-in-X-year event', rounding X to a whole
-number.
-- Name at most three areas with the strongest anomaly. Mention another
-trimester only if its return period is 5 years or more; ignore all the others,
-and ignore off-season trimesters unless they alert.
+unusually dry or wet conditions, how widespread this is and how rare it is.
+- Describe how widespread it is only as a share of the areas in their rainy
+season for that trimester (for example 'all' or 'most' of those areas). Never
+say 'across the country', 'nationwide' or 'countrywide'.
+- Express rarity as 'about once every X years', rounding X to a whole number.
+Never use the word 'event' anywhere in the summary.
+- Name at most three areas with the strongest anomaly, using only the area
+names given. Do not use compass directions such as north or southeast, and do
+not describe where areas are.
+- Mention another trimester only if its return period is 5 years or more; ignore
+all the others, and ignore off-season trimesters unless they alert.
 - Only use the information provided. Do not infer impacts such as crop losses,
 flooding or displacement, and do not add context that is not in the data.
-- Do not comment on how many areas are in season; that caveat is added
-separately when needed.
+- Do not state how many areas are in season; that caveat is added separately
+when needed.
 - Write in plain language for a non-technical reader. Do not include
 formatting. Keep the output to one paragraph.
 
