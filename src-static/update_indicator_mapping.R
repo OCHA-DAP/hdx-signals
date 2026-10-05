@@ -97,7 +97,7 @@ df <- dplyr$bind_rows(
   ),
   dplyr$tibble( # ECMWF SEAS5 seasonal rainfall anomaly
     indicator_id = "seas5_anomaly",
-    mc_interest = NA_character_,
+    mc_interest = "Rainfall anomaly - ECMWF",
     mc_tag = NA_character_,
     mc_folder = "HDX Signals - SEAS5 Anomaly",
     indicator_subject = "Seasonal rainfall forecast",
