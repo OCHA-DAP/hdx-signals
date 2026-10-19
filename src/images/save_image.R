@@ -87,8 +87,8 @@ save_map <- function(p, iso3, indicator_id, date, crop = FALSE) {
     iso3 = iso3,
     indicator_id = indicator_id,
     date = date,
-    width = df_ms$width,
-    height = df_ms$height,
+    width = width,
+    height = height,
     crop = crop
   )
 }
