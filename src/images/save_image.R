@@ -2,6 +2,7 @@ box::use(dplyr)
 
 box::use(
   src/email/mailchimp/images,
+  src/images/maps/fit_canvas,
   cs = src/utils/cloud_storage
 )
 
@@ -50,7 +51,7 @@ save_image <- function(p, iso3, indicator_id, date, width, height, crop = FALSE,
 #' Save map produced by HDX Signals
 #'
 #' Just a wrapper around `save_image()` that automatically pulls in the width
-#' and height for the ISO3 code.
+#' and height for the ISO3 code, and sizes the map to fill that canvas.
 #'
 #' @param p Plot object
 #' @param iso3 ISO3 code
@@ -83,7 +84,7 @@ save_map <- function(p, iso3, indicator_id, date, crop = FALSE) {
 
 
   save_image(
-    p = p,
+    p = fit_canvas$fit_canvas(p, width = width, height = height),
     iso3 = iso3,
     indicator_id = indicator_id,
     date = date,
