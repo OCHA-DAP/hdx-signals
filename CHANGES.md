@@ -1,4 +1,6 @@
 # Changes
+## 0.6.2.6 (19 October 2026)
+- Fixed map legends being oversized in campaigns. Legend headings (16pt) were larger than the map title (14pt) and legend values (13pt) were large for the 6 inch canvas, which shrank the map, left excess white space on the left, pushed the caption off the canvas and spaced legend rows far apart. Map legends now use 11pt headings, 9pt values, smaller keys and tighter row spacing.
 ## 0.6.2.5 (19 October 2026)
 - Fixed the IPC/CH food insecurity map legends running outside the map canvas in campaigns. Maps with both an area phase and a settlement legend placed them side by side, which overflowed wide bottom legends. Map legends are now stacked vertically and left-aligned.
 - Fixed `save_map()` ignoring its per-country size overrides: it computed them but saved with the `iso3_map_settings.json` dimensions, so the Chile (CHL) 6x6 override never applied. Chile maps now render at 6x6.
