@@ -1,4 +1,7 @@
 # Changes
+## 0.6.2.7 (19 October 2026)
+- Fixed the title, legends and caption of narrow maps (e.g. Afghanistan IPC) starting well inside the image and running off its right edge. `save_map()` now calls the new `fit_canvas()` (`src/images/maps/fit_canvas.R`), which widens the map limits so the panel fills the room left after the title, legends and caption. The map stays centered and larger, and the annotations line up with the left edge of the canvas.
+- Map legends are no longer forced to stack vertically; the smaller legends from 0.6.2.6 fit side by side.
 ## 0.6.2.6 (19 October 2026)
 - Fixed map legends being oversized in campaigns. Legend headings (16pt) were larger than the map title (14pt) and legend values (13pt) were large for the 6 inch canvas, which shrank the map, left excess white space on the left, pushed the caption off the canvas and spaced legend rows far apart. Map legends now use 11pt headings, 9pt values, smaller keys and tighter row spacing.
 ## 0.6.2.5 (19 October 2026)
