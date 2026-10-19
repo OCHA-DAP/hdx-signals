@@ -5,6 +5,7 @@ box::use(
   src/utils/all_iso3_codes[...],
   src/utils/cloud_storage[...],
   src/utils/download_shapefile[...],
+  src/utils/format_bullets[...],
   src/utils/formatters[...],
   src/utils/get_env[...],
   src/utils/get_iso3_sf[...],

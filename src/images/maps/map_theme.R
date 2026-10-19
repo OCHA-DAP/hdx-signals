@@ -63,11 +63,12 @@ map_theme <- function(iso3, use_map_settings = TRUE, margin_location = c("title"
       legend.justification = df_ms$justification,
       legend.location = df_ms$location,
       # per the HDX dataviz style guide's map annotations: legend heading in
-      # Roboto, legend values in Roboto Mono, both map_label grey. The guide's
+      # Roboto for legend headings and values (monospaced values look out of place
+      # next to text labels such as "Rural"), both map_label grey. The guide's
       # 16px/13px are about 11pt/9pt on the 6 inch canvas (ggplot sizes are in
       # points), which keeps the legend smaller than the map title
       legend.title = gg$element_text(family = "Roboto", size = 11, color = hdx_signals_palette$map_label),
-      legend.text = gg$element_text(family = "Roboto Mono", size = 9, color = hdx_signals_palette$map_label),
+      legend.text = gg$element_text(family = "Roboto", size = 9, color = hdx_signals_palette$map_label),
       legend.key.size = gg$unit(0.17, "in"),
       legend.spacing.y = gg$unit(0.05, "in"),
       legend.box.spacing = gg$unit(0.1, "in"),
