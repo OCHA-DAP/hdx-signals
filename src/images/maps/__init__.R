@@ -1,5 +1,6 @@
 #' @export
 box::use(
+  src/images/maps/fit_canvas[...],
   src/images/maps/geom_centroids[...],
   src/images/maps/geom_cities[...],
   src/images/maps/map_points[...],
