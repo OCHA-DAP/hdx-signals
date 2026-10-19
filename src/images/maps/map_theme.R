@@ -61,6 +61,9 @@ map_theme <- function(iso3, use_map_settings = TRUE, margin_location = c("title"
       legend.position = df_ms$legend_position,
       legend.direction = df_ms$direction,
       legend.justification = df_ms$justification,
+      # stack multiple legends so wide bottom legends don't overflow the canvas
+      legend.box = "vertical",
+      legend.box.just = "left",
       legend.location = df_ms$location,
       # per the HDX dataviz style guide's map annotations: legend heading in
       # Roboto 16px, legend values in Roboto Mono 13px, both map_label grey

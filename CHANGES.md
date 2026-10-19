@@ -1,4 +1,6 @@
 # Changes
+## 0.6.2.5 (19 October 2026)
+- Fixed the IPC/CH food insecurity map legends running outside the map canvas in campaigns. Maps with both an area phase and a settlement legend placed them side by side, which overflowed wide bottom legends. Map legends are now stacked vertically and left-aligned.
 ## 0.6.2.4 (2 October 2026)
 - Fixed point map titles (e.g. IDMC displacement for Cameroon) running outside the map canvas and truncating the year on narrow maps (#359). The title is now aligned to the left edge of the canvas and its font size scales with the canvas width, so it stays on one line.
 ## 0.6.2.3 (17 September 2026)
