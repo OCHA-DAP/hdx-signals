@@ -9,6 +9,7 @@ box::use(
 )
 
 box::use(
+  src/utils/format_bullets,
   src/utils/get_prompts,
   src/utils/parse_pdf,
   src/utils/get_manual_info,
@@ -211,7 +212,8 @@ text_summarizer_manual <- function(txt_c) {
     system_prompt = prompts$system,
     user_prompt   = glue::glue(prompts[[2]]),
     info = txt_c[[2]]  # Second string for recommendations
-  )
+  ) |>
+    format_bullets$format_bullets()
 
   # Handle cases where parts of content are not available
   if (is.na(sit_rep) && is.na(recs)) {
@@ -273,7 +275,8 @@ text_summarizer <- function(txt, org) {
     system_prompt = prompts$system,
     user_prompt = glue$glue(prompts[[2]]),
     info = txt[2]
-  )
+  ) |>
+    format_bullets$format_bullets()
 
   # ensure that we are only using those that are not blank
   # so make sure to check when parts of it are not available

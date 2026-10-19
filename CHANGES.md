@@ -1,4 +1,7 @@
 # Changes
+## 0.6.2.8 (19 October 2026)
+- Map legend text now uses Roboto instead of Roboto Mono, so labels such as "Rural" match the rest of the map text.
+- Fixed bullet points ("-") in IPC/CH food insecurity recommendation summaries running together as one paragraph in the email. A new `format_bullets()` (`src/utils/format_bullets.R`) puts a `<br>` before each bullet so every bullet starts on a new line.
 ## 0.6.2.7 (19 October 2026)
 - Fixed the title, legends and caption of narrow maps (e.g. Afghanistan IPC) starting well inside the image and running off its right edge. `save_map()` now calls the new `fit_canvas()` (`src/images/maps/fit_canvas.R`), which widens the map limits so the panel fills the room left after the title, legends and caption. The map stays centered and larger, and the annotations line up with the left edge of the canvas.
 - Map legends are no longer forced to stack vertically; the smaller legends from 0.6.2.6 fit side by side.
