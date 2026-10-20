@@ -1,4 +1,6 @@
 # Changes
+## 0.6.2.9 (20 October 2026)
+- Fixed all scheduled workflows failing at the `Set up environment` step with `Error installing package 'later'`. `ubuntu-latest` moved to Ubuntu 26.04 (glibc 2.43, GCC 15), where `later` 1.4.4 no longer compiles because its bundled tinycthread clashes with the C23 `once_flag` type. `later` is now pinned at 1.4.8 in `renv.lock`, which includes the upstream fix (1.4.7).
 ## 0.6.2.8 (19 October 2026)
 - Map legend text now uses Roboto instead of Roboto Mono, so labels such as "Rural" match the rest of the map text.
 - Fixed bullet points ("-") in IPC/CH food insecurity recommendation summaries running together as one paragraph in the email. A new `format_bullets()` (`src/utils/format_bullets.R`) puts a `<br>` before each bullet so every bullet starts on a new line.
