@@ -1,4 +1,7 @@
-box::use(cs = src/utils/cloud_storage)
+box::use(
+  cs = src/utils/cloud_storage,
+  src/utils/hs_first_run
+)
 
 #' Download raw SEAS5 anomaly data
 #'
@@ -14,10 +17,18 @@ box::use(cs = src/utils/cloud_storage)
 #' `in_season_flat` and `in_season_app` with the climatology behind them
 #' (`tri_share_annual`, `tri_mean_mm_day`).
 #'
+#' If `HS_FIRST_RUN` is `TRUE`, the full history file `signal_inputs_adm1.parquet`
+#' is read instead of the latest-issuance file.
+#'
 #' @export
 raw <- function() {
+  file_name <- if (hs_first_run$hs_first_run()) {
+    "signal_inputs_adm1.parquet"
+  } else {
+    "signal_inputs_adm1_latest.parquet"
+  }
   cs$read_az_file(
-    "ds-seas5-skill/processed/hdx_signal/signal_inputs_adm1_latest.parquet",
+    paste0("ds-seas5-skill/processed/hdx_signal/", file_name),
     container = "projects"
   )
 }
