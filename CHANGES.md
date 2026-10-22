@@ -1,5 +1,5 @@
 # Changes
-## 0.7.0.0 (2 October 2026)
+## 0.7.0.0 (22 October 2026)
 - Added the `seas5_anomaly` indicator, which signals unusually dry or wet seasonal rainfall forecasts from ECMWF SEAS5. It reads the processed signal inputs written by `ds-seas5-skill` from the projects blob container and fires per country when at least 60% of in-season admin 1 areas have a return period of 5 years or more with moderate forecast skill. Signals resting on fewer than 3 in-season areas are flagged in the title and summary.
 - Added a rainfall bar chart, a redesigned return-period map and a palette for the indicator, plus AI-generated long and short summaries built from the structured signal data (`src/indicators/seas5_anomaly/prompts`). The prompts describe rarity as "about once every X years" and do not use the word "event", compass directions or "nationwide".
 - Added a `monitor_seas5_anomaly` workflow (Python and Azure OpenAI setup for the summaries, run on days 6-10 of each month after the monthly SEAS5 issuance, already-issued signals are skipped) and a `cloud_storage` container helper for the SEAS5 inputs. Added `seas5_anomaly` to the triage workflow indicator options. Added the `seas5_anomaly` row to `src-static/update_indicator_mapping.R`, with its Mailchimp interest, folder, static segment and banner.
