@@ -1,4 +1,6 @@
 # Changes
+## 0.6.2.10 (22 October 2026)
+- Fixed the JRC agricultural hotspots monitor intermittently failing with `HTTP response code said error ... 403` when downloading `hotspots_html_ts.zip` from GitHub runners. The download now goes through `download_zip()`, which sends a browser-like user agent and retries up to 4 times with increasing waits.
 ## 0.6.2.9 (20 October 2026)
 - Fixed all scheduled workflows failing at the `Set up environment` step with `Error installing package 'later'`. `ubuntu-latest` moved to Ubuntu 26.04 (glibc 2.43, GCC 15), where `later` 1.4.4 no longer compiles because its bundled tinycthread clashes with the C23 `once_flag` type. `later` is now pinned at 1.4.8 in `renv.lock`, which includes the upstream fix (1.4.7).
 ## 0.6.2.8 (19 October 2026)
