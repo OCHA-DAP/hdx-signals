@@ -1,4 +1,6 @@
 # Changes
+## 0.6.3.0 (22 October 2026)
+- Removed the `Publish PROMPTS.md` workflow (`.github/workflows/publish_prompts.yml`) and its `src/repo/publish_prompts.R` script. The `docs/` folder was removed from the repo in July, but the script still wrote to `docs/PROMPTS.md`, so the workflow failed with `cannot open file 'docs/PROMPTS.md': No such file or directory` on any pull request that added or changed an indicator prompt file (first hit by #362).
 ## 0.6.2.9 (20 October 2026)
 - Fixed all scheduled workflows failing at the `Set up environment` step with `Error installing package 'later'`. `ubuntu-latest` moved to Ubuntu 26.04 (glibc 2.43, GCC 15), where `later` 1.4.4 no longer compiles because its bundled tinycthread clashes with the C23 `once_flag` type. `later` is now pinned at 1.4.8 in `renv.lock`, which includes the upstream fix (1.4.7).
 ## 0.6.2.8 (19 October 2026)
