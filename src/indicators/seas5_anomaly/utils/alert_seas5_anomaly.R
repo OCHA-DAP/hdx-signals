@@ -92,33 +92,6 @@ signal_shares <- function(df_wrangled) {
     dplyr$arrange(iso3, date, dplyr$desc(frac_qualifying), lead, direction)
 }
 
-#' Pick at most one new signal per country and issuance
-#'
-#' Walks a country's issuances in date order. Within each issuance, candidate
-#' signals for a trimester the country has already been alerted for (same
-#' `trimester` and `season_year`, either direction) at an earlier issuance are
-#' dropped, then the first remaining candidate is kept and its trimester
-#' recorded. Candidates must already be ordered with the preferred one first
-#' within each issuance.
-#'
-#' @param df_country Candidate signals for a single country
-#'
-#' @returns The kept rows, at most one per `date`
-#'
-#' @noRd
-first_new_signal_per_issuance <- function(df_country) {
-  alerted <- character()
-  kept <- list()
-  for (df_date in split(df_country, df_country$date)) {
-    df_date <- df_date[!paste(df_date$trimester, df_date$season_year) %in% alerted, ]
-    if (nrow(df_date) > 0) {
-      kept <- c(kept, list(df_date[1, ]))
-      alerted <- c(alerted, paste(df_date$trimester[1], df_date$season_year[1]))
-    }
-  }
-  dplyr$bind_rows(kept)
-}
-
 #' Creates SEAS5 anomaly alerts dataset
 #'
 #' Evaluates the dry and wet signals separately for every country, issuance and
@@ -127,17 +100,12 @@ first_new_signal_per_issuance <- function(df_country) {
 #' `seas5_min_units` in-season units still fire but are flagged with
 #' `few_units`, which the title and the summary caveat.
 #'
-#' A country alerts at most once per issuance, so at most 12 times a year: when
-#' several trimesters or both directions fire, only the first is kept, meaning
-#' the shortest lead, then the largest qualifying share, then dry before wet.
-#' A trimester a country has already been alerted for at an earlier issuance is
-#' not alerted again. The chosen `direction`, `trimester`, `season_year`,
-#' `lead`, unit counts and `few_units` are carried alongside the required alert
+#' Dry and wet signals are separate alerts. A country alerts at most once per
+#' issuance and direction: when several trimesters fire in the same direction,
+#' only the first is kept, meaning the shortest lead, then the largest
+#' qualifying share. The chosen `direction`, `trimester`, `season_year`, `lead`,
+#' unit counts and `few_units` are carried alongside the required alert
 #' columns.
-#'
-#' Only the issuances present in `df_wrangled` are considered, so on a monitoring
-#' run, which reads the latest issuance only, repeats of earlier issuances are
-#' screened by the signals framework instead.
 #'
 #' @param df_wrangled Wrangled data frame
 #'
@@ -148,10 +116,8 @@ alert <- function(df_wrangled) {
   df_wrangled |>
     signal_shares() |>
     dplyr$filter(frac_qualifying >= seas5_frac_units) |>
-    dplyr$arrange(iso3, date, lead, dplyr$desc(frac_qualifying), direction) |>
-    dplyr$group_by(iso3) |>
-    dplyr$group_modify(\(df_country, key) first_new_signal_per_issuance(df_country)) |>
-    dplyr$ungroup() |>
+    dplyr$arrange(iso3, date, direction, lead, dplyr$desc(frac_qualifying)) |>
+    dplyr$distinct(iso3, date, direction, .keep_all = TRUE) |>
     dplyr$transmute(
       iso3,
       indicator_name = "anomaly",
