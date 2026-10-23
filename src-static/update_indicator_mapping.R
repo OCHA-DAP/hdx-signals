@@ -94,6 +94,26 @@ df <- dplyr$bind_rows(
     static_segment = 7392229,
     banner_url = "https://mcusercontent.com/ea3f905d50ea939780139789d/images/b21825e8-0197-dfdf-b99a-ec498308f7b8.png", #nolint
     data_source = "INFORM Severity - ACAPS"
+  ),
+  dplyr$tibble( # ECMWF SEAS5 dry seasonal rainfall anomaly
+    indicator_id = "seas5_anomaly_dry",
+    mc_interest = "Seasonal rainfall forecast - ECMWF",
+    mc_tag = NA_character_,
+    mc_folder = "HDX Signals - SEAS5 Anomaly",
+    indicator_subject = "Drier than usual seasonal rainfall forecast",
+    static_segment = 7393360,
+    banner_url = "https://mcusercontent.com/ea3f905d50ea939780139789d/images/4fd42546-f9db-cd0f-1a20-6c00283aadf3.png", #nolint
+    data_source = "Seasonal rainfall forecast - ECMWF SEAS5"
+  ),
+  dplyr$tibble( # ECMWF SEAS5 wet seasonal rainfall anomaly
+    indicator_id = "seas5_anomaly_wet",
+    mc_interest = "Seasonal rainfall forecast - ECMWF",
+    mc_tag = NA_character_,
+    mc_folder = "HDX Signals - SEAS5 Anomaly",
+    indicator_subject = "Wetter than usual seasonal rainfall forecast",
+    static_segment = 7393360,
+    banner_url = "https://mcusercontent.com/ea3f905d50ea939780139789d/images/4fd42546-f9db-cd0f-1a20-6c00283aadf3.png", #nolint
+    data_source = "Seasonal rainfall forecast - ECMWF SEAS5"
   )
 )
 
