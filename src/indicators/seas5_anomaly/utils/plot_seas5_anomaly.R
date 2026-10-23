@@ -70,7 +70,9 @@ plot <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
     df_alerts = df_plot,
     df_wrangled = df_wrangled,
     df_raw = df_raw,
-    image_fn = seas5_anomaly_plot,
+    image_fn = \(df_wrangled, df_raw, title, date) {
+      seas5_anomaly_plot(df_wrangled, df_raw, title, date, unique(df_alerts$direction))
+    },
     image_use = "plot",
     height = 4,
     width = 6
@@ -148,9 +150,10 @@ summarise_trimesters <- function(df_wrangled) {
 #' @param df_raw Raw data frame, not used.
 #' @param title Plot title.
 #' @param date Date of the alert.
+#' @param direction Direction of the alert, `"dry"` or `"wet"`.
 #'
 #' @returns Bar chart of forecast against historical rainfall by trimester
-seas5_anomaly_plot <- function(df_wrangled, df_raw, title, date) {
+seas5_anomaly_plot <- function(df_wrangled, df_raw, title, date, direction) {
   df_bars <- summarise_trimesters(df_wrangled) |>
     dplyr$mutate(
       trimester = forcats$fct_reorder(paste(trimester, season_year, sep = "\n"), lead)
@@ -249,7 +252,7 @@ seas5_anomaly_plot <- function(df_wrangled, df_raw, title, date) {
       color = "",
       title = title,
       caption = caption$caption(
-        indicator_id = "seas5_anomaly",
+        indicator_id = paste("seas5_anomaly", direction, sep = "_"),
         iso3 = unique(df_wrangled$iso3),
         extra_caption = "Means over the admin 1 areas in season each trimester."
       )

@@ -74,7 +74,7 @@ summary <- function(df_alerts, df_wrangled, df_raw) {
     dplyr$transmute(
       location_iso3 = iso3,
       date_generated = date,
-      indicator_id = seas5_anomaly,
+      indicator_id = paste(seas5_anomaly, direction, sep = "_"),
       info,
       manual_info = NA_character_,
       use_manual_info = FALSE,

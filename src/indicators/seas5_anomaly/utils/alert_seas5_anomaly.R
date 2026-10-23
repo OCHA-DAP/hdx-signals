@@ -92,37 +92,55 @@ signal_shares <- function(df_wrangled) {
     dplyr$arrange(iso3, date, dplyr$desc(frac_qualifying), lead, direction)
 }
 
-#' Creates SEAS5 anomaly alerts dataset
+#' Firing SEAS5 anomaly signals, one per country, issuance and direction
 #'
 #' Evaluates the dry and wet signals separately for every country, issuance and
 #' forecast trimester with `signal_shares()`. A signal fires when at least 60% of
-#' the country's in-season admin 1 units qualify. Signals resting on fewer than
-#' `seas5_min_units` in-season units still fire but are flagged with
-#' `few_units`, which the title and the summary caveat.
-#'
-#' Dry and wet signals are separate alerts. A country alerts at most once per
-#' issuance and direction: when several trimesters fire in the same direction,
-#' only the first is kept, meaning the shortest lead, then the largest
-#' qualifying share. The chosen `direction`, `trimester`, `season_year`, `lead`,
-#' unit counts and `few_units` are carried alongside the required alert
-#' columns.
+#' the country's in-season admin 1 units qualify. When several trimesters fire in
+#' the same direction, only the first is kept, meaning the shortest lead, then
+#' the largest qualifying share.
 #'
 #' @param df_wrangled Wrangled data frame
 #'
-#' @returns Alerts dataset
+#' @returns Data frame in the format of `signal_shares()`, at most one row per
+#'     `iso3`, `date` and `direction`
 #'
 #' @export
-alert <- function(df_wrangled) {
+firing_signals <- function(df_wrangled) {
   df_wrangled |>
     signal_shares() |>
     dplyr$filter(frac_qualifying >= seas5_frac_units) |>
     dplyr$arrange(iso3, date, direction, lead, dplyr$desc(frac_qualifying)) |>
-    dplyr$distinct(iso3, date, direction, .keep_all = TRUE) |>
+    dplyr$distinct(iso3, date, direction, .keep_all = TRUE)
+}
+
+#' Creates SEAS5 anomaly alerts dataset
+#'
+#' Dry and wet signals are separate indicators, `seas5_anomaly_dry` and
+#' `seas5_anomaly_wet`, so a country can alert once per issuance for each. Alerts
+#' are the `firing_signals()` in the requested direction. Signals resting on
+#' fewer than `seas5_min_units` in-season units still fire but are flagged with
+#' `few_units`, which the title and the summary caveat. The chosen `direction`,
+#' `trimester`, `season_year`, `lead`, unit counts and `few_units` are carried
+#' alongside the required alert columns.
+#'
+#' @param df_wrangled Wrangled data frame
+#' @param signal_direction Direction of the signals to alert on, `"dry"` or
+#'     `"wet"`
+#'
+#' @returns Alerts dataset
+#'
+#' @export
+alert <- function(df_wrangled, signal_direction = c("dry", "wet")) {
+  signal_direction <- match.arg(signal_direction)
+  df_wrangled |>
+    firing_signals() |>
+    dplyr$filter(direction == signal_direction) |>
     dplyr$transmute(
       iso3,
       indicator_name = "anomaly",
       indicator_source = "seas5",
-      indicator_id = paste(indicator_source, indicator_name, sep = "_"),
+      indicator_id = paste("seas5_anomaly", signal_direction, sep = "_"),
       date,
       alert_level_numeric = 1L,
       value = frac_qualifying,

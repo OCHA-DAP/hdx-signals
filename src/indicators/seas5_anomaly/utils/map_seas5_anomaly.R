@@ -55,7 +55,9 @@ map <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
     df_alerts = df_map,
     df_wrangled = df_wrangled,
     df_raw = df_raw,
-    image_fn = seas5_anomaly_map,
+    image_fn = \(df_wrangled, df_raw, title, date) {
+      seas5_anomaly_map(df_wrangled, df_raw, title, date, unique(df_alerts$direction))
+    },
     image_use = "map",
     width = 6,
     height = 4,
@@ -79,13 +81,15 @@ map <- function(df_alerts, df_wrangled, df_raw, preview = FALSE) {
 #' @param df_raw Raw data frame, not used.
 #' @param title Plot title.
 #' @param date Date of the alert.
+#' @param direction Direction of the alert, `"dry"` or `"wet"`.
 #'
 #' @returns Admin 1 choropleth ggplot object, or `NULL`
-seas5_anomaly_map <- function(df_wrangled, df_raw, title, date) {
+seas5_anomaly_map <- function(df_wrangled, df_raw, title, date, direction) {
   iso3 <- unique(df_wrangled$iso3)
   df_issuance <- dplyr$filter(df_wrangled, date == max(date))
   signal <- df_issuance |>
-    alert_seas5_anomaly$signal_shares() |>
+    alert_seas5_anomaly$firing_signals() |>
+    dplyr$filter(direction == !!direction) |>
     dplyr$slice_head(n = 1)
 
   sf_adm1 <- tryCatch(
@@ -124,7 +128,11 @@ seas5_anomaly_map <- function(df_wrangled, df_raw, title, date) {
 
   # the data source name is long, so the boundary source goes on its own line
   # to keep the caption inside the narrow map canvases
-  map_caption <- caption$caption(indicator_id = "seas5_anomaly", iso3 = iso3, map = TRUE) |>
+  map_caption <- caption$caption(
+    indicator_id = paste("seas5_anomaly", direction, sep = "_"),
+    iso3 = iso3,
+    map = TRUE
+  ) |>
     sub(pattern = "; Boundaries", replacement = "\nBoundaries", fixed = TRUE)
 
   class_fills <- stats$setNames(
